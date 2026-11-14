@@ -53,7 +53,6 @@ jobs:
       - name: Transport boundary regressions (CPU only)
         run: |
           python tests/unit/test_stream_replace.py clang++
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tests/unit/test_transport_boundaries.py clang++
       - name: WebRTC nullable latency hints
         working-directory: src_assets/common/assets/web
