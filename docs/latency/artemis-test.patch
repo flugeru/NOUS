@@ -1,0 +1,39 @@
+diff --git a/app/build.gradle b/app/build.gradle
+index 3a3494f0..7f9d9b8f 100644
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -95,10 +95,10 @@ android {
+ 
+     buildTypes {
+         debug {
+-            applicationIdSuffix ".noirdebug"
+-            resValue "string", "app_label", "Diana"
+-            resValue "string", "app_label_root", "Diana (Root)"
+-            resValue "string", "app_label_game", "Diana (Game)"
++            applicationIdSuffix ".vibepollotest"
++            resValue "string", "app_label", "Artemis Vibepollo Test"
++            resValue "string", "app_label_root", "Artemis Vibepollo Test"
++            resValue "string", "app_label_game", "Artemis Vibepollo Test"
+ 
+             minifyEnabled true
+             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+@@ -154,7 +154,7 @@ android {
+         abi {
+             enable true
+             reset()
+-            include "x86", "x86_64", "armeabi-v7a", "arm64-v8a"
++            include "arm64-v8a"
+         }
+     }
+ 
+diff --git a/gradle/wrapper/gradle-wrapper.properties b/gradle/wrapper/gradle-wrapper.properties
+index 2733ed5d..e6cd0b30 100644
+--- a/gradle/wrapper/gradle-wrapper.properties
++++ b/gradle/wrapper/gradle-wrapper.properties
+@@ -1,5 +1,6 @@
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+ distributionUrl=https\://services.gradle.org/distributions/gradle-8.13-bin.zip
++distributionSha256Sum=20f1b1176237254a6fc204d8434196fa11a4cfb387567519c61556e8710aed78
+ zipStoreBase=GRADLE_USER_HOME
+ zipStorePath=wrapper/dists

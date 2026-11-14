@@ -49,7 +49,7 @@ O workflow gera artefatos somente após as etapas de build e validação corresp
 
 Clientes de origem: [Moonlight Android](https://github.com/moonlight-stream/moonlight-android) e [Artemis](https://github.com/ClassicOldSong/moonlight-android).
 
-As correções listadas acima pertencem ao servidor. Nenhuma otimização nova de MediaCodec foi aplicada ao cliente Android nesta rodada. Um APK de teste compilado separadamente deve usar identidade e assinatura próprias, sem se passar por release oficial nem substituir o aplicativo original.
+As correções listadas acima pertencem ao servidor. Nenhuma otimização nova de MediaCodec foi aplicada ao cliente Android nesta rodada. **APK ARM64 de teste compilado e verificado localmente**, com pacote `com.limelight.vibepollotest` e assinatura Android Debug, separado dos aplicativos oficiais. [Versão, hash, fonte e reconstrução](docs/latency/android-test-build.md). O APK não está publicado em Releases; a entrega local fica em `build/delivery/`.
 
 AV1 é candidato a ensaio, não escolha universal. Decoder efetivo, perfil, bit depth, FPS sustentado e comportamento térmico do POCO ainda precisam ser medidos.
 
@@ -69,6 +69,7 @@ AV1 é candidato a ensaio, não escolha universal. Decoder efetivo, perfil, bit 
 | [Arquitetura e transporte](docs/latency/architecture-audit.md) | Filas, pacing, dependências e backlog. |
 | [NVENC e captura](docs/latency/nvenc-audit.md) | Rate control, sincronização e evidências. |
 | [Android e POCO](docs/latency/decoder-research.md) | MediaCodec, fontes oficiais e capacidades ainda desconhecidas. |
+| [APK de teste](docs/latency/android-test-build.md) | Procedência, assinatura, SHA-256 e reconstrução do cliente ARM64. |
 | [Benchmark A/B](docs/latency/benchmark.md) | Schema CSV e protocolo de comparação sem misturar relógios. |
 | [Compilação](docs/building.md) | Toolchains, dependências e empacotamento. |
 | [Linux](docs/linux/install.md) | Instruções herdadas; validação Linux não foi ampliada nesta edição. |

@@ -177,7 +177,7 @@ Teste de sintaxe não valida firmware, disponibilidade dos serviços nem resulta
 
 ### 6.2 MediaCodecList: probe dentro de app de diagnóstico ou build instrumentada
 
-Sem APK nesta entrega; instalação altera estado do telefone e deve ser autorizada separadamente. ADB shell puro não executa diretamente API Java pública `MediaCodecList`. Não fornecer comando fictício `adb shell MediaCodecList`.
+APK Artemis de teste compilado em etapa posterior, descrito em [android-test-build.md](android-test-build.md), sem probe MediaCodecList nem mudanças no decoder. Instalação altera estado do telefone e deve ser autorizada separadamente. ADB shell puro não executa diretamente API Java pública `MediaCodecList`. Não fornecer comando fictício `adb shell MediaCodecList`.
 
 1. Obtenha consentimento para probe mínimo ou build instrumentada do cliente. Não substituir APK pessoal sem preservar dados e versão. Não pedir root.
 2. Exporte JSON com fingerprint/SDK, nome/canonical/alias de cada decoder, MIME, flags hardware/software/vendor, perfis/levels crus e decodificados por constantes, features e parâmetros de fornecedor publicados. Preserve exceções por componente.
