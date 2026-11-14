@@ -1,0 +1,29 @@
+---
+name: Fork Test Installer
+permissions:
+  contents: read
+  actions: read
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths: [.github/workflows/fork-test-installer.yml]
+
+concurrency:
+  group: fork-test-installer-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  windows:
+    if: github.repository == 'flugeru/Vibepollo'
+    uses: ./.github/workflows/ci-windows.yml
+    with:
+      release_commit: ${{ github.sha }}
+      release_version: '2.0.0'
+      symbol_product_name: Vibepollo
+      symbol_release_prefix: polo
+      build_tests: true
+      require_signpath_signing: false
+      require_truehdr_runtime: false
+      release_artifact_retention_days: 7
