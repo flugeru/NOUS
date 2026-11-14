@@ -324,7 +324,7 @@ function applyAudioReceiverHints(
     /* ignore */
   }
   try {
-    if (target != null && typeof receiverAny.jitterBufferTarget === 'number') {
+    if (target != null && 'jitterBufferTarget' in receiverAny) {
       receiverAny.jitterBufferTarget = target;
     }
   } catch {
@@ -374,7 +374,7 @@ function applyVideoReceiverHints(receiver?: RTCRtpReceiver, targetMs?: number): 
     /* ignore */
   }
   try {
-    if (typeof receiverAny.jitterBufferTarget === 'number') {
+    if ('jitterBufferTarget' in receiverAny) {
       receiverAny.jitterBufferTarget = target;
     }
   } catch {

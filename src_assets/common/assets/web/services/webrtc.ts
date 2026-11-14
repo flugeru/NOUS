@@ -152,7 +152,7 @@ export function resolveVideoMaxFrameAgeMs(config: StreamConfig): number | undefi
 function applyReceiverLatencyHints(receiver: RTCRtpReceiver | undefined, targetMs: number): void {
   if (!receiver) return;
   const receiverWithHints = receiver as RTCRtpReceiver & {
-    jitterBufferTarget?: number;
+    jitterBufferTarget?: number | null;
     playoutDelayHint?: number | null;
   };
   try {
@@ -163,7 +163,7 @@ function applyReceiverLatencyHints(receiver: RTCRtpReceiver | undefined, targetM
     // Receiver latency hints are optional and vary across browser versions.
   }
   try {
-    if (typeof receiverWithHints.jitterBufferTarget === 'number') {
+    if ('jitterBufferTarget' in receiverWithHints) {
       receiverWithHints.jitterBufferTarget = targetMs;
     }
   } catch {

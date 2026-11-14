@@ -9,6 +9,13 @@ on:
       - 'src/platform/windows/display_vram.cpp'
       - 'tests/unit/test_nvenc_bitrate.py'
       - 'tests/unit/test_keyed_mutex_abandoned.py'
+      - 'tests/unit/test_transport_boundaries.py'
+      - 'tests/unit/test_stream_replace.py'
+      - 'src/stream.cpp'
+      - 'src/rtsp.cpp'
+      - 'src_assets/common/assets/web/services/webrtc.ts'
+      - 'src_assets/common/assets/web-legacy/utils/webrtc/client.ts'
+      - 'src_assets/common/assets/web/scripts/webrtc-hints.test.ts'
       - '.github/workflows/latency-checks.yml'
   pull_request:
     paths:
@@ -18,6 +25,13 @@ on:
       - 'src/platform/windows/display_vram.cpp'
       - 'tests/unit/test_nvenc_bitrate.py'
       - 'tests/unit/test_keyed_mutex_abandoned.py'
+      - 'tests/unit/test_transport_boundaries.py'
+      - 'tests/unit/test_stream_replace.py'
+      - 'src/stream.cpp'
+      - 'src/rtsp.cpp'
+      - 'src_assets/common/assets/web/services/webrtc.ts'
+      - 'src_assets/common/assets/web-legacy/utils/webrtc/client.ts'
+      - 'src_assets/common/assets/web/scripts/webrtc-hints.test.ts'
       - '.github/workflows/latency-checks.yml'
   workflow_dispatch:
 
@@ -26,13 +40,24 @@ permissions:
 
 jobs:
   diagnostics:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: '24'
       - name: NVENC bitrate regression (CPU only)
         run: python tests/unit/test_nvenc_bitrate.py --compiler clang++
       - name: Abandoned keyed mutex regression (CPU only)
         run: python tests/unit/test_keyed_mutex_abandoned.py --compiler clang++
+      - name: Transport boundary regressions (CPU only)
+        run: |
+          python tests/unit/test_stream_replace.py clang++
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tests/unit/test_transport_boundaries.py clang++
+      - name: WebRTC nullable latency hints
+        working-directory: src_assets/common/assets/web
+        run: node --experimental-strip-types --test scripts/webrtc-hints.test.ts
       - name: Trace analyzer tests
         run: python tools/latency/test_analyze_trace.py
       - name: Parse PowerShell collectors without running device commands
