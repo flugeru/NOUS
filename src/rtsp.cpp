@@ -13,6 +13,7 @@ extern "C" {
 #include <algorithm>
 #include <array>
 #include <cctype>
+#include <charconv>
 #include <format>
 #include <functional>
 #include <iterator>
@@ -2327,7 +2328,7 @@ namespace rtsp_stream {
         auto name = line.substr(2, pos - 2);
         auto val = line.substr(pos + 1);
 
-        if (val[val.size() - 1] == ' ') {
+        if (!val.empty() && val.back() == ' ') {
           val = val.substr(0, val.size() - 1);
         }
         args.emplace(name, val);
@@ -2367,7 +2368,16 @@ namespace rtsp_stream {
         util::from_view(args.at("x-nv-audio.surround.AudioQuality"sv));
 
       config.controlProtocolType = (int) util::from_view(args.at("x-nv-general.useReliableUdp"sv));
-      config.packetsize = (int) util::from_view(args.at("x-nv-video[0].packetSize"sv));
+      const auto requested_packet_size = args.at("x-nv-video[0].packetSize"sv);
+      const auto [packet_size_end, packet_size_error] = std::from_chars(
+        requested_packet_size.data(), requested_packet_size.data() + requested_packet_size.size(), config.packetsize
+      );
+      if (packet_size_error != std::errc {} || packet_size_end != requested_packet_size.data() + requested_packet_size.size() ||
+          config.packetsize < config::PACKETSIZE_MIN || config.packetsize > config::PACKETSIZE_MAX) {
+        BOOST_LOG(warning) << "Rejecting invalid client packetSize"sv;
+        respond(socket->sock, *session, &option, 400, "BAD REQUEST", req->sequenceNumber, {});
+        return false;
+      }
 
       // Limit the packetsize to avoid fragmentation with clients that cannot configure this value
       if (config::stream.packetsize && config::stream.packetsize < config.packetsize) {

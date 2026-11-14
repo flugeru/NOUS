@@ -1900,6 +1900,15 @@ endif()
 
 # Production-code regression harnesses exercise Windows policies on the native host.
 find_package(Python3 COMPONENTS Interpreter)
+# Transport fixtures compile literal production snippets without host runtime dependencies.
+if(SUNSHINE_TEST_ENABLE_COMPONENT AND Python3_Interpreter_FOUND AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    foreach(_transport_test IN ITEMS stream_replace transport_boundaries)
+        add_test(NAME test_component_${_transport_test}
+            COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_LIST_DIR}/unit/test_${_transport_test}.py"
+                "${CMAKE_CXX_COMPILER}")
+        set_tests_properties(test_component_${_transport_test} PROPERTIES LABELS "component" TIMEOUT 120)
+    endforeach()
+endif()
 if(Python3_Interpreter_FOUND AND WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     add_test(NAME regression_pyrowave_windows_header_order
         COMMAND "${Python3_EXECUTABLE}"

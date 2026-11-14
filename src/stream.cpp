@@ -1356,7 +1356,7 @@ namespace stream {
    */
   std::vector<uint8_t> replace(const std::string_view &original, const std::string_view &old, const std::string_view &_new) {
     std::vector<uint8_t> replaced;
-    replaced.reserve(original.size() + _new.size() - old.size());
+    replaced.reserve(original.size());
 
     auto begin = std::begin(original);
     auto end = std::end(original);
@@ -1925,21 +1925,21 @@ namespace stream {
     });
 
     server->map(packetTypes[IDX_SET_CLIPBOARD], [server](session_t *session, const std::string_view &payload) {
-      BOOST_LOG(info) << "type [IDX_SET_CLIPBOARD]: "sv << payload << " size: " << payload.size();
-
       if (!(session->permission & crypto::PERM::clipboard_set)) {
         BOOST_LOG(debug) << "Permission Clipboard Set deined for [" << session->device_name << "]";
         return;
       }
+
+      BOOST_LOG(info) << "type [IDX_SET_CLIPBOARD] size: "sv << payload.size();
     });
 
     server->map(packetTypes[IDX_FILE_TRANSFER_NONCE_REQUEST], [server](session_t *session, const std::string_view &payload) {
-      BOOST_LOG(info) << "type [IDX_FILE_TRANSFER_NONCE_REQUEST]: "sv << payload << " size: " << payload.size();
-
       if (!(session->permission & crypto::PERM::file_upload)) {
         BOOST_LOG(debug) << "Permission File Upload deined for [" << session->device_name << "]";
         return;
       }
+
+      BOOST_LOG(info) << "type [IDX_FILE_TRANSFER_NONCE_REQUEST] size: "sv << payload.size();
     });
 
     server->map(packetTypes[IDX_ENCRYPTED], [server](session_t *session, const std::string_view &payload) {
