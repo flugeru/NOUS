@@ -1151,11 +1151,11 @@ namespace nvenc {
     enc_config.rcParams.averageBitRate = new_bitrate_bps;
     enc_config.rcParams.maxBitRate = new_bitrate_bps;
 
-    // Scale the VBV buffer with the bitrate so the rate controller keeps a comparable buffering
-    // window (mirrors the create_encoder VBV sizing), with a floor to avoid an undersized buffer.
+    // Preserve the configured VBV window, including single-frame buffers below 100 kbit.
+    // Zero selects the driver's default, so keep a scaled custom buffer at least one bit.
     if (enc_config.rcParams.vbvBufferSize > 0 && prev_bitrate_bps > 0) {
       const uint64_t scaled = static_cast<uint64_t>(new_bitrate_bps) * current_enc_config.rcParams.vbvBufferSize / prev_bitrate_bps;
-      enc_config.rcParams.vbvBufferSize = static_cast<uint32_t>(std::max<uint64_t>(scaled, 100u * 1000u));
+      enc_config.rcParams.vbvBufferSize = static_cast<uint32_t>(std::max<uint64_t>(scaled, 1u));
     }
 
     NV_ENC_RECONFIGURE_PARAMS reconfigure_params {api::reconfigure_params_version(selected_api_version)};
