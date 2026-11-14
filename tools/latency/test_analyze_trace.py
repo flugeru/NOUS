@@ -54,8 +54,9 @@ class TraceTests(unittest.TestCase):
 
     def test_mismatched_baseline(self):
         report = analyze(io.StringIO("frame_id,display_ms\n0,0\n"), 60)
-        with self.assertRaises(ValueError):
-            compare(report, {"schema_version": 1, "fps": 120})
+        for baseline in ({"schema_version": 1, "fps": 120}, [], None):
+            with self.subTest(baseline=baseline), self.assertRaises(ValueError):
+                compare(report, baseline)
 
 
 if __name__ == "__main__":

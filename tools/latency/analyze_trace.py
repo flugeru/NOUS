@@ -106,7 +106,7 @@ def analyze(stream, fps):
 
 
 def compare(current, baseline):
-    if baseline.get("schema_version") != current["schema_version"] or baseline.get("fps") != current["fps"]:
+    if not isinstance(baseline, dict) or baseline.get("schema_version") != current["schema_version"] or baseline.get("fps") != current["fps"]:
         raise ValueError("baseline must use same schema version and target fps")
     deltas = {}
     for stage, data in current["stages"].items():
