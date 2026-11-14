@@ -285,10 +285,7 @@ namespace platf::dxgi {
         return true;
       }
       HRESULT status = _mutex->AcquireSync(0, 3000);
-      if (status == S_OK || status == WAIT_ABANDONED) {
-        if (status == WAIT_ABANDONED) {
-          BOOST_LOG(error) << "Keyed mutex was abandoned; continuing with lock held";
-        }
+      if (status == S_OK) {
         _locked = true;
       } else {
         BOOST_LOG(error) << "Failed to acquire texture mutex [0x"sv << util::hex(status).to_string_view() << ']';
@@ -619,12 +616,10 @@ namespace platf::dxgi {
         BOOST_LOG(error) << "Timed out acquiring encoder mutex; capture/encoder sync likely wedged";
         return -1;
       }
-      if (status != S_OK && status != WAIT_ABANDONED) {
+      if (status != S_OK) {
+        // WAIT_ABANDONED also invalidates the surface; do not sample or release it.
         BOOST_LOG(error) << "Failed to acquire encoder mutex [0x"sv << util::hex(status).to_string_view() << ']';
         return -1;
-      }
-      if (status == WAIT_ABANDONED) {
-        BOOST_LOG(error) << "Encoder mutex was abandoned; continuing with lock held";
       }
 
       bool encoder_mutex_held = true;

@@ -1951,8 +1951,18 @@ if(Python3_Interpreter_FOUND)
         endforeach()
     endif()
 endif()
-# Compile the actual notification method against the production C tray ABI.
+# Compile production methods against focused CPU-only fixtures.
 if(SUNSHINE_TEST_ENABLE_COMPONENT AND Python3_Interpreter_FOUND AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    add_test(NAME test_component_nvenc_bitrate
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_LIST_DIR}/unit/test_nvenc_bitrate.py"
+            --compiler "${CMAKE_CXX_COMPILER}")
+    set_tests_properties(test_component_nvenc_bitrate PROPERTIES LABELS "component")
+    add_test(NAME test_component_keyed_mutex_abandoned
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_LIST_DIR}/unit/test_keyed_mutex_abandoned.py"
+            --compiler "${CMAKE_CXX_COMPILER}")
+    set_tests_properties(test_component_keyed_mutex_abandoned PROPERTIES LABELS "component")
     add_test(NAME test_component_update_notification_tray_interface
         COMMAND "${Python3_EXECUTABLE}"
             "${CMAKE_CURRENT_LIST_DIR}/unit/test_update_notification_tray_interface.py"

@@ -99,6 +99,7 @@ int active = 0, peak_active = 0, generations = 0;
 DXGI_RATIONAL desktop_refresh {0, 1};
 int desktop_refresh_rounded = 0;
 struct display_t {
+  std::uint64_t recovery_capture_instance = 0;
   int client_frame_rate = 0;
   DXGI_RATIONAL client_frame_rate_strict {0, 0};
   DXGI_RATIONAL display_refresh_rate {0, 1};
@@ -124,6 +125,8 @@ std::shared_ptr<display_t> display(int, const std::string &, const config_t &con
 void reset_display(std::shared_ptr<platf::display_t> &disp, int type, const std::string &name, const config_t &config) {
   disp = platf::display(type, name, config);
 }
+// ponytail: demand-only fixture; add a Windows integration test for recovery lookup.
+void observe_recovery_capture_frame(const std::string &, std::uint64_t) {}
 using image_event_t = safe::event_t<std::shared_ptr<platf::img_t>>;
 struct capture_ctx_t { std::shared_ptr<image_event_t> images; config_t config; };
 using video::capture_config_for_consumers;

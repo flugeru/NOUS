@@ -379,7 +379,9 @@ namespace platf::dxgi {
     HRESULT status = d3d_img->capture_mutex->AcquireSync(0, 3000);
     const auto capture_mutex_wait = std::chrono::steady_clock::now() - capture_mutex_wait_start;
     if (status == WAIT_ABANDONED) {
-      BOOST_LOG(error) << "Capture texture keyed mutex was abandoned; continuing with lock held";
+      // The surface and mutex are inconsistent; reinit recreates the image pool.
+      BOOST_LOG(error) << "Capture texture keyed mutex was abandoned; requesting capture reinit";
+      return capture_e::reinit;
     } else if (status != S_OK) {
       BOOST_LOG(error) << "Failed to lock capture texture [0x"sv << util::hex(status).to_string_view() << ']';
       return capture_e::error;
