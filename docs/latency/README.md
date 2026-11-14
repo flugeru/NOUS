@@ -47,7 +47,7 @@ Guarda anterior ignorava `jitterBufferTarget` quando API existia com valor inici
 - `tools/latency/test_analyze_trace.py`: seis testes stdlib cobrindo cadência, stall, duplicação, clock domains e entradas inválidas.
 - `tools/latency/Collect-HostDiagnostics.ps1`: inventário Windows/GPU sem alterar configuração.
 - `tools/latency/Collect-AndroidDiagnostics.ps1`: snapshots ADB somente leitura no aparelho já autorizado; não instala APK nem presume MediaCodecList via comando shell fictício.
-- `.github/workflows/latency-checks.yml`: checks focados CPU e sintaxe. Publicar workflow não significa que GitHub Actions executou.
+- `.github/workflows/latency-checks.yml`: checks focados CPU e sintaxe. Execução confirmada no GitHub Actions; resultado e limites abaixo.
 
 ## Validação local desta rodada
 
@@ -87,6 +87,14 @@ $env:CPLUS_INCLUDE_PATH = "$env:LOCALAPPDATA\Temp\opencode\include"
 ```
 
 Python embarcado desativa inclusão automática do diretório do script no `sys.path`; ambiente temporário recebeu `tools/latency` no arquivo `python313._pth` para teste local. Python padrão/CI não precisa disso. Caminhos temporários não são configuração obrigatória do projeto.
+
+## GitHub Actions confirmado
+
+Commit verificado: `94d6bd633cbf4dafb0f23821d89f10594a44dfea`, em 2026-11-14.
+
+- [Latency diagnostics checks — PASS](https://github.com/flugeru/Vibepollo/actions/runs/43627911720): regressões CPU de NVENC, mutex abandonado e transporte, hints WebRTC, analisador e parse dos coletores PowerShell passaram no runner Ubuntu. Nenhum comando de coleta em dispositivo foi executado.
+- [CI herdado — success, cobertura limitada](https://github.com/flugeru/Vibepollo/actions/runs/43627911835): somente job `Release candidate` executou. Jobs Windows, Arch Linux, validação de artefato Linux e assinatura foram ignorados (`skipped`). Esse verde **não comprova build Windows x64**.
+- [Deploy GitHub Pages — FAIL](https://github.com/flugeru/Vibepollo/actions/runs/43627911864): montagem estática passou; `Configure GitHub Pages` retornou `HttpError: Not Found` ao consultar o site Pages. Anotação pede habilitar/configurar Pages no repositório. Deploy foi ignorado. Configuração de publicação do fork não foi alterada; falha não é evidência de erro no binário de streaming.
 
 ## Próxima validação no hardware
 
