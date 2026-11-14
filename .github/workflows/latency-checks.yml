@@ -1,0 +1,46 @@
+name: Latency diagnostics checks
+
+on:
+  push:
+    paths:
+      - 'tools/latency/**'
+      - 'src/nvenc/nvenc_base.cpp'
+      - 'src/platform/windows/display_wgc.cpp'
+      - 'src/platform/windows/display_vram.cpp'
+      - 'tests/unit/test_nvenc_bitrate.py'
+      - 'tests/unit/test_keyed_mutex_abandoned.py'
+      - '.github/workflows/latency-checks.yml'
+  pull_request:
+    paths:
+      - 'tools/latency/**'
+      - 'src/nvenc/nvenc_base.cpp'
+      - 'src/platform/windows/display_wgc.cpp'
+      - 'src/platform/windows/display_vram.cpp'
+      - 'tests/unit/test_nvenc_bitrate.py'
+      - 'tests/unit/test_keyed_mutex_abandoned.py'
+      - '.github/workflows/latency-checks.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnostics:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: NVENC bitrate regression (CPU only)
+        run: python tests/unit/test_nvenc_bitrate.py --compiler clang++
+      - name: Abandoned keyed mutex regression (CPU only)
+        run: python tests/unit/test_keyed_mutex_abandoned.py --compiler clang++
+      - name: Trace analyzer tests
+        run: python tools/latency/test_analyze_trace.py
+      - name: Parse PowerShell collectors without running device commands
+        shell: pwsh
+        run: |
+          Get-ChildItem tools/latency/*.ps1 | ForEach-Object {
+            $tokens = $null
+            $parseErrors = $null
+            $null = [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$tokens, [ref]$parseErrors)
+            if ($parseErrors) { throw ($parseErrors | Out-String) }
+          }
