@@ -6,7 +6,7 @@
 [![Build Windows de teste](https://github.com/flugeru/Vibepollo/actions/workflows/fork-test-installer.yml/badge.svg)](https://github.com/flugeru/Vibepollo/actions/workflows/fork-test-installer.yml)
 [![Licença GPLv3](https://img.shields.io/badge/licen%C3%A7a-GPLv3-blue.svg)](LICENSE)
 
-Fork independente mantido por [Flügel (@flugeru)](https://github.com/flugeru), baseado no [Vibepollo de Nonary](https://github.com/Nonary/Vibepollo), com origem em [Apollo](https://github.com/ClassicOldSong/Apollo) e [Sunshine](https://github.com/LizardByte/Sunshine).
+NOUS é o projeto de streaming de [Flügel (@flugeru)](https://github.com/flugeru). A versão **1.0.0** marca o início desta edição para desktop e Android. O host deriva do [Vibepollo de Nonary](https://github.com/Nonary/Vibepollo), com origem em [Apollo](https://github.com/ClassicOldSong/Apollo) e [Sunshine](https://github.com/LizardByte/Sunshine).
 
 Esta edição reúne correções pontuais, testes de regressão e ferramentas de análise para streaming entre PC e cliente Moonlight/Artemis. Desenvolvimento assistido por IA, com mudanças documentadas e limites de validação explícitos. Não é uma distribuição oficial dos projetos de origem.
 
@@ -62,7 +62,7 @@ Clientes de origem: [Moonlight Android](https://github.com/moonlight-stream/moon
 
 O [workflow NOUS Android](.github/workflows/android-client.yml) roda testes unitários e compila o cliente ARM64 de teste. Para compilar localmente, inicialize o submódulo nativo a partir da raiz e execute o Gradle a partir de `android/`. [Configuração de SDK e NDK](docs/latency/android-test-build.md).
 
-As correções listadas acima pertencem ao servidor. Nenhuma otimização nova de MediaCodec foi aplicada ao cliente Android nesta rodada. O APK ARM64 de teste do NOUS usa `com.flugel.nous.debug` e assinatura Android Debug. [Procedência do build anterior](docs/latency/android-test-build.md).
+As correções listadas acima pertencem ao servidor. Nenhuma otimização nova de MediaCodec foi aplicada ao cliente Android nesta rodada. O APK ARM64 de teste do NOUS usa `com.flugel.nous` e assinatura Android Debug. [Procedência do build anterior](docs/latency/android-test-build.md).
 
 AV1 é candidato a ensaio, não escolha universal. Decoder efetivo, perfil, bit depth, FPS sustentado e comportamento térmico do POCO ainda precisam ser medidos.
 

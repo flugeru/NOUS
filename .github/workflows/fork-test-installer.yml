@@ -33,7 +33,7 @@ jobs:
     uses: ./.github/workflows/ci-windows.yml
     with:
       release_commit: ${{ github.sha }}
-      release_version: '2.0.0'
+      release_version: '1.0.0'
       symbol_product_name: NOUS
       symbol_release_prefix: nous
       build_tests: true

@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.20)
 # `cmake_path(CONVERT ... TO_NATIVE_PATH_LIST ...)` requires 3.20
 # todo - set this conditionally
 
-project(NOUS VERSION 0.0.0
+project(NOUS VERSION 1.0.0
         DESCRIPTION "Self-hosted game stream host for Moonlight"
         HOMEPAGE_URL "https://github.com/flugeru/Vibepollo")
 
@@ -50,7 +50,10 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 # export compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# set version info for this build
+# Use the NOUS version for local builds unless an explicit build version is supplied.
+if(NOT DEFINED BUILD_VERSION OR BUILD_VERSION STREQUAL "")
+    set(BUILD_VERSION "${PROJECT_VERSION}")
+endif()
 include(${CMAKE_MODULE_PATH}/prep/build_version.cmake)
 
 # cmake build flags
