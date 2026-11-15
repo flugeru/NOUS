@@ -1,28 +1,14 @@
 # Contributing
-Read our contribution guide in our organization level
-[docs](https://docs.lizardbyte.dev/latest/developers/contributing.html).
+Contribute to [NOUS](https://github.com/flugeru/NOUS). Target `nous-project` for pull requests.
 
-## Canary and stable releases
+## Builds and releases
 
-Target `canary` for contributions. Trusted contributors with repository write
-access can push directly to it. The nightly workflow runs at 06:32 UTC every
-day and builds the exact remote `canary` commit, including all commits in its
-history. A successful Windows and Linux qualification publishes a prerelease;
-an unchanged source is skipped. New commits after the source is selected wait
-for the next nightly.
-
-`master` remains the default branch and the stable review lane. The maintainer
-reviews and promotes selected changes from `canary` for stable releases;
-nightly publication never promotes changes automatically.
-
-Repository rules reserve updates to `master` and non-nightly release tags for
-administrators, and prevent contributor force pushes or deletion of `canary`.
-Repository write access is broader than a single branch, so grant it only to
-trusted contributors. Keep these protections in place when adding writers.
-
-Workflow changes must be reviewed and synchronized to both `master` and
-`canary`: nightly publication requires identical `.github/workflows` trees.
-See [daily prereleases](daily-prereleases.md) for activation and qualification.
+Project workflows are manual-only. Pushes, tags, pull requests, issue changes,
+release events and schedules do not start Actions. Reusable `workflow_call`
+interfaces remain available to manually started workflows. Run local checks
+before requesting review; publishing requires an explicit maintainer decision.
+See [release instructions](maintainers/release.md) and
+[manual prereleases](daily-prereleases.md).
 
 ## Recommended Tools
 
@@ -40,7 +26,7 @@ the semantic tokens generated from `design/tokens.json`, and preserve the
 task-first information hierarchy documented in `docs/design-principles.md`.
 
 ### Localization
-Sunshine and related LizardByte projects are being localized into various languages.
+NOUS retains the upstream locale catalogs. The links below describe the upstream LizardByte translation service, not a NOUS-hosted service.
 The default language is `en` (English).
 
 ![](https://app.lizardbyte.dev/dashboard/crowdin/LizardByte_graph.svg)
@@ -54,7 +40,7 @@ The translations occur on [CrowdIn][crowdin-url].
 Anyone is free to contribute to the localization there.
 
 ##### Translation Basics
-* The brand names *LizardByte* and *Sunshine* should never be translated.
+* The brand name *NOUS* should never be translated. Preserve upstream brand names when referring to upstream projects.
 * Other brand names should never be translated. Examples include *AMD*, *Intel*, and *NVIDIA*.
 
 ##### CrowdIn Integration
@@ -139,7 +125,7 @@ Additionally, [xgettext](https://www.gnu.org/software/gettext) must be installed
 > Due to the integration with CrowdIn, it is important to not include any extracted or compiled files in
 > Pull Requests. The files are automatically generated and updated by the workflow. Once the PR is merged, the
 > translations can take place on [CrowdIn][crowdin-url]. Once the translations are
-> complete, a PR will be made to merge the translations into Sunshine.
+> complete, a PR will be made to merge the translations into NOUS.
 
 ### Testing
 

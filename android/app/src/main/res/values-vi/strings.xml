@@ -37,7 +37,7 @@
     <string name="nettest_text_waiting">NOUS đang kiểm tra kết nối mạng của bạn để xác định xem có bất kỳ cổng nào bị chặn hay không.\n\nĐiều này có thể mất vài giây…</string>
     <string name="nettest_title_done">Kiểm tra mạng hoàn tất</string>
     <string name="nettest_text_success">Mạng của bạn dường như không chặn NOUS. Nếu bạn vẫn gặp khó khăn khi kết nối, hãy kiểm tra cài đặt tường lửa của PC.\n\nNếu bạn đang cố gắng phát trực tuyến qua Internet, hãy cài đặt Công cụ Lưu trữ Internet NOUS trên PC của bạn và chạy Trình kiểm tra Phát trực tuyến Internet đi kèm để kiểm tra kết nối Internet của PC.</string>
-    <string name="nettest_text_inconclusive">Không thể thực hiện kiểm tra mạng vì không có máy chủ kiểm tra kết nối của Artemis nào có thể truy cập được. Kiểm tra kết nối Internet của bạn hoặc thử lại sau.</string>
+    <string name="nettest_text_inconclusive">Không thể thực hiện kiểm tra mạng vì không có máy chủ kiểm tra kết nối của NOUS nào có thể truy cập được. Kiểm tra kết nối Internet của bạn hoặc thử lại sau.</string>
     <string name="nettest_text_failure">Kết nối mạng hiện tại của thiết bị của bạn dường như đang chặn NOUS. Phát trực tuyến qua Internet có thể không hoạt động khi kết nối với mạng này.\n\nCác cổng mạng sau đã bị chặn:\n</string>
     <string name="nettest_text_blocked">Kết nối mạng hiện tại của thiết bị của bạn đang chặn NOUS. Phát trực tuyến qua Internet có thể không hoạt động khi kết nối với mạng này.</string>
 
@@ -49,7 +49,7 @@
     <string name="pair_pc_ingame">Máy tính hiện đang trong trò chơi. Bạn phải đóng trò chơi trước khi ghép nối.</string>
     <string name="pair_pairing_title">Đang ghép nối</string>
     <string name="pair_pairing_msg">Vui lòng nhập mã PIN sau trên PC mục tiêu:</string>
-    <string name="pair_pairing_help">Nếu PC chủ của bạn đang chạy Sunshine, hãy điều hướng đến giao diện web của Sunshine để nhập mã PIN.</string>
+    <string name="pair_pairing_help">Nếu PC chủ của bạn đang chạy NOUS, hãy điều hướng đến giao diện web của NOUS để nhập mã PIN.</string>
     <string name="pair_otp_pairing_msg">Đang ghép nối, vui lòng đợi…</string>
     <string name="pair_otp_pairing_help">Ghép nối OTP chỉ khả dụng với NOUS, nhập mã PIN bạn vừa cung cấp trên giao diện web theo cách thủ công nếu bạn đang sử dụng phần mềm máy chủ khác.</string>
     <string name="pair_incorrect_pin">Mã PIN hoặc mật khẩu không chính xác</string>
@@ -111,7 +111,7 @@
     <!-- General strings -->
     <string name="ip_hint">Địa chỉ IP của PC máy chủ</string>
     <string name="searching_pc">Đang tìm kiếm PC máy chủ trên mạng cục bộ của bạn…\n\n
-        Đảm bảo Sunshine đang chạy trên PC máy chủ của bạn hoặc GameStream được bật trong cài đặt SHIELD của GeForce Experience.</string>
+        Đảm bảo NOUS đang chạy trên PC máy chủ của bạn hoặc GameStream được bật trong cài đặt SHIELD của GeForce Experience.</string>
     <string name="yes">Có</string>
     <string name="no">Không</string>
     <string name="lost_connection">Mất kết nối với PC</string>
@@ -296,7 +296,7 @@
     <string name="title_troubleshooting">Hướng dẫn khắc phục sự cố</string>
     <string name="summary_troubleshooting">Xem các mẹo để chẩn đoán và khắc phục các sự cố phát trực tuyến phổ biến</string>
     <string name="title_privacy_policy">Chính sách quyền riêng tư</string>
-    <string name="summary_privacy_policy">Xem chính sách quyền riêng tư của Artemis</string>
+    <string name="summary_privacy_policy">Xem chính sách quyền riêng tư của NOUS</string>
     <string name="title_special_key_help">Trợ giúp phím đặc biệt</string>
     <string name="summary_special_key_help">Hướng dẫn về cách thiết lập các phím đặc biệt tùy chỉnh</string>
 

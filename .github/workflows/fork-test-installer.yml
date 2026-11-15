@@ -6,22 +6,6 @@ permissions:
 
 on:
   workflow_dispatch:
-  push:
-    branches: [master, NOUS-First-steps]
-    paths:
-      - '.github/workflows/fork-test-installer.yml'
-      - '.github/workflows/ci-windows.yml'
-      - '.github/actions/**'
-      - 'src/**'
-      - 'src_assets/**'
-      - 'scripts/**'
-      - 'tests/**'
-      - 'plugins/**'
-      - 'tools/**'
-      - 'cmake/**'
-      - 'CMakeLists.txt'
-      - 'packaging/**'
-      - 'third-party/**'
 
 concurrency:
   group: fork-test-installer-${{ github.ref }}
@@ -29,7 +13,7 @@ concurrency:
 
 jobs:
   windows:
-    if: github.repository == 'flugeru/Vibepollo' && !contains(github.event.head_commit.message, '[skip desktop]')
+    if: github.repository == 'flugeru/NOUS' && !contains(github.event.head_commit.message, '[skip desktop]')
     uses: ./.github/workflows/ci-windows.yml
     with:
       release_commit: ${{ github.sha }}

@@ -80,7 +80,7 @@ if(SUNSHINE_BUILD_STEAMOS)
             DESTINATION "share/vibepollo/steamos"
             PATTERN "__pycache__" EXCLUDE)
     set(CPACK_GENERATOR "TGZ")
-    set(CPACK_PACKAGE_FILE_NAME "Vibepollo-SteamOS-${PROJECT_VERSION_FULL}-${CMAKE_SYSTEM_PROCESSOR}")
+    set(CPACK_PACKAGE_FILE_NAME "NOUS-SteamOS-${PROJECT_VERSION_FULL}-${CMAKE_SYSTEM_PROCESSOR}")
     # No machine services, udev rules, kernel modules or native package hooks.
     return()
 endif()
@@ -486,16 +486,16 @@ set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 set(CPACK_RPM_PACKAGE_AUTOREQ ON)
 
 # Application and status icons use the application ID for every package type.
-install(FILES "${CMAKE_SOURCE_DIR}/apollo.svg"
+install(FILES "${CMAKE_SOURCE_DIR}/nous.svg"
         DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps"
         RENAME "${PROJECT_FQDN}.svg")
 
 if(${SUNSHINE_TRAY} STREQUAL 1)
-    install(FILES "${CMAKE_SOURCE_DIR}/apollo.svg"
+    install(FILES "${CMAKE_SOURCE_DIR}/nous.svg"
             DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/status"
             RENAME "${PROJECT_FQDN}-tray.svg")
     foreach(state playing pausing locked)
-        install(FILES "${SUNSHINE_SOURCE_ASSETS_DIR}/common/assets/web/public/images/apollo-${state}.svg"
+        install(FILES "${SUNSHINE_SOURCE_ASSETS_DIR}/common/assets/web/public/images/nous-${state}.svg"
                 DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/status"
                 RENAME "${PROJECT_FQDN}-${state}.svg")
     endforeach()

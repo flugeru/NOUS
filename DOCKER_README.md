@@ -1,4 +1,8 @@
-# Docker
+# NOUS Docker
+
+NOUS source: [flugeru/NOUS](https://github.com/flugeru/NOUS). No NOUS container registry publication is implied.
+Build from `docker/` locally. Registry examples, version tags and architecture tables below describe upstream Sunshine images, not NOUS images.
+Legacy executable and configuration names remain compatible.
 
 ## Important note
 Starting with v0.18.0, tag names have changed. You may no longer use `latest`, `master`, `vX.X.X`.
@@ -32,11 +36,11 @@ Sunshine images are available with the following tag suffixes, based on their re
 You must combine the `SUNSHINE_VERSION` and `SUNSHINE_OS` to determine the tag to pull. The format should be
 `<SUNSHINE_VERSION>-<SUNSHINE_OS>`. For example, `latest-ubuntu-24.04`.
 
-See all our available tags on [docker hub](https://hub.docker.com/r/lizardbyte/sunshine/tags) or
+See upstream available tags on [docker hub](https://hub.docker.com/r/lizardbyte/sunshine/tags) or
 [ghcr](https://github.com/LizardByte/Sunshine/pkgs/container/sunshine/versions) for more info.
 
 ## Where used
-This is a list of docker projects using Sunshine. Something missing? Let us know about it!
+These external projects use upstream Sunshine; they are not NOUS distribution channels.
 
 - [Games on Whales](https://games-on-whales.github.io)
 

@@ -1,8 +1,8 @@
-# PyroWave streaming with Vibepollo
+# PyroWave streaming with NOUS
 
-Vibepollo streams [PyroWave](https://github.com/Themaister/pyrowave), Hans-Kristian
+NOUS streams [PyroWave](https://github.com/Themaister/pyrowave), Hans-Kristian
 Arntzen's intra-only GPU wavelet codec, over its normal video stream. To use
-PyroWave or VRR playback with Vibepollo, install Nonary's
+PyroWave or VRR playback with NOUS, install Nonary's
 [VRR Moonlight Client fork](https://github.com/Nonary/moonlight-qt). Select PyroWave
 explicitly in that client's codec settings; stock Moonlight does not support it.
 Every frame decodes independently, so a lost frame never needs a keyframe request.
@@ -16,7 +16,7 @@ and `Vibepollo/docs/pyrowave-protocol.md`). Change both together.
 
 Both ends vendor upstream PyroWave at the same commit through
 `pyrowave/vendor-pyrowave.ps1` (moonlight-qt) and `third-party/pyrowave`
-(Vibepollo); see `VENDOR.txt`. The PyroWave bitstream has no version field, so the
+(NOUS); see `VENDOR.txt`. The PyroWave bitstream has no version field, so the
 host advertises the vendored commit (below) and the client warns on a mismatch.
 
 | Name | Value |
@@ -29,7 +29,7 @@ produce identical records; decoded coefficient values remain unchanged.
 
 ## Negotiation
 
-Vibepollo and the VRR Moonlight Client use the capability and format constants
+NOUS and the VRR Moonlight Client use the capability and format constants
 below to negotiate PyroWave profiles and framing. See "Compatibility" for client
 requirements.
 
@@ -121,7 +121,7 @@ chosen automatically, since it needs a wired link with hundreds of Mbps to spare
 
 `0x2` was once reserved for partial-frame decoding. No bit is needed: ordinary
 record-framed frames use the partial-recovery layout when the negotiated packet size supports
-record alignment (see "Record framing"), and Vibepollo ignores `0x2`.
+record alignment (see "Record framing"), and NOUS ignores `0x2`.
 
 The host rejects `bitStreamFormat=3` with `400 BAD REQUEST` when PyroWave is
 unavailable, like HEVC/AV1. The former compression and Hybrid transports are
@@ -137,7 +137,7 @@ The host keeps sending the usual HDR mode and metadata control messages.
 
 ## Frames
 
-PyroWave frames use Vibepollo's existing video transport: RTP, the
+PyroWave frames use NOUS's existing video transport: RTP, the
 `NV_VIDEO_PACKET` header and FEC block layout (up to four blocks), optional
 AES-GCM, and the 8-byte short frame header in front of the first payload. The frame
 header `frameType` is always `2` (IDR). moonlight-common-c trims the last payload
@@ -273,7 +273,7 @@ sequence header, a block record before the sequence header or with another
 `sequence`, and `block_index` values outside the frame. A rejected frame is
 dropped; the next frame is independent.
 
-Vibepollo sends complete, independent frames. It never sends conditional
+NOUS sends complete, independent frames. It never sends conditional
 replenishment records (sequence code 1 "keep previous" frames or header-only zero
 blocks), which upstream PyroWave does not decode.
 
@@ -393,7 +393,7 @@ HDR10. At 60 fps that is about 220 Mbps for 1080p and 290 Mbps for 1440p and 4K 
 
 ## Compatibility
 
-| Client connecting to Vibepollo | Result |
+| Client connecting to NOUS | Result |
 |---|---|
 | Nonary's [VRR Moonlight Client fork](https://github.com/Nonary/moonlight-qt) | Recommended for PyroWave and VRR playback. Uses record framing and partial-frame recovery with the matching vendored bitstream. |
 | Aurora client | Negotiates PyroWave, record framing. Its decoder is an older WiVRn-derived PyroWave; frames decode only if its bitstream matches `186f0393`. |

@@ -75,17 +75,17 @@ namespace upnp {
       auto wm_http = std::to_string(net::map_port(confighttp::PORT_HTTPS));
 
       mappings.assign({
-        {{rtsp, rtsp, "TCP"s}, "Sunshine - RTSP"s},
-        {{video, video, "UDP"s}, "Sunshine - Video"s},
-        {{audio, audio, "UDP"s}, "Sunshine - Audio"s},
-        {{control, control, "UDP"s}, "Sunshine - Control"s},
-        {{gs_http, gs_http, "TCP"s}, "Sunshine - Client HTTP"s},
-        {{gs_https, gs_https, "TCP"s}, "Sunshine - Client HTTPS"s},
+        {{rtsp, rtsp, "TCP"s}, "NOUS - RTSP"s},
+        {{video, video, "UDP"s}, "NOUS - Video"s},
+        {{audio, audio, "UDP"s}, "NOUS - Audio"s},
+        {{control, control, "UDP"s}, "NOUS - Control"s},
+        {{gs_http, gs_http, "TCP"s}, "NOUS - Client HTTP"s},
+        {{gs_https, gs_https, "TCP"s}, "NOUS - Client HTTPS"s},
       });
 
       // Only map port for the Web Manager if it is configured to accept connection from WAN
       if (net::from_enum_string(config::nvhttp.origin_web_ui_allowed) > net::LAN) {
-        mappings.emplace_back(mapping_t {{wm_http, wm_http, "TCP"s}, "Sunshine - Configuration API"s});
+        mappings.emplace_back(mapping_t {{wm_http, wm_http, "TCP"s}, "NOUS - Configuration API"s});
       }
 
       // Start the mapping thread

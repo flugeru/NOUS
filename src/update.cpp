@@ -52,7 +52,7 @@ namespace update {
     struct curl_slist *headers = nullptr;
     headers = curl_slist_append(headers, "Accept: application/vnd.github+json");
     headers = curl_slist_append(headers, "X-GitHub-Api-Version: 2022-11-28");
-    headers = curl_slist_append(headers, "User-Agent: Sunshine-Updater/1.0");
+    headers = curl_slist_append(headers, "User-Agent: NOUS-Updater/1.0");
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     bool tls_configured = http::configure_curl_tls(curl);

@@ -1,4 +1,4 @@
-# Vibepollo Linux Machine-Service Guide
+# NOUS Linux Machine-Service Guide
 
 This document describes the supported Linux deployment. The repository-level
 `AGENTS.md` remains authoritative for the exact build, test, staging, and host
@@ -6,7 +6,7 @@ installation commands.
 
 ## Ownership model
 
-Vibepollo follows the normal machine-wide Linux layout:
+NOUS follows the normal machine-wide Linux layout:
 
 - `/usr/bin/vibepollo`, `/usr/libexec/vibeshine`, and
   `/usr/share/vibepollo` are immutable, root-owned program files.
@@ -173,7 +173,7 @@ compositor. Compare the installed `modinfo` version with
 `/sys/module/vibeshine_drm/version` and reboot when they differ.
 
 On this KDE/Wayland/NVIDIA host, keep `capture = kms`. A healthy deployment
-requires the event-driven Vibepollo DRM capture message and successful H.264
+requires the event-driven NOUS DRM capture message and successful H.264
 encoder discovery; HEVC and AV1 are reported when the GPU supports them but are
 not required for readiness. Unit activity, TCP listeners, or a reachable Web
 UI alone are not proof that remote display works. Test both the greeter and the

@@ -1,5 +1,8 @@
 # Changelog
 
+NOUS release notes: [flugeru/NOUS releases](https://github.com/flugeru/NOUS/releases).
+The embedded changelog below is historical upstream Sunshine material.
+
 @htmlonly
 <script type="module" src="https://md-block.verou.me/md-block.js"></script>
 <md-block

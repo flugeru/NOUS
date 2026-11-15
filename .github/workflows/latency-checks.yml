@@ -1,38 +1,6 @@
 name: Latency diagnostics checks
 
 on:
-  push:
-    paths:
-      - 'tools/latency/**'
-      - 'src/nvenc/nvenc_base.cpp'
-      - 'src/platform/windows/display_wgc.cpp'
-      - 'src/platform/windows/display_vram.cpp'
-      - 'tests/unit/test_nvenc_bitrate.py'
-      - 'tests/unit/test_keyed_mutex_abandoned.py'
-      - 'tests/unit/test_transport_boundaries.py'
-      - 'tests/unit/test_stream_replace.py'
-      - 'src/stream.cpp'
-      - 'src/rtsp.cpp'
-      - 'src_assets/common/assets/web/services/webrtc.ts'
-      - 'src_assets/common/assets/web-legacy/utils/webrtc/client.ts'
-      - 'src_assets/common/assets/web/scripts/webrtc-hints.test.ts'
-      - '.github/workflows/latency-checks.yml'
-  pull_request:
-    paths:
-      - 'tools/latency/**'
-      - 'src/nvenc/nvenc_base.cpp'
-      - 'src/platform/windows/display_wgc.cpp'
-      - 'src/platform/windows/display_vram.cpp'
-      - 'tests/unit/test_nvenc_bitrate.py'
-      - 'tests/unit/test_keyed_mutex_abandoned.py'
-      - 'tests/unit/test_transport_boundaries.py'
-      - 'tests/unit/test_stream_replace.py'
-      - 'src/stream.cpp'
-      - 'src/rtsp.cpp'
-      - 'src_assets/common/assets/web/services/webrtc.ts'
-      - 'src_assets/common/assets/web-legacy/utils/webrtc/client.ts'
-      - 'src_assets/common/assets/web/scripts/webrtc-hints.test.ts'
-      - '.github/workflows/latency-checks.yml'
   workflow_dispatch:
 
 permissions:

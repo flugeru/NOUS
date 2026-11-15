@@ -21,16 +21,6 @@ on:
         description: Use the local Windows and Linux release runners
         type: boolean
         default: false
-  push:
-    branches:
-      - '**'
-    tags:
-      - '*'
-  pull_request:
-    branches:
-      - main
-      - master
-      - canary
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.ref }}"
@@ -244,10 +234,10 @@ jobs:
       release_version: ${{ needs.release-candidate.outputs.release_version || '2.0.0-pr-validation' }}
       release_tag: ${{ needs.release-candidate.outputs.tag_name }}
       release_artifact_retention_days: ${{ needs.release-candidate.outputs.should_release == 'true' && 14 || 1 }}
-      symbol_product_name: Vibepollo
+      symbol_product_name: NOUS
       publish_symbols: ${{ needs.release-candidate.outputs.should_release == 'true' }}
       symbol_release_draft: true
-      symbol_release_prefix: polo
+      symbol_release_prefix: nous
       require_truehdr_runtime: ${{ needs.release-candidate.outputs.should_release == 'true' }}
     secrets:
       symbol_token: ${{ secrets.SYMBOL_TOKEN }}

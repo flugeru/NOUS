@@ -15,7 +15,7 @@ param(
 )
 
 # Constants
-$DocsUrl = "https://github.com/Nonary/Vibepollo"
+$DocsUrl = "https://github.com/flugeru/NOUS"
 
 # Set preference variables for output streams
 $InformationPreference = 'Continue'
@@ -372,7 +372,7 @@ function Invoke-SunshineIfExist {
         Write-LogMessage -Message "$Emoji $Description" -Level "Step"
     }
 
-    $SunshinePath = Join-Path $RootDir "sunshine.exe"
+    $SunshinePath = Join-Path $RootDir "NOUS.exe"
 
     if (Test-Path $SunshinePath) {
         Write-LogMessage -Message "Executing: $SunshinePath $Arguments" -Level "Information"

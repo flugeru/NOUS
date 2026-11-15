@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 jobs:
   publish-qualified-linux:
-    if: github.repository == 'Nonary/Vibepollo' && github.ref_name == github.event.repository.default_branch
+    if: github.repository == 'flugeru/NOUS' && github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -22,7 +22,7 @@ jobs:
       - name: Validate exact qualified package, preserve binaries, and publish missing Linux payload
         env:
           NIGHTLY_VALIDATION_ROOT: ${{ runner.temp }}/qualified-nightly-linux
-        run: python scripts/recover_nightly_linux.py --product Vibepollo
+        run: python scripts/recover_nightly_linux.py --product NOUS
       - name: Retain qualification and publication evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

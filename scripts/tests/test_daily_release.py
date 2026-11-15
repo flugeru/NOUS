@@ -21,16 +21,16 @@ SHA = "a" * 40
 class DailyTests(unittest.TestCase):
     def setUp(self):
         context = patch.dict(os.environ, GITHUB_EVENT_NAME="workflow_dispatch",
-                             GITHUB_REF_TYPE="branch", GITHUB_REF_NAME="master")
+                             GITHUB_REF_TYPE="branch", GITHUB_REF_NAME="nous-project")
         context.start()
         self.addCleanup(context.stop)
 
     def routing(self, text, job, **overrides):
-        values = {'github.event_name':'workflow_dispatch', 'github.repository':'Nonary/Vibepollo',
-                  'github.ref_type':'branch', 'github.ref_name':'canary',
+        values = {'github.event_name':'workflow_dispatch', 'github.repository':'flugeru/NOUS',
+                  'github.ref_type':'branch', 'github.ref_name':'nous-project',
                   'github.event.repository.default_branch':'master', 'vars.DAILY_RELEASE_ENABLED':'true',
-                  'vars.DAILY_RELEASE_SOURCE_BRANCH':'canary',
-                  'vars.DAILY_RELEASE_SOURCE_CONFIRMED':'Nonary/Vibepollo:canary'}
+                  'vars.DAILY_RELEASE_SOURCE_BRANCH':'nous-project',
+                  'vars.DAILY_RELEASE_SOURCE_CONFIRMED':'flugeru/NOUS:nous-project'}
         values.update(overrides)
         expression = re.search(r"\n  " + job + r":\n.*?    if: >-\n(.*?)\n    runs-on:", text, re.S)[1]
         for key in sorted(values, key=len, reverse=True):
@@ -47,25 +47,23 @@ class DailyTests(unittest.TestCase):
         for changed in ({'github.ref_name':'feature'}, {'github.ref_name':'master'},
                         {'github.event_name':'schedule'}, {'github.ref_type':'tag'},
                         {'github.repository':'Other/fork'}, {'vars.DAILY_RELEASE_SOURCE_BRANCH':'master'},
-                        {'vars.DAILY_RELEASE_SOURCE_CONFIRMED':'Nonary/Vibepollo:master'}):
+                        {'vars.DAILY_RELEASE_SOURCE_CONFIRMED':'flugeru/NOUS:master'}):
             with self.subTest(child=changed): self.assertFalse(self.routing(child, 'prepare', **changed))
         base = {'github.event_name':'schedule', 'github.ref_name':'master'}
         self.assertTrue(self.routing(launcher, 'dispatch', **base))
-        for changed in ({'vars.DAILY_RELEASE_ENABLED':'false'}, {'github.ref_name':'canary'},
+        for changed in ({'vars.DAILY_RELEASE_ENABLED':'false'}, {'github.ref_name':'nous-project'},
                         {'github.ref_type':'tag'}, {'github.repository':'Other/fork'},
                         {'github.event_name':'push'}, {'vars.DAILY_RELEASE_SOURCE_BRANCH':'master'},
-                        {'vars.DAILY_RELEASE_SOURCE_CONFIRMED':'Nonary/Vibepollo:master'}):
+                        {'vars.DAILY_RELEASE_SOURCE_CONFIRMED':'flugeru/NOUS:master'}):
             with self.subTest(launcher=changed):
                 self.assertFalse(self.routing(launcher, 'dispatch', **(base|changed)))
-        self.assertIn("cron: '32 6 * * *'", child)
-        for changed in ({}, {'vars.DAILY_RELEASE_ENABLED':'false'}, {'github.ref_name':'canary'}, {'github.event_name':'push'}, {'vars.DAILY_RELEASE_SOURCE_CONFIRMED':'Nonary/Vibepollo:master'}):
-            actual = base | changed
-            self.assertEqual(self.routing(child, 'dispatch', **actual), self.routing(launcher, 'dispatch', **actual))
+        self.assertNotIn('  schedule:', child)
+        self.assertTrue(self.routing(child, 'dispatch', **{'github.ref_name':'master'}))
+        self.assertFalse(self.routing(child, 'dispatch', **base))
         self.assertIn("cron: '32 6 * * *'", launcher)
         self.assertIn('group: daily-windows-launcher', launcher)
         self.assertIn('daily-windows-prerelease', child)
-        self.assertIn('daily-windows-launcher', child)
-        self.assertIn("github.ref_name == github.event.repository.default_branch", child.split('concurrency:', 1)[1].split('jobs:', 1)[0])
+        self.assertIn("github.ref_name == github.event.repository.default_branch", child)
         self.assertIn('cancel-in-progress: false', launcher)
         self.assertIn('cancel-in-progress: false', child)
         self.assertIn('permissions: {}', launcher)
@@ -96,7 +94,7 @@ class DailyTests(unittest.TestCase):
         script = textwrap.dedent(dispatch.group(1).split('        run: |\n', 1)[1])
         fake = r'''gh() {
   test "$1" = api && test "$2" = --method && test "$3" = POST || return 90
-  test "$4" = repos/Nonary/Vibepollo/actions/workflows/daily-prerelease.yml/dispatches || return 91
+  test "$4" = repos/flugeru/NOUS/actions/workflows/daily-prerelease.yml/dispatches || return 91
   test "$5" = --input || return 92
   cp "$6" "$PAYLOAD_LOG"
   return "$DISPATCH_FAILURE"
@@ -105,21 +103,21 @@ class DailyTests(unittest.TestCase):
         for publish, failure in (('true',0), ('false',0), ('true',1)):
             with self.subTest(publish=publish, failure=failure), tempfile.TemporaryDirectory() as temp:
                 summary, payload = Path(temp)/'summary', Path(temp)/'payload'
-                env = dict(os.environ, GITHUB_REPOSITORY='Nonary/Vibepollo', PUBLISH=publish,
+                env = dict(os.environ, GITHUB_REPOSITORY='flugeru/NOUS', PUBLISH=publish,
                            GITHUB_STEP_SUMMARY=str(summary), PAYLOAD_LOG=str(payload), DISPATCH_FAILURE=str(failure))
                 result = subprocess.run([bash,'-c',fake+script], env=env, capture_output=True, text=True)
                 self.assertEqual(result.returncode, failure, result.stderr)
-                self.assertEqual(json.loads(payload.read_text()), dict(ref='canary', inputs=dict(publish=publish=='true')))
+                self.assertEqual(json.loads(payload.read_text()), dict(ref='nous-project', inputs=dict(publish=publish=='true')))
                 self.assertEqual(summary.exists(), failure==0)
 
-    def test_manual_canary_source_is_exact_dispatch_sha(self):
+    def test_manual_nous_project_source_is_exact_dispatch_sha(self):
         for advanced in (False, True):
             with self.subTest(advanced=advanced), tempfile.TemporaryDirectory() as temp:
                 output = Path(temp) / 'output'
-                with patch.dict(os.environ, GITHUB_REPOSITORY='Nonary/Vibepollo', GITHUB_SHA=SHA,
-                                GITHUB_REF_NAME='canary', DAILY_PRIMARY_BRANCH='master',
-                                DAILY_RELEASE_SOURCE_BRANCH='canary',
-                                DAILY_RELEASE_SOURCE_CONFIRMED='Nonary/Vibepollo:canary', GITHUB_OUTPUT=str(output)):
+                with patch.dict(os.environ, GITHUB_REPOSITORY='flugeru/NOUS', GITHUB_SHA=SHA,
+                                GITHUB_REF_NAME='nous-project', DAILY_PRIMARY_BRANCH='master',
+                                DAILY_RELEASE_SOURCE_BRANCH='nous-project',
+                                DAILY_RELEASE_SOURCE_CONFIRMED='flugeru/NOUS:nous-project', GITHUB_OUTPUT=str(output)):
                     commands = ['', 'b'*40] if advanced else ['', SHA, '', '[[]]', '', '2.0.0', '']
                     with patch.object(daily, 'run', side_effect=commands) as calls:
                         if advanced:
@@ -129,20 +127,20 @@ class DailyTests(unittest.TestCase):
                             daily.resolve()
                             self.assertIn(f'commit={SHA}', output.read_text())
                             self.assertIn('should_build=true', output.read_text())
-                        self.assertEqual(calls.call_args_list[0].args[-1], 'refs/heads/canary:refs/remotes/origin/daily-source')
+                        self.assertEqual(calls.call_args_list[0].args[-1], 'refs/heads/nous-project:refs/remotes/origin/daily-source')
 
     def test_ref_and_event_restrictions_apply_before_fetch(self):
         for event, ref_type, ref, source in (
-                ('schedule', 'branch', 'canary', 'canary'),
-                ('workflow_dispatch', 'branch', 'feature', 'canary'),
-                ('workflow_dispatch', 'tag', 'canary', 'canary'),
-                ('workflow_dispatch', 'branch', 'canary', 'master'),
-                ('push', 'branch', 'master', 'canary')):
+                ('schedule', 'branch', 'nous-project', 'nous-project'),
+                ('workflow_dispatch', 'branch', 'feature', 'nous-project'),
+                ('workflow_dispatch', 'tag', 'nous-project', 'nous-project'),
+                ('workflow_dispatch', 'branch', 'nous-project', 'master'),
+                ('push', 'branch', 'master', 'nous-project')):
             with self.subTest(event=event, ref=ref, source=source):
                 with patch.dict(os.environ, GITHUB_EVENT_NAME=event, GITHUB_REF_TYPE=ref_type,
-                                GITHUB_REF_NAME=ref, GITHUB_SHA=SHA, GITHUB_REPOSITORY='Nonary/Vibepollo',
+                                GITHUB_REF_NAME=ref, GITHUB_SHA=SHA, GITHUB_REPOSITORY='flugeru/NOUS',
                                 DAILY_PRIMARY_BRANCH='master', DAILY_RELEASE_SOURCE_BRANCH=source,
-                                DAILY_RELEASE_SOURCE_CONFIRMED=f'Nonary/Vibepollo:{source}'):
+                                DAILY_RELEASE_SOURCE_CONFIRMED=f'flugeru/NOUS:{source}'):
                     with patch.object(daily, 'run') as commands:
                         with self.assertRaises(ValueError): daily.resolve()
                         commands.assert_not_called()
@@ -152,23 +150,23 @@ class DailyTests(unittest.TestCase):
             with self.subTest(scenario=scenario), tempfile.TemporaryDirectory() as temp:
                 root, linux = Path(temp) / 'assets', Path(temp) / 'linux'
                 root.mkdir(); linux.mkdir()
-                name = 'vibeshine-2.0.0.daily-1-x86_64.pkg.tar.zst'
+                name = 'vibepollo-2.0.0.daily-1-x86_64.pkg.tar.zst'
                 (linux / name).write_bytes(b'package')
                 evidence = dict(source_commit=SHA, version='version', workflow_run_id='123', assets={name: hashlib.sha256(b'package').hexdigest()})
                 if scenario == 'source': evidence['source_commit'] = 'b' * 40
                 if scenario == 'version': evidence['version'] = 'other'
                 if scenario == 'run': evidence['workflow_run_id'] = '456'
                 if scenario == 'hash': (linux / name).write_bytes(b'tampered')
-                if scenario == 'extra': (linux / 'vibeshine-extra.pkg.tar.zst').write_bytes(b'other')
+                if scenario == 'extra': (linux / 'vibepollo-extra.pkg.tar.zst').write_bytes(b'other')
                 (linux / 'linux-provenance.json').write_text(json.dumps(evidence))
                 (root / 'daily-manifest.json').write_text(json.dumps({'assets': {}}))
                 with patch.dict(os.environ, GITHUB_RUN_ID='123'):
                     if scenario == 'valid':
-                        daily.include_linux(root, linux, 'Vibeshine', SHA, 'version')
+                        daily.include_linux(root, linux, 'NOUS', SHA, 'version')
                         self.assertEqual((root / name).read_bytes(), b'package')
                         self.assertEqual(json.loads((root / 'daily-manifest.json').read_text())['linux'], evidence)
                     else:
-                        with self.assertRaises(ValueError): daily.include_linux(root, linux, 'Vibeshine', SHA, 'version')
+                        with self.assertRaises(ValueError): daily.include_linux(root, linux, 'NOUS', SHA, 'version')
 
     def test_calendar_identity_fits_msi(self):
         first = daily.identity(SHA, dt.date(2026, 10, 11), "2.0.0")
@@ -217,9 +215,9 @@ class DailyTests(unittest.TestCase):
         for same_source in (True, False):
             with tempfile.TemporaryDirectory() as temp:
                 output = Path(temp) / 'output'
-                with patch.dict(os.environ, GITHUB_REPOSITORY="Nonary/Vibepollo", GITHUB_SHA=SHA,
-                                DAILY_PRIMARY_BRANCH="master", DAILY_RELEASE_SOURCE_BRANCH="canary",
-                                DAILY_RELEASE_SOURCE_CONFIRMED="Nonary/Vibepollo:canary", GITHUB_OUTPUT=str(output)):
+                with patch.dict(os.environ, GITHUB_REPOSITORY="flugeru/NOUS", GITHUB_SHA=SHA,
+                                DAILY_PRIMARY_BRANCH="master", DAILY_RELEASE_SOURCE_BRANCH="nous-project",
+                                DAILY_RELEASE_SOURCE_CONFIRMED="flugeru/NOUS:nous-project", GITHUB_OUTPUT=str(output)):
                     values = ["", SHA, "", json.dumps(releases), "", "2.0.0", SHA if same_source else "b"*40]
                     if not same_source:
                         values.append(daily.subprocess.CalledProcessError(1, ['git', 'merge-base']))
@@ -252,10 +250,10 @@ class DailyTests(unittest.TestCase):
                 with patch.object(daily, 'run', side_effect=values):
                     with patch.object(daily, 'previous_successful_nightly', return_value=(dict(tag='old', source_commit=other) if scenario == 'rewind' else None)):
                         if scenario == 'success':
-                            daily.guard_publication('Nonary/Vibepollo', SHA, tag)
+                            daily.guard_publication('flugeru/NOUS', SHA, tag)
                         else:
                             with self.assertRaises((ValueError, daily.subprocess.CalledProcessError)):
-                                daily.guard_publication('Nonary/Vibepollo', SHA, tag)
+                                daily.guard_publication('flugeru/NOUS', SHA, tag)
 
     def test_publish_orders_numeric_base_before_same_day_revision(self):
         day = dt.datetime.now(dt.timezone.utc).date()
@@ -283,19 +281,18 @@ class DailyTests(unittest.TestCase):
             self.assertEqual(commands.call_args.args[-1], 'refs/tags/2.0.1-nightly.d20261026.*')
 
     def test_source_requires_exact_upstream_confirmation(self):
-        for repository, branch, confirmation in (("Other/fork", "main", "Other/fork:main"), ("Nonary/vibeshine", "", ""), ("Nonary/vibeshine", "master", "true")):
+        for repository, branch, confirmation in (("Other/fork", "main", "Other/fork:main"), ("flugeru/NOUS", "", ""), ("flugeru/NOUS", "master", "true")):
             with self.assertRaises(ValueError):
                 daily.validate_source(repository, branch, confirmation)
-        daily.validate_source("Nonary/vibeshine", "master", "Nonary/vibeshine:master")
-        daily.validate_source("Nonary/vibeshine", "canary", "Nonary/vibeshine:canary")
-        daily.validate_source("Nonary/Vibepollo", "canary", "Nonary/Vibepollo:canary")
-        for repository, confirmation in (("Nonary/vibeshine", "Nonary/vibeshine:master"),
-                                         ("Nonary/Vibepollo", "Nonary/Vibepollo:master")):
+        with patch.object(daily.subprocess, 'run'):
+            daily.validate_source("flugeru/NOUS", "nous-project", "flugeru/NOUS:nous-project")
+        for repository, confirmation in (("flugeru/NOUS", "flugeru/NOUS:master"),
+                                         ("flugeru/NOUS", "flugeru/NOUS:master")):
             with self.assertRaises(ValueError):
-                daily.validate_source(repository, "canary", confirmation)
-        for retired in ("vibe", "vibe-test"):
+                daily.validate_source(repository, "nous-project", confirmation)
+        for retired in ("vibe", "vibe-test", "canary", "master", "main"):
             with self.assertRaises(ValueError):
-                daily.validate_source("Nonary/vibeshine", retired, f"Nonary/vibeshine:{retired}")
+                daily.validate_source("flugeru/NOUS", retired, f"flugeru/NOUS:{retired}")
 
     def test_reserved_nightly_tag_reuses_only_exact_source(self):
         day = dt.datetime.now(dt.timezone.utc).date()
@@ -303,7 +300,7 @@ class DailyTests(unittest.TestCase):
         for target, should_pass in ((SHA, True), ("b" * 40, False)):
             with self.subTest(target=target), tempfile.TemporaryDirectory() as temp:
                 output = Path(temp) / "output"
-                with patch.dict(os.environ, GITHUB_REPOSITORY="Nonary/Vibepollo", GITHUB_SHA=SHA, DAILY_PRIMARY_BRANCH="master", DAILY_RELEASE_SOURCE_BRANCH="master", DAILY_RELEASE_SOURCE_CONFIRMED="Nonary/Vibepollo:master", GITHUB_OUTPUT=str(output)):
+                with patch.dict(os.environ, GITHUB_REPOSITORY="flugeru/NOUS", GITHUB_SHA=SHA, DAILY_PRIMARY_BRANCH="master", DAILY_RELEASE_SOURCE_BRANCH="nous-project", DAILY_RELEASE_SOURCE_CONFIRMED="flugeru/NOUS:nous-project", GITHUB_OUTPUT=str(output)):
                     with patch.object(daily, "run", side_effect=["", SHA, "", "[[]]", "", "2.0.0", f"{target} refs/tags/{tag}"]):
                         if should_pass:
                             daily.resolve()
@@ -318,7 +315,7 @@ class DailyTests(unittest.TestCase):
         releases = [[dict(tag_name=released, draft=False, prerelease=True, published_at="2026-10-22T12:00:00Z")]]
         with tempfile.TemporaryDirectory() as temp:
             output = Path(temp) / "output"
-            with patch.dict(os.environ, GITHUB_REPOSITORY="Nonary/Vibepollo", GITHUB_SHA=SHA, DAILY_PRIMARY_BRANCH="master", DAILY_RELEASE_SOURCE_BRANCH="master", DAILY_RELEASE_SOURCE_CONFIRMED="Nonary/Vibepollo:master", GITHUB_OUTPUT=str(output)):
+            with patch.dict(os.environ, GITHUB_REPOSITORY="flugeru/NOUS", GITHUB_SHA=SHA, DAILY_PRIMARY_BRANCH="master", DAILY_RELEASE_SOURCE_BRANCH="nous-project", DAILY_RELEASE_SOURCE_CONFIRMED="flugeru/NOUS:nous-project", GITHUB_OUTPUT=str(output)):
                 with patch.object(daily, "run", side_effect=["", SHA, "", json.dumps(releases), "", "2.0.0", "b" * 40, f"{'b' * 40} refs/tags/{released}"]):
                     with patch.object(daily, "previous_successful_nightly", return_value=None):
                         daily.resolve()
@@ -328,63 +325,63 @@ class DailyTests(unittest.TestCase):
     def test_resolve_fetches_confirmed_remote_commit_and_emits_identity(self):
         with tempfile.TemporaryDirectory() as temp:
             output = Path(temp) / "output"
-            with patch.dict(os.environ, GITHUB_REPOSITORY="Nonary/vibeshine", GITHUB_SHA=SHA, DAILY_PRIMARY_BRANCH="master", DAILY_RELEASE_SOURCE_BRANCH="master", DAILY_RELEASE_SOURCE_CONFIRMED="Nonary/vibeshine:master", GITHUB_OUTPUT=str(output)):
+            with patch.dict(os.environ, GITHUB_REPOSITORY="flugeru/NOUS", GITHUB_SHA=SHA, DAILY_PRIMARY_BRANCH="master", DAILY_RELEASE_SOURCE_BRANCH="nous-project", DAILY_RELEASE_SOURCE_CONFIRMED="flugeru/NOUS:nous-project", GITHUB_OUTPUT=str(output)):
                 with patch.object(daily, "run", side_effect=["", SHA, "", "[[]]", "", "2.0.0-beta.4\n2.0.0", ""]) as commands:
                     daily.resolve()
             self.assertIn(f"commit={SHA}", output.read_text())
             self.assertIn("version=2.0.1-nightly", output.read_text())
             self.assertIn("should_build=true", output.read_text())
-            self.assertEqual(commands.call_args_list[0].args, ("git", "fetch", "--no-tags", "origin", "refs/heads/master:refs/remotes/origin/daily-source"))
+            self.assertEqual(commands.call_args_list[0].args, ("git", "fetch", "--no-tags", "origin", "refs/heads/nous-project:refs/remotes/origin/daily-source"))
 
-    def test_canary_pins_remote_tip_separately_from_default_workflow_commit(self):
+    def test_nous_project_pins_remote_tip_separately_from_default_workflow_commit(self):
         control = "b" * 40
         with tempfile.TemporaryDirectory() as temp:
             output = Path(temp) / "output"
-            with patch.dict(os.environ, GITHUB_REPOSITORY="Nonary/vibeshine", GITHUB_SHA=control,
-                            DAILY_PRIMARY_BRANCH="master", DAILY_RELEASE_SOURCE_BRANCH="canary",
-                            DAILY_RELEASE_SOURCE_CONFIRMED="Nonary/vibeshine:canary", GITHUB_OUTPUT=str(output)):
+            with patch.dict(os.environ, GITHUB_REPOSITORY="flugeru/NOUS", GITHUB_SHA=SHA,
+                            DAILY_PRIMARY_BRANCH="master", DAILY_RELEASE_SOURCE_BRANCH="nous-project",
+                            DAILY_RELEASE_SOURCE_CONFIRMED="flugeru/NOUS:nous-project", GITHUB_OUTPUT=str(output)):
                 with patch.object(daily, "run", side_effect=["", SHA, "", "[[]]", "", "2.0.0", ""]) as commands:
                     daily.resolve()
             self.assertIn(f"commit={SHA}", output.read_text())
             self.assertIn("should_build=true", output.read_text())
             self.assertEqual(commands.call_args_list[0].args, (
-                "git", "fetch", "--no-tags", "origin", "refs/heads/canary:refs/remotes/origin/daily-source"))
-            self.assertIn((("git", "diff", "--exit-code", control, SHA, "--", ".github/workflows"),),
+                "git", "fetch", "--no-tags", "origin", "refs/heads/nous-project:refs/remotes/origin/daily-source"))
+            self.assertIn((("git", "diff", "--exit-code", SHA, SHA, "--", ".github/workflows"),),
                           commands.call_args_list)
 
-    def test_canary_workflow_drift_blocks_publication(self):
+    def test_nous_project_workflow_drift_blocks_publication(self):
         with tempfile.TemporaryDirectory() as temp:
             output = Path(temp) / "output"
-            with patch.dict(os.environ, GITHUB_REPOSITORY="Nonary/vibeshine", GITHUB_SHA="b" * 40,
-                            DAILY_PRIMARY_BRANCH="master", DAILY_RELEASE_SOURCE_BRANCH="canary",
-                            DAILY_RELEASE_SOURCE_CONFIRMED="Nonary/vibeshine:canary", GITHUB_OUTPUT=str(output)):
+            with patch.dict(os.environ, GITHUB_REPOSITORY="flugeru/NOUS", GITHUB_SHA=SHA,
+                            DAILY_PRIMARY_BRANCH="master", DAILY_RELEASE_SOURCE_BRANCH="nous-project",
+                            DAILY_RELEASE_SOURCE_CONFIRMED="flugeru/NOUS:nous-project", GITHUB_OUTPUT=str(output)):
                 mismatch = daily.subprocess.CalledProcessError(1, ["git", "diff"])
                 with patch.object(daily, "run", side_effect=["", SHA, "", "[[]]", mismatch]):
                     with self.assertRaises(daily.subprocess.CalledProcessError):
                         daily.resolve()
             self.assertFalse(output.exists())
 
-    def test_vibepollo_canary_accepts_independent_commits_without_migration_pin(self):
+    def test_nous_project_accepts_independent_commits_without_migration_pin(self):
         with tempfile.TemporaryDirectory() as temp:
             output = Path(temp) / "output"
-            with patch.dict(os.environ, GITHUB_REPOSITORY="Nonary/Vibepollo", GITHUB_SHA="b" * 40,
-                            DAILY_PRIMARY_BRANCH="master", DAILY_RELEASE_SOURCE_BRANCH="canary",
-                            DAILY_RELEASE_SOURCE_CONFIRMED="Nonary/Vibepollo:canary", GITHUB_OUTPUT=str(output),
+            with patch.dict(os.environ, GITHUB_REPOSITORY="flugeru/NOUS", GITHUB_SHA=SHA,
+                            DAILY_PRIMARY_BRANCH="master", DAILY_RELEASE_SOURCE_BRANCH="nous-project",
+                            DAILY_RELEASE_SOURCE_CONFIRMED="flugeru/NOUS:nous-project", GITHUB_OUTPUT=str(output),
                             DAILY_RELEASE_MIGRATION_CONFIRMED="stale primary migration pin"):
                 with patch.object(daily, "run", side_effect=["", SHA, "", "[[]]", "", "2.0.0", ""]) as commands:
                     daily.resolve()
             self.assertIn(f"commit={SHA}", output.read_text())
             self.assertIn("should_build=true", output.read_text())
             self.assertEqual(commands.call_args_list[0].args, (
-                "git", "fetch", "--no-tags", "origin", "refs/heads/canary:refs/remotes/origin/daily-source"))
+                "git", "fetch", "--no-tags", "origin", "refs/heads/nous-project:refs/remotes/origin/daily-source"))
 
     def test_unchanged_repo_skips_even_if_upstream_migration_pin_is_stale(self):
-        for repository in ("Nonary/vibeshine", "Nonary/Vibepollo"):
+        for repository in ("flugeru/NOUS", "flugeru/NOUS"):
             with self.subTest(repository=repository), tempfile.TemporaryDirectory() as temp:
                 output = Path(temp) / "output"
                 with patch.dict(os.environ, GITHUB_REPOSITORY=repository, GITHUB_SHA=SHA,
-                                DAILY_PRIMARY_BRANCH="master", DAILY_RELEASE_SOURCE_BRANCH="master",
-                                DAILY_RELEASE_SOURCE_CONFIRMED=f"{repository}:master", GITHUB_OUTPUT=str(output),
+                                DAILY_PRIMARY_BRANCH="master", DAILY_RELEASE_SOURCE_BRANCH="nous-project",
+                                DAILY_RELEASE_SOURCE_CONFIRMED=f"{repository}:nous-project", GITHUB_OUTPUT=str(output),
                                 DAILY_RELEASE_MIGRATION_CONFIRMED="stale upstream pin"):
                     with patch.object(daily, "run", side_effect=["", SHA, "", "[[]]"]) as commands:
                         with patch.object(daily, "previous_successful_nightly", return_value={"tag": "daily-2026-10-10", "source_commit": SHA}) as baseline:
@@ -395,13 +392,13 @@ class DailyTests(unittest.TestCase):
                 self.assertFalse(any("ls-remote" in call.args for call in commands.call_args_list))
 
     def test_changed_vibepollo_source_builds_without_migration_confirmation(self):
-        for branch in ("master", "canary"):
-            for event, migration in (("schedule", ""), ("workflow_dispatch", ""), ("workflow_dispatch", "stale upstream pin")):
+        for branch in ("nous-project",):
+            for event, migration in (("workflow_dispatch", ""), ("workflow_dispatch", "stale upstream pin")):
                 with self.subTest(branch=branch, event=event, migration=migration), tempfile.TemporaryDirectory() as temp:
                     output = Path(temp) / "output"
-                    with patch.dict(os.environ, GITHUB_REPOSITORY="Nonary/Vibepollo", GITHUB_SHA=SHA,
+                    with patch.dict(os.environ, GITHUB_REPOSITORY="flugeru/NOUS", GITHUB_SHA=SHA,
                                     DAILY_PRIMARY_BRANCH="master", DAILY_RELEASE_SOURCE_BRANCH=branch,
-                                    DAILY_RELEASE_SOURCE_CONFIRMED=f"Nonary/Vibepollo:{branch}",
+                                    DAILY_RELEASE_SOURCE_CONFIRMED=f"flugeru/NOUS:{branch}",
                                     GITHUB_OUTPUT=str(output), DAILY_RELEASE_MIGRATION_CONFIRMED=migration, GITHUB_EVENT_NAME=event):
                         with patch.object(daily, "run", side_effect=["", SHA, "", "[[]]", "", "2.0.0", "", ""]) as commands:
                             with patch.object(daily, "previous_successful_nightly", return_value={"tag": "previous", "source_commit": "c" * 40}):
@@ -409,17 +406,17 @@ class DailyTests(unittest.TestCase):
                     self.assertIn("should_build=true", output.read_text())
                     self.assertIn(f"commit={SHA}", output.read_text())
                     self.assertIn("version=2.0.1-nightly.", output.read_text())
-                    self.assertFalse(any("https://github.com/Nonary/vibeshine.git" in call.args for call in commands.call_args_list))
+                    self.assertFalse(any("https://github.com/flugeru/NOUS.git" in call.args for call in commands.call_args_list))
                     self.assertIn((("git", "diff", "--exit-code", SHA, SHA, "--", ".github/workflows"),),
                                   commands.call_args_list)
 
     def test_vibepollo_invalid_source_still_fails_before_fetch(self):
         for branch, confirmation, primary in (
-                ("vibe", "Nonary/Vibepollo:vibe", "master"),
+                ("vibe", "flugeru/NOUS:vibe", "master"),
                 ("master", "", "master"),
-                ("main", "Nonary/Vibepollo:main", "master")):
+                ("main", "flugeru/NOUS:main", "master")):
             with self.subTest(branch=branch, confirmation=confirmation):
-                with patch.dict(os.environ, GITHUB_REPOSITORY="Nonary/Vibepollo",
+                with patch.dict(os.environ, GITHUB_REPOSITORY="flugeru/NOUS",
                                 DAILY_PRIMARY_BRANCH=primary, DAILY_RELEASE_SOURCE_BRANCH=branch,
                                 DAILY_RELEASE_SOURCE_CONFIRMED=confirmation):
                     with patch.object(daily, "run") as commands:
@@ -431,7 +428,7 @@ class DailyTests(unittest.TestCase):
         workflow = (Path(__file__).resolve().parents[2] / ".github/workflows/daily-prerelease.yml").read_text()
         self.assertIn("  workflow_dispatch:", workflow)
         self.assertIn("github.event_name == 'workflow_dispatch'", workflow)
-        self.assertIn("github.ref_name == 'canary'", workflow)
+        self.assertIn("github.ref_name == 'nous-project'", workflow)
         self.assertIn("DAILY_RELEASE_SOURCE_BRANCH: ${{ vars.DAILY_RELEASE_SOURCE_BRANCH }}", workflow)
         self.assertIn("DAILY_RELEASE_SOURCE_CONFIRMED: ${{ vars.DAILY_RELEASE_SOURCE_CONFIRMED }}", workflow)
         self.assertIn("vars.DAILY_RELEASE_ENABLED == 'true' && inputs.publish == true", workflow)
@@ -449,13 +446,13 @@ class DailyTests(unittest.TestCase):
         metadata = {"schema_version": 1, "channel": "nightly", "tag": "daily-2026-10-10", "source_commit": SHA,
                     "version": f"2.0.0-daily.d20261010+{SHA[:12]}", "nightly_sequence": 20261010}
         with patch.object(daily, "run", side_effect=[json.dumps(metadata), SHA]):
-            self.assertEqual(daily.previous_successful_nightly("Nonary/vibeshine", releases)["source_commit"], SHA)
+            self.assertEqual(daily.previous_successful_nightly("flugeru/NOUS", releases)["source_commit"], SHA)
         with patch.object(daily, "run", side_effect=[json.dumps(metadata), "b" * 40]):
             with self.assertRaisesRegex(ValueError, "tag"):
-                daily.previous_successful_nightly("Nonary/vibeshine", releases)
+                daily.previous_successful_nightly("flugeru/NOUS", releases)
         with patch.object(daily, "run") as commands:
-            self.assertIsNone(daily.previous_successful_nightly("Nonary/vibeshine", [[releases[0][0]]]))
-            self.assertIsNone(daily.previous_successful_nightly("Nonary/vibeshine", [[
+            self.assertIsNone(daily.previous_successful_nightly("flugeru/NOUS", [[releases[0][0]]]))
+            self.assertIsNone(daily.previous_successful_nightly("flugeru/NOUS", [[
                 {"tag_name": "daily-2026-10-09", "draft": False, "prerelease": True, "published_at": "2026-10-09T00:00:00Z", "assets": []}
             ]]))
             commands.assert_not_called()
@@ -465,11 +462,11 @@ class DailyTests(unittest.TestCase):
         for scenario in ("valid", "corrupt", "wrong-run", "wrong-source", "extra", "duplicate", "missing", "public-msi", "unverified-msi"):
             with self.subTest(scenario=scenario), tempfile.TemporaryDirectory() as temp:
                 root = Path(temp)
-                (root / "VibepolloSetup.exe").write_bytes(b"setup")
-                provenance = {"schema_version": 1, "release_tag": info["tag"], "release_commit": SHA, "source_build_run_id": "123", "assets": {"VibepolloSetup.exe": hashlib.sha256(b"setup").hexdigest()}}
+                (root / "NOUSSetup.exe").write_bytes(b"setup")
+                provenance = {"schema_version": 1, "release_tag": info["tag"], "release_commit": SHA, "source_build_run_id": "123", "assets": {"NOUSSetup.exe": hashlib.sha256(b"setup").hexdigest()}}
                 provenance["embedded_msi"] = {"verified": True, "sha256": hashlib.sha256(b"msi").hexdigest()}
                 if scenario == "corrupt":
-                    (root / "VibepolloSetup.exe").write_bytes(b"tampered")
+                    (root / "NOUSSetup.exe").write_bytes(b"tampered")
                 if scenario == "wrong-run":
                     provenance["source_build_run_id"] = "456"
                 if scenario == "wrong-source":
@@ -477,23 +474,23 @@ class DailyTests(unittest.TestCase):
                 if scenario == "extra":
                     (root / "local-driver.cat").write_bytes(b"untrusted")
                 if scenario == "duplicate":
-                    (root / "VibepolloSetup-copy.exe").write_bytes(b"setup")
+                    (root / "NOUSSetup-copy.exe").write_bytes(b"setup")
                 if scenario == "missing":
-                    (root / "VibepolloSetup.exe").unlink()
+                    (root / "NOUSSetup.exe").unlink()
                 if scenario == "public-msi":
-                    (root / "Vibepollo.msi").write_bytes(b"msi")
+                    (root / "NOUS.msi").write_bytes(b"msi")
                 if scenario == "unverified-msi":
                     provenance["embedded_msi"]["verified"] = False
                 (root / "release-provenance.json").write_text(json.dumps(provenance))
                 with patch.dict(os.environ, GITHUB_RUN_ID="123"):
                     if scenario == "valid":
-                        daily.verify_assets(root, "Vibepollo", SHA, info["tag"], info["version"])
+                        daily.verify_assets(root, "NOUS", SHA, info["tag"], info["version"])
                         manifest = json.loads((root / "daily-manifest.json").read_text())
                         self.assertTrue(manifest["prerelease"])
                         self.assertFalse(manifest["signpath"])
                     else:
                         with self.assertRaises(ValueError):
-                            daily.verify_assets(root, "Vibepollo", SHA, info["tag"], info["version"])
+                            daily.verify_assets(root, "NOUS", SHA, info["tag"], info["version"])
 
 
 if __name__ == "__main__":

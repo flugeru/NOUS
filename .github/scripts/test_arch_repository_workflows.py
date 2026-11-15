@@ -80,20 +80,20 @@ class ArchRepositoryWorkflowTest(unittest.TestCase):
         self.assertIn("ARCH_REPO_GPG_FINGERPRINT", text)
         self.assertIn("Imported signing key fingerprint does not match", text)
         self.assertIn("Release ${source_tag} is still a draft", text)
-        self.assertIn("Expected exactly one non-debug Vibepollo Arch package", text)
+        self.assertIn("Expected exactly one non-debug NOUS Arch package", text)
         self.assertIn("arch_package_version=${release_version//-/}", text)
         self.assertIn("pkgver = ${arch_package_version}-1", text)
         self.assertIn("--detach-sign \"incoming/${PACKAGE_NAME}\"", text)
         self.assertIn("--detach-sign vibepollo.db.tar.gz", text)
         self.assertIn("gpg --batch --verify", text)
         self.assertIn("git -C \"${publication_dir}\" push origin HEAD:arch-repo", text)
-        self.assertIn("gh workflow run update-pages.yml --ref master", text)
+        self.assertIn("gh workflow run update-pages.yml --ref nous-project", text)
 
-    def test_public_site_uses_nonary_vibepollo_identity(self) -> None:
+    def test_public_site_uses_nous_identity(self) -> None:
         site = (ROOT / "gh-pages-template" / "index.html").read_text(encoding="utf-8")
-        self.assertIn("Vibepollo by Nonary", site)
-        self.assertIn("https://github.com/Nonary/Vibepollo", site)
-        self.assertIn("https://nonary.github.io/Vibepollo/arch/x86_64", site)
+        self.assertIn("<title>NOUS</title>", site)
+        self.assertIn("https://github.com/flugeru/NOUS", site)
+        self.assertIn("https://flugeru.github.io/NOUS/arch/x86_64", site)
         self.assertNotIn("LizardByte", site)
 
 

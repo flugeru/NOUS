@@ -291,7 +291,7 @@ class TrayTests(unittest.TestCase):
         with self.assertRaises(tray.ApiError):
             tray.select_releases({"message": "rate limited"})
         self.assertEqual(tray.release_url("tag/with space"),
-                         "https://github.com/Nonary/Vibepollo/releases/tag/tag%2Fwith%20space")
+                         "https://github.com/flugeru/NOUS/releases/tag/tag%2Fwith%20space")
 
     def test_update_metadata_request_does_not_carry_local_credentials(self):
         response = unittest.mock.MagicMock()
@@ -717,7 +717,7 @@ class TrayPackagingTests(unittest.TestCase):
             base = Path(directory)
             project = base / "project"
             project.mkdir()
-            shutil.copy(ROOT / "apollo.svg", project / "apollo.svg")
+            shutil.copy(ROOT / "nous.svg", project / "nous.svg")
             (project / "CMakeLists.txt").write_text(
                 "cmake_minimum_required(VERSION 3.20)\nproject(icon_stage NONE)\n"
                 "include(GNUInstallDirs)\n"

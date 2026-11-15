@@ -1021,7 +1021,7 @@ namespace proc {
       VDISPLAY::DRIVER_SELECTION::UNKNOWN
     );
     if (!VDISPLAY::ensure_driver_is_ready()) {
-      BOOST_LOG(warning) << "Sunshine virtual display driver reported unavailable during initialization; attempting to continue.";
+      BOOST_LOG(warning) << "NOUS virtual display driver reported unavailable during initialization; attempting to continue.";
     }
     const auto status = VDISPLAY::openVDisplayDevice();
     if (status == VDISPLAY::DRIVER_STATUS::OK) {

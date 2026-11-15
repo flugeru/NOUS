@@ -1,14 +1,18 @@
 # Getting Started
 
-The recommended method for running Vibepollo is to use the [binaries](#binaries) included in the
+NOUS source and releases: [flugeru/NOUS](https://github.com/flugeru/NOUS).
+Upstream Sunshine download URLs and package names below identify upstream builds, not NOUS releases.
+Use NOUS release assets only after an explicit release is published; legacy CLI, service and configuration names remain compatible.
+
+The recommended method for running NOUS is to use the [binaries](#binaries) included in the
 [latest release][latest-release], unless otherwise specified.
 
-[Pre-releases](https://github.com/Nonary/Vibepollo/releases) are also available. These should be considered beta,
+[Pre-releases](https://github.com/flugeru/NOUS/releases) are also available. These should be considered beta,
 and release artifacts may be missing when merging changes on a faster cadence.
 
 ## Binaries
 
-Binaries of Vibepollo are created for each release. Availability varies by platform while the distribution channels are being established.
+Binaries of NOUS are created for each release. Availability varies by platform while the distribution channels are being established.
 Binaries can be found in the [latest release][latest-release].
 
 > [!NOTE]
@@ -51,7 +55,7 @@ sudo pkg delete Sunshine
 ### Linux
 
 Linux support is in **beta** and ships as a native package for **Arch Linux and CachyOS** (x86_64).
-Vibepollo is developed and tested on **CachyOS with KDE Plasma 6 on Wayland**; other Arch-based
+NOUS is developed and tested on **CachyOS with KDE Plasma 6 on Wayland**; other Arch-based
 distributions are supported on a best-effort basis. AppImage, Flatpak, Debian/Ubuntu,
 Fedora/openSUSE, Homebrew, and Docker builds are not produced for this beta.
 
@@ -79,18 +83,18 @@ running kernel, installs the package from the signed repository (or the latest G
 the repository is unavailable), opens firewalld or ufw, and tells you whether to reboot:
 
 ```bash
-curl -fsSLO https://raw.githubusercontent.com/Nonary/Vibepollo/master/scripts/linux_install.sh
+curl -fsSLO https://raw.githubusercontent.com/flugeru/NOUS/nous-project/scripts/linux_install.sh
 sudo bash linux_install.sh
 ```
 
 To install a specific release, pass `--version 2.0.0`. To install a package you already
-downloaded from the [releases page](https://github.com/Nonary/Vibepollo/releases), pass
+downloaded from the [releases page](https://github.com/flugeru/NOUS/releases), pass
 `--package ./vibepollo-*.pkg.tar.zst`. Manual repository and `pacman -U` steps are in the
 [Linux install guide](linux/install.md#install-manually).
 
 ##### After installation
 
-1. **Reboot after the first installation.** The login screen and desktop need to load Vibepollo's
+1. **Reboot after the first installation.** The login screen and desktop need to load NOUS's
    display and session integration. On updates, reboot if asked. A kernel that still holds an older
    driver, or a one-time Secure Boot key enrollment, needs one reboot.
 2. **Log in to Plasma (Wayland) and pair.** Open `https://localhost:47990` on the machine, create
@@ -105,7 +109,7 @@ downloaded from the [releases page](https://github.com/Nonary/Vibepollo/releases
    sudo ufw allow Vibepollo
    ```
 
-   Vibepollo listens on TCP 47984, 47989, 47990, and 48010, and UDP 47998 to 48000 and 48010.
+   NOUS listens on TCP 47984, 47989, 47990, and 48010, and UDP 47998 to 48000 and 48010.
 4. **Start a new login session** so the PipeWire audio drop-in the package installs takes effect.
    The first-install reboot above already does this.
 
@@ -123,7 +127,7 @@ sudo pacman -R vibepollo
 ### macOS
 
 > [!IMPORTANT]
-> Sunshine on macOS is experimental. Gamepads do not work.
+> NOUS on macOS is experimental. Gamepads do not work.
 
 #### DMG
 
@@ -141,7 +145,7 @@ sudo pacman -R vibepollo
 4. Eject the disk image.
 
 ##### Uninstall
-1. Quit Sunshine if it is running.
+1. Quit NOUS if it is running.
 2. Open `Finder`, navigate to `Applications`, and drag `Sunshine.app` to the Trash.
 
 #### Homebrew
@@ -166,7 +170,7 @@ brew uninstall sunshine
 ### Windows
 
 > [!NOTE]
-> Sunshine supports ARM64 on Windows; however, this should be considered experimental. This version does not properly
+> NOUS supports ARM64 on Windows; however, this should be considered experimental. This version does not properly
 > support GPU scheduling and any hardware acceleration.
 
 #### Installer (recommended)
@@ -196,16 +200,16 @@ brew uninstall sunshine
 > enable features.
 
 To present a wired USB DualSense with native waveform haptics to Windows games, select the optional
-**DualSense USB audio and haptics** component in the Vibepollo installer.
+**DualSense USB audio and haptics** component in the NOUS installer.
 It is off by default, installs the bundled Microsoft-signed usbip-win2 transport,
 and may require a Windows restart. Then enable **DualSense waveform haptics** for
 an application, or choose **DualSense with waveform haptics** in Settings → Input
 to use it for all streams. Compatible games and a Moonlight client implementing
 waveform feedback are required. See the [Windows DualSense setup guide](windows-dualsense-haptics.md).
 The USB/IP transport is shared with other applications and remains installed
-when Vibepollo is uninstalled.
+when NOUS is uninstalled.
 
-To uninstall, find Sunshine in the list <a href="ms-settings:installed-apps">here</a> and select "Uninstall" from the
+To uninstall, find NOUS in the list <a href="ms-settings:installed-apps">here</a> and select "Uninstall" from the
 overflow menu. Different versions of Windows may provide slightly different steps for uninstall.
 
 #### Standalone (lite version)
@@ -274,7 +278,7 @@ After adding yourself to the group, log out and log back in for the changes to t
 
 #### Services
 
-The Arch/CachyOS package installs Vibepollo as machine-wide system services.
+The Arch/CachyOS package installs NOUS as machine-wide system services.
 The session controller is enabled during installation and starts the streaming host whenever the
 configured user's KDE Plasma Wayland session is active:
 
@@ -297,9 +301,9 @@ There is no per-user unit on Linux. Never enable `app-io.github.Nonary.vibepollo
 already carries the capabilities it needs.
 
 ### macOS
-The first time you start Sunshine, you will be asked to grant access to screen recording and your microphone.
+The first time you start NOUS, you will be asked to grant access to screen recording and your microphone.
 
-Sunshine supports native system audio capture on macOS 14.0 (Sonoma) and newer via Apple’s Audio Tap API.
+NOUS supports native system audio capture on macOS 14.0 (Sonoma) and newer via Apple’s Audio Tap API.
 To use it, simply leave the **Audio Sink** setting blank.
 
 If you prefer to manage your own loopback device, you can still use
@@ -315,7 +319,7 @@ and enter its device name in the [audio_sink](configuration.md#audio_sink) field
 
 ### Windows
 In order for virtual gamepads to work, you must install ViGEmBus. You can do this from the troubleshooting tab
-in the web UI, as long as you are running Sunshine as a service or as an administrator. After installation, it is
+in the web UI, as long as you are running NOUS as a service or as an administrator. After installation, it is
 recommended to restart your computer.
 
 ![ViGEmBus Installation](images/vigembus-installer.png)
@@ -323,7 +327,7 @@ recommended to restart your computer.
 ## Usage
 
 ### Basic usage
-On Windows and Linux, Vibepollo runs as a service that the installer sets up; you do not start it by
+On Windows and Linux, NOUS runs as a service that the installer sets up; you do not start it by
 hand. On Linux the session controller starts the host whenever the configured user's Plasma Wayland
 session is active (see the [Linux install guide](linux/install.md)). Elsewhere, start it with:
 
@@ -332,7 +336,7 @@ vibepollo
 ```
 
 > [!NOTE]
-> Running multiple instances of Vibepollo is not advised.
+> Running multiple instances of NOUS is not advised.
 
 ### Specify config file
 ```bash
@@ -345,14 +349,14 @@ vibepollo <directory of conf file>/vibepollo.conf
 > The configuration file specified will be created if it doesn't exist.
 
 ### Headless Linux hosts
-Vibepollo does not stream X11 sessions or manually started hosts. On a headless Linux machine keep
+NOUS does not stream X11 sessions or manually started hosts. On a headless Linux machine keep
 the SDDM or Plasma Login Manager greeter running: NVIDIA hosts stream the login screen itself and
 you sign in from Moonlight, while AMD and Intel hosts need an autologin or a local sign-in before
 the stream starts. The managed virtual display replaces dummy plugs.
 
 ### Configuration
 
-Vibepollo is configured via the Web UI at [https://localhost:47990](https://localhost:47990)
+NOUS is configured via the Web UI at [https://localhost:47990](https://localhost:47990)
 on the host by default. From another device on your LAN, replace only `localhost` with
 the host's LAN IP address, for example `https://192.168.1.10:47990`. Keep the `https://`
 prefix: entering just an IP address and port can make the browser try plain HTTP,
@@ -378,7 +382,7 @@ For an empty response or other connection failure, see
    ![Applications](images/applications.png)
 3. Adjust any configuration settings as needed. You can search for options in the search bar.
    ![Configuration](images/configuration-search.png)
-4. Find Moonlight clients and other tools for Sunshine in the `Featured Apps` tab.
+4. Find Moonlight clients and other tools for NOUS in the `Featured Apps` tab.
    ![Featured Apps](images/featured-apps.png)
 5. In Moonlight, you may need to add the PC manually.
 6. When Moonlight requests for you insert the pin:
@@ -412,11 +416,11 @@ All shortcuts start with `Ctrl+Alt+Shift`, just like Moonlight.
 * You can use Environment variables in place of values
 * `$(HOME)` will be replaced by the value of `$HOME`
 * `$$` will be replaced by `$`, e.g. `$$(HOME)` will be become `$(HOME)`
-* `env` - Adds or overwrites Environment variables for the commands/applications run by Sunshine.
+* `env` - Adds or overwrites Environment variables for the commands/applications run by NOUS.
   This can only be changed by modifying the `apps.json` file directly.
 
 ### Considerations
-* On Windows, Sunshine uses the Desktop Duplication API which only supports capturing from the GPU used for display.
+* On Windows, NOUS uses the Desktop Duplication API which only supports capturing from the GPU used for display.
   If you want to capture and encode on the eGPU, connect a display or HDMI dummy display dongle to it and run the games
   on that display.
 * When an application is started, if there is an application already running, it will be terminated.
@@ -434,9 +438,9 @@ All shortcuts start with `Ctrl+Alt+Shift`, just like Moonlight.
 
   * On Linux the packaged host already belongs to the `vibepollo-uinput` group that owns
     `/dev/uinput` and `/dev/uhid`; check `journalctl -u vibepollo.service` for uinput errors.
-  * On FreeBSD, add the user running Vibepollo to the `input` group.
+  * On FreeBSD, add the user running NOUS to the `input` group.
 
-* The FreeBSD version of Sunshine is missing some features that are present on Linux.
+* The FreeBSD version of NOUS is missing some features that are present on Linux.
   The following are known limitations.
 
   * Only X11 and Wayland capture are supported
@@ -449,7 +453,7 @@ Streaming HDR content is officially supported on Windows hosts and experimentall
 * General HDR support information and requirements:
 
   * HDR must be activated in the host OS, which may require an HDR-capable physical display, an EDID
-    emulator dongle, or a managed Vibepollo HDR virtual display connected to the desktop session.
+    emulator dongle, or a managed NOUS HDR virtual display connected to the desktop session.
   * You must also enable the HDR option in your Moonlight client settings, otherwise the stream will be SDR
     (and probably overexposed if your host is HDR).
   * A good HDR experience relies on proper HDR display calibration both in the OS and in game. HDR calibration can
@@ -475,7 +479,7 @@ Additional information:
     encoder. KWin ScreenCast remains recommended for managed SDR capture. NvFBC and X11 capture do
     not support HDR.
   - You will need a desktop environment with a compositor that supports HDR rendering, such as Gamescope or KDE Plasma 6.
-  - Native Vibepollo installations can provide private HDR10 virtual outputs through the
+  - Native NOUS installations can provide private HDR10 virtual outputs through the
     `vibeshine_drm` compatibility module supplied by `libvirtualdisplay`. It requires Linux 6.16 or newer and matching kernel headers. Its EDID
     advertises BT.2020, PQ, and HDR static metadata, while its connector and planes support 10-bit output.
     The driver notifies direct KMS capture when a presentation completes and exports the exact pinned
@@ -517,7 +521,7 @@ Additional information:
   Only a custom kernel configured to enforce trusted module signatures needs additional
   authorization. When that is detected, the package installation launches the one-time signing-key
   confirmation automatically. After confirming it, reboot and approve the pending firmware
-  confirmations once; future kernel and Vibepollo updates remain automatic. If a noninteractive
+  confirmations once; future kernel and NOUS updates remain automatic. If a noninteractive
   package frontend cannot display the prompt, retry the package installation from a terminal.
 
   @seealso{[Arch wiki on HDR Support for Linux](https://wiki.archlinux.org/title/HDR_monitor_support) and
@@ -534,7 +538,7 @@ Guides are available [here](guides.md).
 Tutorials and Guides are community generated. Want to contribute? Reach out to us on our discord server.}
 
 ### Version Status Messages
-The Web UI provides detailed context about how your locally built Sunshine instance relates to the latest public release:
+The Web UI provides detailed context about how your locally built NOUS instance relates to the latest public release:
 
 * Ahead: Your build's commit is ahead of the latest release tag (extra commits not yet part of a release). You will not be prompted to update.
 * Behind: Your build is a number of commits behind the latest release; an update is recommended.
@@ -556,4 +560,4 @@ Commit distance is determined using the GitHub compare endpoint between the late
   [TOC]
 </details>
 
-[latest-release]: https://github.com/Nonary/Vibepollo/releases/latest
+[latest-release]: https://github.com/flugeru/NOUS/releases/latest

@@ -1,6 +1,6 @@
 /**
  * @file tools/sunshinesvc.cpp
- * @brief Handles launching Sunshine.exe into user sessions as SYSTEM
+ * @brief Handles launching NOUS.exe into user sessions as SYSTEM
  */
 #define WIN32_LEAN_AND_MEAN
 #include <format>
@@ -67,11 +67,11 @@ HANDLE CreateJobObjectForChildProcess() {
 
   JOBOBJECT_EXTENDED_LIMIT_INFORMATION job_limit_info = {};
 
-  // Kill Sunshine.exe when the final job object handle is closed (which will happen if we terminate unexpectedly).
-  // This ensures we don't leave an orphaned Sunshine.exe running with an inherited handle to our log file.
+  // Kill NOUS.exe when the final job object handle is closed (which will happen if we terminate unexpectedly).
+  // This ensures we don't leave an orphaned NOUS.exe running with an inherited handle to our log file.
   job_limit_info.BasicLimitInformation.LimitFlags |= JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
 
-  // Allow Sunshine.exe to use CREATE_BREAKAWAY_FROM_JOB when spawning processes to ensure they can to live beyond
+  // Allow NOUS.exe to use CREATE_BREAKAWAY_FROM_JOB when spawning processes to ensure they can to live beyond
   // the lifetime of SunshineSvc.exe. This avoids unexpected user data loss if we crash or are killed.
   job_limit_info.BasicLimitInformation.LimitFlags |= JOB_OBJECT_LIMIT_BREAKAWAY_OK;
 
@@ -431,7 +431,7 @@ VOID WINAPI ServiceMain(DWORD dwArgc, LPTSTR *lpszArgv) {
     return;
   }
 
-  // Only allow Sunshine.exe to inherit the log file handle, not all inheritable handles.
+  // Only allow NOUS.exe to inherit the log file handle, not all inheritable handles.
   // If even the NUL fallback failed, launch without redirected standard handles.
   if (have_log_handle) {
     UpdateProcThreadAttribute(startup_info.lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_HANDLE_LIST, &log_file_handle, sizeof(log_file_handle), nullptr, nullptr);
@@ -447,7 +447,7 @@ VOID WINAPI ServiceMain(DWORD dwArgc, LPTSTR *lpszArgv) {
   DWORD fast_exit_count = 0;
   ULONGLONG first_fast_exit_tick = 0;
 
-  // Loop every 3 seconds until the stop event is set or Sunshine.exe is running
+  // Loop every 3 seconds until the stop event is set or NOUS.exe is running
   while (WaitForSingleObject(stop_event, 3000) != WAIT_OBJECT_0) {
     auto console_session_id = WTSGetActiveConsoleSessionId();
     if (console_session_id == 0xFFFFFFFF) {
@@ -467,11 +467,11 @@ VOID WINAPI ServiceMain(DWORD dwArgc, LPTSTR *lpszArgv) {
       continue;
     }
 
-    // Start Sunshine.exe inside our job object
+    // Start NOUS.exe inside our job object
     UpdateProcThreadAttribute(startup_info.lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_JOB_LIST, &job_handle, sizeof(job_handle), nullptr, nullptr);
 
     PROCESS_INFORMATION process_info;
-    if (!CreateProcessAsUserW(console_token, L"Sunshine.exe", nullptr, nullptr, nullptr, have_log_handle, CREATE_UNICODE_ENVIRONMENT | CREATE_NO_WINDOW | EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr, (LPSTARTUPINFOW) &startup_info, &process_info)) {
+    if (!CreateProcessAsUserW(console_token, L"NOUS.exe", nullptr, nullptr, nullptr, have_log_handle, CREATE_UNICODE_ENVIRONMENT | CREATE_NO_WINDOW | EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr, (LPSTARTUPINFOW) &startup_info, &process_info)) {
       CloseHandle(console_token);
       CloseHandle(job_handle);
       continue;
@@ -481,7 +481,7 @@ VOID WINAPI ServiceMain(DWORD dwArgc, LPTSTR *lpszArgv) {
     bool self_exit = false;
     const auto process_start_tick = GetTickCount64();
     do {
-      // Wait for the stop event to be set, Sunshine.exe to terminate, or the console session to change
+      // Wait for the stop event to be set, NOUS.exe to terminate, or the console session to change
       const HANDLE wait_objects[] = {stop_event, process_info.hProcess, session_change_event};
       switch (WaitForMultipleObjects(_countof(wait_objects), wait_objects, FALSE, INFINITE)) {
         case WAIT_OBJECT_0 + 2:
@@ -490,9 +490,9 @@ VOID WINAPI ServiceMain(DWORD dwArgc, LPTSTR *lpszArgv) {
             still_running = true;
             continue;
           }
-          // Fall-through to terminate Sunshine.exe and start it again.
+          // Fall-through to terminate NOUS.exe and start it again.
         case WAIT_OBJECT_0:
-          // The service is shutting down, so try to gracefully terminate Sunshine.exe.
+          // The service is shutting down, so try to gracefully terminate NOUS.exe.
           // If it doesn't terminate in 20 seconds, we will forcefully terminate it.
           if (!RunTerminationHelper(console_token, process_info.dwProcessId) ||
               WaitForSingleObject(process_info.hProcess, 20000) != WAIT_OBJECT_0) {
@@ -593,13 +593,13 @@ int main(int argc, char *argv[]) {
     {nullptr, nullptr}
   };
 
-  // Check if this is a reinvocation of ourselves to send Ctrl-C to Sunshine.exe
+  // Check if this is a reinvocation of ourselves to send Ctrl-C to NOUS.exe
   if (argc == 3 && strcmp(argv[1], "--terminate") == 0) {
     return DoGracefulTermination(atol(argv[2]));
   }
 
   // By default, services have their current directory set to %SYSTEMROOT%\System32.
-  // We want to use the directory where Sunshine.exe is located instead of system32.
+  // We want to use the directory where NOUS.exe is located instead of system32.
   // This requires stripping off 2 path components: the file name and the last folder
   WCHAR module_path[MAX_PATH];
   GetModuleFileNameW(nullptr, module_path, _countof(module_path));

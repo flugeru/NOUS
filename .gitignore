@@ -45,6 +45,8 @@
 
 # build directories
 build/
+!src_assets/macos/build/
+!src_assets/macos/build/nous.icns
 cmake-*/
 docs/doxyconfig*
 
@@ -72,6 +74,14 @@ build-msvc
 AGENTS.md
 .github/copilot-instructions.md
 /build_release
+
+# Local dependency downloads and staged driver payloads
+/.vibepollo-deps/
+/.vibeshine-deps/
+/libvirtualdisplay-*-windows-x64/
+/src_assets/windows/drivers/vhf-gamepad/driver/
+/src_assets/windows/drivers/vhf-gamepad/tools/
+/src_assets/windows/drivers/vhf-gamepad/manifest.json
 
 # Local runtime/test artifacts
 test_sunshine.log

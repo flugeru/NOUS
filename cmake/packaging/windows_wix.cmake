@@ -5,7 +5,7 @@
 set(CPACK_GENERATOR "WIX")
 
 # Product identity and visuals
-set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/src_assets/common/assets/web/public/images/apollo.ico")
+set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/src_assets/common/assets/web/public/images/nous.ico")
 set(CPACK_WIX_PROGRAM_MENU_FOLDER "NOUS")
 
 # Stable Upgrade GUID to enable in-place upgrades
@@ -20,7 +20,7 @@ set(CPACK_WIX_VALIDATION_CONDITION "")
 if(PROJECT_VERSION_FULL MATCHES "-pr-validation($|[.+])")
   string(CONCAT CPACK_WIX_VALIDATION_CONDITION
     "<Condition Message='PR validation packages cannot replace an existing "
-    "Vibepollo installation. Use a clean test machine.'>"
+    "NOUS installation. Use a clean test machine.'>"
     "Installed OR NOT WIX_UPGRADE_DETECTED</Condition>")
 endif()
 

@@ -40,12 +40,12 @@ command returns 0 for matching installed/loaded source revisions, 4 when a
 reboot is required, and a failure for a missing or unloaded module. To repair
 an existing installation, run `sudo /usr/libexec/vibeshine/vibeshine-ds5-install install`.
 After first loading the module, restart the session controller and reconnect
-the stream so systemd grants the newly created device and Vibepollo creates
+the stream so systemd grants the newly created device and NOUS creates
 a composite controller. Restarting disconnects the stream and its game.
 
 The wire calibration is zero bias, 16 gyro counts per degree/second, and 8192
 accelerometer counts per g. Inputtino's public DS5 motion API takes radians/second
-and m/s²; Vibepollo's DS4 API takes degrees/second and m/s². Pairing replies must
+and m/s²; NOUS's DS4 API takes degrees/second and m/s². Pairing replies must
 agree with each device's unique address, in reversed wire order.
 
 Build and run the normal suite, including `test_component_ds4_usb` and
@@ -80,11 +80,11 @@ game-specific translation by Steam or Proton is a separate layer.
 The coordinated Moonlight fork can advertise `LI_CCAP_HAPTICS_PCM` (`0x8000`) for
 a controller with a waveform renderer and SDP `ML_FF_HAPTICS_PCM` (`0x04`) for
 the connection. With the controller capability present, Inputtino passes the
-virtual USB audio samples to Vibepollo instead of reducing PCM to rumble RMS.
+virtual USB audio samples to NOUS instead of reducing PCM to rumble RMS.
 Normal HID rumble and adaptive-trigger callbacks remain separate. Clients that
 do not advertise the capability keep the existing PCM-to-rumble fallback.
 
-Vibepollo extracts only actuator channels 3/4, preserving their signed S16LE
+NOUS extracts only actuator channels 3/4, preserving their signed S16LE
 samples, and batches 240 stereo frames (5 ms at 48 kHz). Control type `0x5601`
 contains a versioned payload defined in `ControllerHaptics.h` in both copies of
 moonlight-common-c. It uses the existing encrypted control connection and
@@ -97,7 +97,7 @@ The initial client renderer supports Linux Bluetooth DualSense and DualSense
 Edge through hidraw and the MPL-2.0 SAxense packet format. The client repository
 retains the pinned upstream source/license, adaptations and credits, and embeds
 them in the binary (`moonlight --haptics-license`). No SAxense code is linked into
-Vibepollo or Inputtino. USB/other clients retain rumble fallback; speaker and
+NOUS or Inputtino. USB/other clients retain rumble fallback; speaker and
 microphone transport are outside this extension.
 
 Test channel extraction/packet validation with `test_ds5_haptics`, and test the
@@ -125,7 +125,7 @@ so it is deliberately excluded from automatic CTest runs.
 ## Global Proton DualSense compatibility
 
 On Linux, **Input → DualSense compatibility for Proton games** defaults to on
-(`proton_dualsense_compatibility = enabled`). During a stream, Vibepollo supplies
+(`proton_dualsense_compatibility = enabled`). During a stream, NOUS supplies
 `PROTON_KEEP_SONY_AUDIO_ENDPOINT_VISIBLE=1` and
 `PROTON_SONY_WINDOWS_DEVICE_NAMES=1` to Proton game launches.
 

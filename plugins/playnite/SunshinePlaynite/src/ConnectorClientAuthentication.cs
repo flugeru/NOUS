@@ -35,7 +35,8 @@ namespace SunshinePlaynite
                 return role;
             }
             var expected = launcher ? "playnite-launcher.exe" : "sunshine.exe";
-            if (!string.Equals(executable, expected, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(executable, expected, StringComparison.OrdinalIgnoreCase)
+                && (launcher || !string.Equals(executable, "NOUS.exe", StringComparison.OrdinalIgnoreCase)))
                 throw new UnauthorizedAccessException("Client executable does not match its declared role");
             return role;
         }

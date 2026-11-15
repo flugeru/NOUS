@@ -760,7 +760,7 @@ def install_driver(directory, manifest):
                'current_kernel_release() { printf "%s\\n" "$deploy_kernel"; }; main install')
     returncodes = []
     for kernel in manifest['driver']['kernels']:
-        print(f'Building/installing Vibepollo DRM for {kernel}', flush=True)
+        print(f'Building/installing NOUS DRM for {kernel}', flush=True)
         code = driver_command(['/usr/bin/bash', '-c', wrapper, 'vibepollo-driver-upgrade', kernel])
         returncodes.append(code)
         if code not in (0, 4):
@@ -1006,7 +1006,7 @@ def refuse_live_applications(args):
     result = run('systemctl', '--user', 'list-units', '--plain', '--no-legend', '--no-pager',
                  '--state=active', 'vibepollo-app-*.service', check=False)
     if result.returncode:
-        raise DeployError('Could not list running Vibepollo applications; '
+        raise DeployError('Could not list running NOUS applications; '
                           'pass --allow-disruption to install anyway')
     running = [line.split()[0] for line in result.stdout.splitlines() if line.strip()]
     if running:
@@ -1039,7 +1039,7 @@ def build_native_package(archive_path, destination, version):
     """Package the exact validated local stage with the maintained Arch hooks."""
     recipe = (REPO / 'packaging/linux/Arch/PKGBUILD').read_text()
     fields = [('pkgname', 'vibepollo'), ('pkgbase', 'vibepollo'),
-              ('pkgver', arch_package_version(version)), ('pkgdesc', 'Local Vibepollo build'),
+              ('pkgver', arch_package_version(version)), ('pkgdesc', 'Local NOUS build'),
               ('arch', 'x86_64'), ('builddate', str(int(time.time())))]
     for array, field in (('depends', 'depend'), ('provides', 'provides'),
                          ('conflicts', 'conflict'), ('license', 'license')):
@@ -1167,7 +1167,7 @@ def root_package_install(args):
 
 def native_installation_preflight():
     """Check updater prerequisites without reading or changing shared state."""
-    guidance = ('This local-build helper updates an already-configured native Vibepollo host; '
+    guidance = ('This local-build helper updates an already-configured native NOUS host; '
                 'complete the native package installation and machine setup first. '
                 'Use --stage-only to build without installing.')
     try:
@@ -1509,7 +1509,7 @@ def platform_preflight(native=True):
         raise DeployError('Native deployment requires /lib/modules to resolve to /usr/lib/modules')
     kernel = re.match(r'([0-9]+)\.([0-9]+)', os.uname().release)
     if not kernel or tuple(map(int, kernel.groups())) < (6, 16):
-        raise DeployError('Managed Vibepollo displays require Linux 6.16 or newer')
+        raise DeployError('Managed NOUS displays require Linux 6.16 or newer')
     commands = ('systemctl', 'loginctl', 'journalctl', 'ss', 'setpriv', 'udevadm',
                 'getcap', 'setcap', 'modinfo', 'modprobe', 'depmod', 'pgrep', 'bash', 'openssl')
     missing = [name for name in commands if not shutil.which(name, path=TRUSTED_PATH)]
@@ -1659,14 +1659,14 @@ def build_install(args):
         environment = dict(os.environ, DESTDIR=str(work / 'stage'))
         subprocess.run(['cmake', '--install', str(build)], env=environment, check=True)
         version_environment = dict(os.environ, XDG_CONFIG_HOME=str(work / 'version-config'))
-        # Vibepollo parses defaults before --version. Seed only this isolated
+        # NOUS parses defaults before --version. Seed only this isolated
         # probe profile from the staged payload, never an installed host's data.
         probe_profile = work / 'version-config' / 'vibepollo'
         probe_profile.mkdir(parents=True)
         shutil.copyfile(work / 'stage/usr/share/vibepollo/apps.json', probe_profile / 'apps.json')
         reported = run(work / 'stage' / f'usr/bin/vibepollo-{args.version}', '--version',
                        env=version_environment).stdout
-        if not re.search(r'Vibepollo version: ' + re.escape(args.version) + r'(?:\s|$)', reported):
+        if not re.search(r'NOUS version: ' + re.escape(args.version) + r'(?:\s|$)', reported):
             raise DeployError(f'Staged executable did not report the requested version: {reported}')
         archive_path = work / 'candidate.tar.gz'
         with tarfile.open(archive_path, 'w:gz', format=tarfile.PAX_FORMAT) as archive:

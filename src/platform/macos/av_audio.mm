@@ -589,7 +589,7 @@ namespace platf {
   CATapDescription *tapDescription = [[CATapDescription alloc] initStereoGlobalTapButExcludeProcesses:excludeProcesses];
 
   // Set unique name and UUID for this instance
-  NSString *uniqueName = [NSString stringWithFormat:@"ApolloAVAudio-Tap-%p", (void *) self];
+  NSString *uniqueName = [NSString stringWithFormat:@"NOUSAVAudio-Tap-%p", (void *) self];
   NSUUID *uniqueUUID = [[NSUUID alloc] init];
 
   tapDescription.name = uniqueName;
@@ -651,7 +651,7 @@ namespace platf {
   };
 
   NSDictionary *aggregateProperties = @{
-    @kAudioAggregateDeviceNameKey: [NSString stringWithFormat:@"ApolloAggregate-%p", (void *) self],
+    @kAudioAggregateDeviceNameKey: [NSString stringWithFormat:@"NOUSAggregate-%p", (void *) self],
     @kAudioAggregateDeviceUIDKey: [NSString stringWithFormat:@"io.github.nonary.apollo.aggregate-%p", (void *) self],
     @kAudioAggregateDeviceTapListKey: @[subTapDictionary],
     @kAudioAggregateDeviceTapAutoStartKey: @NO,

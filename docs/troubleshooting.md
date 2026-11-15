@@ -25,7 +25,7 @@ If you forgot your credentials to the web UI, try this.
 > Do not include the curly braces.
 
 ### Unusual Mouse Behavior
-If you experience unusual mouse behavior, try attaching a physical mouse to the Sunshine host.
+If you experience unusual mouse behavior, try attaching a physical mouse to the NOUS host.
 
 ### Web UI Access
 Can't access the web UI?
@@ -49,7 +49,7 @@ Can't access the web UI?
    default certificate is self-signed. See the [configuration introduction](getting_started.md#configuration).
    Do not enter credentials if you cannot verify the host's identity. Plain HTTP is
    not a safe workaround for accessing the authenticated administration interface.
-4. If the correct HTTPS URL still cannot connect, check that Vibepollo is running,
+4. If the correct HTTPS URL still cannot connect, check that NOUS is running,
    that its bind address and `origin_web_ui_allowed` permit the intended LAN access,
    and that firewall rules allow the configured Web UI port on the intended network.
 
@@ -79,7 +79,7 @@ login, and display settings/launch shortcuts may need reconfiguration. It does
 2. In PowerShell, inspect those two copies:
 
    ```powershell
-   & 'C:\Program Files\Sunshine\sunshine.exe' --auxiliary-recovery inspect 'C:\PrivateRecovery\vibeshine_state.json'
+   & 'C:\Program Files\NOUS\sunshine.exe' --auxiliary-recovery inspect 'C:\PrivateRecovery\vibeshine_state.json'
    ```
 
    Adjust the executable path for your installation. Both snapshots must exist
@@ -90,7 +90,7 @@ login, and display settings/launch shortcuts may need reconfiguration. It does
    that value; `C:\PrivateRecovery\reset` must not exist:
 
    ```powershell
-   & 'C:\Program Files\Sunshine\sunshine.exe' --auxiliary-recovery prepare-reset 'C:\PrivateRecovery\vibeshine_state.json' --expect-snapshot TOKEN --accept-token-and-metadata-loss --confirm-separate-auxiliary-state --output 'C:\PrivateRecovery\reset'
+   & 'C:\Program Files\NOUS\sunshine.exe' --auxiliary-recovery prepare-reset 'C:\PrivateRecovery\vibeshine_state.json' --expect-snapshot TOKEN --accept-token-and-metadata-loss --confirm-separate-auxiliary-state --output 'C:\PrivateRecovery\reset'
    ```
 
    Success creates private copies of both originals, two identical reset
@@ -185,7 +185,7 @@ collapsed without a choice. Conflicting records under one UUID, invalid
 certificates and malformed state are refused. The command never installs a
 candidate, alters live pairing data or falls back to stale authorization.
 
-Vibepollo also treats a native permission mask with no recognized permissions as
+NOUS also treats a native permission mask with no recognized permissions as
 disabled. An imported `enabled: false` record remains disabled even if its mask
 grants permissions. Recovery retains the selected record's exact permission
 mask, client preferences and unknown fields; it never combines permission masks.
@@ -199,7 +199,7 @@ One trick might be to change Steam settings and check or uncheck the configurati
 controllers and leave only support for Generic controllers.
 
 Also, if you have many controllers already directly connected to the host, it might help to disable them so that the
-Sunshine-provided controller (connected to the guest) is the "first" one. In Linux this can be achieved on USB
+NOUS-provided controller (connected to the guest) is the "first" one. In Linux this can be achieved on USB
 devices by finding the device in `/sys/bus/usb/devices/` and writing `0` to the `authorized` file.
 
 ### Network performance test
@@ -210,7 +210,7 @@ consistency (low latency with low variance, minimal or no packet loss).
 
 The network can be tested using the multi-platform tool [iPerf3](https://iperf.fr).
 
-On the Sunshine host `iperf3` is started in server mode:
+On the NOUS host `iperf3` is started in server mode:
 
 ```bash
 iperf3 -s
@@ -235,9 +235,9 @@ If you are testing a remote connection (over the internet), you will need to
 forward the port 5201 (TCP and UDP) from your host.
 
 ### Packet loss (Buffer overrun)
-If the host PC (running Sunshine) has a much faster connection to the network
+If the host PC (running NOUS) has a much faster connection to the network
 than the slowest segment of the network path to the client device (running
-Moonlight), massive packet loss can occur: Sunshine emits its stream in bursts
+Moonlight), massive packet loss can occur: NOUS emits its stream in bursts
 every 16 ms (for 60 fps), but those bursts can't be passed on fast enough to the
 client and must be buffered by one of the network devices inbetween. If the
 bitrate is high enough, these buffers will overflow and data will be discarded.
@@ -249,7 +249,7 @@ client having only a 100 Mbps interface.
 As a workaround the transmission speed of the host NIC can be reduced: 1 Gbps
 instead of 2.5 or 100 Mbps instead of 1 Gbps. A technically more advanced
 solution would be to configure traffic shaping rules at the OS level, so that
-only Sunshine's traffic is slowed down.
+only NOUS's traffic is slowed down.
 
 Such a solution on Linux could look like that:
 
@@ -264,7 +264,7 @@ sudo tc qdisc add dev <NIC> root handle 1: htb default 1
 sudo tc class add dev <NIC> parent 1: classid 1:1 htb \
     rate 10000mbit ceil 10000mbit burst 32k
 
-# 4) Create class 1:10 for Sunshine game stream at 1 Gbit/s
+# 4) Create class 1:10 for NOUS game stream at 1 Gbit/s
 sudo tc class add dev <NIC> parent 1: classid 1:10 htb \
     rate 1000mbit ceil 1000mbit burst 32k
 
@@ -274,7 +274,7 @@ sudo tc filter add dev <NIC> protocol ip parent 1: prio 1 \
     match ip sport 47998 0xffff flowid 1:10
 ```
 
-In that way only the Sunshine traffic is limited by 1 Gbit. This is not persistent on reboots.
+In that way only the NOUS traffic is limited by 1 Gbit. This is not persistent on reboots.
 If you use a different port for the game stream, you need to adjust the last command.
 
 Sunshine versions > 0.23.1 include improved networking code that should
@@ -297,12 +297,12 @@ Due to legal concerns, Mesa has disabled hardware decoding and encoding by defau
 Error: Could not open codec [h264_vaapi]: Function not implemented
 ```
 
-If you see the above error in the Sunshine logs, compiling *Mesa* manually may be required. See the official Mesa3D
+If you see the above error in the NOUS logs, compiling *Mesa* manually may be required. See the official Mesa3D
 [Compiling and Installing](https://docs.mesa3d.org/install.html) documentation for instructions.
 
 > [!IMPORTANT]
 > You must re-enable the disabled encoders. You can do so by passing the following argument to the build
-> system. You may also want to enable decoders, however, that is not required for Sunshine and is not covered here.
+> system. You may also want to enable decoders, however, that is not required for NOUS and is not covered here.
 > ```bash
 > -Dvideo-codecs=h264enc,h265enc
 > ```
@@ -324,19 +324,19 @@ sudo usermod -aG input $USER
 #### Multiseat
 
 If you run multiple concurrent Wayland sessions on separate logind seats (e.g. `seat0`, `seat1`),
-your compositor may ignore injected input unless Sunshine's virtual devices are assigned to the correct seat.
+your compositor may ignore injected input unless NOUS's virtual devices are assigned to the correct seat.
 
-Sunshine determines its target seat from `XDG_SEAT`, which is typically set automatically by your display manager.
-If needed, you can override it manually in your systemd service file or shell environment before starting Sunshine.
+NOUS determines its target seat from `XDG_SEAT`, which is typically set automatically by your display manager.
+If needed, you can override it manually in your systemd service file or shell environment before starting NOUS.
 
-When the seat is not `seat0`, Sunshine appends the seat name to its virtual device names, for example:
+When the seat is not `seat0`, NOUS appends the seat name to its virtual device names, for example:
 
 - Keyboard passthrough (seat1)
 - Sunshine PS5 (virtual) pad (seat1)
 
-Sunshine creates two mouse devices: a relative one and an absolute one.
+NOUS creates two mouse devices: a relative one and an absolute one.
 
-To assign Sunshine's virtual devices to the correct seat, create this udev rules file
+To assign NOUS's virtual devices to the correct seat, create this udev rules file
 (/etc/udev/rules.d/72-sunshine-virtual-seat.rules):
 ```udev
 SUBSYSTEM=="input", KERNEL=="input*", ATTR{name}=="*(seat1)*", TAG+="seat", ENV{ID_SEAT}="seat1"
@@ -350,7 +350,7 @@ sudo udevadm control --reload-rules && sudo udevadm trigger -s input
 
 ### KMS Streaming fails
 KMS screencasting requires elevated privileges which are not allowed for Flatpak or AppImage packages.
-This means that you must install Sunshine using the native package format of your distribution, if available.
+This means that you must install NOUS using the native package format of your distribution, if available.
 KMS capture will soon be phased out in favour of XDG Portal Capture (which works with all package types).
 
 ### KMS Streaming; some windows flicker/disappear on KDE Plasma 6.5+
@@ -390,7 +390,7 @@ by running them with a special
 ```bash
 export AMD_DEBUG=lowlatencyenc
 ```
-Sunshine sets this variable automatically, no manual
+NOUS sets this variable automatically, no manual
 configuration is needed.
 
 To check whether low-latency mode is being used, one can watch the VCLK and DCLK
@@ -425,7 +425,7 @@ Alternatively, you can manually install it from
 After installation, it is recommended to restart your computer.
 
 ### Permission denied
-Since Sunshine runs as a service on Windows, it may not have the same level of access that your regular user account
+Since NOUS runs as a service on Windows, it may not have the same level of access that your regular user account
 has. You may get permission denied errors when attempting to launch a game or application from a non-system drive.
 
 You will need to modify the security permissions on your disk. Ensure that user/principal SYSTEM has full

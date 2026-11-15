@@ -1,6 +1,6 @@
-# Release Vibepollo
+# Release NOUS
 
-Vibepollo releases are built from an existing, v-less semantic-version tag such as `1.19.0-beta.4`
+NOUS releases are built from an existing, v-less semantic-version tag such as `1.19.0-beta.4`
 or `1.19.0`. The tagged commit must contain the matching version-scoped release notes file, for
 example `release_notes/1.19.0-beta.4.md`.
 
@@ -26,7 +26,9 @@ display title.
 
 ## Build and publish
 
-The tag push runs `.github/workflows/ci.yml`. The release gate validates the tag, exact release
+After pushing the tag, manually dispatch `.github/workflows/ci.yml` **on that tag ref**,
+with the same exact `release_tag` input. The signing gate requires the CI run's tag ref and SHA
+both to match; a branch-ref dispatch is not release provenance. The release gate validates the tag, exact release
 notes, and source commit, then builds the retained release artifacts. Successful release artifacts
 are retained for 14 days.
 
@@ -56,8 +58,8 @@ the GitHub Release against the existing tag and includes the Arch package genera
 For a non-draft release, run **Publish signed Arch repository** with the exact v-less
 `release_tag`. The workflow downloads the release's single validated `vibepollo` package, checks
 its embedded package name, version, and architecture, signs it, updates the signed `vibepollo`
-database on the `arch-repo` branch, and pushes that branch. The Pages workflow then deploys it at
-`https://nonary.github.io/Vibepollo/arch/x86_64`.
+database on the `arch-repo` branch, and pushes that branch. The explicitly invoked Pages workflow then deploys it at
+`https://flugeru.github.io/NOUS/arch/x86_64`.
 
 The `arch-repository` GitHub environment must contain:
 
@@ -71,4 +73,4 @@ the Secure Boot/MOK module-signing key for this repository.
 
 After publication, verify that the Pages deployment succeeds, import the published public key on a
 clean Arch or CachyOS machine, add the `[vibepollo]` repository shown on the project site, and run
-`pacman -Syu vibepollo`. A normal system upgrade must subsequently discover Vibepollo updates.
+`pacman -Syu vibepollo`. A normal system upgrade must subsequently discover NOUS updates.

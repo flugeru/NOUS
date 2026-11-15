@@ -1786,7 +1786,7 @@ namespace {
     // Compute path to sunshine_display_helper.exe inside the tools subdirectory next to Sunshine.exe
     wchar_t module_path[MAX_PATH] = {};
     if (!GetModuleFileNameW(nullptr, module_path, _countof(module_path))) {
-      BOOST_LOG(error) << "Failed to resolve Sunshine module path; cannot launch display helper.";
+      BOOST_LOG(error) << "Failed to resolve NOUS module path; cannot launch display helper.";
       return false;
     }
     std::filesystem::path exe_path(module_path);

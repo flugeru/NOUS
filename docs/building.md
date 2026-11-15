@@ -1,5 +1,5 @@
 # Building
-Sunshine binaries are built using [CMake](https://cmake.org) and requires `cmake` > 3.25.
+NOUS binaries are built using [CMake](https://cmake.org) and requires `cmake` > 3.25.
 The browser interface is built with Node.js and npm. CMake's `web_ui` target
 installs the locked dependencies with lifecycle scripts disabled, generates the
 design tokens, type-checks the Vue source, and writes the production bundle to
@@ -48,7 +48,7 @@ off to use newer CUDA toolkits with a reduced set of GPU targets.
 
 #### FreeBSD
 > [!CAUTION]
-> Sunshine support for FreeBSD is experimental and may be incomplete or not work as expected
+> NOUS support for FreeBSD is experimental and may be incomplete or not work as expected
 
 ##### Install dependencies
 ```sh
@@ -80,7 +80,7 @@ pkg install -y \
 
 #### Linux
 Dependencies vary depending on the distribution. You can reference our
-[linux_build.sh](https://github.com/LizardByte/Sunshine/blob/master/scripts/linux_build.sh) script for a list of
+[linux_build.sh](https://github.com/flugeru/NOUS/blob/nous-project/scripts/linux_build.sh) script for a list of
 dependencies we use in Debian-based, Fedora-based and Arch-based distributions. Please submit a PR if you would like to extend the
 script to support other distributions.
 
@@ -107,7 +107,7 @@ upgrading the toolkit can therefore reduce GPU compatibility. See NVIDIA's
 and [CUDA compatibility guide](https://docs.nvidia.com/deploy/cuda-compatibility/index.html).
 
 The native Arch/CachyOS release package uses a private build-time toolkit and
-does not require users to install the CUDA toolkit to run Vibepollo.
+does not require users to install the CUDA toolkit to run NOUS.
 
 > [!NOTE]
 > To install older versions, select the appropriate run file based on your desired CUDA version and architecture
@@ -214,7 +214,7 @@ pacman -S "${dependencies[@]}"
 ```
 
 ##### WebRTC (optional, Windows only)
-Sunshine can link against the libwebrtc C++ wrapper when `SUNSHINE_ENABLE_WEBRTC=ON`. The wrapper source is vendored as
+NOUS can link against the libwebrtc C++ wrapper when `SUNSHINE_ENABLE_WEBRTC=ON`. The wrapper source is vendored as
 the `third-party/libwebrtc` submodule, but you must build WebRTC separately and provide a staging directory that
 contains `include/` and `lib/` (e.g., `libwebrtc.dll` and its import library). We use the `third-party/depot_tools`
 submodule for `gclient`/`gn`.
@@ -229,12 +229,12 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build_mingw_webrtc.p
 By default the script builds under `%LOCALAPPDATA%\Vibepollo\deps\libwebrtc\src`, stages the reusable SDK under
 `%LOCALAPPDATA%\Vibepollo\deps\libwebrtc\out`, and removes the large source workspace only after verifying the
 staged headers, DLL, import library, and completed-build DLL identity. The retained `out` directory is **shared
-across every Vibepollo build dir, worktree, and git checkout on the machine**. This means:
+across every NOUS build dir, worktree, and git checkout on the machine**. This means:
 
 - Wiping `build/` does not destroy libwebrtc — the next CMake configure picks it back up.
 - A successful local dependency build does not leave the multi-gigabyte Chromium/WebRTC source and Git cache behind.
 - A failed build retains its source workspace for diagnosis and retry.
-- Multiple Vibepollo build dirs share one small staged libwebrtc SDK.
+- Multiple NOUS build dirs share one small staged libwebrtc SDK.
 
 Pass `-RetainBuildSources` while actively iterating on WebRTC itself. `-Stage Sync` always retains sources because
 its purpose is to prepare a later `-Stage Build`; a successful `All` or `Build` stage cleans sources by default.
@@ -277,7 +277,7 @@ If you cannot use the helper script, the underlying steps are:
    shared cache location (`%LOCALAPPDATA%\Vibepollo\deps\libwebrtc\out`) so CMake finds them automatically, or
    point CMake at your staging directory with `-DWEBRTC_ROOT=<path>`. Copy `libwebrtc.dll` and `libwebrtc.dll.lib`
    into `lib/`.
-8. Configure Sunshine with `-DSUNSHINE_ENABLE_WEBRTC=ON`. If CMake still fails to find libwebrtc, pass
+8. Configure NOUS with `-DSUNSHINE_ENABLE_WEBRTC=ON`. If CMake still fails to find libwebrtc, pass
    `WEBRTC_INCLUDE_DIR` and `WEBRTC_LIBRARY` explicitly.
 
 The Windows build requires the [.NET SDK](https://dotnet.microsoft.com/download)
@@ -287,8 +287,8 @@ to compile the bundled Playnite plugin. It is also used when creating a WiX inst
 Ensure [git](https://git-scm.com) is installed on your system, then clone the repository using the following command:
 
 ```bash
-git clone https://github.com/ClassicOldSong/Apollo.git --recurse-submodules
-cd Apollo
+git clone https://github.com/flugeru/NOUS.git --recurse-submodules
+cd NOUS
 mkdir build
 ```
 
@@ -301,7 +301,7 @@ ninja -C build
 
 > [!TIP]
 > Available build options can be found in
-> [options.cmake](https://github.com/LizardByte/Sunshine/blob/master/cmake/prep/options.cmake).
+> [options.cmake](https://github.com/flugeru/NOUS/blob/nous-project/cmake/prep/options.cmake).
 
 ### Package
 
@@ -341,7 +341,7 @@ ninja -C build
 ### Windows portable package
 
 The opt-in `package_portable` target builds the runtime and creates
-`Vibepollo-Windows-<architecture>-<version>-portable.zip` in `build/cpack_artifacts`.
+`NOUS-Windows-<architecture>-<version>-portable.zip` in `build/cpack_artifacts`.
 Configure with an explicit `BUILD_VERSION` and `SUNSHINE_ASSETS_DIR=assets`.
 The default Windows package target still creates the WiX installer.
 
@@ -412,4 +412,4 @@ incompatible cached toolkits before configuration. Direct CMake builds may
 still use newer CUDA with `SUNSHINE_REQUIRE_CUDA_PASCAL=OFF` (the default);
 CUDA 13 builds omit those older GPU targets. Set the option to `ON` when
 producing a Pascal-compatible build with CUDA 12.9. This does not enable Linux
-release publishing in Vibepollo's Windows release workflow.
+release publishing in NOUS's Windows release workflow.

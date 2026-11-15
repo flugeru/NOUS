@@ -185,7 +185,7 @@ if (-not $RootDir) {
 $RootDir = (Resolve-Path $RootDir).Path
 
 # Resolve a per-user shared cache root for libwebrtc build artifacts so the
-# multi-hour build is not coupled to any single Vibepollo build directory.
+# multi-hour build is not coupled to any single NOUS build directory.
 # Override priority: VIBEPOLLO_DEPS_DIR env var > legacy VIBESHINE_DEPS_DIR env
 # var > WEBRTC_BUILD_DIR/WEBRTC_OUT_DIR (legacy, unchanged) >
 # %LOCALAPPDATA%\Vibepollo\deps default.

@@ -132,7 +132,7 @@ static void json_and_ptree_roundtrips() {
 
 static void mutex_state_and_reset() {
   update::state_t state;
-  state.last_notified_url = "https://github.com/Nonary/Vibepollo/releases/tag/v2.0.0";
+  state.last_notified_url = "https://github.com/flugeru/NOUS/releases/tag/v2.0.0";
   state.last_notified_is_prerelease = true;
   update::notification::apply(state, {"v2.0.0", {"daily-2026-10-10", "v2.0.0"}});
   history_is(update::notification::snapshot(state), "v2.0.0", {"daily-2026-10-10", "v2.0.0"});
@@ -140,7 +140,7 @@ static void mutex_state_and_reset() {
   state.notification_mutex.unlock();
   update::notification::apply(state, {});
   history_is(update::notification::snapshot(state), "", {});
-  assert(state.last_notified_url == "https://github.com/Nonary/Vibepollo/releases/tag/v2.0.0");
+  assert(state.last_notified_url == "https://github.com/flugeru/NOUS/releases/tag/v2.0.0");
   assert(state.last_notified_is_prerelease);
 }
 

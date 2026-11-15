@@ -7,7 +7,7 @@ import subprocess
 from pathlib import Path
 from urllib.parse import quote
 
-REPOSITORIES = {'Nonary/vibeshine', 'Nonary/Vibepollo', 'Nonary/moonlight-qt'}
+REPOSITORIES = {'flugeru/NOUS', 'Nonary/vibeshine', 'Nonary/Vibepollo', 'Nonary/moonlight-qt'}
 
 
 def run(*args):
@@ -108,7 +108,7 @@ def make_notes(repo, tag, version, source, previous, commits, ancestor=True):
                     commits_total=len(commits), commits_listed=len(commits))
     if repo == 'Nonary/moonlight-qt':
         metadata['windows_product_version'] = f'6.2.{seq}'
-    product = {'Nonary/vibeshine': 'Vibeshine', 'Nonary/Vibepollo': 'Vibepollo', 'Nonary/moonlight-qt': 'Moonlight'}[repo]
+    product = {'flugeru/NOUS': 'NOUS', 'Nonary/vibeshine': 'Vibeshine', 'Nonary/Vibepollo': 'Vibepollo', 'Nonary/moonlight-qt': 'Moonlight'}[repo]
     notes = [f'This is a nightly release of {product} and contains several bug fixes and may contain new features. Check the commit log for more information.', '',
              'Nightly Windows installers are unsigned and include self-signed gamepad components. They may cause false-positive antivirus alerts.', '',
              '<details>', '<summary>Commit log</summary>', '',
@@ -171,10 +171,10 @@ def generate(repo, tag, version, source, assets, notes):
         body = body.replace('preceding successfully published nightly', 'preceding stable release')
         metadata.update(first_nightly=True, previous_successful_tag=None, initial_stable_tag=previous['tag'])
     root = Path(assets)
-    product = {'Nonary/vibeshine': 'Vibeshine', 'Nonary/Vibepollo': 'Vibepollo'}.get(repo)
+    product = {'flugeru/NOUS': 'NOUS', 'Nonary/vibeshine': 'Vibeshine', 'Nonary/Vibepollo': 'Vibepollo'}.get(repo)
     if product and (root / (product + 'Setup.exe')).is_file():
         downloads = [f'[Windows installer](https://github.com/{repo}/releases/download/{tag}/{product}Setup.exe)']
-        packages = list(root.glob(product.lower() + '-*.pkg.tar.zst'))
+        packages = list(root.glob(('vibepollo' if product == 'NOUS' else product.lower()) + '-*.pkg.tar.zst'))
         if len(packages) == 1:
             downloads.append(f'[Linux (Arch x86_64)](https://github.com/{repo}/releases/download/{tag}/{quote(packages[0].name)})')
         first_line, remainder = body.split('\n', 1)

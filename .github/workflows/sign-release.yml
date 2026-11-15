@@ -89,7 +89,7 @@ jobs:
             "unsigned-msi-package-Windows"
             # upload-artifact v7 uses the source filename as the artifact name
             # when archive is false, which SignPath requires for a direct MSI.
-            "Vibepollo.msi"
+            "NOUS.msi"
             "windows-versioninfo-Windows"
           )
 
@@ -128,7 +128,7 @@ jobs:
               return 1
             fi
 
-            if [[ "${source_status}" != "completed" || "${source_conclusion}" != "success" || "${source_event}" != "push" || "${source_sha}" != "${release_commit}" || "${source_branch}" != "${source_tag}" ]]; then
+            if [[ "${source_status}" != "completed" || "${source_conclusion}" != "success" || "${source_event}" != "workflow_dispatch" || "${source_sha}" != "${release_commit}" || "${source_branch}" != "${source_tag}" ]]; then
               echo "CI run ${candidate_run_id} does not match completed successful ci.yml tag build ${source_tag} at ${release_commit}." >&2
               return 1
             fi
@@ -156,7 +156,7 @@ jobs:
             echo "::notice::Using explicitly requested exact CI build ${build_run_id}."
           else
             matching_runs="$(
-              gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs?event=push&status=completed&head_sha=${release_commit}&per_page=100" |
+              gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs?event=workflow_dispatch&status=completed&head_sha=${release_commit}&per_page=100" |
                 jq -rs --arg release_commit "${release_commit}" --arg source_tag "${source_tag}" '
                   [
                     .[]
@@ -164,7 +164,7 @@ jobs:
                     | select(
                         .status == "completed"
                         and .conclusion == "success"
-                        and .event == "push"
+                        and .event == "workflow_dispatch"
                         and (
                           .path == ".github/workflows/ci.yml"
                           or ((.path // "") | startswith(".github/workflows/ci.yml@"))
@@ -355,10 +355,10 @@ jobs:
       release_commit: ${{ needs.resolve_release.outputs.release_commit }}
       release_version: ${{ needs.resolve_release.outputs.release_version }}
       release_tag: ${{ needs.resolve_release.outputs.tag_name }}
-      symbol_product_name: Vibepollo
+      symbol_product_name: NOUS
       publish_symbols: true
       symbol_release_draft: true
-      symbol_release_prefix: polo
+      symbol_release_prefix: nous
       require_signpath_signing: true
       signpath_signing_policy_slug: release-signing
       signpath_wait_for_completion_timeout_in_seconds: 3600
@@ -398,7 +398,7 @@ jobs:
           $artifactRoot = Join-Path $PWD 'artifacts'
           $manifestPath = Join-Path $artifactRoot 'release-provenance.json'
           $assets = @(Get-ChildItem -LiteralPath $artifactRoot -File | Where-Object { $_.Name -ne 'release-provenance.json' })
-          $setups = @($assets | Where-Object { $_.Name -like 'VibepolloSetup*.exe' })
+          $setups = @($assets | Where-Object { $_.Name -like 'NOUSSetup*.exe' })
           if ($setups.Count -ne 1) {
             throw "Expected exactly one finalized Vibepollo setup executable; found $($setups.Count)."
           }
@@ -521,7 +521,7 @@ jobs:
             make_latest=true
           fi
 
-          product_name="Vibepollo"
+          product_name="NOUS"
 
           notes_file=""
           for candidate in \

@@ -93,7 +93,7 @@ on:
       signpath_project_slug:
         required: false
         type: string
-        default: Vibepollo
+        default: NOUS
       signpath_signing_policy_slug:
         required: false
         type: string
@@ -107,7 +107,7 @@ on:
       signpath_artifact_configuration_slug:
         required: false
         type: string
-        # Setup-EXE (outer VibepolloSetup.exe) artifact configuration slug.
+        # Setup-EXE (outer NOUSSetup.exe) artifact configuration slug.
         # See docs/signpath/setup-exe.artifact-config.xml.
         default: setup-exe
       signpath_msi_artifact_configuration_slug:
@@ -275,7 +275,7 @@ jobs:
     needs:
       - fetch_vhf_gamepad_release
     if: inputs.artifact_source_run_id == '' && needs.fetch_vhf_gamepad_release.result == 'success'
-    runs-on: ${{ !inputs.daily_unsigned && inputs.use_self_hosted && github.repository == 'Nonary/Vibepollo' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && fromJSON('["self-hosted", "Windows", "X64", "windows-release"]') || fromJSON('["windows-2022"]') }}
+    runs-on: ${{ !inputs.daily_unsigned && inputs.use_self_hosted && github.repository == 'flugeru/NOUS' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && fromJSON('["self-hosted", "Windows", "X64", "windows-release"]') || fromJSON('["windows-2022"]') }}
     outputs:
       msi_name: ${{ steps.package-windows-msi.outputs.msi_name }}
       symbol_pack_name: ${{ steps.package-windows-symbols.outputs.symbol_pack_name }}
@@ -732,8 +732,8 @@ jobs:
             -DSUNSHINE_NPM_EXECUTABLE="${NPM_PATH}" \
             -DSUNSHINE_ASSETS_DIR=assets \
             -DSUNSHINE_PUBLISHER_NAME="${GITHUB_REPOSITORY_OWNER}" \
-            -DSUNSHINE_PUBLISHER_WEBSITE="https://github.com/Nonary/Vibepollo" \
-            -DSUNSHINE_PUBLISHER_ISSUE_URL="https://github.com/Nonary/Vibepollo/issues" \
+            -DSUNSHINE_PUBLISHER_WEBSITE="https://github.com/flugeru/NOUS" \
+            -DSUNSHINE_PUBLISHER_ISSUE_URL="https://github.com/flugeru/NOUS/issues" \
             "${vdd_prebuilt_arg[@]}" \
             "${vhf_gamepad_package_arg[@]}" \
             "${truehdr_runtime_arg[@]}"
@@ -789,6 +789,7 @@ jobs:
           $ErrorActionPreference = 'Stop'
 
           $executables = @(
+            '.\build\NOUS.exe',
             '.\build\sunshine.exe',
             '.\build\tools\audio-info.exe',
             '.\build\tools\dxgi-info.exe',
@@ -935,7 +936,7 @@ jobs:
             echo "Two origin-verified requests: (1) MSI deep-sign '${SIGNPATH_MSI_ARTIFACT_CONFIGURATION_SLUG}', (2) setup EXE '${SIGNPATH_ARTIFACT_CONFIGURATION_SLUG}'."
             echo "Both artifact configurations must exist in the SignPath portal (see docs/signpath/)."
             if [[ -z "${SIGNPATH_MSI_ARTIFACT_CONFIGURATION_SLUG}" ]]; then
-              echo "signpath_msi_artifact_configuration_slug is required so SignPath can deep-sign the MSI payload (sunshine.exe, tools, uninstall.exe, DLLs)." >&2
+              echo "signpath_msi_artifact_configuration_slug is required so SignPath can deep-sign the MSI payload (NOUS.exe, sunshine.exe compatibility alias, tools, uninstall.exe, DLLs)." >&2
               exit 1
             fi
             if [[ -z "${SIGNPATH_ARTIFACT_CONFIGURATION_SLUG}" ]]; then
@@ -985,12 +986,12 @@ jobs:
           if ($process.ExitCode -ne 0) {
             throw "Administrative extraction of unsigned MSI failed with exit code $($process.ExitCode)."
           }
-          $vulkanInstaller = Join-Path $extractRoot 'Apollo\drivers\sunshine\install.ps1'
+          $vulkanInstaller = Join-Path $extractRoot 'NOUS\drivers\sunshine\install.ps1'
           & powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $vulkanInstaller -RegisterVulkanLayerOnly -ValidateOnly
           if ($LASTEXITCODE -ne 0) {
             throw "Unsigned MSI Vulkan layer payload validation failed with exit code $LASTEXITCODE."
           }
-          $packageDir = Join-Path $extractRoot 'Apollo\drivers\vhf-gamepad'
+          $packageDir = Join-Path $extractRoot 'NOUS\drivers\vhf-gamepad'
           .\packaging\windows\virtual_gamepad_driver\refresh_driver_package.ps1 `
             -AllowLocalTestPackage:($env:DAILY_UNSIGNED -eq 'true') `
             -ValidateOnly `
@@ -1062,7 +1063,7 @@ jobs:
             if ($null -eq $record -or $record.StringData(1) -cne '1') { throw "Daily MSI must enforce $property=1." }
             $view.Close()
           }
-          $gamepadRoot = Join-Path $extractRoot 'Apollo/drivers/vhf-gamepad'
+          $gamepadRoot = Join-Path $extractRoot 'NOUS/drivers/vhf-gamepad'
           $manifest = Get-Content (Join-Path $gamepadRoot 'manifest.json') -Raw | ConvertFrom-Json
           $lock = Get-Content (Join-Path $gamepadRoot 'release-lock.json') -Raw | ConvertFrom-Json
           $cer = [Security.Cryptography.X509Certificates.X509Certificate2]::new((Join-Path $gamepadRoot 'driver/VibeshineVhfGamepad.cer'))
@@ -1070,7 +1071,7 @@ jobs:
           if (@(Get-ChildItem -LiteralPath $extractRoot -Recurse -File | Where-Object { $_.Extension -in '.pfx', '.pem', '.key' }).Count -ne 0) { throw 'A daily MSI contains private signing material.' }
           foreach ($driver in @('sunshine', 'sudovda', 'vhf-gamepad')) {
             $source = Join-Path $PWD "src_assets/windows/drivers/$driver/install.ps1"
-            $packaged = Join-Path $extractRoot "Apollo/drivers/$driver/install.ps1"
+            $packaged = Join-Path $extractRoot "NOUS/drivers/$driver/install.ps1"
             if ((Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash -cne (Get-FileHash -LiteralPath $packaged -Algorithm SHA256).Hash) {
               throw "Packaged $driver installer is not the policy-tested source script."
             }
@@ -1638,7 +1639,7 @@ jobs:
             throw "Administrative MSI extraction failed (exit $($proc.ExitCode))."
           }
 
-          $virtualDisplayRoot = Join-Path $extractDir 'Apollo\drivers\sunshine'
+          $virtualDisplayRoot = Join-Path $extractDir 'NOUS\drivers\sunshine'
           $virtualDisplayCatalog = Join-Path $virtualDisplayRoot 'SunshineVirtualDisplayDriver.cat'
           $virtualDisplayInf = Join-Path $virtualDisplayRoot 'SunshineVirtualDisplayDriver.inf'
           $virtualDisplayDll = Join-Path $virtualDisplayRoot 'SunshineVirtualDisplayDriver.dll'
@@ -1673,7 +1674,7 @@ jobs:
           }
 
           $firstParty = @(
-            'sunshine.exe','uninstall.exe','libwebrtc.dll','zlib1.dll',
+            'NOUS.exe','sunshine.exe','uninstall.exe','libwebrtc.dll','zlib1.dll',
             'sunshinesvc.exe','dxgi-info.exe','audio-info.exe',
             'playnite-launcher.exe','sunshine_wgc_capture.exe','sunshine_display_helper.exe',
             'vibepollo_dualsense_haptics.exe','vibepollo_dualsense_audio.dll',
@@ -1728,7 +1729,7 @@ jobs:
             }
           }
 
-          $displayPackageDir = Join-Path $extractDir 'Apollo\drivers\sunshine'
+          $displayPackageDir = Join-Path $extractDir 'NOUS\drivers\sunshine'
           if (Test-Path -LiteralPath $displayPackageDir -PathType Container) {
             foreach ($relative in @(
               'SunshineVirtualDisplayDriver.cat',
@@ -1737,11 +1738,11 @@ jobs:
             )) {
               $path = Join-Path $displayPackageDir $relative
               if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
-                $failures.Add("Vibepollo virtual display signing target is missing: $relative")
+                $failures.Add("NOUS virtual display signing target is missing: $relative")
               } elseif (Test-Signed $path) {
                 Write-Host "[verify] OK   virtual display target signed: $relative"
               } else {
-                $failures.Add("Vibepollo virtual display target is UNSIGNED: $path")
+                $failures.Add("NOUS virtual display target is UNSIGNED: $path")
               }
             }
           }
@@ -1754,7 +1755,7 @@ jobs:
           # hashes for those two files are expected not to match because
           # signing rewrote them. Everything else is still hash-pinned, and the
           # catalog-bound DLL must still be untouched.
-          $vhfPackageDir = Join-Path $extractDir 'Apollo\drivers\vhf-gamepad'
+          $vhfPackageDir = Join-Path $extractDir 'NOUS\drivers\vhf-gamepad'
           $vhfManifestPath = Join-Path $vhfPackageDir 'manifest.json'
           if (-not (Test-Path -LiteralPath $vhfManifestPath -PathType Leaf)) {
             $failures.Add('VHF gamepad manifest is missing from the signed MSI')

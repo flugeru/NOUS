@@ -807,7 +807,7 @@ namespace logging {
       << "    --pairing-recovery prepare INPUT --expect-snapshot TOKEN --keep UUID [...] --output NEW_DIRECTORY"sv << std::endl
       << "    --auxiliary-recovery inspect INPUT | inspect zero-filled auxiliary snapshots without starting the host"sv << std::endl
       << "    --auxiliary-recovery prepare-reset INPUT --expect-snapshot TOKEN --accept-token-and-metadata-loss --confirm-separate-auxiliary-state --output NEW_DIRECTORY"sv << std::endl
-      << "    --version                 | print the version of Vibepollo"sv << std::endl
+      << "    --version                 | print the version of NOUS"sv << std::endl
       << std::endl
       << "    flags"sv << std::endl
       << "        -0 | Read PIN from stdin"sv << std::endl

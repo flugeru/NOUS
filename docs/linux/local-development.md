@@ -35,7 +35,7 @@ build dependencies.
   CMake, Ninja, npm, and Git must already be available. CUDA is optional.
 - Live deployment requires systemd, cgroup v2, Linux 6.16+, and a merged module
   layout where `/lib/modules` resolves to `/usr/lib/modules`. It requires the
-  existing Vibepollo service account, machine configuration, shared state,
+  existing NOUS service account, machine configuration, shared state,
   controller/socket architecture, and managed virtual-display setup **only for
   the file updater on non-Arch systems**. On Arch/CachyOS the native package
   lifecycle creates these prerequisites.
@@ -152,7 +152,7 @@ installation.
 
 Readiness checks use the current host invocation, its Web UI listener, H.264
 discovery, a generation-bound broker
-display-power probe, and active Vibepollo virtual kernel scanout (a working
+display-power probe, and active NOUS virtual kernel scanout (a working
 physical monitor cannot hide a broken virtual output). They do not prove
 client video delivery or suspend/resume; test those
 with Moonlight afterwards. Capture log messages are not a startup gate: synthetic
@@ -215,7 +215,7 @@ python3 scripts/linux_local_deploy.py install --enforce
 
 ## Driver upgrades and reboot
 
-The transaction backs up Vibepollo DRM sources, its DKMS registrations/builds,
+The transaction backs up NOUS DRM sources, its DKMS registrations/builds,
 its installation markers, and installed module files across kernels. It invokes
 the official signed driver installer for the running kernel, previously installed
 module kernels, and other installed kernels with headers. Same-version source

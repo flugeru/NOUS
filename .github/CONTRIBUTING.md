@@ -15,13 +15,13 @@ Thank you for your interest in contributing to this project! We welcome contribu
 
 #### Getting Started
 
-1. Fork the repository
+1. Fork [flugeru/NOUS](https://github.com/flugeru/NOUS) and base changes on `nous-project`
 2. Create a new branch for your feature or bugfix: `git checkout -b feature/your-feature-name`
 3. Make your changes
 4. Test your changes thoroughly
 5. Commit your changes with clear, descriptive messages
 6. Push your branch to your fork
-7. Create a pull request
+7. Create a pull request targeting `nous-project`
 
 #### Code Standards
 
@@ -36,6 +36,8 @@ Thank you for your interest in contributing to this project! We welcome contribu
 - Reference any related issues using keywords like "Fixes #123"
 - Include screenshots or examples if your changes affect the UI
 - Be responsive to feedback and suggestions during code review
+
+GitHub Actions are manual-only. Pushes, tags and pull requests do not start builds or releases.
 
 ## Important Rules
 

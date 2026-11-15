@@ -73,6 +73,7 @@ int main(void) { return zlib1_fixture() + libwebrtc_fixture() + zero_filled_fixt
         run([args.link, "/entry:main", "/subsystem:console", "/nodefaultlib", f"/machine:{machine}",
              f"/out:{payload / 'sunshine.exe'}", str(obj), *map(str, imports)])
         shutil.copyfile(payload / "sunshine.exe", payload / "uninstall.exe")
+        shutil.copyfile(payload / "sunshine.exe", payload / "NOUS.exe")
         tools = payload / "tools"
         tools.mkdir()
         for tool in ("dxgi-info", "audio-info", "playnite-launcher", "sunshine_wgc_capture", "sunshine_display_helper", "vibepollo_dualsense_haptics"):
@@ -109,9 +110,9 @@ set(CMAKE_OBJDUMP "{cmake_path(args.objdump)}")
 set(SUNSHINE_PORTABLE_REDISTRIBUTABLE_DIRS "{cmake_path(redist)}" CACHE STRING "Fixture release CRT directory")
 set(SUNSHINE_PLAYNITE_PLUGIN_DLL "{cmake_path(payload)}/plugins/playnite/SunshinePlaynite/VibepolloPlaynite.dll")
 set(CPACK_GENERATOR WIX)
-set(CPACK_PACKAGE_NAME Vibepollo)
+set(CPACK_PACKAGE_NAME NOUS)
 set(CPACK_PACKAGE_VERSION 2.0.1)
-set(CPACK_PACKAGE_FILE_NAME Vibepollo)
+set(CPACK_PACKAGE_FILE_NAME NOUS)
 set(CPACK_PACKAGE_DIRECTORY "${{CMAKE_BINARY_DIR}}/packages")
 set(CPACK_PROJECT_CONFIG_FILE "{cmake_path(repository)}/packaging/windows/wix/generate_sortable_product_guid.cmake")
 set(ZLIB "{cmake_path(payload)}/zlib1.dll")
@@ -128,13 +129,13 @@ include(CPack)
         configure = [args.cmake, "-S", str(fixture), "-B", str(build)]
         run(configure)
         package = [args.cpack, "-G", "ZIP", "--config", str(build / "CPackConfig.cmake")]
-        archive = build / f"packages/Vibepollo-Windows-{args.architecture}-2.0.1-beta.1-portable.zip"
+        archive = build / f"packages/NOUS-Windows-{args.architecture}-2.0.1-beta.1-portable.zip"
 
         def check_archive():
             with zipfile.ZipFile(archive) as zipped:
-                prefix = f"Vibepollo-Windows-{args.architecture}-2.0.1-beta.1-portable/"
+                prefix = f"NOUS-Windows-{args.architecture}-2.0.1-beta.1-portable/"
                 contents = {name.removeprefix(prefix) for name in zipped.namelist()}
-                for required in ("sunshine.exe", "zlib1.dll", "libwebrtc.dll", "vcruntime140.dll", "vcruntime140_1.dll",
+                for required in ("NOUS.exe", "sunshine.exe", "zlib1.dll", "libwebrtc.dll", "vcruntime140.dll", "vcruntime140_1.dll",
                                  "vibeshine_truehdr.dll", "nvngx_truehdr.dll",
                                  "tools/sunshine_display_helper.exe", "tools/sunshine_wgc_capture.exe",
                                  "tools/playnite-launcher.exe", "tools/vibepollo_dualsense_haptics.exe",
@@ -263,7 +264,7 @@ include(CPack)
         try:
             run(package)
             with zipfile.ZipFile(archive) as zipped:
-                prefix = f"Vibepollo-Windows-{args.architecture}-2.0.1-beta.1-portable/"
+                prefix = f"NOUS-Windows-{args.architecture}-2.0.1-beta.1-portable/"
                 assert zipped.read(prefix + "sunshine.exe") == overlay
         finally:
             image.write_bytes(original)
@@ -344,7 +345,7 @@ include(CPack)
         run(package)
         check_archive()
         print(f"PASS: {args.architecture} native PE closure succeeds; tested invalid headers and unknown machines/target reject packaging; MSI uninstaller excluded")
-        stage = next((build / "packages/_CPack_Packages").glob("*/ZIP/Vibepollo*portable"))
+        stage = next((build / "packages/_CPack_Packages").glob("*/ZIP/NOUS*portable"))
         (stage / "config/private-key").write_text("must not ship")
         run(package)
         check_archive()
@@ -469,7 +470,7 @@ if(NOT CPACK_GENERATOR STREQUAL "WIX")
     message(FATAL_ERROR "Default generator was changed by portable packaging")
 endif()
 include("{cmake_path(build)}/portable_cpack_project_config.cmake")
-if(NOT CPACK_WIX_PRODUCT_GUID OR NOT CPACK_PACKAGE_FILE_NAME STREQUAL "Vibepollo")
+if(NOT CPACK_WIX_PRODUCT_GUID OR NOT CPACK_PACKAGE_FILE_NAME STREQUAL "NOUS")
     message(FATAL_ERROR "WiX identity/configuration was changed by portable packaging")
 endif()
 """)

@@ -1499,7 +1499,7 @@ namespace platf {
     if (private_output && !config::video.capture.empty() && config::video.capture != "kms") {
       BOOST_LOG(warning) << "Using explicitly selected capture method [" << config::video.capture
                          << "] for a virtual display. KMS is recommended for maximum compatibility; "
-                         << "other methods may not work properly and do not use Vibepollo's low-latency virtual-display capture.";
+                         << "other methods may not work properly and do not use NOUS's low-latency virtual-display capture.";
     }
     if (prefer_private_kms) {
       BOOST_LOG(info) << "Capturing the private display through completed DRM frames."sv;

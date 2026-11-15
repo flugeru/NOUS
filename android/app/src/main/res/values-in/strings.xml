@@ -17,7 +17,7 @@
     <string name="nettest_text_waiting">NOUS sedang menguji koneksi jaringan untuk mencari tahu apakah jalur diblokir.
 \n
 \nIni mungkin membutuhkan beberapa saat…</string>
-    <string name="nettest_text_inconclusive">Uji koneksi jaringan tidak dapat dilakukan karena tidak ada server pengujian Moonlight yang bisa dijangkau. Cek koneksi Internet Anda atau coba lagi nanti.</string>
+    <string name="nettest_text_inconclusive">Uji koneksi jaringan tidak dapat dilakukan karena tidak ada server pengujian NOUS yang bisa dijangkau. Cek koneksi Internet Anda atau coba lagi nanti.</string>
     <string name="nettest_text_failure">Koneksi jaringan perangkat anda sepertinya memblokir NOUS. Streaming lewat Internet mungkin tidak bekerja ketika terhubung dengan jaringan ini.
 \n
 \nPort-port ini telah diblokir:
@@ -182,7 +182,7 @@
     <string name="title_checkbox_reduce_refresh_rate">Izinkan pengurangan kecepatan penyegaran</string>
     <string name="summary_checkbox_reduce_refresh_rate">Kecepatan refresh tampilan yang lebih rendah dapat menghemat daya dengan mengorbankan beberapa latensi video tambahan</string>
     <string name="applist_refresh_error_title">Kesalahan</string>
-    <string name="pair_pairing_help">Jika PC host Anda menjalankan Sunshine, buka UI web Sunshine untuk memasukkan PIN.</string>
+    <string name="pair_pairing_help">Jika PC host Anda menjalankan NOUS, buka UI web NOUS untuk memasukkan PIN.</string>
     <string name="applist_quit_app">Berhenti</string>
     <string name="perf_overlay_renderingfps">Frekuensi gambar rendering: %1$.2f FPS</string>
     <string name="perf_overlay_netlatency">Rata-rata latensi jaringan: %1$d ms (variasi: %2$d ms)</string>

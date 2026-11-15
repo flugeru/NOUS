@@ -34,7 +34,7 @@ namespace release_selection {
     return false;
   }
   inline bool macos_package(const json &release, bool arm64) {
-    return asset(release, arm64 ? "Vibepollo-macOS-arm64.dmg" : "Vibepollo-macOS-x86_64.dmg");
+    return asset(release, arm64 ? "NOUS-macOS-arm64.dmg" : "NOUS-macOS-x86_64.dmg");
   }
   inline bool complete(const json &release, bool nightly) {
     if (!release.is_object() || !release.contains("draft") || !release["draft"].is_boolean() || release["draft"].get<bool>() ||
@@ -43,8 +43,8 @@ namespace release_selection {
 #ifdef _WIN32
     auto version = release["tag_name"].get<std::string>();
     if (version.starts_with('v')) version.erase(0, 1);
-    const bool package = asset(release, "VibepolloSetup.exe") || (!nightly &&
-      (asset(release, "VibepolloSetup-v" + version + ".exe") || asset(release, "VibepolloSetup-" + version + ".exe")));
+    const bool package = asset(release, "NOUSSetup.exe") || (!nightly &&
+      (asset(release, "NOUSSetup-v" + version + ".exe") || asset(release, "NOUSSetup-" + version + ".exe")));
 #elif defined(__APPLE__)
 #if defined(__aarch64__) || defined(__arm64__) || defined(_M_ARM64)
     const bool package = macos_package(release, true);

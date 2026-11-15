@@ -12,6 +12,7 @@ import datetime
 import os
 import subprocess
 
+# Retain the runtime gettext domain and upstream copyright holder.
 project_name = 'Sunshine'
 project_owner = 'LizardByte'
 
@@ -68,9 +69,9 @@ def x_extract():
         '--boost',
         '--from-code=utf-8',
         '-F',
-        f'--msgid-bugs-address=github.com/{project_owner.lower()}/{project_name.lower()}',
+        '--msgid-bugs-address=https://github.com/flugeru/NOUS/issues',
         f'--copyright-holder={project_owner}',
-        f'--package-name={project_name}',
+        '--package-name=NOUS',
         '--package-version=v0'
     ]
 
@@ -94,11 +95,11 @@ def x_extract():
             for line in file.readlines():
                 if line != '"Language: \\n"\n':  # do not include this line
                     if line == '# SOME DESCRIPTIVE TITLE.\n':
-                        body += f'# Translations template for {project_name}.\n'
+                        body += '# Translations template for NOUS.\n'
                     elif line.startswith('#') and 'YEAR' in line:
                         body += line.replace('YEAR', str(year))
                     elif line.startswith('#') and 'PACKAGE' in line:
-                        body += line.replace('PACKAGE', project_name)
+                        body += line.replace('PACKAGE', 'NOUS')
                     else:
                         body += line
 

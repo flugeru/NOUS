@@ -5,8 +5,8 @@ cmake_minimum_required(VERSION 3.20)
 # todo - set this conditionally
 
 project(NOUS VERSION 1.0.0
-        DESCRIPTION "Self-hosted game stream host for Moonlight"
-        HOMEPAGE_URL "https://github.com/flugeru/Vibepollo")
+        DESCRIPTION "Self-hosted game streaming host"
+        HOMEPAGE_URL "https://github.com/flugeru/NOUS")
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -70,10 +70,10 @@ include(${CMAKE_MODULE_PATH}/dependencies/libvirtualdisplay_source.cmake)
 # added. Keep it in the cache so libvirtualdisplay sees the same decision.
 if(SUNSHINE_BUILD_STEAMOS)
     set(BUILD_VIBESHINE_KWIN_GPU_BRIDGE OFF CACHE BOOL
-            "Build the Vibepollo KWin GPU-association bridge" FORCE)
+            "Build the NOUS KWin GPU-association bridge" FORCE)
 else()
     set(BUILD_VIBESHINE_KWIN_GPU_BRIDGE ON CACHE BOOL
-        "Build the Vibepollo KWin GPU-association bridge" FORCE)
+        "Build the NOUS KWin GPU-association bridge" FORCE)
 endif()
 
 # configure special package files, such as sunshine.desktop, Flatpak manifest, Portfile , etc.

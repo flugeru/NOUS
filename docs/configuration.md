@@ -8,10 +8,10 @@ By providing the host authority (URI + port), you can easily open each configura
 @endhtmlonly
 }
 
-Sunshine will work with the default settings for most users. In some cases you may want to configure Sunshine further.
+NOUS will work with the default settings for most users. In some cases you may want to configure NOUS further.
 
 The default location for the configuration file is listed below. You can use another location if you
-choose, by passing in the full configuration file path as the first argument when you start Sunshine.
+choose, by passing in the full configuration file path as the first argument when you start NOUS.
 
 **Example**
 ```bash
@@ -30,14 +30,14 @@ location by modifying the configuration file.
 | Linux (native package) | @code{}/var/lib/vibepollo@endcode |
 | Linux (standalone) | @code{}~/.config/vibepollo@endcode (or `$XDG_CONFIG_HOME/vibepollo`) |
 | macOS   | @code{}~/.config/sunshine@endcode               |
-| Windows | @code{}%ProgramFiles%\\Sunshine\\config@endcode |
+| Windows | @code{}%ProgramFiles%\\NOUS\\config@endcode |
 
 Native Linux packages share one machine profile across the login screen and desktop.
 Edit settings through the Web UI; use `vibepollo paths` to locate files and
 `sudo vibepollo logs` for diagnostics. Package upgrades import the selected desktop
 user's legacy `~/.config/vibepollo` profile once and preserve existing machine settings.
 
-Although it is recommended to use the configuration UI, it is possible manually configure Sunshine by
+Although it is recommended to use the configuration UI, it is possible manually configure NOUS by
 editing the `conf` file in a text editor. Use the examples as reference.
 
 ## General
@@ -48,7 +48,7 @@ editing the `conf` file in a text editor. Use the examples as reference.
     <tr>
         <td>Description</td>
         <td colspan="2">
-            The locale used for Sunshine's user interface.
+            The locale used for NOUS's user interface.
         </td>
     </tr>
     <tr>
@@ -162,7 +162,7 @@ editing the `conf` file in a text editor. Use the examples as reference.
     <tr>
         <td>Example</td>
         <td colspan="2">@code{}
-            sunshine_name = Sunshine
+            sunshine_name = NOUS
             @endcode</td>
     </tr>
 </table>
@@ -251,7 +251,7 @@ editing the `conf` file in a text editor. Use the examples as reference.
     <tr>
         <td>Description</td>
         <td colspan="2">
-            Whether to be notified of new pre-release versions of Sunshine.
+            Whether to be notified of new pre-release versions of NOUS.
         </td>
     </tr>
     <tr>
@@ -274,8 +274,8 @@ editing the `conf` file in a text editor. Use the examples as reference.
     <tr>
         <td>Description</td>
         <td colspan="2">
-            Interval in seconds between automatic checks for new Sunshine releases. Set to 0 to disable periodic checking.
-            Checks are date-based: Sunshine compares its build date to the latest release (and pre-releases if enabled) and notifies when a newer build is available.
+            Interval in seconds between automatic checks for new NOUS releases. Set to 0 to disable periodic checking.
+            Checks are date-based: NOUS compares its build date to the latest release (and pre-releases if enabled) and notifies when a newer build is available.
         </td>
     </tr>
     <tr>
@@ -315,7 +315,7 @@ editing the `conf` file in a text editor. Use the examples as reference.
     </tr>
 </table>
 
-<!-- The update command mechanism was removed. Sunshine now only notifies about updates. -->
+<!-- The update command mechanism was removed. NOUS now only notifies about updates. -->
 
 ## Input
 
@@ -382,9 +382,9 @@ editing the `conf` file in a text editor. Use the examples as reference.
     </tr>
     <tr>
         <td>vhf</td>
-        <td>Vibepollo's own virtual gamepad driver, instead of ViGEmBus, choosing the controller
+        <td>NOUS's own virtual gamepad driver, instead of ViGEmBus, choosing the controller
             automatically
-            @note{This option applies to Windows only and requires the Vibepollo virtual gamepad
+            @note{This option applies to Windows only and requires the NOUS virtual gamepad
             driver to be installed. It presents a DualSense to clients that report a PlayStation
             controller, or when motion_as_ds4 or touchpad_as_ds4 applies, and an Xbox Series
             controller otherwise. A client that reports a Steam Controller, Switch or PlayStation
@@ -394,16 +394,16 @@ editing the `conf` file in a text editor. Use the examples as reference.
     </tr>
     <tr>
         <td>vhf_switch</td>
-        <td>Switch Pro Controller on Vibepollo's own virtual gamepad driver
-            @note{This option applies to Windows only and requires the Vibepollo virtual gamepad
+        <td>Switch Pro Controller on NOUS's own virtual gamepad driver
+            @note{This option applies to Windows only and requires the NOUS virtual gamepad
             driver to be installed. Includes motion sensors, battery reporting, rumble, and the
             Capture button. This controller has no analog triggers, so trigger travel is reported
             as ZL and ZR presses, and it has no touchpad.}</td>
     </tr>
     <tr>
         <td>vhf_steam</td>
-        <td>Steam Controller (2026) on Vibepollo's own virtual gamepad driver
-            @note{This option applies to Windows only and requires a Vibepollo virtual gamepad
+        <td>Steam Controller (2026) on NOUS's own virtual gamepad driver
+            @note{This option applies to Windows only and requires a NOUS virtual gamepad
             driver with the Steam Controller profile. Steam recognises it as a real Steam
             Controller: two trackpads (the client's touchpad 0 and 1), four grip buttons, motion
             sensors, battery and pad haptics rendered as rumble. Plain `vhf` and `auto` select it
@@ -420,8 +420,8 @@ editing the `conf` file in a text editor. Use the examples as reference.
     </tr>
     <tr>
         <td>vhf_xbox</td>
-        <td>Xbox Series controller on Vibepollo's own virtual gamepad driver
-            @note{This option applies to Windows only and requires the Vibepollo virtual gamepad
+        <td>Xbox Series controller on NOUS's own virtual gamepad driver
+            @note{This option applies to Windows only and requires the NOUS virtual gamepad
             driver to be installed. Along with vhf_xbox_one, this is a virtual gamepad option
             Windows places on the XInput path, so it is one of the two that games supporting only
             XInput can see. It has rumble and impulse triggers, but no touchpad, motion, or
@@ -429,8 +429,8 @@ editing the `conf` file in a text editor. Use the examples as reference.
     </tr>
     <tr>
         <td>vhf_xbox_one</td>
-        <td>Xbox One controller on Vibepollo's own virtual gamepad driver
-            @note{This option applies to Windows only and requires the Vibepollo virtual gamepad
+        <td>Xbox One controller on NOUS's own virtual gamepad driver
+            @note{This option applies to Windows only and requires the NOUS virtual gamepad
             driver to be installed. It reaches the XInput path the same way vhf_xbox does, and is
             recognised by Windows on its own product ID rather than a generic one, which can help
             with software that identifies controllers by generation. It is otherwise identical to
@@ -438,15 +438,15 @@ editing the `conf` file in a text editor. Use the examples as reference.
     </tr>
     <tr>
         <td>vhf_ds4</td>
-        <td>DualShock 4 on Vibepollo's own virtual gamepad driver
-            @note{This option applies to Windows only and requires the Vibepollo virtual gamepad
+        <td>DualShock 4 on NOUS's own virtual gamepad driver
+            @note{This option applies to Windows only and requires the NOUS virtual gamepad
             driver to be installed. Includes the touchpad, motion sensors, battery reporting, and
             the lightbar.}</td>
     </tr>
     <tr>
         <td>vhf_ds5</td>
-        <td>DualSense on Vibepollo's own virtual gamepad driver
-            @note{This option applies to Windows only and requires the Vibepollo virtual gamepad
+        <td>DualSense on NOUS's own virtual gamepad driver
+            @note{This option applies to Windows only and requires the NOUS virtual gamepad
             driver to be installed. Includes the touchpad, motion sensors, battery reporting, the
             lightbar, the player and microphone LEDs, and the adaptive triggers.}</td>
     </tr>
@@ -595,7 +595,7 @@ already be connected. A press without a connected target is consumed; connecting
 or reconnecting a controller while the key is held does not press Guide. Release
 and press the key again. Key-up releases the binding, including after input is
 disabled. Controller removal and session disconnect clear its held Guide state.
-Vibepollo clients also need both keyboard and controller permissions for this
+NOUS clients also need both keyboard and controller permissions for this
 binding. Revoking either permission releases the binding's held Guide state.
 Native Guide remains independent. The existing `back_button_timeout` is unchanged;
 set it below `0` if the Back/Select shortcut is unwanted.
@@ -721,7 +721,7 @@ controller of another client. This option does not create or redirect controller
     <tr>
         <td>Description</td>
         <td colspan="2">It may be possible that you cannot send the Windows Key from Moonlight directly. In those cases it may be useful to
-            make Sunshine think the Right Alt key is the Windows key.
+            make NOUS think the Right Alt key is the Windows key.
             </td>
     </tr>
     <tr>
@@ -767,14 +767,14 @@ controller of another client. This option does not create or redirect controller
     <tr>
         <td>Description</td>
         <td colspan="2">
-            Select how Vibepollo sends keyboard and mouse input on Windows. `auto` (the default)
+            Select how NOUS sends keyboard and mouse input on Windows. `auto` (the default)
             prefers VHF when a compatible driver is available at input initialization and otherwise
             uses Windows SendInput. `sendinput` always uses Windows SendInput; `vhf` explicitly
             prefers virtual HID devices. Existing explicit settings are preserved. Backend selection
             does not switch automatically just because a game starts or stops.
             VHF requires a compatible virtual input driver
-            and Vibepollo running as SYSTEM or an elevated administrator. If the driver is missing,
-            lacks the capability, or access is denied, Vibepollo uses SendInput. Auto logs this normal
+            and NOUS running as SYSTEM or an elevated administrator. If the driver is missing,
+            lacks the capability, or access is denied, NOUS uses SendInput. Auto logs this normal
             fallback as informational; an explicitly selected VHF backend logs a warning.
             The bundled driver supports VHF keyboard and mouse input.
             VHF keyboard repeat follows Windows settings; a modifier sent only as a temporary
@@ -782,7 +782,7 @@ controller of another client. This option does not create or redirect controller
             Unicode text, unsupported keys, and absolute pointer positions outside the primary display
             use SendInput. Mixed VHF and SendInput events may be processed in a different order, which
             can affect absolute dragging on secondary displays. The keyboard and mouse enable settings
-            still apply. Restart Vibepollo after changing this setting.
+            still apply. Restart NOUS after changing this setting.
             @caution{Applies to Windows only. VHF requires a compatible virtual input driver.}
         </td>
     </tr>
@@ -806,7 +806,7 @@ controller of another client. This option does not create or redirect controller
     <tr>
         <td>Description</td>
         <td colspan="2">
-            When enabled, Sunshine will pass through high resolution scroll events from Moonlight clients.
+            When enabled, NOUS will pass through high resolution scroll events from Moonlight clients.
             <br>
             This can be useful to disable for older applications that scroll too fast with high resolution scroll
             events. When VHF is active for mouse input, scrolling uses whole detents.
@@ -832,7 +832,7 @@ controller of another client. This option does not create or redirect controller
     <tr>
         <td>Description</td>
         <td colspan="2">
-            When enabled, Sunshine will pass through native pen/touch events from Moonlight clients.
+            When enabled, NOUS will pass through native pen/touch events from Moonlight clients.
             <br>
             This can be useful to disable for older applications without native pen/touch support.
         </td>
@@ -1005,7 +1005,7 @@ dualsense_haptics_gain = 1.5
             <br>
             **macOS:**
             <br>
-            Sunshine can only access microphones on macOS due to system limitations.
+            NOUS can only access microphones on macOS due to system limitations.
             To stream system audio use
             [Soundflower](https://github.com/mattingalls/Soundflower) or
             [BlackHole](https://github.com/ExistentialAudio/BlackHole).
@@ -1015,7 +1015,7 @@ dualsense_haptics_gain = 1.5
             <br>
             Enter the following command in command prompt or PowerShell.
             @code{}
-            %ProgramFiles%\Sunshine\tools\audio-info.exe
+            %ProgramFiles%\NOUS\tools\audio-info.exe
             @endcode
             If you have multiple audio devices with identical names, use the Device ID instead.
             }
@@ -1025,7 +1025,7 @@ dualsense_haptics_gain = 1.5
     </tr>
     <tr>
         <td>Default</td>
-        <td colspan="2">Sunshine will select the default audio device.</td>
+        <td colspan="2">NOUS will select the default audio device.</td>
     </tr>
     <tr>
         <td>Example (FreeBSD/Linux)</td>
@@ -1084,7 +1084,7 @@ dualsense_haptics_gain = 1.5
     <tr>
         <td>Description</td>
         <td colspan="2">
-            The audio device that's virtual, like Steam Streaming Speakers. This allows Sunshine to stream audio,
+            The audio device that's virtual, like Steam Streaming Speakers. This allows NOUS to stream audio,
             while muting the speakers.
             @tip{See [audio_sink](#audio_sink)!}
             @tip{These are some options for virtual sound devices.
@@ -1117,7 +1117,7 @@ dualsense_haptics_gain = 1.5
             Selects the encoded audio format sent to a compatible client. Opus remains the default.
             AC-3 (Dolby Digital) and E-AC-3 (Dolby Digital Plus) are offered only when the linked FFmpeg build
             includes the selected encoder. The client must explicitly accept the exact codec offer; otherwise
-            Vibepollo falls back to Opus. Dolby supports stereo and 5.1 channels.
+            NOUS falls back to Opus. Dolby supports stereo and 5.1 channels.
         </td>
     </tr>
     <tr>
@@ -1212,18 +1212,18 @@ dualsense_haptics_gain = 1.5
             vainfo --display drm --device /dev/dri/renderD129 | \
               grep -E "((VAProfileH264High|VAProfileHEVCMain|VAProfileHEVCMain10).*VAEntrypointEncSlice)|Driver version"
             @endcode
-            To be supported by Sunshine, it needs to have at the very minimum:
+            To be supported by NOUS, it needs to have at the very minimum:
             `VAProfileH264High   : VAEntrypointEncSlice`
             <br>
             <br>
             **Windows:**
             <br>
-            Select the adapter in the web interface so Vibepollo can save both
+            Select the adapter in the web interface so NOUS can save both
             its display name and persistent Windows device identity. For
             manually authored configurations, use the following command in
             command prompt or PowerShell to list adapter descriptions.
             @code{}
-            %ProgramFiles%\Sunshine\tools\dxgi-info.exe
+            %ProgramFiles%\NOUS\tools\dxgi-info.exe
             @endcode
             For hybrid graphics systems, DXGI reports the outputs are connected to whichever graphics
             adapter that the application is configured to use, so it's not a reliable indicator of how the
@@ -1231,14 +1231,14 @@ dualsense_haptics_gain = 1.5
             <br>
             <br>
             Once an adapter is selected, capture stays pinned to it. If that GPU currently has no display
-            attached (for example a TV that is powered off), Vibepollo does **not** fall back to another
+            attached (for example a TV that is powered off), NOUS does **not** fall back to another
             GPU; it treats the host as displayless and creates the virtual display on the selected adapter.
             }
         </td>
     </tr>
     <tr>
         <td>Default</td>
-        <td colspan="2">Sunshine will select the default video card.</td>
+        <td colspan="2">NOUS will select the default video card.</td>
     </tr>
     <tr>
         <td>Example (FreeBSD/Linux)</td>
@@ -1264,7 +1264,7 @@ dualsense_haptics_gain = 1.5
             The web interface records this value automatically when an adapter
             is selected, allowing adapters with identical descriptions to
             remain distinct across restarts and enumeration-order changes.
-            The same identity selects the render adapter when Vibepollo creates
+            The same identity selects the render adapter when NOUS creates
             a virtual display fallback.
             Do not configure this key by itself. If it is omitted,
             `adapter_name` retains its legacy description-only behavior.
@@ -1295,7 +1295,7 @@ dualsense_haptics_gain = 1.5
             <br>
             **FreeBSD/Linux:**
             <br>
-            During Sunshine startup, you should see the list of detected displays:
+            During NOUS startup, you should see the list of detected displays:
             @code{}
             Info: Detecting displays
             Info: Detected display: DVI-D-0 (id: 0) connected: false
@@ -1309,7 +1309,7 @@ dualsense_haptics_gain = 1.5
             <br>
             **macOS:**
             <br>
-            During Sunshine startup, you should see the list of detected displays:
+            During NOUS startup, you should see the list of detected displays:
             @code{}
             Info: Detecting displays
             Info: Detected display: Monitor-0 (id: 3) connected: true
@@ -1320,7 +1320,7 @@ dualsense_haptics_gain = 1.5
             <br>
             **Windows:**
             <br>
-            During Sunshine startup, you should see the list of detected displays:
+            During NOUS startup, you should see the list of detected displays:
             @code{}
             Info: Currently available display devices:
             [
@@ -1375,7 +1375,7 @@ dualsense_haptics_gain = 1.5
     </tr>
     <tr>
         <td>Default</td>
-        <td colspan="2">Sunshine will select the default display.</td>
+        <td colspan="2">NOUS will select the default display.</td>
     </tr>
     <tr>
         <td>Example (FreeBSD/Linux)</td>
@@ -1399,7 +1399,7 @@ dualsense_haptics_gain = 1.5
 
 The Devices editor can offer **Advertise only this client's resolution** for a private Windows virtual display. The option appears only when the opened bundled driver reports control protocol 3.8 or later; an existing saved choice remains visible so it can be disabled after a downgrade. The default is off. This setting belongs to the paired client, rather than the global configuration or application overrides. Matching refresh rates remain available, including supported base and multiplied rates.
 
-An explicit request fails with a client-visible error when the producer cannot confirm support or the session uses a physical, shared, SudoVDA or peer capture target. Catalog changes take effect at a new session boundary by replacing only a securely reclaimed owned temporary monitor. A matching retained catalog is reused when its refresh and adapter provenance permit it. A capture-ready retained output can be reconciled only by the same paired app owner after all live and pending capture work has ended, with an exact tracked display identity. Changing the create provider does not bypass catalog checks for owned Sunshine displays; restore the bundled provider before resuming that retained private target. Windows driver packaging, signing and native enumeration must qualify a compatible producer before deployment.
+An explicit request fails with a client-visible error when the producer cannot confirm support or the session uses a physical, shared, SudoVDA or peer capture target. Catalog changes take effect at a new session boundary by replacing only a securely reclaimed owned temporary monitor. A matching retained catalog is reused when its refresh and adapter provenance permit it. A capture-ready retained output can be reconciled only by the same paired app owner after all live and pending capture work has ended, with an exact tracked display identity. Changing the create provider does not bypass catalog checks for owned NOUS displays; restore the bundled provider before resuming that retained private target. Windows driver packaging, signing and native enumeration must qualify a compatible producer before deployment.
 
 ### virtual_display_mode
 
@@ -1407,7 +1407,7 @@ An explicit request fails with a client-visible error when the producer cannot c
     <tr>
         <td>Description</td>
         <td colspan="2">
-            Select which display Sunshine should prepare before streaming. When set to one of the virtual options, Sunshine will manage a virtual display instead of relying on your physical monitor.
+            Select which display NOUS should prepare before streaming. When set to one of the virtual options, NOUS will manage a virtual display instead of relying on your physical monitor.
         </td>
     </tr>
     <tr>
@@ -1479,11 +1479,11 @@ An explicit request fails with a client-visible error when the producer cannot c
             <code>cat /sys/module/vibeshine_drm/version</code> and reboot before testing when they differ.
             The module supports Linux 6.16 or newer and exposes eight independent virtual connectors
             with a deterministic HDR10 EDID, BT.2020/PQ metadata, 8-16 bits per component, and
-            10-bit RGB plane formats. Vibepollo enables one only for a stream, applies the requested
+            10-bit RGB plane formats. NOUS enables one only for a stream, applies the requested
             mode, layout, and HDR state through KScreen, captures that exact connector, and restores
             the prior topology afterward.
             KDE Plasma/KWin and <code>kscreen-doctor</code> are required for managed topology.
-            Vibepollo uses direct DRM/KMS capture for managed HDR output so the 10-bit scanout reaches
+            NOUS uses direct DRM/KMS capture for managed HDR output so the 10-bit scanout reaches
             the encoder. The custom driver also notifies capture after completed presentation changes and
             exports the exact pinned primary-plane DMA-BUF for that sequence. Sparse changes are captured
             immediately, while faster changes are coalesced to the stream's requested maximum frame rate
@@ -1494,7 +1494,7 @@ An explicit request fails with a client-visible error when the producer cannot c
             <br><br>
             If the custom module cannot be built or loaded (including on older kernels or when
             the kernel rejects an untrusted module signature), managed virtual displays remain unavailable.
-            Vibepollo deliberately does not fall back to CPU-backed stock <code>vkms</code> scanout.
+            NOUS deliberately does not fall back to CPU-backed stock <code>vkms</code> scanout.
             Arch Linux and CachyOS packages use DKMS to sign future rebuilds with a persistent local
             key and verify the embedded signer before accepting the module. Stock Arch and CachyOS
             kernels need no separate signing step: accepting the normal package-install confirmation
@@ -1689,7 +1689,7 @@ Terminate request. The original game client is unaffected. The default is
 
 ### remote_monitor_confirm_app_replacement
 
-Protect a running app while Vibepollo advertises the host as available for
+Protect a running app while NOUS advertises the host as available for
 warning-free Remote Input and Remote Monitor attachment. Selecting a different
 normal app is rejected once and temporarily advertises the running app as
 resumable to that paired client, allowing Moonlight to show its native close-app
@@ -2051,7 +2051,7 @@ dd_remove_virtual_display_after_restore = disabled
         <td>Description</td>
         <td colspan="2">
             Comma-separated list or JSON array of display device identifiers to ignore when saving display snapshots.<br>
-            Excluded devices are removed from session and golden snapshots so Sunshine will not restore to transient or dummy displays.<br>
+            Excluded devices are removed from session and golden snapshots so NOUS will not restore to transient or dummy displays.<br>
             @note{Applies to Windows only.}
         </td>
     </tr>
@@ -2083,7 +2083,7 @@ dd_remove_virtual_display_after_restore = disabled
         <td colspan="2">
               Keyboard shortcut key that restores the display snapshot and tears down any virtual displays.
               <br>
-              Useful for forcing virtual displays off and restoring snapshots when Sunshine is paused or stuck.
+              Useful for forcing virtual displays off and restoring snapshots when NOUS is paused or stuck.
               The modifier keys for this hotkey are configured separately via dd_snapshot_restore_hotkey_modifiers.
               Accepts function keys (F1-F24), letters, digits, or a virtual-key code.
               @note{Applies to Windows only.}
@@ -2203,7 +2203,7 @@ These settings are host-wide and are not application runtime overrides.
     <tr>
         <td>Description</td>
         <td colspan="2">
-            When enabled, Vibepollo uses the Vibepollo Display Driver for virtual display streams. Disable this to switch back to the bundled SudoVDA rollback driver.
+            When enabled, NOUS uses the NOUS Display Driver for virtual display streams. Disable this to switch back to the bundled SudoVDA rollback driver.
             @note{Applies to Windows only.}
         </td>
     </tr>
@@ -2225,7 +2225,7 @@ These settings are host-wide and are not application runtime overrides.
     <tr>
         <td>Description</td>
         <td colspan="2">
-            When enabled, Sunshine activates the virtual display driver and makes it the only active display during stream startup.
+            When enabled, NOUS activates the virtual display driver and makes it the only active display during stream startup.
             @note{Applies to Windows only.}
         </td>
     </tr>
@@ -2334,7 +2334,7 @@ These settings are host-wide and are not application runtime overrides.
         <td>Description</td>
         <td colspan="2">
             Forces Windows to run the capture output at 30&nbsp;Hz with HDR enabled so physical HDMI dummy plugs expose 10-bit colour.<br>
-            Sunshine also keeps the "Disable VSYNC" override engaged to ensure the driver profile disables VSYNC during streams.
+            NOUS also keeps the "Disable VSYNC" override engaged to ensure the driver profile disables VSYNC during streams.
         </td>
     </tr>
     <tr>
@@ -2363,7 +2363,7 @@ These settings are host-wide and are not application runtime overrides.
     <tr>
         <td>Description</td>
         <td colspan="2">
-            The maximum bitrate (in Kbps) that Sunshine will encode the stream at. If set to 0, it will always use the bitrate requested by Moonlight.
+            The maximum bitrate (in Kbps) that NOUS will encode the stream at. If set to 0, it will always use the bitrate requested by Moonlight.
         </td>
     </tr>
     <tr>
@@ -2386,7 +2386,7 @@ These settings are host-wide and are not application runtime overrides.
     <tr>
         <td>Description</td>
         <td colspan="2">
-            Sunshine tries to save bandwidth when content on screen is static or a low framerate. Because many clients expect a constant stream of video frames, a certain amount of duplicate frames are sent when this happens. This setting controls the lowest effective framerate a stream can reach.
+            NOUS tries to save bandwidth when content on screen is static or a low framerate. Because many clients expect a constant stream of video frames, a certain amount of duplicate frames are sent when this happens. This setting controls the lowest effective framerate a stream can reach.
         </td>
     </tr>
     <tr>
@@ -2414,7 +2414,7 @@ These settings are host-wide and are not application runtime overrides.
     <tr>
         <td>Description</td>
         <td colspan="2">
-            Sunshine will attempt to open ports for streaming over the internet.
+            NOUS will attempt to open ports for streaming over the internet.
         </td>
     </tr>
     <tr>
@@ -2437,7 +2437,7 @@ These settings are host-wide and are not application runtime overrides.
     <tr>
         <td>Description</td>
         <td colspan="2">
-            Set the address family that Sunshine will use.
+            Set the address family that NOUS will use.
         </td>
     </tr>
     <tr>
@@ -2469,8 +2469,8 @@ These settings are host-wide and are not application runtime overrides.
     <tr>
         <td>Description</td>
         <td colspan="2">
-            Set the IP address to bind Sunshine to. This is useful when you have multiple network interfaces
-            and want to restrict Sunshine to a specific one. If not set, Sunshine will bind to all available
+            Set the IP address to bind NOUS to. This is useful when you have multiple network interfaces
+            and want to restrict NOUS to a specific one. If not set, NOUS will bind to all available
             interfaces (0.0.0.0 for IPv4 or :: for IPv6).
             <br><br>
             <strong>Note:</strong> The address must be valid for the system and must match the address family
@@ -2509,7 +2509,7 @@ These settings are host-wide and are not application runtime overrides.
     <tr>
         <td>Description</td>
         <td colspan="2">
-            Set the family of ports used by Sunshine.
+            Set the family of ports used by NOUS.
             Changing this value will offset other ports as shown in config UI.
         </td>
     </tr>
@@ -2602,7 +2602,7 @@ These settings are host-wide and are not application runtime overrides.
     <tr>
         <td>Description</td>
         <td colspan="2">
-            If no external IP address is given, Sunshine will attempt to automatically detect external ip-address.
+            If no external IP address is given, NOUS will attempt to automatically detect external ip-address.
         </td>
     </tr>
     <tr>
@@ -2785,7 +2785,7 @@ These settings are host-wide and are not application runtime overrides.
     <tr>
         <td>Description</td>
         <td colspan="2">
-            Experimental opt-in for ordinary video streams. When enabled, Vibepollo uses negotiated bitrate and FEC-expanded
+            Experimental opt-in for ordinary video streams. When enabled, NOUS uses negotiated bitrate and FEC-expanded
             frame demand to limit the size of each outgoing send call. It leaves the ordinary pacing group,
             <code>pacing_max_bitrate_kbps</code> ceiling, and cumulative pacing deadline unchanged.
             It does not cap aggregate packets across successive calls before a pacing wait, guarantee a wire-level burst limit,
@@ -2824,7 +2824,7 @@ PyroWave is unchanged. Example: `pacing_group_demand_limit = true`.
     <tr>
         <td>Description</td>
         <td colspan="2">
-            Experimental opt-in for ordinary H.264, HEVC and AV1 streams. Vibepollo spaces video packets using a rate that
+            Experimental opt-in for ordinary H.264, HEVC and AV1 streams. NOUS spaces video packets using a rate that
             starts at twice the encoder bitrate or 1.25 times the stream's packetized wire demand (including FEC), whichever
             is higher, within the usual 800 Mbps ceiling. It then probes upward by up to 12.5% at most every half second,
             but only while video is busy, recent standard client pings arrive and the control stream's round trip time is
@@ -2962,8 +2962,8 @@ PyroWave is unchanged. Example: `pacing_group_demand_limit = true`.
     <tr>
     <td>Description</td>
         <td colspan="2">
-            Determines where Sunshine stores log sessions. When this value points to a file (the default),
-            Sunshine keeps a rolling <code>logs</code> folder next to that file and keeps the last 30 sessions,
+            Determines where NOUS stores log sessions. When this value points to a file (the default),
+            NOUS keeps a rolling <code>logs</code> folder next to that file and keeps the last 30 sessions,
             each capped at about 10 MiB by rolling ~2MB log files. Pointing to a directory stores the
             <code>logs</code> folder at the specified location.
         </td>
@@ -3038,7 +3038,7 @@ PyroWave is unchanged. Example: `pacing_group_demand_limit = true`.
     <tr>
         <td>Description</td>
         <td colspan="2">
-            The file where current state of Sunshine is stored.
+            The file where current state of NOUS is stored.
         </td>
     </tr>
     <tr>
@@ -3061,8 +3061,8 @@ PyroWave is unchanged. Example: `pacing_group_demand_limit = true`.
     <tr>
         <td>Description</td>
         <td colspan="2">
-            The file used by new Vibepollo features to persist web authentication tokens and notification state.
-            If left unset, it defaults to <code>vibeshine_state.json</code> in the same directory as other Vibepollo data.
+            The file used by new NOUS features to persist web authentication tokens and notification state.
+            If left unset, it defaults to <code>vibeshine_state.json</code> in the same directory as other NOUS data.
         </td>
     </tr>
     <tr>
@@ -3333,7 +3333,7 @@ PyroWave is unchanged. Example: `pacing_group_demand_limit = true`.
     <tr>
         <td>Default</td>
         <td colspan="2">Automatic<br>
-            Sunshine will use the first capture method available in the order of the table below</td>
+            NOUS will use the first capture method available in the order of the table below</td>
     </tr>
     <tr>
         <td>Example</td>
@@ -3346,7 +3346,7 @@ PyroWave is unchanged. Example: `pacing_group_demand_limit = true`.
         <td>gamescope</td>
         <td>Capture the Gamescope compositor's main output through PipeWire in SDR.
             Automatically preferred when Gamescope is available. Supports downscaling
-            within the physical output. HDR requires the version-matched Vibepollo Gamescope
+            within the physical output. HDR requires the version-matched NOUS Gamescope
             capture patch and a working Main10 hardware encoder; stock Gamescope remains SDR.
             Independent virtual modes are unavailable.
             @note{Applies to Linux only.}</td>
@@ -3367,7 +3367,7 @@ PyroWave is unchanged. Example: `pacing_group_demand_limit = true`.
     </tr>
     <tr>
         <td>kms</td>
-        <td>DRM/KMS screen capture from the kernel. This requires that Sunshine has `cap_sys_admin` capability.
+        <td>DRM/KMS screen capture from the kernel. This requires that NOUS has `cap_sys_admin` capability.
             Managed Linux private HDR sessions use this path automatically to preserve 10-bit scanout,
             even when KWin is selected globally for SDR capture.
             With the <code>vibeshine_drm</code> presentation ABI, capture is change-driven, imports the exact
@@ -3420,7 +3420,7 @@ PyroWave is unchanged. Example: `pacing_group_demand_limit = true`.
         <td>Description</td>
         <td colspan="2">
             Path to the LosslessScaling.exe executable used for frame generation or upscaling.
-            If empty, Sunshine will attempt to auto-detect common installation locations.
+            If empty, NOUS will attempt to auto-detect common installation locations.
             @note{Applies to Windows only.}
         </td>
     </tr>
@@ -3447,7 +3447,7 @@ PyroWave is unchanged. Example: `pacing_group_demand_limit = true`.
     </tr>
     <tr>
         <td>Default</td>
-        <td colspan="2">Sunshine will use the first encoder that is available.</td>
+        <td colspan="2">NOUS will use the first encoder that is available.</td>
     </tr>
     <tr>
         <td>Example</td>
@@ -3458,7 +3458,7 @@ PyroWave is unchanged. Example: `pacing_group_demand_limit = true`.
     <tr>
         <td rowspan="8">Choices</td>
         <td>nvenc</td>
-        <td>For NVIDIA graphics cards. Uses Vibepollo's native NVENC implementation on Windows and
+        <td>For NVIDIA graphics cards. Uses NOUS's native NVENC implementation on Windows and
             on CUDA-enabled Linux builds. On Linux it is tried first during automatic selection.</td>
     </tr>
     <tr>
@@ -3561,7 +3561,7 @@ They appear in the Frame Limiter section of the settings UI.
     </tr>
     <tr>
         <td>mangohud</td>
-        <td>Use MangoHUD on Linux. Vibepollo enables it for launched games and supplies the stream-derived FPS limit.</td>
+        <td>Use MangoHUD on Linux. NOUS enables it for launched games and supplies the stream-derived FPS limit.</td>
     </tr>
     <tr>
         <td>mangohud-proton</td>
@@ -3588,15 +3588,15 @@ They appear in the Frame Limiter section of the settings UI.
 On native Linux, an active stream also prepares launch hooks in writable Proton
 installations discovered through Steam. This applies the selected Proton or
 MangoHUD provider to games started from Steam or another launcher, even when the
-game is not a Vibepollo application. Existing `user_settings.py` code and file
+game is not a NOUS application. Existing `user_settings.py` code and file
 permissions are preserved. The hook is inert when no stream is active and after
 host shutdown; it does not persist an FPS limit in Proton's configuration.
 
 These are launch-time renderer settings: start the game after the stream connects.
 A game already running retains its previous settings until restarted, including
 when the stream ends. Read-only Proton installations, native Linux games launched
-outside Vibepollo, and containers with a separate network namespace are not
-covered by this Proton hook. Native games launched by Vibepollo retain the
+outside NOUS, and containers with a separate network namespace are not
+covered by this Proton hook. Native games launched by NOUS retain the
 existing MangoHUD integration. Newly installed Proton versions in known libraries
 are detected during the stream. The host log reports hook readiness or failure.
 
@@ -3711,7 +3711,7 @@ are detected during the stream. The host log reports hook readiness or failure.
     <tr>
         <td>Description</td>
         <td colspan="2">
-            Controls how fast the virtual display refreshes, which decides how soon each game frame is captured. Windows only hands Vibeshine a new frame when it redraws the display, so on a display that refreshes at the stream rate a frame that finishes just after a redraw waits up to a whole refresh before capture, and frames reach the client unevenly. A faster virtual display captures each frame closer to when the game drew it. None of the modes change the stream FPS or bandwidth, and all but @code{}disabled@endcode cap games to the stream rate.
+            Controls how fast the virtual display refreshes, which decides how soon each game frame is captured. Windows only hands NOUS a new frame when it redraws the display, so on a display that refreshes at the stream rate a frame that finishes just after a redraw waits up to a whole refresh before capture, and frames reach the client unevenly. A faster virtual display captures each frame closer to when the game drew it. None of the modes change the stream FPS or bandwidth, and all but @code{}disabled@endcode cap games to the stream rate.
             <br>
             @code{}vrr@endcode requests a fixed 1000 Hz virtual display whatever the stream rate, reducing the delay between game presentation and capture for clients with VRR pacing. On Windows 10 and Windows 11 before 24H2, refresh is capped at the maximum allowed by the OS's 1 MHz horizontal scan-frequency limit for the selected resolution (about 462.962 Hz at 3840x2160). Manual refresh settings and matching FPS-to-refresh mappings take precedence over the automatic capture policy, subject to this OS limit; mapping rules match the requested stream FPS. @code{}enabled@endcode keeps the display at 4x the stream rate and captures at most 2x the stream rate on the desktop. @code{}legacy@endcode uses a fixed 2x refresh, as older versions did. @code{}disabled@endcode leaves the display at the stream rate and turns off the matching game cap. Existing boolean values remain compatible: true maps to enabled and false maps to disabled.
         </td>
@@ -3736,10 +3736,10 @@ are detected during the stream. The host log reports hook readiness or failure.
     <tr>
         <td>Description</td>
         <td colspan="2">
-            Full path to the RTSS install directory under Program Files. If empty, Vibepollo will
+            Full path to the RTSS install directory under Program Files. If empty, NOUS will
             attempt to auto-detect it. Paths outside Program Files and paths containing reparse
             points are ignored because the Windows service loads signed RTSS integration code in
-            its privileged host process; Vibepollo falls back to the default Program Files location.
+            its privileged host process; NOUS falls back to the default Program Files location.
         </td>
     </tr>
     <tr>
@@ -3823,15 +3823,15 @@ are detected during the stream. The host log reports hook readiness or failure.
     <tr>
         <td>Description</td>
         <td colspan="2">
-            Forces the NVIDIA driver VSYNC setting to Off for the Sunshine profile while streaming. Sunshine restores the previous VSYNC setting when streaming stops.
+            Forces the NVIDIA driver VSYNC setting to Off for the NOUS profile while streaming. NOUS restores the previous VSYNC setting when streaming stops.
             <br><br>
-            Use this when you globally enable VSYNC in the driver but need Sunshine sessions to run without it. This option no longer changes Ultra Low Latency Mode or pre-rendered frames.
+            Use this when you globally enable VSYNC in the driver but need NOUS sessions to run without it. This option no longer changes Ultra Low Latency Mode or pre-rendered frames.
             <br><br>
-            When NVIDIA-specific overrides are unavailable, Sunshine falls back to forcing the active display to its highest available refresh rate during streams to minimize VSYNC engagement.
+            When NVIDIA-specific overrides are unavailable, NOUS falls back to forcing the active display to its highest available refresh rate during streams to minimize VSYNC engagement.
             <br><br>
             <b>Notes</b>:
             <ul>
-                <li>Windows only; uses NVIDIA NvAPI overrides when available and relies on the Sunshine display helper for refresh-rate fallbacks.</li>
+                <li>Windows only; uses NVIDIA NvAPI overrides when available and relies on the NOUS display helper for refresh-rate fallbacks.</li>
                 <li>Automatically enabled when the Dummy Plug HDR workaround is active.</li>
                 <li>On non-NVIDIA GPUs, the refresh-rate fallback acts as a best-effort VSYNC mitigation.</li>
             </ul>
@@ -3849,7 +3849,7 @@ are detected during the stream. The host log reports hook readiness or failure.
     </tr>
 </table>
 
-@note{Legacy configurations may still use @code{rtss_disable_vsync_ullm}. Sunshine continues to accept the old key and maps it to @code{frame_limiter_disable_vsync}.}
+@note{Legacy configurations may still use @code{rtss_disable_vsync_ullm}. NOUS continues to accept the old key and maps it to @code{frame_limiter_disable_vsync}.}
 
 ## NVIDIA NVENC Encoder
 
@@ -3986,7 +3986,7 @@ directly to the NVIDIA Video Codec SDK and is preferred during automatic probing
         <td>Description</td>
         <td colspan="2">
             Single-frame VBV/HRD percentage increase.
-            By default Sunshine uses single-frame VBV/HRD, which means any encoded video frame size is not expected to
+            By default NOUS uses single-frame VBV/HRD, which means any encoded video frame size is not expected to
             exceed requested bitrate divided by requested frame rate. Relaxing this restriction can be beneficial and
             act as low-latency variable bitrate, but may also lead to packet loss if the network doesn't have buffer
             headroom to handle bitrate spikes. Maximum accepted value is 400, which corresponds to 5x increased
@@ -4087,7 +4087,7 @@ directly to the NVIDIA Video Codec SDK and is preferred during automatic probing
         <td>Description</td>
         <td colspan="2">
             Adaptive P-State algorithm which NVIDIA drivers employ doesn't work well with low latency streaming,
-            so Sunshine requests high power mode explicitly.
+            so NOUS requests high power mode explicitly.
             @note{This option only applies when using NVENC [encoder](#encoder).}
             @warning{Disabling this is not recommended since this can lead to significantly increased encoding latency.}
             @note{Applies to Windows only.}
@@ -4113,9 +4113,9 @@ directly to the NVIDIA Video Codec SDK and is preferred during automatic probing
     <tr>
         <td>Description</td>
         <td colspan="2">
-            Sunshine can't capture fullscreen OpenGL and Vulkan programs at full frame rate unless they present on
-            top of DXGI. With this option enabled Sunshine changes global Vulkan/OpenGL present method to
-            "Prefer layered on DXGI Swapchain". This is system-wide setting that is reverted on Sunshine program exit.
+            NOUS can't capture fullscreen OpenGL and Vulkan programs at full frame rate unless they present on
+            top of DXGI. With this option enabled NOUS changes global Vulkan/OpenGL present method to
+            "Prefer layered on DXGI Swapchain". This is system-wide setting that is reverted on NOUS program exit.
             @note{This option only applies when using NVENC [encoder](#encoder).}
             @note{Applies to Windows only.}
         </td>
@@ -4283,10 +4283,10 @@ directly to the NVIDIA Video Codec SDK and is preferred during automatic probing
 
 @note{HDR (HEVC Main10) encoding through AMF requires the AMF runtime shipped with Adrenalin 23.30
 or newer, which reports AMF 1.4.32. FFmpeg refuses 10-bit P010 surfaces on any older runtime, so HDR
-is not offered to clients even though Vibepollo's own AMF check only needs 1.4.23. Update your
+is not offered to clients even though NOUS's own AMF check only needs 1.4.23. Update your
 graphics drivers if HDR is unavailable on an AMD GPU. This limitation applies to the
 @code{amdvce_ffmpeg} encoder only; the experimental native @code{amdvce_experimental} encoder talks to AMF
-directly and is not subject to FFmpeg's 10-bit refusal. Vibepollo carries one narrow exception for the
+directly and is not subject to FFmpeg's 10-bit refusal. NOUS carries one narrow exception for the
 FFmpeg-based encoder: on a Radeon Pro 5500 XT (PCI @code{1002:7340}) running AMF 1.4.31.x, it presents 1.4.32 to
 FFmpeg for the duration of codec validation so HEVC Main10 is not refused. The exception is applied
 automatically, has no configuration option, and does not apply to any other adapter. The detected AMF
@@ -5070,7 +5070,7 @@ Default: `false`
 
 Synchronizes the games selected by the Steam policy into `apps.json` when
 configuration is applied and checks for manifest, local play-history, library,
-metadata, and artwork changes every 30 seconds while Vibepollo is running.
+metadata, and artwork changes every 30 seconds while NOUS is running.
 Steam-managed entries use stable Steam IDs; manual and Playnite-managed entries
 are preserved.
 
@@ -5131,7 +5131,7 @@ their catalog.
 Default: `false`
 
 The manual application picker shows installed, importable Steam games by
-default, matching the Playnite picker. Vibepollo also reads Steam's local user
+default, matching the Playnite picker. NOUS also reads Steam's local user
 play-history and `appinfo.vdf` caches to rank installed games for recent-game
 synchronization without requiring a Steam Web API key or a public profile.
 
@@ -5193,7 +5193,7 @@ Default: `true` on Windows
     <tr>
         <td>Description</td>
         <td>
-            When set to <code>true</code>, Sunshine synchronises every installed Playnite game into
+            When set to <code>true</code>, NOUS synchronises every installed Playnite game into
             <code>apps.json</code>, in addition to any recent or category-based selections.
         </td>
     </tr>
@@ -5213,7 +5213,7 @@ Default: `true` on Windows
     <tr>
         <td>Description</td>
         <td>
-            Controls whether Sunshine removes auto-synced games when they are uninstalled in Playnite.
+            Controls whether NOUS removes auto-synced games when they are uninstalled in Playnite.
             Set to <code>true</code> to drop entries immediately when Playnite reports them as uninstalled.
         </td>
     </tr>
@@ -5259,7 +5259,7 @@ playnite_sync_plugins = [
     <tr>
         <td>Description</td>
         <td>
-            List of Playnite categories to omit from Sunshine's auto-sync. Accepts a JSON array of objects
+            List of Playnite categories to omit from NOUS's auto-sync. Accepts a JSON array of objects
             with <code>id</code>/<code>name</code> pairs or a comma-separated list of category names. Any
             game tagged with one of these categories is skipped even if it matches recent-activity or
             inclusion-category rules.
@@ -5285,7 +5285,7 @@ Sets the number of long-term reference frames used by the experimental native AM
 
 ### amd_input_queue_size
 
-Sets the experimental native AMD encoder's driver input capacity. This is not the number of frames Vibepollo permits to accumulate: the native encoder independently keeps the smallest pipeline depth demonstrated by the runtime and drops a newer stale capture rather than growing that backlog. Leave this at `0` for the driver default unless hardware testing shows a benefit. A positive explicit value overrides VRR low-latency queue selection; values as small as `1` can starve drivers that retain several startup surfaces, while `4` is the safer low-latency tuning point.
+Sets the experimental native AMD encoder's driver input capacity. This is not the number of frames NOUS permits to accumulate: the native encoder independently keeps the smallest pipeline depth demonstrated by the runtime and drops a newer stale capture rather than growing that backlog. Leave this at `0` for the driver default unless hardware testing shows a benefit. A positive explicit value overrides VRR low-latency queue selection; values as small as `1` can starve drivers that retain several startup surfaces, while `4` is the safer low-latency tuning point.
 
 ### amd_smart_access_video
 
@@ -5389,7 +5389,7 @@ Automatically selects the audio capture sink when no explicit virtual sink is co
 
 ### enable_discovery
 
-Controls whether Vibepollo advertises itself for local-network discovery.
+Controls whether NOUS advertises itself for local-network discovery.
 
 ### enable_input_only_mode
 

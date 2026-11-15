@@ -52,8 +52,8 @@ PRODUCTION_METHOD
 }
 int main() {
   using update::notify_new_version;
-  update::state.latest_release.url = "https://github.com/Nonary/Vibepollo/releases/tag/2.0.1";
-  update::state.latest_prerelease.url = "https://github.com/Nonary/Vibepollo/releases/tag/daily-2026-10-11";
+  update::state.latest_release.url = "https://github.com/flugeru/NOUS/releases/tag/2.0.1";
+  update::state.latest_prerelease.url = "https://github.com/flugeru/NOUS/releases/tag/daily-2026-10-11";
   notify_new_version("", false);
   assert(notices.empty() && nvhttp::saves == 0);
   config::sunshine.notify_pre_releases = false;
@@ -68,7 +68,7 @@ int main() {
   assert(update::state.last_notified_url == first_url);
   assert(update::state.last_notified_is_prerelease);
   // Changing selected release/state cannot redirect an older toast click.
-  update::state.latest_prerelease.url = "https://github.com/Nonary/Vibepollo/releases/tag/daily-2026-10-12";
+  update::state.latest_prerelease.url = "https://github.com/flugeru/NOUS/releases/tag/daily-2026-10-12";
   notify_new_version("2.0.2-daily.d20261012", true);
   assert(notices.size() == 2 && notices[1].callback == nullptr);
   assert(notices[0].body == "Version 2.0.2-daily.d20261011\n" + first_url);

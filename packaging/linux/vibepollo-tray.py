@@ -29,8 +29,8 @@ CONTROLLER = "vibepollo-session-controller.service"
 HOST = "vibepollo.service"
 SCOPES = {"/api/session/status": "GET", "/api/apps/close": "POST"}
 ICON_PREFIX = "io.github.Nonary.vibepollo"
-RELEASES_API = "https://api.github.com/repos/Nonary/Vibepollo/releases"
-RELEASES_PAGE = "https://github.com/Nonary/Vibepollo/releases"
+RELEASES_API = "https://api.github.com/repos/flugeru/NOUS/releases"
+RELEASES_PAGE = "https://github.com/flugeru/NOUS/releases"
 
 
 class CertificateChanged(Exception):

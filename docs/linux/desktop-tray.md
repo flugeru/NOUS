@@ -10,7 +10,7 @@ AppImage, Flatpak, and SteamOS packages keep their existing tray behavior.
 The tray reports machine-service state without authentication. Green means
 the services are running; it does not prove that capture/encoding is healthy.
 With an API token, it also shows Ready, Streaming, and Paused using the same
-Vibepollo icons as Windows and reports state changes through desktop notifications.
+NOUS icons as Windows and reports state changes through desktop notifications.
 `--no-notifications` disables notifications. Status is refreshed every five
 seconds. `vibepollo-tray --port PORT` supports a non-default Web UI HTTPS port.
 The Web UI must listen on IPv4 loopback (`127.0.0.1`) at that port for token
@@ -39,13 +39,13 @@ Web UI as well to invalidate it at the host.
 
 The menu provides:
 
-- **Open Vibepollo** and **Pair a client** open the local Web UI.
+- **Open NOUS** and **Pair a client** open the local Web UI.
 - **Stop [application]** uses the authenticated API, with confirmation.
 - **Check for Update** fetches public GitHub release metadata, displays the
   installed version and latest published stable/prerelease tags, and offers
   their release pages. It does not install anything or claim a nightly/stable
   version ordering. No API token is sent to GitHub.
-- **Start Vibepollo**, **Restart**, and **Quit Vibepollo** operate on the
+- **Start NOUS**, **Restart**, and **Quit NOUS** operate on the
   session controller through systemd's existing polkit authorization.
   Restart and Quit ask for confirmation because they end active streams and
   the running application. They never stop/start the static host directly:
@@ -54,7 +54,7 @@ The menu provides:
 
 Quit stops the controller for the current boot, leaving its boot enablement
 unchanged. Start resumes it. The tray does not change startup settings.
-To disable the tray at login, disable **Vibepollo Tray** in your desktop's
+To disable the tray at login, disable **NOUS Tray** in your desktop's
 Autostart settings, or override the packaged desktop entry with a user entry
 at `~/.config/autostart/vibepollo-tray.desktop` containing `Hidden=true`.
 

@@ -51,7 +51,7 @@ jobs:
       COMMIT: ${{ inputs.release_commit }}
     permissions:
       contents: read
-    runs-on: ${{ !inputs.validation_only && inputs.use_self_hosted && github.repository == 'Nonary/Vibepollo' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && fromJSON('["self-hosted", "Linux", "X64", "linux-release"]') || fromJSON('["ubuntu-latest"]') }}
+    runs-on: ${{ !inputs.validation_only && inputs.use_self_hosted && github.repository == 'flugeru/NOUS' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && fromJSON('["self-hosted", "Linux", "X64", "linux-release"]') || fromJSON('["ubuntu-latest"]') }}
     container:
       image: archlinux/archlinux:base-devel
     steps:
@@ -142,7 +142,7 @@ jobs:
         shell: bash
         run: python3 tests/unit/test_cuda_release_policy.py
 
-      - name: Compile Vibepollo DRM against Arch kernel
+      - name: Compile NOUS DRM against Arch kernel
         shell: bash
         run: |
           set -euo pipefail
@@ -405,7 +405,7 @@ jobs:
           grep -qx $'\tmakedepends = vulkan-headers' .SRCINFO
           grep -qx 'usr/bin/vibepollo' <<< "${package_files}"
           if grep -qx 'usr/bin/sunshine' <<< "${package_files}"; then
-            echo "::error::The Vibepollo package unexpectedly contains the legacy Sunshine executable."
+            echo "::error::The NOUS package unexpectedly contains the legacy Sunshine executable."
             exit 1
           fi
           grep -qx 'usr/lib/systemd/system/vibepollo-session-controller.service' <<< "${package_files}"
@@ -456,7 +456,7 @@ jobs:
             usr/libexec/vibeshine/vibepollo-session-handoff \
             usr/libexec/vibeshine/vibepollo-session-ready; do
             if grep -qx "${obsolete_path}" <<< "${package_files}"; then
-              echo "::error::The Vibeshine package unexpectedly contains obsolete login-path file ${obsolete_path}."
+              echo "::error::The NOUS package unexpectedly contains obsolete login-path file ${obsolete_path}."
               exit 1
             fi
           done

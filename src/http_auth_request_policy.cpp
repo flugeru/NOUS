@@ -19,7 +19,7 @@ namespace confighttp::policy {
 
   AuthResult RequestAuthPolicy::basic_error() const {
     auto result = make_error(StatusCode::client_error_unauthorized, "Unauthorized");
-    result.headers.emplace("WWW-Authenticate", "Basic realm=\"Sunshine\"");
+    result.headers.emplace("WWW-Authenticate", "Basic realm=\"NOUS\"");
     return result;
   }
 

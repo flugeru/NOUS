@@ -19,12 +19,12 @@ static_assert([] {
 using nlohmann::json;
 std::string platform_package() {
 #ifdef _WIN32
-  return "VibepolloSetup.exe";
+  return "NOUSSetup.exe";
 #elif defined(__APPLE__)
 #if defined(__aarch64__) || defined(__arm64__)
-  return "Vibepollo-macOS-arm64.dmg";
+  return "NOUS-macOS-arm64.dmg";
 #else
-  return "Vibepollo-macOS-x86_64.dmg";
+  return "NOUS-macOS-x86_64.dmg";
 #endif
 #elif defined(__aarch64__)
   return "vibepollo-2.0.0-1-aarch64.pkg.tar.zst";
@@ -157,23 +157,23 @@ int main() {
   assert(select(json::array({invalid_revision}),"2.0.0",true).is_null());
   auto published=release("2.0.0");
 #ifdef _WIN32
-  published["assets"][0]["name"]="VibepolloSetup-v2.0.0.exe";
+  published["assets"][0]["name"]="NOUSSetup-v2.0.0.exe";
 #endif
   assert(select(json::array({published}),"1.18.4-stable.4",false)["tag_name"]=="2.0.0");
   auto wrong_platform=release("9.0.0");
 #ifdef _WIN32
   wrong_platform["assets"][0]["name"]="vibepollo-fixture-x86_64.pkg.tar.zst";
 #else
-  wrong_platform["assets"][0]["name"]="VibepolloSetup.exe";
+  wrong_platform["assets"][0]["name"]="NOUSSetup.exe";
 #endif
   assert(select(json::array({wrong_platform}),"1.0.0",true).is_null());
 #ifndef _WIN32
   auto wrong_arch=release("9.0.0");
 #if defined(__APPLE__)
 #if defined(__aarch64__) || defined(__arm64__)
-  wrong_arch["assets"][0]["name"]="Vibepollo-macOS-x86_64.dmg";
+  wrong_arch["assets"][0]["name"]="NOUS-macOS-x86_64.dmg";
 #else
-  wrong_arch["assets"][0]["name"]="Vibepollo-macOS-arm64.dmg";
+  wrong_arch["assets"][0]["name"]="NOUS-macOS-arm64.dmg";
 #endif
 #elif defined(__x86_64__)
   wrong_arch["assets"][0]["name"]="vibepollo-fixture-aarch64.pkg.tar.zst";
@@ -190,10 +190,10 @@ int main() {
   assert(select(json::array({bad,draft,incomplete,empty_package,missing_checksums,json("bad"),json::object()}),"1.0.0",true).is_null());
   assert(select(releases,"unknown",true).is_null());
   assert(select(releases,"99999999999999999999999.0.0",true).is_null());
-  auto mac=release("2.0.0"); mac["assets"][0]["name"]="Vibepollo-macOS-arm64.dmg";
+  auto mac=release("2.0.0"); mac["assets"][0]["name"]="NOUS-macOS-arm64.dmg";
   assert(release_selection::macos_package(mac,true));
   assert(!release_selection::macos_package(mac,false));
-  mac["assets"][0]["name"]="Vibepollo-macOS-x86_64.dmg";
+  mac["assets"][0]["name"]="NOUS-macOS-x86_64.dmg";
   assert(release_selection::macos_package(mac,false));
   assert(!release_selection::macos_package(mac,true));
   mac["assets"][0]["size"]=0;

@@ -28,8 +28,8 @@ jobs:
       release_commit: ${{ github.sha }}
       release_version: ${{ inputs.build_version || '2.0.0' }}
       release_tag: ''
-      symbol_product_name: Vibepollo
-      symbol_release_prefix: polo
+      symbol_product_name: NOUS
+      symbol_release_prefix: nous
       publish_symbols: false
       upload_symbols_artifact: false
       require_signpath_signing: true

@@ -29,7 +29,7 @@ function New-GitHubHeaders {
 
   $headers = @{
     "Accept" = "application/vnd.github+json"
-    "User-Agent" = "vibepollo-webrtc-downloader"
+    "User-Agent" = "nous-webrtc-downloader"
     "X-GitHub-Api-Version" = "2022-11-28"
   }
 
@@ -88,7 +88,7 @@ if ($asset.Count -eq 0) {
   throw "Release '$repo@$tag' does not contain pinned asset '$assetName'."
 }
 
-$tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) "vibepollo-webrtc-$([System.Guid]::NewGuid().ToString('N'))"
+$tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) "nous-webrtc-$([System.Guid]::NewGuid().ToString('N'))"
 $downloadDir = Join-Path $tempRoot "download"
 $extractDir = Join-Path $tempRoot "extract"
 New-Item -ItemType Directory -Path $downloadDir, $extractDir | Out-Null

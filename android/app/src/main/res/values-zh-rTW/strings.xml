@@ -41,8 +41,8 @@
 	<string name="nettest_title_waiting">正在測試網路連線</string>
 	<string name="nettest_text_waiting">NOUS 正在測試您的網路連線，以判斷是否有必要的連接埠被阻擋。\n\n這可能需要幾秒鐘…</string>
 	<string name="nettest_title_done">網路測試完成</string>
-	<string name="nettest_text_success">您的網路似乎沒有阻擋 NOUS。如果您仍然無法連線，請檢查您電腦的防火牆設定。\n\n如果您嘗試透過網際網路進行串流，請在電腦上安裝 Artemis Internet Hosting Tool，並執行內建的 Internet Streaming Tester 以檢查網際網路連線。</string>
-	<string name="nettest_text_inconclusive">無法執行網路測試，因為無法連線至 Artemis 的測試伺服器。請檢查您的網際網路連線，或稍後再試。</string>
+	<string name="nettest_text_success">您的網路似乎沒有阻擋 NOUS。如果您仍然無法連線，請檢查您電腦的防火牆設定。\n\n如果您嘗試透過網際網路進行串流，請在電腦上安裝 Moonlight Internet Hosting Tool，並執行內建的 Internet Streaming Tester 以檢查網際網路連線。</string>
+	<string name="nettest_text_inconclusive">無法執行網路測試，因為無法連線至 NOUS 的測試伺服器。請檢查您的網際網路連線，或稍後再試。</string>
 	<string name="nettest_text_failure">您目前的網路連線似乎正在阻擋 NOUS。在此網路下，透過網際網路串流可能無法正常運作。\n\n以下連接埠被阻擋：\n</string>
 	<string name="nettest_text_blocked">您目前的網路連線正在阻擋 NOUS。在此網路下，透過網際網路串流可能無法正常運作。</string>
 
@@ -54,7 +54,7 @@
 	<string name="pair_pc_ingame">電腦目前正在執行遊戲，必須先關閉遊戲才能配對。</string>
 	<string name="pair_pairing_title">正在配對</string>
 	<string name="pair_pairing_msg">請在目標電腦上輸入以下 PIN：</string>
-	<string name="pair_pairing_help">如果您的主機電腦正在執行 Sunshine，請進入 Sunshine 的網頁介面輸入 PIN。</string>
+	<string name="pair_pairing_help">如果您的主機電腦正在執行 NOUS，請進入 NOUS 的網頁介面輸入 PIN。</string>
 	<string name="pair_otp_pairing_msg">正在進行配對，請稍候…</string>
 	<string name="pair_otp_pairing_help">OTP 配對僅適用於 NOUS，如果您使用其他主機軟體，請在網頁介面手動輸入剛剛提供的 PIN。</string>
 	<string name="pair_incorrect_pin">PIN 或密碼短語錯誤</string>
@@ -143,7 +143,7 @@
 	</string>
 
 	<string name="email_recipient">artemistics.logs@gmail.com</string>
-	<string name="email_subject">Artemistics - 效能日誌</string>
+	<string name="email_subject">NOUS - 效能日誌</string>
 	<string name="email_chooser_title">傳送效能日誌...</string>
 	<string name="toast_no_email_clients">未安裝電子郵件用戶端。</string>
 	<string name="toast_no_logs">尚未儲存任何效能數據。</string>
@@ -321,10 +321,10 @@
 	<string name="title_troubleshooting">疑難排解指南</string>
 	<string name="summary_troubleshooting">檢視診斷與修復常見串流問題的提示</string>
 	<string name="title_privacy_policy">隱私權政策</string>
-	<string name="summary_privacy_policy">檢視 Artemis 的隱私權政策</string>
+	<string name="summary_privacy_policy">檢視 NOUS 的隱私權政策</string>
 	<string name="title_special_key_help">自訂按鍵說明</string>
 	<string name="summary_special_key_help">有關如何設定自訂特殊按鍵的指引</string>
-	<string name="summary_performance_link">查看其他裝置的效能。\n請注意，這些資料由社群管理，非由 Artemis 官方管理，也不代表 Artemis 的官方立場。</string>
+	<string name="summary_performance_link">查看其他裝置的效能。\n請注意，這些資料由社群管理，非由 NOUS 官方管理，也不代表 NOUS 的官方立場。</string>
 	<string name="title_performance_link">效能儀表板</string>
 
 	<!-- Toasts -->
@@ -494,7 +494,7 @@
 	
 
 	<string name="title_follow_update">追蹤更新</string>
-	<string name="summary_follow_update">使用 Obtainium 追蹤 Artemis 更新</string>
+	<string name="summary_follow_update">使用 Obtainium 追蹤 NOUS 更新</string>
 
 	<string name="title_special_key_layout">特殊按鍵佈局</string>
 	<string name="title_show_virtual_key">在螢幕上顯示虛擬按鍵</string>
@@ -750,8 +750,8 @@
 	<!-- AppView Toast Messages -->
 	<string name="file_export_cancelled">已取消匯出。</string>
 	<string name="app_removed_from_pc">已自電腦移除應用程式</string>
-	<string name="title_export_sunshine_launcher_file">為 Sunshine 匯出啟動檔</string>
-	<string name="message_export_sunshine_launcher_file">為 Sunshine 匯出啟動檔不夠穩定，可能隨時失效。每次變更應用程式名稱或圖片後都需要重新匯出。\n欲獲得更穩定體驗，請使用 Apollo。</string>
+	<string name="title_export_sunshine_launcher_file">為 NOUS 匯出啟動檔</string>
+	<string name="message_export_sunshine_launcher_file">為 NOUS 匯出啟動檔不夠穩定，可能隨時失效。每次變更應用程式名稱或圖片後都需要重新匯出。\n欲獲得更穩定體驗，請使用 NOUS。</string>
 
 	<string name="title_enable_commit_text">啟用 commit-text 輸入（滑動/語音）</string>
 	<string name="summary_enable_commit_text">將軟體鍵盤的多字元輸入（手勢輸入、建議字詞、語音聽寫）轉送到主機。可能會影響依賴逐鍵輸入的遊戲。</string>

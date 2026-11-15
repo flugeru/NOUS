@@ -689,7 +689,7 @@ esac
             '"${source_path}" != ".github/workflows/ci.yml" && "${source_path}" != ".github/workflows/ci.yml@"*',
             workflow_text,
         )
-        self.assertIn("Vibepollo.msi", workflow_text)
+        self.assertIn("NOUS.msi", workflow_text)
         self.assertIn("windows-versioninfo-Windows", workflow_text)
         self.assertEqual(dispatch_inputs["signed_run_id"]["required"], "false")
         self.assertIn("finalized signed artifacts", dispatch_inputs["signed_run_id"]["description"])
@@ -792,7 +792,7 @@ esac
         self.assertEqual(publish_steps["Download exact-build Windows symbols from this run"]["with"]["name"], "windows-symbols-Windows")
         self.assertIn('test -s "symbol-assets/$symbol_pack"',
                       publish_steps["Verify exact-build Windows symbols"]["run"])
-        self.assertIn('VibepolloSymbols-${DAILY_VERSION}-windows-x64.7z',
+        self.assertIn('NOUSSymbols-${DAILY_VERSION}-windows-x64.7z',
                       publish_steps["Verify exact-build Windows symbols"]["run"])
         self.assertLess(
             list(publish_steps).index("Verify exact-build Windows symbols"),

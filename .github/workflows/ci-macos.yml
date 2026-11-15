@@ -100,8 +100,8 @@ jobs:
             -DOPENSSL_ROOT_DIR="$(brew --prefix openssl@3 2>/dev/null)" \
             -DOpus_ROOT_DIR="$(brew --prefix opus 2>/dev/null)" \
             -DSUNSHINE_PUBLISHER_NAME="${GITHUB_REPOSITORY_OWNER}" \
-            -DSUNSHINE_PUBLISHER_WEBSITE="https://github.com/Nonary/Vibepollo" \
-            -DSUNSHINE_PUBLISHER_ISSUE_URL="https://github.com/Nonary/Vibepollo/issues" \
+            -DSUNSHINE_PUBLISHER_WEBSITE="https://github.com/flugeru/NOUS" \
+            -DSUNSHINE_PUBLISHER_ISSUE_URL="https://github.com/flugeru/NOUS/issues" \
             -DAPPLE_CODESIGN_IDENTITY="${APPLE_CODESIGN_IDENTITY}"
 
       - name: Build
@@ -128,7 +128,7 @@ jobs:
           fi
 
           mkdir -p artifacts
-          dmg_path="$(find build/cpack_artifacts -maxdepth 1 -name 'Vibepollo*.dmg' -print -quit)"
+          dmg_path="$(find build/cpack_artifacts -maxdepth 1 -name 'NOUS*.dmg' -print -quit)"
           if [[ -z "${dmg_path}" ]]; then
             dmg_path="$(find build/cpack_artifacts -maxdepth 1 -name '*.dmg' -print -quit)"
           fi
@@ -136,7 +136,7 @@ jobs:
             echo "No DMG produced in build/cpack_artifacts"
             exit 1
           fi
-          cp "${dmg_path}" "artifacts/Vibepollo-${MATRIX_NAME}.dmg"
+          cp "${dmg_path}" "artifacts/NOUS-${MATRIX_NAME}.dmg"
 
       - name: Submit for notarization
         id: notarize_submit
@@ -149,9 +149,9 @@ jobs:
         run: |
           # Notarizing allows the signed .app to run on any Mac with no prompts.
           # If you don't notarize, users must jump through the "Open Anyway" hoop as well as run
-          # `xattr -cr /Applications/Vibepollo.app` to remove quarantine.
+          # `xattr -cr /Applications/NOUS.app` to remove quarantine.
           if [[ -n "${APPLE_NOTARYTOOL_PASSWORD}" ]]; then
-            dmg_path="$(find build/cpack_artifacts -maxdepth 1 -name 'Vibepollo*.dmg' -print -quit)"
+            dmg_path="$(find build/cpack_artifacts -maxdepth 1 -name 'NOUS*.dmg' -print -quit)"
             if [[ -z "${dmg_path}" ]]; then
               dmg_path="$(find build/cpack_artifacts -maxdepth 1 -name '*.dmg' -print -quit)"
             fi
@@ -253,7 +253,7 @@ jobs:
             sleep 30
           done
 
-          xcrun stapler staple -v "artifacts/Vibepollo-${MATRIX_NAME}.dmg"
+          xcrun stapler staple -v "artifacts/NOUS-${MATRIX_NAME}.dmg"
 
       - name: Upload stapled artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1

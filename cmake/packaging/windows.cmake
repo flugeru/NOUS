@@ -4,6 +4,8 @@ include("${CMAKE_SOURCE_DIR}/cmake/packaging/windows_virtual_gamepad_contract.cm
 include("${CMAKE_SOURCE_DIR}/cmake/packaging/windows_usbip_contract.cmake")
 
 install(TARGETS sunshine RUNTIME DESTINATION "." COMPONENT application)
+# Compatibility executable for legacy integrations.
+install(PROGRAMS "$<TARGET_FILE:sunshine>" DESTINATION "." RENAME sunshine.exe COMPONENT application)
 install(FILES "${CMAKE_SOURCE_DIR}/packaging/windows/dualsense_usbip_NOTICES.txt"
         DESTINATION "licenses" COMPONENT application)
 
@@ -144,7 +146,7 @@ install(FILES ${SUDOVDA_DRIVER_FILES}
         DESTINATION "${SUNSHINE_VDD_SUDOVDA_DESTINATION}"
         COMPONENT sudovda)
 
-# Drivers (Vibepollo Display Driver)
+# Drivers (NOUS Display Driver)
 set(SUNSHINE_VIRTUAL_DISPLAY_DRIVER_SOURCE_DIR "${SUNSHINE_SOURCE_ASSETS_DIR}/windows/drivers/sunshine")
 set(SUNSHINE_VIRTUAL_DISPLAY_DRIVER_REFRESH_SCRIPT "${CMAKE_SOURCE_DIR}/packaging/windows/virtual_display_driver/refresh_driver_package.ps1")
 set(SUNSHINE_VIRTUAL_DISPLAY_DRIVER_DOWNLOAD_SCRIPT "${CMAKE_SOURCE_DIR}/scripts/download_libvirtualdisplay_release.ps1")
@@ -193,11 +195,11 @@ foreach(_sunshine_driver_file IN LISTS SUNSHINE_VIRTUAL_DISPLAY_PACKAGE_FILES)
         continue()
     endif()
     if (NOT EXISTS "${_sunshine_driver_file}")
-        message(FATAL_ERROR "Required Vibepollo Display Driver artifact missing: ${_sunshine_driver_file}")
+        message(FATAL_ERROR "Required NOUS Display Driver artifact missing: ${_sunshine_driver_file}")
     endif()
     file(SIZE "${_sunshine_driver_file}" _sunshine_driver_file_size)
     if (_sunshine_driver_file_size EQUAL 0)
-        message(FATAL_ERROR "Required Vibepollo Display Driver artifact is empty (0 bytes): ${_sunshine_driver_file}")
+        message(FATAL_ERROR "Required NOUS Display Driver artifact is empty (0 bytes): ${_sunshine_driver_file}")
     endif()
 endforeach()
 unset(_sunshine_driver_file_size)
@@ -221,7 +223,7 @@ if(EXISTS "${SUNSHINE_VIRTUAL_DISPLAY_DRIVER_REFRESH_SCRIPT}")
                 -LockPath "${SUNSHINE_VDD_LIBVIRTUALDISPLAY_RELEASE_LOCK}"
                 ${_sunshine_vdd_provenance_args}
         DEPENDS "${SUNSHINE_VIRTUAL_DISPLAY_DRIVER_DOWNLOAD_SCRIPT}" "${SUNSHINE_VDD_LIBVIRTUALDISPLAY_RELEASE_LOCK}"
-        COMMENT "Verifying reviewed Vibepollo Display Driver producer bytes"
+        COMMENT "Verifying reviewed NOUS Display Driver producer bytes"
         VERBATIM)
     unset(_sunshine_vdd_provenance_args)
 
@@ -233,7 +235,7 @@ if(EXISTS "${SUNSHINE_VIRTUAL_DISPLAY_DRIVER_REFRESH_SCRIPT}")
                 -PrebuiltPackageDir "${SUNSHINE_EFFECTIVE_LIBVIRTUALDISPLAY_PREBUILT_DIR}"
                 -PackageDir "${SUNSHINE_VIRTUAL_DISPLAY_DRIVER_SOURCE_DIR}"
         DEPENDS "${SUNSHINE_VIRTUAL_DISPLAY_DRIVER_REFRESH_SCRIPT}"
-        COMMENT "Validating Vibepollo Display Driver package assets"
+        COMMENT "Validating NOUS Display Driver package assets"
         VERBATIM)
 
     add_dependencies(validate_sunshine_virtual_display_driver_assets
@@ -249,7 +251,7 @@ if(EXISTS "${SUNSHINE_VIRTUAL_DISPLAY_DRIVER_REFRESH_SCRIPT}")
                 -PackageDir "${SUNSHINE_VIRTUAL_DISPLAY_DRIVER_SOURCE_DIR}"
                 ${SUNSHINE_VIRTUAL_DISPLAY_DRIVER_SIGNING_ARGS}
         DEPENDS "${SUNSHINE_VIRTUAL_DISPLAY_DRIVER_REFRESH_SCRIPT}"
-        COMMENT "Refreshing Vibepollo Display Driver package assets from the pinned release"
+        COMMENT "Refreshing NOUS Display Driver package assets from the pinned release"
         VERBATIM)
 
     add_dependencies(refresh_sunshine_virtual_display_driver_assets
@@ -576,11 +578,11 @@ if(NOT EXISTS "${CMAKE_BINARY_DIR}/assets/shaders")
     execute_process(COMMAND cmd.exe /c mklink /J "${shaders_in_build_dest_native}" "${shaders_in_build_src_native}")
 endif()
 
-set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}\\\\apollo.ico")
+set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}\\\\nous.ico")
 
 # The name of the directory that will be created in C:/Program Files/
-# Match the legacy NSIS layout by installing under Apollo
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "Apollo")
+# Upgrades retain existing install location through MSI migration.
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "NOUS")
 
 # Setting components groups and dependencies
 set(CPACK_COMPONENT_GROUP_CORE_EXPANDED true)

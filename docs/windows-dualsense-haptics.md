@@ -1,16 +1,16 @@
 # Windows DualSense waveform haptics
 
-Vibepollo exposes the streamed controller as a wired USB DualSense with HID and
+NOUS exposes the streamed controller as a wired USB DualSense with HID and
 audio interfaces on the Windows host. The bundled installer transport currently
 targets Windows x64. Compatible games see a normal Windows controller audio endpoint
-and can submit native waveform haptics. Vibepollo sends the actuator samples to a
+and can submit native waveform haptics. NOUS sends the actuator samples to a
 Moonlight client implementing the waveform extension, which renders them on the
 physical DualSense. The client manages the physical controller connection;
 that connection does not change the wired USB identity exposed to Windows games.
 
 ## Setup
 
-1. In the Vibepollo installer, select the optional **DualSense USB audio and
+1. In the NOUS installer, select the optional **DualSense USB audio and
    haptics** component. It is off by default and installs the bundled
    Microsoft-signed usbip-win2 transport. Restart Windows if the installer requests it.
 2. Windows automatically uses the composite USB/audio backend whenever controller
@@ -29,11 +29,11 @@ that connection does not change the wired USB identity exposed to Windows games.
 
 Direct executables, Steam launches, Playnite launches, and desktop streaming use
 the same controller audio endpoint. With the per-application option enabled,
-Vibepollo waits up to 30 seconds for a waveform-capable streamed controller and
+NOUS waits up to 30 seconds for a waveform-capable streamed controller and
 its HID and active audio endpoint before running preparation commands or starting
 the game. Global `usbip_ds5` selection creates the device when a controller arrives;
 a desktop stream can still start with only a mouse and keyboard.
-Games launched outside Vibepollo can also use the endpoint and send waveform
+Games launched outside NOUS can also use the endpoint and send waveform
 haptics while the composite controller is connected, including after an opted-in
 application ends. The per-application option does
 not require a special game-launch helper or an injected audio DLL.
@@ -42,7 +42,7 @@ If the optional transport is unavailable, the per-application option reports an
 error before launching the application. An explicitly selected composite controller
 does not silently substitute a VHF or ViGEm controller. Run the installer again with
 the optional component selected, follow any restart request, and reconnect the stream.
-The shared usbip-win2 driver remains installed when Vibepollo is uninstalled.
+The shared usbip-win2 driver remains installed when NOUS is uninstalled.
 
 ## Controller and audio path
 
@@ -54,7 +54,7 @@ This is the same controller/audio contract used by the Linux composite DualSense
 
 The game writes four-channel, 48 kHz S16LE audio to the controller endpoint.
 Only actuator channels 3/4 enter the waveform transport; controller-speaker channels
-and microphone audio are outside this extension. Vibepollo batches the signed
+and microphone audio are outside this extension. NOUS batches the signed
 samples into 240 stereo frames (5 ms) and forwards them through the existing
 gamepad feedback queue and encrypted `0x5601` control extension. PCM admission is
 bounded so audio cannot clear pending rumble, LED, or adaptive-trigger messages.

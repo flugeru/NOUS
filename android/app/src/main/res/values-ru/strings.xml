@@ -14,8 +14,8 @@
 \n
 \nЭто может занять некоторое время…</string>
     <string name="nettest_title_done">Тестирование подключения завершено</string>
-    <string name="nettest_text_success">Ваша сеть не блокирует NOUS. Если у вас всё ещё есть проблемы с соединением, проверьте настройки брандмауэра на компьютере.\n\nЕсли вы пытаетесь транслировать через интернет, установите Artemis Internet Hosting Tool на ваш компьютер и запустите установленный Internet Streaming Tester, чтобы проверить Интернет-соединение на вашем компьютере.</string>
-    <string name="nettest_text_inconclusive">Тестирование подключения не может быть выполнено, потому что сервера тестирования подключения Artemis не доступны. Проверьте ваше Интернет-соединение или повторите попытку позже.</string>
+    <string name="nettest_text_success">Ваша сеть не блокирует NOUS. Если у вас всё ещё есть проблемы с соединением, проверьте настройки брандмауэра на компьютере.\n\nЕсли вы пытаетесь транслировать через интернет, установите Moonlight Internet Hosting Tool на ваш компьютер и запустите установленный Internet Streaming Tester, чтобы проверить Интернет-соединение на вашем компьютере.</string>
+    <string name="nettest_text_inconclusive">Тестирование подключения не может быть выполнено, потому что сервера тестирования подключения NOUS не доступны. Проверьте ваше Интернет-соединение или повторите попытку позже.</string>
     <string name="nettest_text_failure">Похоже, что текущее сетевое подключение вашего устройства блокирует NOUS. Трансляция через Интернет может не работать при подключении к этой сети.\n\nСледующие сетевые порты были заблокированы:\n</string>
     <!-- Pair messages -->
     <string name="pairing">Сопряжение…</string>
@@ -60,7 +60,7 @@
     <string name="ip_hint">IP-адрес хост-ПК</string>
     <string name="searching_pc">Поиск хост-ПК в вашей локальной сети…
 \n
-\n Убедитесь, что Sunshine работает на вашем хост-компьютере или GameStream включен в настройках GeForce Experience SHIELD.</string>
+\n Убедитесь, что NOUS работает на вашем хост-компьютере или GameStream включен в настройках GeForce Experience SHIELD.</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="lost_connection">Потеряно соединение с ПК</string>
@@ -258,7 +258,7 @@
     <string name="summary_setup_guide">Посмотреть инструкцию о том как настроить ваш ПК для стриминга</string>
     <string name="title_troubleshooting">Руководство по устранению неполадок</string>
     <string name="summary_frame_pacing">Укажите, как сбалансировать задержку и плавность видеосигнала</string>
-    <string name="summary_privacy_policy">Посмотреть политику конфиденциальности Artemis</string>
+    <string name="summary_privacy_policy">Посмотреть политику конфиденциальности NOUS</string>
     <string name="title_privacy_policy">Политика конфиденциальности</string>
     <string name="resolution_360p">360p</string>
     <string name="resolution_1080p">1080p</string>
@@ -289,7 +289,7 @@
     <string name="pan_zoom_mode_disabled">Режим прокрутки/масш. выключен</string>
     <string name="title_analog_scrolling">Использовать аналоговый джойстик для прокрутки</string>
     <string name="analogscroll_right">Правый аналоговый джойстик</string>
-    <string name="pair_pairing_help">Если на вашем хост-ПК установлен Sunshine, перейдите в веб-интерфейс Sunshine и введите PIN-код.</string>
+    <string name="pair_pairing_help">Если на вашем хост-ПК установлен NOUS, перейдите в веб-интерфейс NOUS и введите PIN-код.</string>
     <string name="error_code_prefix">Код ошибки:</string>
     <string name="perf_overlay_hostprocessinglatency">Задержка обработки хоста мин/макс/среднее: %1$.1f/%2$.1f/%3$.1f мс</string>
     <string name="summary_seekbar_vibrate_fallback_strength">Увеличьте или уменьшите интенсивность вибрации на вашем устройстве</string>
@@ -305,7 +305,7 @@
     <string name="analogscroll_none">Нет (оба джойстика перемещают мышь)</string>
     <string name="analogscroll_left">Левый аналоговый джойстик</string>
     <string name="pcview_menu_eol">NVIDIA GameStream обслуживание окончено</string>
-    <string name="message_export_sunshine_launcher_file">Экспорт лаунчера для Sunshine нестабилен и может ломаться. При изменении имени или картинки экспорт придётся делать заново.\nДля стабильности используйте Apollo.</string>
+    <string name="message_export_sunshine_launcher_file">Экспорт лаунчера для NOUS нестабилен и может ломаться. При изменении имени или картинки экспорт придётся делать заново.\nДля стабильности используйте NOUS.</string>
     <string name="title_enable_commit_text">Включить передачу готового текста (свайп/голос)</string>
     <string name="summary_enable_commit_text">Передаёт на ПК многосимвольный текст из экранных клавиатур (жестовый ввод, подсказки, голосовой ввод). Может нарушить работу игр, ожидающих посимвольного ввода.</string>
     <string name="menu_button">Меню</string>
@@ -320,7 +320,7 @@
     <string name="pair_otp_pairing_msg">Сопряжение, подождите…</string>
     <string name="pair_passphrase_hint">Пароль</string>
     <string name="pair_pin_length_msg">PIN должен состоять из 4 цифр</string>
-    <string name="email_subject">Artemistics - журнал производительности</string>
+    <string name="email_subject">NOUS - журнал производительности</string>
     <string name="email_chooser_title">Отправить журнал производительности...</string>
     <string name="toast_no_email_clients">Почтовые клиенты не установлены.</string>
     <string name="applist_menu_start_vdisplay">Запустить в виртуальном дисплее</string>
@@ -339,7 +339,7 @@
     <string name="title_show_guide_button">Показать кнопку Guide</string>
     <string name="title_special_key_help">Помощь по пользовательским клавишам</string>
     <string name="summary_special_key_help">Инструкция по настройке пользовательских спец-клавиш</string>
-    <string name="summary_performance_link">Просмотреть производительность других устройств.\nОбратите внимание, эти данные поддерживаются сообществом, они не поддерживаются Artemis и не представляют Artemis официально.</string>
+    <string name="summary_performance_link">Просмотреть производительность других устройств.\nОбратите внимание, эти данные поддерживаются сообществом, они не поддерживаются NOUS и не представляют NOUS официально.</string>
     <string name="pacing_warp">Warp Drive (экспериментально)</string>
     <string name="keyboard_service_label">Физическая клавиатура NOUS</string>
     <string name="accessibility_description_text">Используется, если системные сочетания физической клавиатуры перехватываются Android. В таких случаях некоторые сочетания не проходят на хост-ПК. NOUS не просматривает ваш ввод и не собирает пароли, номера карт или другую личную информацию.</string>
@@ -415,7 +415,7 @@
     <string name="title_software_update">Обновление ПО</string>
     
     <string name="title_follow_update">Следить за обновлениями</string>
-    <string name="summary_follow_update">Следите за обновлениями Artemis через Obtainium</string>
+    <string name="summary_follow_update">Следите за обновлениями NOUS через Obtainium</string>
     <string name="title_special_key_layout">Раскладка спец-клавиш</string>
     <string name="title_show_virtual_key">Показать виртуальные клавиши на экране</string>
     <string name="summary_show_virtual_key">Отобразить слой виртуальных спец-клавиш на тачскрине.\nНепрозрачность клавиш общая с виртуальным геймпадом.</string>
@@ -614,7 +614,7 @@
     <string name="unexpected_error_during_file_export">При экспорте произошла непредвиденная ошибка.</string>
     <string name="file_export_cancelled">Экспорт отменён.</string>
     <string name="app_removed_from_pc">Приложение удалено с ПК</string>
-    <string name="title_export_sunshine_launcher_file">Экспорт файла запуска для Sunshine</string>
+    <string name="title_export_sunshine_launcher_file">Экспорт файла запуска для NOUS</string>
     <string name="title_checkbox_remember_zoom_pan">Запоминать прокрутку/масш.</string>
     <string name="summary_checkbox_remember_zoom_pan">Сохранять масштаб и позицию между сессиями</string>
     <string name="title_checkbox_enable_perf_overlay_bottom">Переместить панель вниз</string>

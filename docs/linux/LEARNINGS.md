@@ -1,6 +1,6 @@
 # Linux Machine-Service Architecture: Lessons Learned
 
-This file records the design constraints behind Vibepollo's supported Linux
+This file records the design constraints behind NOUS's supported Linux
 pre-login implementation. It intentionally replaces the old per-user setup
 notes; use the repository `AGENTS.md` for current commands.
 
@@ -106,7 +106,7 @@ Linux's equivalent of the relevant Windows split is:
 Making `/usr/share/vibepollo` writable is not necessary for shared settings and
 would allow code/data replacement. Shared state belongs in `/var/lib`; only an
 administrator may change machine policy. Ordinary users are not members of a
-privileged Vibepollo group.
+privileged NOUS group.
 
 ## Privilege belongs at narrow boundaries
 
@@ -166,7 +166,7 @@ The greeter may expose only the passive Desktop stream. Arbitrary application
 launch, Steam/Lutris synchronization, and policy changes belong to an
 authenticated desktop/admin context. New pairing requests are accepted at the
 greeter: completing one still requires the Web UI login to submit the PIN, so
-refusing them was a GameStream habit rather than a Vibepollo requirement.
+refusing them was a GameStream habit rather than a NOUS requirement.
 Pairing requests and HTTP bodies need hard size/count limits and timer-driven
 expiry rather than cleanup only when another request arrives.
 
@@ -184,7 +184,7 @@ filesystem authority. Linux enables Steam; Playnite remains Windows-only.
 working stream. On this host, readiness requires:
 
 - the controller bound the exact active local seat0 KDE Wayland session;
-- the managed virtual output exists and KMS uses event-driven Vibepollo DRM
+- the managed virtual output exists and KMS uses event-driven NOUS DRM
   capture;
 - the H.264 encoder probe succeeds (HEVC and AV1 are optional and depend on
   the GPU generation; requiring them would lock out every pre-AV1 GPU);
@@ -206,7 +206,7 @@ controller then starts a fresh wrapper and repeats the complete proof.
 
 The installed and loaded `vibeshine_drm` versions may differ after a package
 update because the compositor holds the old module. A reboot, not merely a
-Vibepollo restart, is required in that case.
+NOUS restart, is required in that case.
 
 ## The KWin GPU bridge must not modify KWin
 

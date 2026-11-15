@@ -251,7 +251,7 @@ namespace platf {
         // present, ViGEmBus is simply not in use, and warning about it sends people chasing a
         // dependency they no longer need.
         if (vhf_gamepad_available) {
-          BOOST_LOG(info) << "ViGEmBus is not installed; the Vibepollo virtual gamepad driver is available."sv;
+          BOOST_LOG(info) << "ViGEmBus is not installed; the NOUS virtual gamepad driver is available."sv;
         } else {
           BOOST_LOG(warning) << "ViGEmBus is not installed or running; gamepad emulation will be unavailable until installed."sv;
         }
@@ -1525,7 +1525,7 @@ namespace platf {
       }
 
       if (vhf_available) {
-        BOOST_LOG(info) << "Gamepad " << id.globalIndex << " will use the Vibepollo virtual gamepad driver"sv
+        BOOST_LOG(info) << "Gamepad " << id.globalIndex << " will use the NOUS virtual gamepad driver"sv
                         << (automatic_vhf_fallback ? " (automatic fallback)"sv :
                             steam_client_prefers_vhf ? " (Steam Controller client)"sv : ""sv);
 
@@ -1552,7 +1552,7 @@ namespace platf {
       // With no ViGEm backend, exhaust the driver's automatic profile before
       // failing. The client-derived profile above is only a preference under auto.
       if (automatic_vhf_fallback) {
-        BOOST_LOG(error) << "Gamepad " << id.globalIndex << " could not be created on the Vibepollo virtual gamepad driver"sv;
+        BOOST_LOG(error) << "Gamepad " << id.globalIndex << " could not be created on the NOUS virtual gamepad driver"sv;
         return -1;
       }
 
@@ -1561,12 +1561,12 @@ namespace platf {
       // win even though the user selected a specific VHF profile. A Steam Controller client
       // under `auto` chose nothing explicitly, so it may still fall back to ViGEmBus.
       if (explicit_profile && desired != vhf_profile_e::automatic && !steam_client_prefers_vhf) {
-        BOOST_LOG(error) << "Gamepad " << id.globalIndex << " could not create the requested Vibepollo controller profile; refusing to substitute another profile"sv;
+        BOOST_LOG(error) << "Gamepad " << id.globalIndex << " could not create the requested NOUS controller profile; refusing to substitute another profile"sv;
         return -1;
       }
 
       // The generic VHF option is allowed to fall back when the driver cannot create a device.
-      BOOST_LOG(error) << "Gamepad " << id.globalIndex << " could not be created on the Vibepollo virtual gamepad driver; falling back to ViGEmBus"sv;
+      BOOST_LOG(error) << "Gamepad " << id.globalIndex << " could not be created on the NOUS virtual gamepad driver; falling back to ViGEmBus"sv;
     }
 
     if (!raw->vigem) {

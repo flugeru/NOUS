@@ -26,7 +26,7 @@
     <string name="nettest_text_success">Dein Netzwerk scheint NOUS nicht zu blockieren. Wenn du weiterhin Probleme mit der Verbindung hast, überprüfe die Firewall-Einstellungen deines Hosts
 \n
 \nWenn du versuchst, über das Internet zu streamen, installiere das Moonlight Internet Hosting Tool auf deinem Host und führe den mitgelieferten Internet-Streaming-Tester aus, um die Internetverbindung des Hosts zu überprüfen.</string>
-    <string name="nettest_text_inconclusive">Der Netzwerktest konnte nicht durchgeführt werden, da keiner der Verbindungstestserver von Moonlight erreichbar war. Überprüfe deine Internetverbindung oder versuche es später noch einmal.</string>
+    <string name="nettest_text_inconclusive">Der Netzwerktest konnte nicht durchgeführt werden, da keiner der Verbindungstestserver von NOUS erreichbar war. Überprüfe deine Internetverbindung oder versuche es später noch einmal.</string>
     <string name="nettest_text_failure">Die aktuelle Netzwerkverbindung deines Geräts scheint NOUS zu blockieren. Das Streaming über das Internet funktioniert möglicherweise nicht, während du mit diesem Netzwerk verbunden bist.
 \n
 \nFolgende Netzwerkports wurden blockiert:
@@ -82,7 +82,7 @@
     <string name="ip_hint">IP-Adresse des GeForce Hosts</string>
     <string name="searching_pc">Suche nach Host PCs in deinem lokalen Netzwerk…
 \n
-\nStelle sicher, dass Sunshine läuft oder GameStream in den GeForce Experience SHIELD-Einstellungen aktiviert ist.</string>
+\nStelle sicher, dass NOUS läuft oder GameStream in den GeForce Experience SHIELD-Einstellungen aktiviert ist.</string>
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
     <string name="lost_connection">Verbindung zum Host verloren</string>
@@ -149,7 +149,7 @@
     <string name="title_checkbox_xb1_driver">Xbox 360/One Controller Treiber</string>
     <string name="summary_checkbox_xb1_driver">Aktiviert den eingebauten USB Treiber für Geräte die keine Xbox-Controller Unterstützung haben</string>
     <string name="title_checkbox_usb_bind_all">Android Controller Unterstützung überschreiben</string>
-    <string name="summary_checkbox_usb_bind_all">Erzwingt die Verwendung von Moonlights USB Treiber für alle Xbox kompatiblen Controller</string>
+    <string name="summary_checkbox_usb_bind_all">Erzwingt die Verwendung von NOUS USB Treiber für alle Xbox kompatiblen Controller</string>
     <string name="title_checkbox_mouse_emulation">Maus Emulation via Controller</string>
     <string name="summary_checkbox_mouse_emulation">Langes gedrückt halten der Start-Taste wechselt in den Maus Modus</string>
     <string name="title_checkbox_mouse_nav_buttons">Vor- und Zurück-Tasten aktivieren</string>
@@ -249,7 +249,7 @@
     <string name="title_checkbox_absolute_mouse_mode">Modus für ferngesteuerte Maus</string>
     <string name="category_help">Hilfe</string>
     <string name="title_setup_guide">Einstellungsanleitung</string>
-    <string name="summary_privacy_policy">Moonlight\'s Datenschutzbestimmungen anzeigen</string>
+    <string name="summary_privacy_policy">NOUS\'s Datenschutzbestimmungen anzeigen</string>
     <string name="summary_seekbar_deadzone">Hinweis: Einige Spiele können eine größere Controller-Totzone erzwingen als die, die in NOUS konfiguriert ist.</string>
     <string name="summary_checkbox_enable_audiofx">Ermöglicht das Funktionieren von Audioeffekten beim Streaming, kann aber die Audio-Latenz erhöhen</string>
     <string name="resolution_prefix_native_portrait">(Portrait)</string>
@@ -265,7 +265,7 @@
     <string name="videoformat_h264always">Immer H.264 verwenden</string>
     <string name="fps_suffix_fps">FPS</string>
     <string name="category_gamepad_settings">Gamepad Einstellungen</string>
-    <string name="pair_pairing_help">Wenn dein Host PC Sunshine verwendet, navigiere zur Sunshine Web UI und gebe dort die PIN ein.</string>
+    <string name="pair_pairing_help">Wenn dein Host PC NOUS verwendet, navigiere zur NOUS Web UI und gebe dort die PIN ein.</string>
     <string name="title_checkbox_gamepad_touchpad_as_mouse">Die Maus immer mit dem Touchpad steuern</string>
     <string name="perf_overlay_hostprocessinglatency">Host Verarbeitungslatenz min/max/avg: %1$.1f/%2$.1f/%3$.1f ms</string>
     <string name="title_analog_scrolling">Verwenden Sie zum Scrollen einen Analogstick</string>
@@ -293,7 +293,7 @@
     Deine geteilten Leistungsdaten helfen, den verfügbaren Datensatz zu verbessern und zu erweitern:\n
      https://tinyurl.com/artemis-performance\n\n</string>
     <string name="email_recipient">artemistics.logs@gmail.com</string>
-    <string name="email_subject">Artemistics - Performance Log</string>
+    <string name="email_subject">NOUS - Performance Log</string>
     <string name="email_chooser_title">Performance Log senden...</string>
     <string name="toast_no_email_clients">Keine E-Mail-Clients installiert.</string>
     <string name="toast_no_logs">Es sind noch keine Leistungsdaten gespeichert.</string>

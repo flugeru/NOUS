@@ -2,9 +2,6 @@ name: NOUS Android
 
 on:
   workflow_dispatch:
-  push:
-    branches: [master, NOUS-First-steps]
-    paths: ['android/**', '.github/workflows/android-client.yml']
 
 permissions:
   contents: read

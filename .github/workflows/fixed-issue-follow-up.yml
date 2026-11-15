@@ -3,15 +3,7 @@ name: Fixed Issue Follow-Up
 permissions: {}
 
 on:
-  issues:
-    types:
-      - labeled
-  release:
-    types:
-      - published
-  repository_dispatch:
-    types:
-      - daily-release-published
+  workflow_dispatch:
 
 jobs:
   queue-follow-up:

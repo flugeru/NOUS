@@ -45,8 +45,8 @@ jobs:
       release_version: ${{ inputs.release_version }}
       release_tag: ${{ inputs.release_tag }}
       require_truehdr_runtime: ${{ inputs.qualify_nightly_installer }}
-      symbol_product_name: Vibepollo
-      symbol_release_prefix: polo
+      symbol_product_name: NOUS
+      symbol_release_prefix: nous
       release_artifact_retention_days: 14
     secrets:
       truehdr_runtime_token: ${{ inputs.qualify_nightly_installer && secrets.TRUEHDR_RUNTIME_TOKEN || '' }}

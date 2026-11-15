@@ -18,7 +18,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
-          ref: canary
+          ref: nous-project
           persist-credentials: false
 
       - name: Install Python
@@ -86,7 +86,7 @@ jobs:
           commit-message: "chore(l10n): new babel updates"
           branch: localize/update
           delete-branch: true
-          base: canary
+          base: nous-project
           title: "chore(l10n): new babel updates"
           body: |
             Update report

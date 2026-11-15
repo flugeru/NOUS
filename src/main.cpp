@@ -199,7 +199,7 @@ namespace {
         // can be blocked by the shutdown path that this watchdog protects.
         std::_Exit(lifetime::desired_exit_code);
       }
-      BOOST_LOG(fatal) << deadline.count() << " seconds passed, yet Vibepollo's still running: Forcing shutdown; active shutdown phase: "sv
+      BOOST_LOG(fatal) << deadline.count() << " seconds passed, yet NOUS's still running: Forcing shutdown; active shutdown phase: "sv
                        << shutdown_phase_.current_name();
       lifetime::debug_trap();
     }
@@ -280,7 +280,7 @@ int main(int argc, char *argv[]) {
 #ifdef __linux__
   #ifdef SUNSHINE_BUILD_STEAMOS
   if (platf::linux_cli::command(argc, argv)) {
-    std::fputs("Vibepollo: native Linux maintenance commands are unavailable in the SteamOS user bundle.\n", stderr);
+    std::fputs("NOUS: native Linux maintenance commands are unavailable in the SteamOS user bundle.\n", stderr);
     return 2;
   }
   #else
@@ -293,7 +293,7 @@ int main(int argc, char *argv[]) {
   #endif
   if (!platf::linux_security::sanitize_startup_capabilities()) {
     const int error_number = errno ? errno : EPERM;
-    std::fprintf(stderr, "Vibepollo: failed to sanitize Linux startup capabilities: %s\n",
+    std::fprintf(stderr, "NOUS: failed to sanitize Linux startup capabilities: %s\n",
                  std::strerror(error_number));
     return 1;
   }
@@ -305,7 +305,7 @@ int main(int argc, char *argv[]) {
   sigaddset(&termination_signal_set, SIGINT);
   sigaddset(&termination_signal_set, SIGTERM);
   if (const int error_number = pthread_sigmask(SIG_BLOCK, &termination_signal_set, nullptr); error_number != 0) {
-    std::fprintf(stderr, "Vibepollo: failed to block termination signals: %s\n", std::strerror(error_number));
+    std::fprintf(stderr, "NOUS: failed to block termination signals: %s\n", std::strerror(error_number));
     return 1;
   }
   const char *machine_host_environment = std::getenv("VIBEPOLLO_MACHINE_HOST");
@@ -334,7 +334,7 @@ int main(int argc, char *argv[]) {
     std::filesystem::current_path(bundle_executable.parent_path().parent_path(), bundle_error);
   }
   if (bundle_error) {
-    std::fprintf(stderr, "Vibepollo: cannot resolve SteamOS bundle: %s\n", bundle_error.message().c_str());
+    std::fprintf(stderr, "NOUS: cannot resolve SteamOS bundle: %s\n", bundle_error.message().c_str());
     return 1;
   }
 #endif
@@ -410,7 +410,7 @@ int main(int argc, char *argv[]) {
                   << ", display_version=" << windows_version.display_version
                   << ", build=" << windows_version.current_build;
   if (windows_version.build_number.has_value() && *windows_version.build_number < 22000) {
-    BOOST_LOG(warning) << "Windows 10 detected; HDR will not work on the Vibepollo Virtual Display.";
+    BOOST_LOG(warning) << "Windows 10 detected; HDR will not work on the NOUS Virtual Display.";
   }
 #endif
   if (version_compare::is_prerelease_channel(PROJECT_VERSION)) {
@@ -564,7 +564,7 @@ int main(int argc, char *argv[]) {
     auto wnd = CreateWindowExA(
       0,
       wnd_class.lpszClassName,
-      "Sunshine Session Monitor Window",
+      "NOUS Session Monitor Window",
       0,
       CW_USEDEFAULT,
       CW_USEDEFAULT,
@@ -1002,7 +1002,7 @@ int main(int argc, char *argv[]) {
     BOOST_LOG(fatal) << "HTTP interface failed to initialize"sv;
 
 #ifdef _WIN32
-    BOOST_LOG(fatal) << "To relaunch Apollo successfully, use the shortcut in the Start Menu. Do not run sunshine.exe manually."sv;
+    BOOST_LOG(fatal) << "To relaunch NOUS successfully, use the shortcut in the Start Menu. Do not run NOUS.exe manually."sv;
     std::this_thread::sleep_for(10s);
 #endif
 
@@ -1062,8 +1062,8 @@ int main(int argc, char *argv[]) {
 #ifdef _WIN32
   // If we're using the default port and GameStream is enabled, warn the user
   if (config::sunshine.port == 47989 && is_gamestream_enabled()) {
-    BOOST_LOG(fatal) << "GameStream is still enabled in GeForce Experience! This *will* cause streaming problems with Apollo!"sv;
-    BOOST_LOG(fatal) << "Disable GameStream on the SHIELD tab in GeForce Experience or change the Port setting on the Advanced tab in the Apollo Web UI."sv;
+    BOOST_LOG(fatal) << "GameStream is still enabled in GeForce Experience! This *will* cause streaming problems with NOUS!"sv;
+    BOOST_LOG(fatal) << "Disable GameStream on the SHIELD tab in GeForce Experience or change the Port setting on the Advanced tab in the NOUS Web UI."sv;
   }
 #endif
 

@@ -3,16 +3,7 @@ name: Logs Needed Reminder
 permissions: {}
 
 on:
-  issues:
-    types:
-      - opened
-      - edited
-      - reopened
-      - labeled
-  issue_comment:
-    types:
-      - created
-      - edited
+  workflow_dispatch:
 
 jobs:
   comment:
@@ -95,9 +86,9 @@ jobs:
 
             Thank you for the report. We need logs in order to troubleshoot this issue.
 
-            Please collect them from Vibepollo:
-            1. Open the system tray icon for Apollo.
-            2. Click **Open Vibepollo**.
+            Please collect them from NOUS:
+            1. Open the system tray icon for NOUS.
+            2. Click **Open NOUS**.
             3. If required, log into the Web UI.
             4. Open the **Troubleshooting** tab.
             5. Click **Export Logs**.

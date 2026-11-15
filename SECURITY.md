@@ -11,7 +11,7 @@ an already enforced security boundary.
 
 If you discover a way to escalate privileges, bypass authentication or
 authorization, or otherwise gain unauthorized access, submit a
-[private security report](https://github.com/Nonary/Vibepollo/security/advisories/new).
+[private security report](https://github.com/flugeru/NOUS/security/advisories/new).
 Do not disclose the exploit in a public issue or pull request before it has been
 reviewed and coordinated with the maintainers. If you are unsure whether a
 finding is a hardening suggestion or an exploitable vulnerability, report it
@@ -24,7 +24,7 @@ boundary crossed.
 
 ## Command execution and Windows elevation
 
-Vibepollo's Web UI intentionally allows an authenticated operator to configure
+NOUS's Web UI intentionally allows an authenticated operator to configure
 applications and preparation commands. The presence of command execution or an
 elevation option alone does not establish a vulnerability.
 
@@ -33,9 +33,9 @@ user's token. It does not grant administrator privileges to a standard user:
 requesting elevation for a non-administrator retains that user's existing access
 level. For an administrator, the service can use that user's existing linked
 administrator token. If the required user token cannot be obtained, the launch
-fails instead of falling back to the service's SYSTEM privileges. When Vibepollo
+fails instead of falling back to the service's SYSTEM privileges. When NOUS
 is run directly rather than as a service, child processes inherit the privileges
-with which Vibepollo was launched.
+with which NOUS was launched.
 
 Here, "administrator" refers to the Windows account in the active desktop
 session, not simply someone signed in to the Web UI. These Windows token rules

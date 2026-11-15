@@ -56,7 +56,7 @@ if(SUNSHINE_NPM_EXECUTABLE)
         COMMAND "${CMAKE_COMMAND}" -E touch "${SUNSHINE_WEB_STAMP}"
         WORKING_DIRECTORY "${SUNSHINE_WEB_SOURCE_DIR}"
         DEPENDS ${SUNSHINE_WEB_SOURCES}
-        COMMENT "Building the Vibepollo browser interface"
+        COMMENT "Building the NOUS browser interface"
         USES_TERMINAL
     )
     add_custom_target(web_ui DEPENDS
@@ -65,8 +65,8 @@ if(SUNSHINE_NPM_EXECUTABLE)
         "${SUNSHINE_WEB_OUTPUT_DIR}/index.html")
 else()
     add_custom_target(web_ui
-        COMMAND "${CMAKE_COMMAND}" -E echo "npm is required to build the Vibepollo browser interface"
+        COMMAND "${CMAKE_COMMAND}" -E echo "npm is required to build the NOUS browser interface"
         COMMAND "${CMAKE_COMMAND}" -E false
-        COMMENT "Unable to build the Vibepollo browser interface"
+        COMMENT "Unable to build the NOUS browser interface"
     )
 endif()

@@ -26,7 +26,7 @@ watchdog_module=""
 
 usage() {
   cat <<EOF
-Safely deploy the current Vibepollo build and reboot this Linux host.
+Safely deploy the current NOUS build and reboot this Linux host.
 
 Usage: $(basename "$0") [--yes] [--dry-run] [--force-reboot]
 
@@ -90,7 +90,7 @@ done
 
 # This historical user-service installer predates the machine-scoped host.
 # Stop before any staging, capability changes, service stop, or reboot.
-die "This deployment path is retired for the machine-scoped Vibepollo host. Use scripts/linux_local_deploy.py install --version 2.0.0 for a validated installation; reboot separately if the driver requires it."
+die "This deployment path is retired for the machine-scoped NOUS host. Use scripts/linux_local_deploy.py install --version 2.0.0 for a validated installation; reboot separately if the driver requires it."
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 repo_root="$(cd -- "$script_dir/.." && pwd -P)"
@@ -139,7 +139,7 @@ for command_name in "${required_commands[@]}"; do
 done
 
 [[ -f "$build_dir/cmake_install.cmake" ]] || die "missing configured build directory: $build_dir"
-[[ -x "$build_dir/vibepollo" ]] || die "missing built Vibepollo executable; run cmake --build build -j10 first"
+[[ -x "$build_dir/vibepollo" ]] || die "missing built NOUS executable; run cmake --build build -j10 first"
 
 calculate_drm_source_id() {
   local source_dir=$1
@@ -198,7 +198,7 @@ This will:
   1. Install the current build from:
        $build_dir
   2. Replace the installed vibeshine_drm source and privileged helpers.
-  3. Restore Vibepollo's KMS/NVENC capabilities.
+  3. Restore NOUS's KMS/NVENC capabilities.
   4. Make the hardware watchdog non-stoppable across kernel reboot notifiers.
   5. Arm a non-disarmable watchdog; the hardware timeout begins after the
      kernel argument has been activated by its one-time bootstrap reboot.
@@ -230,7 +230,7 @@ fi
 
 stage_user_prefix="$stage_dir$expected_home/.local"
 [[ -d "$stage_user_prefix" ]] || die "staged user prefix is missing: $stage_user_prefix"
-[[ -x "$stage_user_prefix/bin/vibepollo" ]] || die "staged Vibepollo executable is missing"
+[[ -x "$stage_user_prefix/bin/vibepollo" ]] || die "staged NOUS executable is missing"
 
 required_system_files=(
   "$stage_dir/usr/lib/udev/rules.d/60-sunshine.rules"
@@ -376,7 +376,7 @@ else
   log "the new kernel argument becomes enforceable only after this reboot"
 fi
 
-log "installing user-local Vibepollo files"
+log "installing user-local NOUS files"
 cp -a --remove-destination "$stage_user_prefix/." "$expected_home/.local/"
 
 log "installing root-owned system integration"
@@ -440,17 +440,17 @@ sudo udevadm control --reload-rules
 sunshine_link="$expected_home/.local/bin/vibepollo"
 sunshine_binary="$(readlink -f -- "$sunshine_link")"
 [[ -n "$sunshine_binary" && -f "$sunshine_binary" && -x "$sunshine_binary" ]] || \
-  die "installed Vibepollo link does not resolve to an executable"
+  die "installed NOUS link does not resolve to an executable"
 case "$sunshine_binary" in
   "$expected_home"/.local/bin/vibepollo) ;;
   *) die "refusing to set capabilities on unexpected path: $sunshine_binary" ;;
 esac
 
-log "restoring Vibepollo capabilities on $sunshine_binary"
+log "restoring NOUS capabilities on $sunshine_binary"
 sudo setcap cap_sys_admin,cap_sys_nice+p "$sunshine_binary"
 sunshine_caps="$(getcap "$sunshine_binary")"
 [[ $sunshine_caps == *cap_sys_admin* && $sunshine_caps == *cap_sys_nice* ]] || \
-  die "Vibepollo capabilities did not verify: ${sunshine_caps:-none}"
+  die "NOUS capabilities did not verify: ${sunshine_caps:-none}"
 log "$sunshine_caps"
 
 installed_drm_version="$(modinfo -F version vibeshine_drm 2>/dev/null || true)"

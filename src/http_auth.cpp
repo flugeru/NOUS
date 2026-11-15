@@ -1354,7 +1354,7 @@ namespace confighttp {
 
   AuthResult make_basic_auth_error(const std::string &error_message = "Unauthorized") {
     AuthResult result = make_auth_error(StatusCode::client_error_unauthorized, error_message);
-    result.headers.emplace("WWW-Authenticate", "Basic realm=\"Sunshine\"");
+    result.headers.emplace("WWW-Authenticate", "Basic realm=\"NOUS\"");
     return result;
   }
 

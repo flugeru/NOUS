@@ -12,20 +12,20 @@
     #include <Windows.h>
     #include <accctrl.h>
     #include <aclapi.h>
-    #define TRAY_ICON WEB_DIR "images/apollo.ico"
-    #define TRAY_ICON_PLAYING WEB_DIR "images/apollo-playing.ico"
-    #define TRAY_ICON_PAUSING WEB_DIR "images/apollo-pausing.ico"
-    #define TRAY_ICON_LOCKED WEB_DIR "images/apollo-locked.ico"
+    #define TRAY_ICON WEB_DIR "images/nous.ico"
+    #define TRAY_ICON_PLAYING WEB_DIR "images/nous-playing.ico"
+    #define TRAY_ICON_PAUSING WEB_DIR "images/nous-pausing.ico"
+    #define TRAY_ICON_LOCKED WEB_DIR "images/nous-locked.ico"
   #elif defined(__linux__) || defined(linux) || defined(__linux)
     #define TRAY_ICON SUNSHINE_TRAY_PREFIX "-tray"
     #define TRAY_ICON_PLAYING SUNSHINE_TRAY_PREFIX "-playing"
     #define TRAY_ICON_PAUSING SUNSHINE_TRAY_PREFIX "-pausing"
     #define TRAY_ICON_LOCKED SUNSHINE_TRAY_PREFIX "-locked"
   #elif defined(__APPLE__) || defined(__MACH__)
-    #define TRAY_ICON WEB_DIR "images/logo-apollo-16.png"
-    #define TRAY_ICON_PLAYING WEB_DIR "images/apollo-playing-16.png"
-    #define TRAY_ICON_PAUSING WEB_DIR "images/apollo-pausing-16.png"
-    #define TRAY_ICON_LOCKED WEB_DIR "images/apollo-locked-16.png"
+    #define TRAY_ICON WEB_DIR "images/logo-nous-16.png"
+    #define TRAY_ICON_PLAYING WEB_DIR "images/nous-playing-16.png"
+    #define TRAY_ICON_PAUSING WEB_DIR "images/nous-pausing-16.png"
+    #define TRAY_ICON_LOCKED WEB_DIR "images/nous-locked-16.png"
     #include <dispatch/dispatch.h>
   #endif
 
@@ -140,7 +140,7 @@ namespace system_tray {
     .menu =
       (struct tray_menu[]) {
         // todo - use boost/locale to translate menu strings
-        {.text = "Open Vibepollo", .cb = tray_open_ui_cb},
+        {.text = "Open NOUS", .cb = tray_open_ui_cb},
         {.text = "-"},
         // { .text = "-" },
         // { .text = "Donate",
@@ -679,7 +679,7 @@ namespace system_tray {
       started = tray_worker.start([]() {
         tray_set_log_callback(&tray_log_bridge);
         // Only the worker that owns startup may change the live tray menu.
-        static const std::string title = utf8ToAcp("Open Apollo (" + config::nvhttp.sunshine_name + ":" + std::to_string(net::map_port(confighttp::PORT_HTTPS)) + ")");
+        static const std::string title = utf8ToAcp("Open NOUS (" + config::nvhttp.sunshine_name + ":" + std::to_string(net::map_port(confighttp::PORT_HTTPS)) + ")");
         tray.menu[0].text = title.c_str();
         if (config::sunshine.hide_tray_controls) {
           tray.menu[1].text = nullptr;
@@ -710,7 +710,7 @@ namespace system_tray {
       return 1;
     }
 
-    static const std::string title_str = "Open Apollo (" + config::nvhttp.sunshine_name + ":" + std::to_string(net::map_port(confighttp::PORT_HTTPS)) + ")";
+    static const std::string title_str = "Open NOUS (" + config::nvhttp.sunshine_name + ":" + std::to_string(net::map_port(confighttp::PORT_HTTPS)) + ")";
     tray.menu[0].text = title_str.c_str();
 
     if (config::sunshine.hide_tray_controls) {

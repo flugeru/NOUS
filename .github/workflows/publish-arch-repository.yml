@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: Published v-less Vibepollo release tag, for example 1.19.0
+        description: Published v-less NOUS release tag, for example 1.19.0
         required: true
         type: string
       allow_draft:
@@ -82,7 +82,7 @@ jobs:
             jq -r '.assets[] | .name as $name | select(($name | test("^vibepollo-.+\\.pkg\\.tar\\.zst$")) and (($name | contains("-debug-")) | not)) | [.id, .name] | @tsv' <<<"${release_json}"
           )
           if (( ${#package_assets[@]} != 1 )); then
-            echo "::error::Expected exactly one non-debug Vibepollo Arch package on release ${source_tag}."
+            echo "::error::Expected exactly one non-debug NOUS Arch package on release ${source_tag}."
             jq -r '.assets[].name' <<<"${release_json}" >&2
             exit 1
           fi
@@ -216,16 +216,16 @@ jobs:
           # The checkout is owned by a different uid than the container user.
           git config --global --add safe.directory '*'
           publication_dir="${RUNNER_TEMP}/arch-repo"
-          git -C "${publication_dir}" config user.name 'Nonary release automation'
+          git -C "${publication_dir}" config user.name 'NOUS release automation'
           git -C "${publication_dir}" config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git -C "${publication_dir}" add --all
           if git -C "${publication_dir}" diff --cached --quiet; then
             echo 'Repository already contains this exact signed release.'
             exit 0
           fi
-          git -C "${publication_dir}" commit -m "Publish Vibepollo ${RELEASE_VERSION} for Arch Linux"
+          git -C "${publication_dir}" commit -m "Publish NOUS ${RELEASE_VERSION} for Arch Linux"
           git -C "${publication_dir}" push origin HEAD:arch-repo
 
       - name: Deploy updated repository through Pages
         shell: bash
-        run: gh workflow run update-pages.yml --ref master
+        run: gh workflow run update-pages.yml --ref nous-project

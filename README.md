@@ -1,117 +1,110 @@
+<p align="center">
+  <img src="branding/NOUS/new-project-icon-transparent.png" alt="Emblema NOUS" width="180" />
+</p>
+
 # NOUS
 
-**Streaming de jogos com foco em baixa latência, estabilidade e diagnóstico reproduzível.**
+**Seus jogos no PC. Sua tela onde você quiser.**
 
-[![Checks de latência](https://github.com/flugeru/Vibepollo/actions/workflows/latency-checks.yml/badge.svg)](https://github.com/flugeru/Vibepollo/actions/workflows/latency-checks.yml)
-[![Build Windows de teste](https://github.com/flugeru/Vibepollo/actions/workflows/fork-test-installer.yml/badge.svg)](https://github.com/flugeru/Vibepollo/actions/workflows/fork-test-installer.yml)
-[![Licença GPLv3](https://img.shields.io/badge/licen%C3%A7a-GPLv3-blue.svg)](LICENSE)
+NOUS reúne host desktop e cliente Android para streaming de jogos pela rede. Projeto mantido por [Flügel (@flugeru)](https://github.com/flugeru), com foco em baixa latência, controle da sessão e diagnóstico reproduzível.
 
-NOUS é o projeto de streaming de [Flügel (@flugeru)](https://github.com/flugeru). A versão **1.0.0** marca o início desta edição para desktop e Android. O host deriva do [Vibepollo de Nonary](https://github.com/Nonary/Vibepollo), com origem em [Apollo](https://github.com/ClassicOldSong/Apollo) e [Sunshine](https://github.com/LizardByte/Sunshine).
+**Versão:** 1.0.0 · **Branch principal:** [`nous-project`](https://github.com/flugeru/NOUS/tree/nous-project) · **Licença:** [GPLv3](LICENSE)
 
-Esta edição reúne correções pontuais, testes de regressão e ferramentas de análise para streaming entre PC e cliente Moonlight/Artemis. Desenvolvimento assistido por IA, com mudanças documentadas e limites de validação explícitos. Não é uma distribuição oficial dos projetos de origem.
+## Dois aplicativos, um projeto
 
-[Melhorias desta edição](#melhorias-desta-edição) · [Downloads e instalação](#downloads-e-instalação) · [Documentação](#documentação) · [Compilação](#compilação) · [Créditos](#créditos-e-licença)
-
-## Host e cliente no mesmo repositório
-
-| Componente | Código | Build |
+| Aplicativo | Função | Código |
 | --- | --- | --- |
-| NOUS Desktop, host | [`src/`](src/) e [`CMakeLists.txt`](CMakeLists.txt) na raiz | [NOUS Desktop (Windows)](.github/workflows/fork-test-installer.yml) |
-| NOUS Android, cliente | [`android/`](android/) | [NOUS Android](.github/workflows/android-client.yml) |
+| **NOUS Desktop** | Captura e codifica o PC, recebe controles e transmite a sessão. | [`src/`](src/), [`CMakeLists.txt`](CMakeLists.txt) |
+| **NOUS Android** | Recebe vídeo e áudio, apresenta a imagem e envia comandos ao PC. | [`android/`](android/) |
 
-O código do Artemis foi importado de [`c5cf27f`](https://github.com/ClassicOldSong/moonlight-android/tree/c5cf27f4dc822db0e863c4691e7a70c74bea977a). Para editar a interface, abra `android/` como projeto Gradle no Android Studio. Os layouts e recursos ficam em [`android/app/src/main/res/`](android/app/src/main/res/) e o código das telas em [`android/app/src/main/java/com/limelight/`](android/app/src/main/java/com/limelight/).
+Desktop usa emblema **transparente**. Android usa emblema **com fundo preto**, inclusive no launcher adaptativo. Arquivos de referência ficam em [`branding/NOUS/`](branding/NOUS/).
 
-O cliente incorpora o suporte a displays virtuais da revisão do Artemis acima. Os checks de pacing existentes exercitam a lógica do host em CPU. A cadência observada no POCO X6 Pro, o comportamento ao criar ou trocar o display virtual e a latência ponta a ponta continuam pendentes de medição, seguindo o [protocolo de benchmark](docs/latency/benchmark.md).
+## Recursos
 
-## Visão geral
+- Streaming H.264, HEVC e AV1, conforme suporte de hardware e cliente.
+- Captura de desktop, integração com bibliotecas de jogos e suporte a displays virtuais no Windows.
+- Pareamento, biblioteca com busca, perfis e configurações de vídeo, áudio e controles no Android.
+- Interface web para administrar host, aplicativos e dispositivos.
+- Ferramentas para analisar traces por frame e verificar regressões na lógica de captura, codificação e transporte.
 
-NOUS Desktop executa no **PC host**: captura imagem, codifica vídeo e transmite para o cliente. NOUS Android executa no dispositivo remoto e cuida da decodificação, apresentação e entrada.
+Alguns recursos herdados dependem de clientes ou drivers específicos. Disponibilidade de codec, HDR, display virtual e controle varia conforme sistema e hardware. Não há promessa de latência numérica sem medição ponta a ponta.
 
-Recursos herdados incluem captura Windows Graphics Capture, displays virtuais, gerenciamento de sessões e dispositivos, integração com bibliotecas de jogos e streaming H.264, HEVC e AV1 conforme suporte do conjunto host/cliente. Recursos específicos como PyroWave e VRR exigem clientes compatíveis; não estão disponíveis automaticamente no Android.
+## Começar
 
-**Foco de validação desta edição:** Windows 11, NVIDIA RTX 5060 e POCO X6 Pro. Esse foco não representa certificação do aparelho nem exclusão das demais plataformas do projeto original.
+1. Compile ou obtenha build NOUS Desktop e instale no PC host.
+2. Instale NOUS Android no dispositivo remoto.
+3. Mantenha ambos na mesma rede para primeiro pareamento. Adicione endereço do PC quando descoberta automática não funcionar.
+4. Confirme PIN no host e escolha jogo ou desktop no cliente.
 
-## Melhorias desta edição
+> **Builds experimentais.** Faça backup das configurações e dos pareamentos antes de instalar. Instalador Windows pode alterar serviços, firewall e drivers. Builds locais não possuem assinatura oficial de distribuição. Não desative Secure Boot nem verificações de assinatura para instalar drivers.
 
-| Área | Alteração |
-| --- | --- |
-| NVENC | Corrige inflação da janela VBV durante ajustes de bitrate, preservando rollback. |
-| Captura Windows | Rejeita mutex abandonado em três caminhos para evitar uso de superfícies inconsistentes. |
-| Transporte | Valida limites de `packetSize` RTSP e trata campos SDP vazios. |
-| Segurança e robustez | Retira conteúdo de clipboard/nonce dos logs e evita underflow em substituição de payload. |
-| WebRTC | Aplica hint de jitter buffer mesmo quando a propriedade existe com valor inicial `null`. |
-| Diagnóstico | Adiciona analisador CSV por frame, coletores somente leitura e checks de regressão CPU. |
+## Compilação local
 
-Defaults de codec, bitrate, preset, multipass, AQ e filas foram preservados. Não há promessa de ganho numérico de latência: testes de lógica não substituem medição no hardware.
+Build local é fluxo padrão. GitHub Actions fica reservado para execuções autorizadas; commit não significa publicação de release.
 
-Detalhes, fontes e resultados em **[docs/latency/README.md](docs/latency/README.md)**.
-
-## Downloads e instalação
-
-### Windows
-
-Build de teste: **[NOUS Desktop (Windows) — GitHub Actions](https://github.com/flugeru/Vibepollo/actions/workflows/fork-test-installer.yml)**.
-
-O workflow gera artefatos somente após as etapas de build e validação correspondentes. Abra uma execução bem-sucedida e confira os artefatos; a existência do workflow não garante que o instalador esteja pronto. Artefatos têm retenção de sete dias e o download pelo Actions pode exigir login no GitHub.
-
-> **Build experimental, sem assinatura oficial.** Preserve a configuração e os pareamentos atuais antes de testar. O instalador pode substituir uma instalação existente e alterar serviços, firewall e drivers. Não desative Secure Boot, verificações de assinatura ou outras proteções para fazê-lo funcionar. Builds deste fork não têm a assinatura SignPath do upstream.
+```sh
+git clone --branch nous-project --recurse-submodules https://github.com/flugeru/NOUS.git NOUS
+cd NOUS
+```
 
 ### Android
 
-Clientes de origem: [Moonlight Android](https://github.com/moonlight-stream/moonlight-android) e [Artemis](https://github.com/ClassicOldSong/moonlight-android).
+Requisitos: JDK 17, Android SDK Platform 36 e NDK `27.0.12077973`. Defina `JAVA_HOME` e `ANDROID_HOME`, ou informe SDK em `android/local.properties` sem versionar caminhos pessoais.
 
-O [workflow NOUS Android](.github/workflows/android-client.yml) roda testes unitários e compila o cliente ARM64 de teste. Para compilar localmente, inicialize o submódulo nativo a partir da raiz e execute o Gradle a partir de `android/`. [Configuração de SDK e NDK](docs/latency/android-test-build.md).
+PowerShell, a partir da raiz:
 
-As correções listadas acima pertencem ao servidor. Nenhuma otimização nova de MediaCodec foi aplicada ao cliente Android nesta rodada. O APK ARM64 de teste do NOUS usa `com.flugel.nous` e assinatura Android Debug. [Procedência do build anterior](docs/latency/android-test-build.md).
-
-AV1 é candidato a ensaio, não escolha universal. Decoder efetivo, perfil, bit depth, FPS sustentado e comportamento térmico do POCO ainda precisam ser medidos.
-
-## Estado da validação
-
-- Checks CPU de NVENC, captura, transporte, privacidade, WebRTC e analisador executados; resultados e cobertura no [relatório](docs/latency/README.md#validação-local-desta-rodada).
-- [Checks de latência no GitHub Actions confirmados](https://github.com/flugeru/Vibepollo/actions/runs/43627911720) para o commit `94d6bd6`.
-- Build Windows completo de teste solicitado em workflow próprio; consulte a execução para o resultado atual.
-- Testes no telefone, recuperação física da GPU e latência input-to-photon continuam pendentes.
-- Auditoria npm registrou 22 entradas afetadas; triagem e atualização segura permanecem abertas. Suíte frontend local não ficou integralmente verde por ausência de `typescript`.
-
-## Documentação
-
-| Guia | Conteúdo |
-| --- | --- |
-| [Auditoria e resultados](docs/latency/README.md) | Escopo, correções, testes e limitações. |
-| [Arquitetura e transporte](docs/latency/architecture-audit.md) | Filas, pacing, dependências e backlog. |
-| [NVENC e captura](docs/latency/nvenc-audit.md) | Rate control, sincronização e evidências. |
-| [Android e POCO](docs/latency/decoder-research.md) | MediaCodec, fontes oficiais e capacidades ainda desconhecidas. |
-| [APK de teste](docs/latency/android-test-build.md) | Procedência, assinatura, SHA-256 e reconstrução do cliente ARM64. |
-| [Benchmark A/B](docs/latency/benchmark.md) | Schema CSV e protocolo de comparação sem misturar relógios. |
-| [Compilação](docs/building.md) | Toolchains, dependências e empacotamento. |
-| [Linux](docs/linux/install.md) | Instruções herdadas; validação Linux não foi ampliada nesta edição. |
-
-## Identidade visual
-
-Os quatro arquivos originais, em PNG e ICO, estão em [branding/NOUS](branding/NOUS/). O launcher Android usa fundo preto, com ícone adaptativo em Android 8 ou posterior. A compilação do Windows pode ser disparada manualmente no workflow NOUS Desktop.
-
-## Compilação
-
-```bash
-git clone --recurse-submodules https://github.com/flugeru/Vibepollo.git
-cd Vibepollo
+```powershell
+git submodule update --init --recursive -- android/app/src/main/jni/moonlight-core/moonlight-common-c
+cd android
+.\gradlew.bat --no-daemon :app:assembleNonRoot_gameDebug
+.\gradlew.bat --no-daemon :app:testNonRoot_gameDebugUnitTest
 ```
 
-Siga o [guia de build](docs/building.md) antes de configurar CMake. Windows exige toolchain e pacotes específicos; o ZIP do código-fonte não substitui um clone com submódulos. O [workflow de teste](.github/workflows/fork-test-installer.yml) reutiliza o pipeline Windows existente, sem credenciais de assinatura oficial.
+APK ARM64 de debug fica em `android/app/build/outputs/apk/nonRoot_game/debug/`. Identidade Android: `com.flugel.nous`. Assinatura Debug serve para desenvolvimento, não para publicação em loja.
 
-Check independente do analisador, com Python instalado:
+### Windows
 
-```bash
+Requisitos principais: MSYS2 UCRT64 com GCC, CMake e Ninja; Visual Studio Build Tools e Windows SDK; Node.js 22; .NET SDK 10; WiX Toolset 3.14. Dependências e pacotes de drivers usam versões fixadas pelo projeto.
+
+Siga [`docs/building.md`](docs/building.md) para configurar dependências e CMake. Depois, no ambiente UCRT64 configurado:
+
+```sh
+cmake --build build --target all --parallel 6
+cmake --build build --target package_msi --parallel 6
+```
+
+Use alvo `package_msi`, não CPack isoladamente: alvo prepara e valida pacotes necessários antes do instalador. EXE de instalação é gerado pelo script [`build_bootstrapper.ps1`](packaging/windows/bootstrapper/build_bootstrapper.ps1), com MSI como entrada. Não versionar caches, SDKs, credenciais nem artefatos compilados.
+
+## Desenvolvimento e validação
+
+Código local e branch `nous-project` devem permanecer sincronizados após mudanças verificadas. Trabalho não concluído ou não testado deve ser identificado, sem sobrescrever alterações de terceiros.
+
+Validação de lógica não substitui streaming real. Desempenho no telefone, comportamento térmico, recuperação da GPU e latência input-to-photon exigem ensaio no hardware.
+
+```sh
 python tools/latency/test_analyze_trace.py
 ```
 
-## Contribuições e problemas
+| Documento | Conteúdo |
+| --- | --- |
+| [Compilação](docs/building.md) | Toolchains, dependências e empacotamento. |
+| [Auditoria](docs/latency/README.md) | Correções, evidências e limites dos testes. |
+| [Benchmark](docs/latency/benchmark.md) | Protocolo A/B e formato dos traces. |
+| [Android e decodificação](docs/latency/decoder-research.md) | Pesquisa técnica e medições pendentes. |
+| [Segurança](SECURITY.md) | Orientações para relatar problemas sensíveis. |
 
-Relate problemas nas [issues deste fork](https://github.com/flugeru/Vibepollo/issues), incluindo commit, sistema, GPU/driver, versão do cliente e passos de reprodução. Remova dados pessoais, tokens e conteúdo de clipboard dos logs antes de anexar. Consulte [SECURITY.md](SECURITY.md) para o procedimento de segurança herdado; não publique credenciais ou detalhes de exploração em issues públicas.
+Relate bugs em [Issues](https://github.com/flugeru/NOUS/issues). Inclua commit, sistema, GPU/driver, cliente e passos para reproduzir. Remova tokens, senhas e dados pessoais dos logs.
 
-## Créditos e licença
+## Créditos e origem
 
-Manutenção e direção desta edição: **Flügel (@flugeru)**. Trabalho derivado de **Nonary/Vibepollo**, **ClassicOldSong/Apollo**, **LizardByte/Sunshine** e colaboradores. Moonlight, Artemis, bibliotecas e drivers mantêm suas respectivas autorias e licenças.
+NOUS é trabalho derivado, não distribuição oficial dos projetos de origem:
 
-Código distribuído sob [GNU GPLv3](LICENSE), sujeito aos avisos e às licenças dos componentes em [NOTICE](NOTICE) e `third-party/`. Créditos, avisos legais e histórico upstream são preservados. Patrocínios e certificados do projeto original não se estendem automaticamente a este fork.
+- **[Nonary/Vibepollo](https://github.com/Nonary/Vibepollo)** — base do host desta edição.
+- **[ClassicOldSong/Apollo](https://github.com/ClassicOldSong/Apollo)** e **[LizardByte/Sunshine](https://github.com/LizardByte/Sunshine)** — origem do host e contribuições anteriores.
+- **[Artemis](https://github.com/ClassicOldSong/moonlight-android)** — base do cliente Android, importada da revisão [`c5cf27f4dc822db0e863c4691e7a70c74bea977a`](https://github.com/ClassicOldSong/moonlight-android/tree/c5cf27f4dc822db0e863c4691e7a70c74bea977a).
+- **[Moonlight](https://github.com/moonlight-stream)** e seus colaboradores — clientes e bibliotecas do ecossistema GameStream.
+- Autores das bibliotecas, drivers e demais componentes listados em [`third-party/`](third-party/) e [`NOTICE`](NOTICE).
+
+Direção e manutenção NOUS: **Flügel**. Desenvolvimento assistido por IA. Autorias, avisos legais, licenças e histórico upstream permanecem preservados. Alguns identificadores internos continuam com nomes de origem por compatibilidade de protocolo, JNI, drivers ou migração; não representam marca do produto.
+
+Código sob [GNU GPLv3](LICENSE), respeitando licenças específicas dos componentes. Certificados, patrocínios e garantias dos projetos de origem não se estendem automaticamente ao NOUS.

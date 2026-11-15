@@ -157,7 +157,7 @@
                     strong
                     size="small"
                     class="w-full justify-center sm:w-auto"
-                    href="https://github.com/Nonary/Vibepollo/issues/new?template=bug_report.yml"
+                    href="https://github.com/flugeru/NOUS/issues/new?template=bug_report.yml"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -577,9 +577,9 @@ const availableVersion = computed(() => {
 });
 const availableReleaseUrl = computed(() => {
   const url = availableUpdate.value?.url;
-  return url?.startsWith('https://github.com/Nonary/Vibepollo/releases/')
+  return url?.startsWith('https://github.com/flugeru/NOUS/releases/')
     ? url
-    : 'https://github.com/Nonary/Vibepollo/releases';
+    : 'https://github.com/flugeru/NOUS/releases';
 });
 const notifyPreReleases = ref(true);
 const installedUpdateVersion = ref('');

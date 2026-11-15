@@ -2115,7 +2115,7 @@ namespace stream {
               if (control_received == 0) {
                 BOOST_LOG(error) << "The control stream peer never connected and no UDP datagrams reached the control socket (port "sv
                                  << net::map_port(CONTROL_PORT) << ") during this session. "sv
-                                 << "Inbound UDP is most likely being blocked before it reaches Sunshine. "sv
+                                 << "Inbound UDP is most likely being blocked before it reaches NOUS. "sv
                                  << "Check Windows Firewall, VPN clients with kill switches or LAN blocking "sv
                                  << "(e.g. NordVPN, Private Internet Access - these filter traffic even while disconnected), "sv
                                  << "and router/NAT port forwarding."sv;
@@ -3583,7 +3583,7 @@ namespace stream {
     const auto received = recv_counter.load(std::memory_order_relaxed) - recv_baseline;
     if (received == 0) {
       BOOST_LOG(error) << "No UDP datagrams reached the "sv << type_str << " socket while waiting for the client's ping. "sv
-                       << "Inbound UDP is most likely being blocked before it reaches Sunshine. "sv
+                       << "Inbound UDP is most likely being blocked before it reaches NOUS. "sv
                        << "Check Windows Firewall, VPN clients with kill switches or LAN blocking "sv
                        << "(e.g. NordVPN, Private Internet Access - these filter traffic even while disconnected), "sv
                        << "and router/NAT port forwarding."sv;

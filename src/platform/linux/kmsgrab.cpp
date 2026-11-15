@@ -1064,7 +1064,7 @@ namespace platf {
           if (auto result = capture_presentation_events(push_captured_image_cb, pull_free_image_cb, cursor)) {
             return *result;
           }
-          BOOST_LOG(error) << "Vibepollo DRM presentation events became unavailable; refusing fixed-rate KMS fallback."sv;
+          BOOST_LOG(error) << "NOUS DRM presentation events became unavailable; refusing fixed-rate KMS fallback."sv;
           presentation_mode.deactivate();
           return capture_e::error;
         }
@@ -1513,7 +1513,7 @@ namespace platf {
           }
         }
         if (ioctl_error != 0) {
-          BOOST_LOG(error) << "Failed to export Vibepollo DRM presentation frame: "sv << strerror(ioctl_error);
+          BOOST_LOG(error) << "Failed to export NOUS DRM presentation frame: "sv << strerror(ioctl_error);
           return frame_export_e::unsupported;
         }
 
@@ -1530,7 +1530,7 @@ namespace platf {
           request.reserved_u32 == 0 &&
           std::ranges::all_of(request.reserved, [](std::uint64_t value) { return value == 0; });
         if (!common_fields_valid) {
-          BOOST_LOG(error) << "Vibepollo DRM returned an invalid frame ABI response."sv;
+          BOOST_LOG(error) << "NOUS DRM returned an invalid frame ABI response."sv;
           return frame_export_e::unsupported;
         }
 
@@ -1543,7 +1543,7 @@ namespace platf {
                                         std::ranges::all_of(request.pitches, [](std::uint32_t value) { return value == 0; }) &&
                                         std::ranges::all_of(request.offsets, [](std::uint32_t value) { return value == 0; });
           if (!empty_descriptor) {
-            BOOST_LOG(error) << "Vibepollo DRM returned a malformed empty frame."sv;
+            BOOST_LOG(error) << "NOUS DRM returned a malformed empty frame."sv;
             return frame_export_e::unsupported;
           }
           pending_exported_frame.reset();
@@ -1553,7 +1553,7 @@ namespace platf {
         if (request.flags != VIBESHINE_DRM_FRAME_READY || request.sequence == 0 ||
             request.width == 0 || request.height == 0 || request.fourcc == 0 ||
             request.plane_count == 0 || request.plane_count > VIBESHINE_DRM_FRAME_MAX_PLANES) {
-          BOOST_LOG(error) << "Vibepollo DRM returned a malformed presentation frame."sv;
+          BOOST_LOG(error) << "NOUS DRM returned a malformed presentation frame."sv;
           return frame_export_e::unsupported;
         }
 
@@ -1562,7 +1562,7 @@ namespace platf {
           if ((active && (request.dma_buf_fds[plane] < 0 || request.sync_file_fds[plane] < -1)) ||
               (!active && (request.dma_buf_fds[plane] != -1 || request.sync_file_fds[plane] != -1 ||
                            request.pitches[plane] != 0 || request.offsets[plane] != 0))) {
-            BOOST_LOG(error) << "Vibepollo DRM returned an invalid DMA-BUF plane descriptor."sv;
+            BOOST_LOG(error) << "NOUS DRM returned an invalid DMA-BUF plane descriptor."sv;
             return frame_export_e::unsupported;
           }
         }
@@ -1574,7 +1574,7 @@ namespace platf {
           last_presentation_timestamp
         );
         if (!timestamp) {
-          BOOST_LOG(error) << "Vibepollo DRM returned an invalid frame presentation timestamp."sv;
+          BOOST_LOG(error) << "NOUS DRM returned an invalid frame presentation timestamp."sv;
           return frame_export_e::unsupported;
         }
 
@@ -1612,7 +1612,7 @@ namespace platf {
         presentation_pending = presentation_latch.capture_ready();
         presentation_trace_sequence = presentation_sequence;
         presentation_trace_available = true;
-        BOOST_LOG(info) << "Using event-driven KMS capture for Vibepollo DRM CRTC ["sv << crtc_id << "]."sv;
+        BOOST_LOG(info) << "Using event-driven KMS capture for NOUS DRM CRTC ["sv << crtc_id << "]."sv;
         if (drm_timing_trace::writer().available()) {
           BOOST_LOG(info) << "Always-on DRM timing trace is buffered in "sv << drm_timing_trace::TRACE_PATH
                           << " and bounded to two 128 MiB tmpfs files."sv;
@@ -1973,7 +1973,7 @@ namespace platf {
               case platf::capture_e::ok:
                 {
                   if (!captured_timestamp) {
-                    BOOST_LOG(error) << "Vibepollo DRM presentation is missing its validated timestamp."sv;
+                    BOOST_LOG(error) << "NOUS DRM presentation is missing its validated timestamp."sv;
                     return std::nullopt;
                   }
                   if (!img_out || !img_out->host_processing_timestamp || !capture_delivery_timestamp) {

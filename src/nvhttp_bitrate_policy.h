@@ -35,7 +35,7 @@ namespace nvhttp::bitrate_policy {
     log_denied(message.str());
     tree.put("root.bitrate", 0);
     tree.put("root.<xmlattr>.status_code", 403);
-    tree.put("root.<xmlattr>.status_message", client ? "Permission denied: this device lacks the \"View stream\" permission. Enable it on the host in the Vibepollo Web UI under Client Management." : "Permission denied: this device's certificate is not recognized by the host. Unpair and pair this device again.");
+    tree.put("root.<xmlattr>.status_message", client ? "Permission denied: this device lacks the \"View stream\" permission. Enable it on the host in the NOUS Web UI under Client Management." : "Permission denied: this device's certificate is not recognized by the host. Unpair and pair this device again.");
     return false;
   }
 

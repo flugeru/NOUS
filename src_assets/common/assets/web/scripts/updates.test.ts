@@ -17,7 +17,7 @@ function selectAvailableUpdate(...args: Parameters<typeof selectWireUpdate>) {
   return selectWireUpdate(...args);
 }
 
-const assets = [{ name: 'VibepolloSetup.exe', state: 'uploaded', size: 100 }];
+const assets = [{ name: 'NOUSSetup.exe', state: 'uploaded', size: 100 }];
 function release(tag: string, prerelease = false): UpdateRelease {
   return { tag_name: tag, draft: false, prerelease, assets };
 }
@@ -110,7 +110,7 @@ test('daily identity uses version family, sequence and verified source, stable s
 test('published versioned setup and Arch package names retain stable notifications', () => {
   const current = {
     ...release('2.0.0'),
-    assets: [{ name: 'VibepolloSetup-v2.0.0.exe', state: 'uploaded', size: 100 }],
+    assets: [{ name: 'NOUSSetup-v2.0.0.exe', state: 'uploaded', size: 100 }],
   };
   assert.equal(selectAvailableUpdate('1.18.4-stable.4', [current], false)?.tag, '2.0.0');
   const arch = {
@@ -128,7 +128,7 @@ test('draft, incomplete, malformed and incompatible packages never notify', () =
       '1.0.0',
       [
         incomplete,
-        { ...release('4.0.0'), assets: [{ name: 'VibepolloSetup.exe', state: 'new', size: 0 }] },
+        { ...release('4.0.0'), assets: [{ name: 'NOUSSetup.exe', state: 'new', size: 0 }] },
         { tag_name: '5.0.0' },
         release('junk'),
       ],
@@ -189,16 +189,16 @@ test('Apollo macOS notices require the uploaded package for the reported archite
     ...release(prerelease ? '2.0.0-beta.1' : '2.0.0', prerelease),
     assets: [{ name, state: 'uploaded', size }],
   });
-  const intel = mac('Vibepollo-macOS-x86_64.dmg');
-  const arm = mac('Vibepollo-macOS-arm64.dmg');
+  const intel = mac('NOUS-macOS-x86_64.dmg');
+  const arm = mac('NOUS-macOS-arm64.dmg');
   assert.equal(selectAvailableUpdate('1.9.0', [intel], false, 'macos', 'x86_64')?.tag, '2.0.0');
   assert.equal(selectAvailableUpdate('1.9.0', [arm], false, 'macos', 'aarch64')?.tag, '2.0.0');
   assert.equal(selectAvailableUpdate('1.9.0', [arm], true, 'macos', 'x86_64'), null);
   assert.equal(selectAvailableUpdate('1.9.0', [intel], true, 'macos', 'aarch64'), null);
   assert.equal(selectAvailableUpdate('1.9.0', [intel], true, 'macos', 'unknown'), null);
-  for (const invalid of [mac('Vibeshine-macOS-x86_64.dmg'), mac('Vibepollo-macOS-x86_64.dmg', 0), release('2.0.0')])
+  for (const invalid of [mac('Vibeshine-macOS-x86_64.dmg'), mac('NOUS-macOS-x86_64.dmg', 0), release('2.0.0')])
     assert.equal(selectAvailableUpdate('1.9.0', [invalid], true, 'macos', 'x86_64'), null);
-  const beta = mac('Vibepollo-macOS-x86_64.dmg', 100, true);
+  const beta = mac('NOUS-macOS-x86_64.dmg', 100, true);
   assert.equal(selectAvailableUpdate('1.9.0', [beta], false, 'macos', 'x86_64'), null);
   assert.equal(selectAvailableUpdate('1.9.0', [beta], true, 'macos', 'x86_64')?.tag, '2.0.0-beta.1');
   const nightly = daily('2026-10-11');

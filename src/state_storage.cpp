@@ -572,7 +572,7 @@ namespace statefile {
       // The primary snapshot is already durable. Keep serving it, but report
       // that the recovery copy could not be refreshed so the next save can
       // retry it.
-      BOOST_LOG(error) << "statefile: failed to refresh Vibepollo state backup "sv
+      BOOST_LOG(error) << "statefile: failed to refresh NOUS state backup "sv
                        << backup_path << ": "sv << e.what();
     }
   }
@@ -634,7 +634,7 @@ namespace statefile {
     try {
       write_json_atomic_direct(sunshine_state_backup_path(), tree);
     } catch (const std::exception &e) {
-      BOOST_LOG(error) << "statefile: failed to refresh Vibepollo paired state backup: " << e.what();
+      BOOST_LOG(error) << "statefile: failed to refresh NOUS paired state backup: " << e.what();
     }
   }
 

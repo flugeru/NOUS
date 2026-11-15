@@ -82,7 +82,7 @@ set(SUNSHINE_PLAYNITE_PLUGIN_OUTPUT_DIR
 set(SUNSHINE_PLAYNITE_PLUGIN_DLL
         "${SUNSHINE_PLAYNITE_PLUGIN_OUTPUT_DIR}/VibepolloPlaynite.dll")
 set(SUNSHINE_PLAYNITE_PLUGIN_ICON
-        "${CMAKE_SOURCE_DIR}/src_assets/common/assets/web/public/images/logo-apollo-45.png")
+        "${CMAKE_SOURCE_DIR}/src_assets/common/assets/web/public/images/logo-nous-45.png")
 set(SUNSHINE_PLAYNITE_PLUGIN_OUTPUT_FILES
         "${SUNSHINE_PLAYNITE_PLUGIN_DLL}"
         "${SUNSHINE_PLAYNITE_PLUGIN_OUTPUT_DIR}/extension.yaml"
@@ -114,7 +114,7 @@ add_custom_command(
                 --nologo
                 -p:ContinuousIntegrationBuild=true
         DEPENDS ${SUNSHINE_PLAYNITE_PLUGIN_SOURCES} "${SUNSHINE_PLAYNITE_PLUGIN_ICON}"
-        COMMENT "Building Vibepollo Playnite plugin"
+        COMMENT "Building NOUS Playnite plugin"
         VERBATIM
 )
 add_custom_target(build_playnite_plugin DEPENDS ${SUNSHINE_PLAYNITE_PLUGIN_OUTPUT_FILES})
@@ -136,7 +136,11 @@ if (TARGET sunshine_display_helper)
         COMMENT "Copying sunshine_display_helper into tools directory")
 endif()
 
-# Enable libdisplaydevice logging in the main Sunshine binary only
+# ponytail: legacy integrations retain sunshine.exe until every caller migrates.
+add_custom_command(TARGET sunshine POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:sunshine>" "$<TARGET_FILE_DIR:sunshine>/sunshine.exe")
+
+# Enable libdisplaydevice logging in main NOUS binary only.
 target_compile_definitions(sunshine PRIVATE SUNSHINE_USE_DISPLAYDEVICE_LOGGING)
 
 # Build lightweight uninstall UI executable (same UX as installer, no embedded MSI payload)
@@ -149,10 +153,10 @@ add_custom_command(
             "${CMAKE_SOURCE_DIR}/packaging/windows/bootstrapper/VibeshineInstaller.cs"
             "${CMAKE_SOURCE_DIR}/packaging/windows/bootstrapper/app.manifest"
             "${CMAKE_SOURCE_DIR}/LICENSE"
-            "${CMAKE_SOURCE_DIR}/apollo.ico"
+            "${CMAKE_SOURCE_DIR}/nous.ico"
             "${SUNSHINE_WINDOWS_VERSIONINFO_STAMP}"
             generate_windows_versioninfo
-    COMMENT "Building lightweight Vibepollo uninstaller UI"
+    COMMENT "Building lightweight NOUS uninstaller UI"
 )
 add_custom_target(build_uninstall_ui ALL DEPENDS "${SUNSHINE_UNINSTALL_UI_EXE}")
 

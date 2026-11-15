@@ -1,4 +1,4 @@
-Diese App streamt Spiele, Programme oder den kompletten Desktop von NVIDIA GameStream-kompatiebelen PCs oder <a href="https://github.com/SunshineStream/Sunshine">Sunshine Stream</a> über das Lokale Netzwerk oder Internet. Gleichzeitig werden Maus-, Tastatur- und Gamepad-Eingaben von deinem Android Gerät zum PC übertragen.
+Diese App streamt Spiele, Programme oder den kompletten Desktop von NVIDIA GameStream-kompatiebelen PCs oder <a href="https://github.com/SunshineStream/Sunshine">NOUS</a> über das Lokale Netzwerk oder Internet. Gleichzeitig werden Maus-, Tastatur- und Gamepad-Eingaben von deinem Android Gerät zum PC übertragen.
 
 Die Streamingqualität kann aufgrund des verwendeten Android Geräts und der Netzwerkgegebenheiten variieren. HDR Unterstützung setzt ein HRD10-fähiges Gerät, eine GTX-1000-series GPU und HDR10-kompatibles Spiele voraus.
 
@@ -18,13 +18,13 @@ Die Streamingqualität kann aufgrund des verwendeten Android Geräts und der Net
 * Windows 7 oder neuer
 * NVIDIA GeForce Experience (GFE) 2.2.2 oder neuer
 
-'''PC Anforderungen mit SunshineStream'''
+'''PC Anforderungen mit NOUS'''
 * Linux, MacOS, Windows
 * AMD, Nvidia GPUs oder Software-Kodierung
 
 '''Anleitung zur Schnellkonfiguration'''
 # Stellen sie sicher dass GeForce Experience auf ihrem PC installiert ist. Aktivieren sie GameStream in den SHIELD Einstellungen.
-# Wählen Sie den PC in Moonlight aus und tippen sie den PIN auf ihrem PC ein.
+# Wählen Sie den PC in NOUS aus und tippen sie den PIN auf ihrem PC ein.
 # Streamen sie los!
 
 Für eine gutes Benutzungserlebnis benötigen sie einen mid- bist high-end WLAN-Router mit einer ungestörten Verbindung zu ihrem Android Gerät (5 GHz wird empfohlen) sowie eine gute Verbindung von ihrem PC zum Router (Ethernet empfohlen).

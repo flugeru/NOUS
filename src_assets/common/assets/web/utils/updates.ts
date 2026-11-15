@@ -128,14 +128,14 @@ export function completeRelease(
     return false;
   const packageAvailable =
     platform === 'windows'
-      ? asset(release, 'VibepolloSetup.exe') ||
+      ? asset(release, 'NOUSSetup.exe') ||
         (!isDailyTag(release.tag_name) &&
-          (asset(release, `VibepolloSetup-v${release.tag_name.replace(/^v/, '')}.exe`) ||
-            asset(release, `VibepolloSetup-${release.tag_name.replace(/^v/, '')}.exe`)))
+          (asset(release, `NOUSSetup-v${release.tag_name.replace(/^v/, '')}.exe`) ||
+            asset(release, `NOUSSetup-${release.tag_name.replace(/^v/, '')}.exe`)))
       : platform === 'macos'
         ? architecture === 'aarch64'
-          ? asset(release, 'Vibepollo-macOS-arm64.dmg')
-          : architecture === 'x86_64' && asset(release, 'Vibepollo-macOS-x86_64.dmg')
+          ? asset(release, 'NOUS-macOS-arm64.dmg')
+          : architecture === 'x86_64' && asset(release, 'NOUS-macOS-x86_64.dmg')
         : platform === 'linux' &&
         Array.isArray(release.assets) &&
         release.assets.some(
@@ -234,7 +234,7 @@ export async function fetchUpdateReleases(
   let complete = false;
   for (let page = 1; page <= 10; page++) {
     const response = await fetch(
-      `https://api.github.com/repos/Nonary/Vibepollo/releases?per_page=100&page=${page}`,
+      `https://api.github.com/repos/flugeru/NOUS/releases?per_page=100&page=${page}`,
       { headers: { Accept: 'application/vnd.github+json' }, credentials: 'omit', signal },
     );
     if (!response.ok) throw new Error('releases-unavailable');

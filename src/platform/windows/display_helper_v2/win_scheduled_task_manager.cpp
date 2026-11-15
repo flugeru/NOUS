@@ -320,7 +320,7 @@ namespace display_helper::v2 {
     }
 
     if (IRegistrationInfo *reg_info = nullptr; SUCCEEDED(task->get_RegistrationInfo(&reg_info))) {
-      reg_info->put_Author(_bstr_t(L"Vibepollo Display Helper"));
+      reg_info->put_Author(_bstr_t(L"NOUS Display Helper"));
       reg_info->put_Description(_bstr_t(L"Automatically restores display settings after reboot"));
       reg_info->Release();
     }

@@ -6,6 +6,8 @@ if(APPLE AND NOT SUNSHINE_BUILD_HOMEBREW)
 else()
     add_executable(sunshine ${SUNSHINE_TARGET_FILES})
 endif()
+# Keep internal target stable; desktop executable carries product name.
+set_target_properties(sunshine PROPERTIES OUTPUT_NAME NOUS)
 foreach(dep ${SUNSHINE_TARGET_DEPENDENCIES})
     add_dependencies(sunshine ${dep})  # compile these before sunshine
 endforeach()

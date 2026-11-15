@@ -24,11 +24,11 @@ jobs:
     if: >-
       (github.event_name == 'workflow_dispatch' || vars.DAILY_RELEASE_ENABLED == 'true') &&
       (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') &&
-      github.repository == 'Nonary/Vibepollo' &&
+      github.repository == 'flugeru/NOUS' &&
       github.ref_type == 'branch' &&
       github.ref_name == github.event.repository.default_branch &&
-      vars.DAILY_RELEASE_SOURCE_BRANCH == 'canary' &&
-      vars.DAILY_RELEASE_SOURCE_CONFIRMED == 'Nonary/Vibepollo:canary'
+      vars.DAILY_RELEASE_SOURCE_BRANCH == 'nous-project' &&
+      vars.DAILY_RELEASE_SOURCE_CONFIRMED == 'flugeru/NOUS:nous-project'
     runs-on: ubuntu-latest
     permissions:
       actions: write
@@ -41,6 +41,6 @@ jobs:
           set -euo pipefail
           payload="$(mktemp)"
           trap 'rm -f "$payload"' EXIT
-          jq -n --argjson publish "$PUBLISH" '{ref:"canary",inputs:{publish:$publish}}' > "$payload"
+          jq -n --argjson publish "$PUBLISH" '{ref:"nous-project",inputs:{publish:$publish}}' > "$payload"
           gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/daily-prerelease.yml/dispatches" --input "$payload"
           echo 'Canary nightly dispatch accepted. Build and publication outcomes belong to the child run.' >> "$GITHUB_STEP_SUMMARY"

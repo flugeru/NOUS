@@ -1019,7 +1019,7 @@
             app:iconSpaceReserved="false" />
 
         <com.limelight.preferences.WebLauncherPreference
-            url="https://github.com/flugeru/Vibepollo/releases"
+            url="https://github.com/flugeru/NOUS/releases"
             android:key="option_software_release"
             android:summary="@string/summary_software_update"
             android:title="@string/title_software_update"

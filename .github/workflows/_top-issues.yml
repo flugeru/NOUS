@@ -9,8 +9,6 @@ name: Top issues
 permissions: {}
 
 on:
-  schedule:
-    - cron: '0 6/12 * * *'
   workflow_dispatch:
 
 concurrency:

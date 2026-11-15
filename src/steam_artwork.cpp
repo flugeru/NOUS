@@ -608,7 +608,7 @@ namespace {
     // Never weaken certificate or hostname verification for artwork.
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
-    curl_easy_setopt(curl, CURLOPT_USERAGENT, "Vibepollo-Steam-Artwork/1.0");
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, "NOUS-Steam-Artwork/1.0");
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
     const auto result = curl_easy_perform(curl);

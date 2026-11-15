@@ -46,7 +46,7 @@
     <string name="ip_hint">IP-адреса головного ПК</string>
     <string name="searching_pc">Пошук головного ПК у локальній мережі…
 \n
-\nПереконайтеся, що Sunshine запущено на вашому головному ПК або GameStream увімкнено в налаштуваннях GeForce Experience SHIELD.</string>
+\nПереконайтеся, що NOUS запущено на вашому головному ПК або GameStream увімкнено в налаштуваннях GeForce Experience SHIELD.</string>
     <string name="yes">Так</string>
     <string name="no">Ні</string>
     <string name="lost_connection">З\'єднання з пристроєм втрачено</string>
@@ -204,7 +204,7 @@
 \n
 \nНаступні мережеві порти були заблоковані:
 \n</string>
-    <string name="nettest_text_inconclusive">Не вдалося перевірити мережу, тому що усі мережо-перевірочні сервери Moonlight недосяжні. Перевірте ваше з\'єднання з інтернетом та спробуйте знову.</string>
+    <string name="nettest_text_inconclusive">Не вдалося перевірити мережу, тому що усі мережо-перевірочні сервери NOUS недосяжні. Перевірте ваше з\'єднання з інтернетом та спробуйте знову.</string>
     <string name="nettest_title_done">Перевірка мережі завершена</string>
     <string name="nettest_text_waiting">NOUS перевіряє ваше мережеве з’єднання, щоб визначити, чи заблоковані необхідні порти.
 \n
@@ -251,13 +251,13 @@
     <string name="summary_checkbox_absolute_mouse_mode">Це може зробити прискорення миші більш природним під час використання віддаленого робочого столу, але воно несумісне з багатьма іграми.</string>
     <string name="title_checkbox_reduce_refresh_rate">Дозволити зниження частоти оновлення</string>
     <string name="category_help">Допомога</string>
-    <string name="summary_privacy_policy">Переглянути політику конфіденційності Moonlight</string>
+    <string name="summary_privacy_policy">Переглянути політику конфіденційності NOUS</string>
     <string name="frame_conversion_error">Головний комп\'ютер повідомив про фатальну помилку кодування відео.
 \n
 \nСпробуйте вимкнути режим HDR, змінити роздільну здатність потокового відео або змінити роздільну здатність дисплея головного комп\'ютера.</string>
     <string name="title_full_range">Сила повного спектру відео (експериментальна)</string>
     <string name="summary_full_range">Це може призвести до втрати деталей у світлих і темних областях, якщо пристрій не відображає належним чином весь діапазон відеоконтенту.</string>
-    <string name="pair_pairing_help">Якщо на вашому комп’ютері встановлений Sunshine, перейдіть до веб-інтерфейсу користувача Sunshine, щоб ввести PIN-код.</string>
+    <string name="pair_pairing_help">Якщо на вашому комп’ютері встановлений NOUS, перейдіть до веб-інтерфейсу користувача NOUS, щоб ввести PIN-код.</string>
     <string name="error_code_prefix">Код помилки:</string>
     <string name="title_seekbar_vibrate_fallback_strength">Налаштування інтенсивності вібро</string>
     <string name="summary_seekbar_vibrate_fallback_strength">Посилюйте або зменшуйте інтенсивність вібрації пристрою</string>

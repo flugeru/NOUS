@@ -18,10 +18,10 @@ class PublicContractTest(unittest.TestCase):
         n = load('nightly_notes')
         host = (SCRIPTS / 'daily_release.py').exists()
         workflow = (SCRIPTS.parent / '.github/workflows/daily-prerelease.yml').read_text(encoding='utf-8') if host else ''
-        product = 'Vibepollo' if '--product Vibepollo' in workflow else 'Vibeshine'
+        product = 'NOUS'
         if host:
             self.assertIn('--destination public-assets --product ' + product, workflow)
-        repo = 'Nonary/' + (product if product == 'Vibepollo' else 'vibeshine') if host else 'Nonary/moonlight-qt'
+        repo = 'flugeru/NOUS' if host else 'Nonary/moonlight-qt'
         source = 'a' * 40
         tag = '2.0.1-nightly.d20261012.r.2.' + source[:12] if host else 'v6.2.0-daily.183'
         version = tag if host else tag[1:]
@@ -31,7 +31,7 @@ class PublicContractTest(unittest.TestCase):
             notes = Path(temp) / 'notes.md'
             if host:
                 (root / (product + 'Setup.exe')).write_bytes(b'installer')
-                (root / (product.lower() + '-fixture-x86_64.pkg.tar.zst')).write_bytes(b'linux')
+                (root / ('vibepollo-fixture-x86_64.pkg.tar.zst')).write_bytes(b'linux')
                 (root / 'daily-manifest.json').write_text(json.dumps({'source_commit': source}))
                 (root / 'release-provenance.json').write_text('{}')
             else:
@@ -52,7 +52,7 @@ class PublicContractTest(unittest.TestCase):
                 d = load('daily_release')
                 destination = Path(temp) / 'public'
                 d.stage_public_assets(root, destination, product)
-                self.assertEqual({p.name for p in destination.iterdir()}, {product + 'Setup.exe', product.lower() + '-fixture-x86_64.pkg.tar.zst', 'nightly-metadata.json', 'SHA256SUMS'})
+                self.assertEqual({p.name for p in destination.iterdir()}, {product + 'Setup.exe', 'vibepollo-fixture-x86_64.pkg.tar.zst', 'nightly-metadata.json', 'SHA256SUMS'})
                 self.assertTrue((root / 'release-provenance.json').exists())
                 (root / 'garbage.txt').write_text('garbage')
                 with self.assertRaises(ValueError):

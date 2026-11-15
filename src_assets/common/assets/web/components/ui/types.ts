@@ -1,4 +1,4 @@
-// Public type contracts for the Vibepollo UI primitives.
+// Public type contracts for the NOUS UI primitives.
 export type UiIconName =
   | 'activity'
   | 'alert-triangle'

@@ -21,7 +21,7 @@ def inhibit_desktop_sleep():
     proxy = bus.get_object('org.freedesktop.PowerManagement',
                            '/org/freedesktop/PowerManagement/Inhibit')
     cookie = dbus.Interface(proxy, 'org.freedesktop.PowerManagement.Inhibit').Inhibit(
-        'Vibepollo shutdown diagnostics', 'Preserve host shutdown logs')
+        'NOUS shutdown diagnostics', 'Preserve host shutdown logs')
     return bus, cookie
 
 

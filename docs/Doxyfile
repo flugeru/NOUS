@@ -22,12 +22,12 @@
 # doxygen -x_noenv [configFile]
 
 # project metadata
-DOCSET_BUNDLE_ID = dev.lizardbyte.Sunshine
-DOCSET_PUBLISHER_ID = dev.lizardbyte.Sunshine.documentation
+DOCSET_BUNDLE_ID = io.github.flugeru.NOUS
+DOCSET_PUBLISHER_ID = io.github.flugeru.NOUS.documentation
 PROJECT_BRIEF = "Self-hosted game stream host for Moonlight."
-PROJECT_ICON = ../sunshine.ico
-PROJECT_LOGO = ../sunshine.png
-PROJECT_NAME = Sunshine
+PROJECT_ICON = ../nous.ico
+PROJECT_LOGO = ../nous.png
+PROJECT_NAME = NOUS
 
 # project specific settings
 # Allow large include/call graphs without erroring out

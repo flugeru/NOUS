@@ -28,11 +28,10 @@ def identity(commit, day, base, revision=1):
 
 
 def validate_source(repository, branch, confirmation):
-    if repository not in {"Nonary/vibeshine", "Nonary/Vibepollo"}:
-        raise ValueError("Daily publishing is limited to the designated upstream repositories")
-    allowed = {"master", "main", "canary"}
-    if branch not in allowed:
-        raise ValueError("Daily source must use a confirmed primary or canary branch; legacy vibe/test lanes are retired")
+    if repository != "flugeru/NOUS":
+        raise ValueError("Daily publishing is limited to flugeru/NOUS")
+    if branch != "nous-project":
+        raise ValueError("Daily source must use the confirmed nous-project branch")
     if confirmation != f"{repository}:{branch}":
         raise ValueError("Set DAILY_RELEASE_SOURCE_BRANCH and explicitly confirm repository:branch in DAILY_RELEASE_SOURCE_CONFIRMED")
     subprocess.run(["git", "check-ref-format", f"refs/heads/{branch}"], check=True)
@@ -68,30 +67,25 @@ def emit_outputs(info):
 
 def validate_invocation(branch):
     event = os.environ.get("GITHUB_EVENT_NAME")
-    primary = os.environ.get("DAILY_PRIMARY_BRANCH")
     ref = os.environ.get("GITHUB_REF_NAME")
-    if (event not in {"schedule", "workflow_dispatch"} or primary not in {"master", "main"}
-            or os.environ.get("GITHUB_REF_TYPE") != "branch"
+    if (os.environ.get("GITHUB_REF_TYPE") != "branch"
             or not re.fullmatch(r"[0-9a-f]{40}", os.environ.get("GITHUB_SHA", ""))):
         raise ValueError("Expected a branch-based nightly invocation with an exact workflow SHA")
-    manual_canary = event == "workflow_dispatch" and ref == "canary" and branch == "canary"
-    if ref != primary and not manual_canary:
-        raise ValueError("Nightly invocation must use the default branch or explicitly confirmed manual Canary")
-    return manual_canary
+    if event != "workflow_dispatch" or ref != "nous-project" or branch != "nous-project":
+        raise ValueError("Nightly invocation must use explicitly confirmed manual nous-project")
+    return True
 
 
 def resolve():
     repository = os.environ["GITHUB_REPOSITORY"]
     branch = os.environ.get("DAILY_RELEASE_SOURCE_BRANCH", "")
     validate_source(repository, branch, os.environ.get("DAILY_RELEASE_SOURCE_CONFIRMED", ""))
-    if branch != os.environ.get("DAILY_PRIMARY_BRANCH") and branch != "canary":
-        raise ValueError("Daily source must equal the verified repository default primary or canary")
-    manual_canary = validate_invocation(branch)
+    validate_invocation(branch)
     # Fetch only the explicitly confirmed remote branch; ignore local HEAD/tags.
     run("git", "fetch", "--no-tags", "origin", f"refs/heads/{branch}:refs/remotes/origin/daily-source")
     commit = run("git", "rev-parse", "refs/remotes/origin/daily-source^{commit}")
-    if manual_canary and commit != os.environ["GITHUB_SHA"]:
-        raise ValueError("Canary advanced after dispatch; rerun from its intended exact workflow/source commit")
+    if commit != os.environ["GITHUB_SHA"]:
+        raise ValueError("nous-project advanced after dispatch; rerun from its intended exact workflow/source commit")
     run("git", "fetch", "--no-recurse-submodules", "origin", "refs/tags/*:refs/tags/*")
     releases = json.loads(run("gh", "api", "--paginate", "--slurp", f"repos/{repository}/releases?per_page=100"))
     previous = previous_successful_nightly(repository, releases)
@@ -258,7 +252,7 @@ def verify_assets(root, product, commit, tag, version):
 
 def include_linux(root, linux_root, product, commit, version):
     root, linux_root = Path(root), Path(linux_root)
-    packages = list(linux_root.glob(product.lower() + '-*.pkg.tar.zst'))
+    packages = list(linux_root.glob(('vibepollo' if product == 'NOUS' else product.lower()) + '-*.pkg.tar.zst'))
     if len(packages) != 1 or any(not p.is_file() or p.is_symlink() or p.stat().st_size == 0 for p in packages):
         raise ValueError('Expected one nonempty installable Linux package')
     provenance = json.loads((linux_root / 'linux-provenance.json').read_text(encoding='utf-8'))
@@ -281,7 +275,7 @@ def include_linux(root, linux_root, product, commit, version):
 
 def stage_public_assets(root, destination, product):
     root, destination = Path(root), Path(destination)
-    packages = list(root.glob(product.lower() + '-*.pkg.tar.zst'))
+    packages = list(root.glob(('vibepollo' if product == 'NOUS' else product.lower()) + '-*.pkg.tar.zst'))
     if len(packages) != 1:
         raise ValueError('Expected exactly one qualified Linux package')
     public = {product + 'Setup.exe', packages[0].name, 'nightly-metadata.json', 'SHA256SUMS'}
@@ -302,7 +296,7 @@ if __name__ == "__main__":
     parser.add_argument("--assets")
     parser.add_argument("--linux-assets")
     parser.add_argument("--destination")
-    parser.add_argument("--product", choices=["Vibeshine", "Vibepollo"])
+    parser.add_argument("--product", choices=["NOUS"])
     args = parser.parse_args()
     if args.command == "resolve":
         resolve()

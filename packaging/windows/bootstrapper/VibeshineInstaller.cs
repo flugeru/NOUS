@@ -1984,7 +1984,7 @@ namespace VibepolloInstaller {
         return;
       }
 
-      var nextStep = "Attach this file on GitHub: https://github.com/flugeru/Vibepollo/issues\n"
+      var nextStep = "Attach this file on GitHub: https://github.com/flugeru/NOUS/issues\n"
         + "Or Discord (#vibeshine): https://discord.com/invite/CGg5JxN";
       SetStatus("Support logs saved.", outputPath, _statusSuccessBrush);
       await ShowOverlayInfoAsync(
@@ -2023,7 +2023,7 @@ namespace VibepolloInstaller {
         return;
       }
 
-      var nextStep = "Attach this file on GitHub: https://github.com/flugeru/Vibepollo/issues\n"
+      var nextStep = "Attach this file on GitHub: https://github.com/flugeru/NOUS/issues\n"
         + "Or Discord (#vibeshine): https://discord.com/invite/CGg5JxN";
       SetStatus("Support logs saved.", outputPath, _statusSuccessBrush);
       await ShowOverlayInfoAsync(
@@ -2181,7 +2181,7 @@ namespace VibepolloInstaller {
         detail ?? "Unknown error",
         string.Empty,
         "Next step:",
-        "Attach this file on GitHub: https://github.com/flugeru/Vibepollo/issues",
+        "Attach this file on GitHub: https://github.com/flugeru/NOUS/issues",
         "Or Discord (#vibeshine): https://discord.com/invite/CGg5JxN"
       };
       return string.Join(Environment.NewLine, lines);
@@ -2197,9 +2197,9 @@ namespace VibepolloInstaller {
 
       block.Inlines.Add(new Run("Open an issue on "));
       var githubLink = new Hyperlink(new Run("GitHub")) {
-        NavigateUri = new Uri("https://github.com/flugeru/Vibepollo/issues")
+        NavigateUri = new Uri("https://github.com/flugeru/NOUS/issues")
       };
-      githubLink.Click += (sender, args) => OpenExternalUrl("https://github.com/flugeru/Vibepollo/issues");
+      githubLink.Click += (sender, args) => OpenExternalUrl("https://github.com/flugeru/NOUS/issues");
       block.Inlines.Add(githubLink);
       block.Inlines.Add(new Run(" or join "));
       var discordLink = new Hyperlink(new Run("Discord (#vibeshine)")) {

@@ -1,18 +1,18 @@
 # Daily Windows prereleases
 
-The daily workflow is inactive unless `DAILY_RELEASE_ENABLED=true`. Its UTC schedule is 06:17 for Vibeshine and 06:32 for Vibepollo. GitHub may delay scheduled runs. Vibepollo uses `canary` as its nightly source and `master` as its default workflow control and stable review branch. Nightly publication never merges into `master` or publishes a stable release.
+NOUS prereleases are manual-only. No cron, push, tag, pull request, issue or release event starts Actions. Source branch is `nous-project` in `flugeru/NOUS`. Publication requires both `DAILY_RELEASE_ENABLED=true` and explicit `publish=true`; validation defaults to no publication.
 
 ## Validate before activation
 
 Merge the workflow, helper scripts, driver safeguards and mandatory tests into the default branch and the intended source branch. The source branch must contain `packaging/windows/test_driver_install_safety.ps1` and `scripts/tests/test_daily_version_contract.cmake`; a legacy branch without the safeguards fails the daily build.
 
-Set repository variables `DAILY_RELEASE_SOURCE_BRANCH` to `canary` and `DAILY_RELEASE_SOURCE_CONFIRMED` to `Nonary/Vibepollo:canary` for Vibepollo. Both canary and the confirmed default primary accept changed source without requiring an upstream migration attestation. Historical `vibe` and `vibe-test` are retired release lanes. The repository's default branch is only the workflow control branch and does not prove the intended release source. Scheduled and manual runs start from the default branch, fetch the confirmed remote source, and pin its exact SHA before building; later pushes wait until the next run. Unchanged sources are skipped.
+Set `DAILY_RELEASE_SOURCE_BRANCH` to `nous-project` and `DAILY_RELEASE_SOURCE_CONFIRMED` to `flugeru/NOUS:nous-project`. Dispatch from `nous-project`, or use the default-branch launcher if it differs. The workflow fetches and pins the exact confirmed source SHA; unchanged sources are skipped.
 
 Dispatch **Daily Windows prerelease** from the default branch with `publish` left **false**. This permits a build, test and package validation while activation remains disabled. Inspect the Windows tests, driver safety matrix, extracted MSI safety-script hashes, finalized provenance and the MSI/setup run artifacts. Do not activate until the full remote build succeeds and fresh-install/upgrade/downgrade behavior is tested on suitable disposable Windows machines.
 
 ## Activate or stop
 
-After validation and an explicit decision to publish daily builds, set `DAILY_RELEASE_ENABLED` to the exact string `true`. The schedule can then publish. A manual dispatch also requires `publish=true` to publish. Contributors with repository write access can dispatch this workflow from the default branch at any time to build the configured canary source; they do not need to wait for the schedule. Existing unchanged-source and one-published-nightly-per-UTC-day limits still apply. Unset the variable or set it to `false` to stop future publication. Fork repositories and dispatches outside the default control branch are blocked.
+After validation and an explicit decision to publish, set `DAILY_RELEASE_ENABLED` to the exact string `true` and dispatch with `publish=true`. No schedule exists. Leave publication false for validation; unset the variable or set it to `false` to block publication. Only `flugeru/NOUS` with the explicitly confirmed source is accepted.
 
 The source and default control branch must have identical `.github/workflows` trees; the helper fails on a difference instead of requiring a new workflow-write credential during release creation.
 
@@ -28,7 +28,7 @@ The host MSI/setup are unsigned. After verifying the immutable upstream VHF arch
 
 Daily MSIs carry `DAILY_UNSIGNED_DRIVER_POLICY=1`; stable packages retain zero. Runtime safeguards retain equal/newer installed drivers, and unknown inventory fails safely before package or certificate handling. Missing or genuinely older gamepad components can use the bundled self-signed package only after independent cryptographic catalog-member, setup signature, public DER certificate, release-lock and payload checks. If Windows does not already trust it, the installer requires a separate unchecked consent option displaying the exact signer, thumbprint, driver version and persistent machine-wide LocalMachine Root/TrustedPublisher scope. Consent is bound to that exact certificate through elevation and secure MSI properties. Quiet installs do not implicitly approve trust. Failed validation/staging/setup removes only trust entries newly added by this attempt, preserving preexisting and unrelated certificates. No Secure Boot or test-signing setting changes or automatic reboot occurs. Trust persists after uninstall; later genuinely newer components signed with a different daily identity require fresh approval. Equal/newer components skip both driver and certificate changes entirely.
 
-Vibepollo nightly builds depend only on its own confirmed source and verified release baseline, not upstream migration readiness. Upstream movement alone never triggers a build. Both primary and canary lanes retain source confirmation, builds, tests, workflow parity and publication checks. The former migration confirmation variable and manual upstream tag input are no longer used.
+NOUS nightly builds depend only on its own confirmed source and verified release baseline, not upstream migration readiness. Upstream movement alone never triggers a build. Both primary and confirmed source lanes retain source confirmation, builds, tests, workflow parity and publication checks. The former migration confirmation variable and manual upstream tag input are no longer used.
 
 An existing daily tag or release, including a draft from a failed upload, blocks reruns. No daily workflow moves tags, overwrites assets, or deletes stable releases. Review a failed run and any partial draft manually before deciding recovery. Concurrent daily runs queue instead of cancelling an in-progress publication. The workflow summary records disabled, skipped, failed and published job outcomes.
 

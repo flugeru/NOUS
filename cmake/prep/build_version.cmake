@@ -26,8 +26,8 @@ endif()
 
 # Allow forks / CI to override which GitHub repo is used for update checks.
 # Cache variables can be provided via -DSUNSHINE_REPO_OWNER=... or -DSUNSHINE_REPO_NAME=...
-set(SUNSHINE_REPO_OWNER "Nonary" CACHE STRING "GitHub repo owner for update checks")
-set(SUNSHINE_REPO_NAME "vibepollo" CACHE STRING "GitHub repo name for update checks")
+set(SUNSHINE_REPO_OWNER "flugeru" CACHE STRING "GitHub repo owner for update checks")
+set(SUNSHINE_REPO_NAME "NOUS" CACHE STRING "GitHub repo name for update checks")
 
 # Allow environment variables to override the cache values (useful in CI)
 if(DEFINED ENV{SUNSHINE_REPO_OWNER})
@@ -38,7 +38,7 @@ if(DEFINED ENV{SUNSHINE_REPO_NAME})
 endif()
 
 # Try to infer owner/name from the clone URL when available and the defaults are still in use
-if(DEFINED GITHUB_CLONE_URL AND (SUNSHINE_REPO_OWNER STREQUAL "Nonary" OR SUNSHINE_REPO_NAME STREQUAL "vibepollo"))
+if(DEFINED GITHUB_CLONE_URL AND (SUNSHINE_REPO_OWNER STREQUAL "flugeru" OR SUNSHINE_REPO_NAME STREQUAL "NOUS"))
     string(REGEX MATCH "github.com[:/]+([^/]+)/([^/]+)(\\.git)?$" _match "${GITHUB_CLONE_URL}")
     if(_match)
         set(SUNSHINE_REPO_OWNER "${CMAKE_MATCH_1}")
@@ -172,7 +172,7 @@ if(DEFINED PROJECT_VERSION)
     set(PROJECT_VERSION_FULL "${PROJECT_VERSION}")
     if(NOT PROJECT_VERSION_FULL MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?(\\+[0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?$")
         message(FATAL_ERROR
-            "Invalid Vibeshine build version '${PROJECT_VERSION_FULL}'. Expected a numeric "
+            "Invalid NOUS build version '${PROJECT_VERSION_FULL}'. Expected a numeric "
             "major.minor.patch version with optional prerelease/build metadata.")
     endif()
     string(REGEX REPLACE "[-+].*$" "" PROJECT_VERSION_NUMERIC "${PROJECT_VERSION}")

@@ -229,7 +229,7 @@ namespace confighttp {
     EXPECT_EQ(json_response["error"], "Unauthorized");
     auto www_auth_it = result.headers.find("WWW-Authenticate");
     EXPECT_NE(www_auth_it, result.headers.end());
-    EXPECT_EQ(www_auth_it->second, "Basic realm=\"Sunshine\"");
+    EXPECT_EQ(www_auth_it->second, "Basic realm=\"NOUS\"");
   }
 
   TEST_F(ConfigHttpCheckAuthTest, given_valid_basic_credentials_when_checking_auth_then_should_authorize) {

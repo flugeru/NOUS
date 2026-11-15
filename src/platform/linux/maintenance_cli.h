@@ -93,7 +93,7 @@ namespace platf::linux_cli {
     // Fixed executables and separate arguments: no shell, PATH search, or
     // privilege escalation. Administrative helpers enforce their own UID check.
     execv(arguments->front(), const_cast<char *const *>(arguments->data()));
-    std::fprintf(stderr, "Vibepollo: cannot execute %s: %s\n", arguments->front(), std::strerror(errno));
+    std::fprintf(stderr, "NOUS: cannot execute %s: %s\n", arguments->front(), std::strerror(errno));
     return 1;
   }
 }  // namespace platf::linux_cli

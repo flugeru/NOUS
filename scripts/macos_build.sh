@@ -5,9 +5,9 @@ set -euo pipefail
 
 # Default value for arguments
 num_processors=$(sysctl -n hw.ncpu)
-publisher_name="LizardByte"
-publisher_website="https://app.lizardbyte.dev"
-publisher_issue_url="https://app.lizardbyte.dev/support"
+publisher_name="flugeru"
+publisher_website="https://github.com/flugeru/NOUS"
+publisher_issue_url="https://github.com/flugeru/NOUS/issues"
 step="all"
 build_docs="OFF"
 build_type="Release"
@@ -148,11 +148,11 @@ function run_step_dmg() {
   cpack -G DragNDrop --config "${build_dir}/CPackConfig.cmake" --verbose
 
   if [[ -n "${sign_app}" && -n "${notarize}" ]]; then
-    time xcrun notarytool submit "${build_dir}/cpack_artifacts/Sunshine.dmg" \
+    time xcrun notarytool submit "${build_dir}/cpack_artifacts/NOUS.dmg" \
       --keychain-profile "notarytool-password" \
       --wait \
       --timeout 15m
-    xcrun stapler staple -v "${build_dir}/cpack_artifacts/Sunshine.dmg"
+    xcrun stapler staple -v "${build_dir}/cpack_artifacts/NOUS.dmg"
   fi
   return 0
 }

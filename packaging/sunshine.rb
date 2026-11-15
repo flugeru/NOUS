@@ -2,7 +2,7 @@ class Sunshine < Formula
   include Language::Python::Virtualenv
 
   # Linux exposes the fork product name; Homebrew macOS retains the target name.
-  HOST_BINARY = (OS.linux? ? "@PROJECT_NAME@".downcase : "sunshine").freeze
+  HOST_BINARY = "NOUS".freeze
 
   CUDA_VERSION = "13.1".freeze
   CUDA_FORMULA = "cuda@#{CUDA_VERSION}".freeze

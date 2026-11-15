@@ -1,6 +1,6 @@
-# Sunshine Architecture (with WebRTC deep dive)
+# NOUS Architecture (with WebRTC deep dive)
 
-This document describes Sunshine’s runtime architecture (processes/threads/modules) and gives an end-to-end, code-level walk-through of how the **experimental WebRTC streaming path** is established and how media/input flows from capture -> encode -> WebRTC transport -> browser playback.
+This document describes NOUS’s runtime architecture (processes/threads/modules) and gives an end-to-end, code-level walk-through of how the **experimental WebRTC streaming path** is established and how media/input flows from capture -> encode -> WebRTC transport -> browser playback.
 
 Repo snapshot: this documentation was written against the code currently in this workspace; file references below are the source of truth.
 
@@ -8,7 +8,7 @@ Repo snapshot: this documentation was written against the code currently in this
 
 ## 1) Big picture
 
-Sunshine is a single host-side daemon (one process) that:
+NOUS is a single host-side daemon (one process) that:
 
 - Enumerates/launches the configured “apps” to stream (`src/process.cpp`).
 - Captures video frames from the host display (`src/video.cpp` + `src/platform/**`).
@@ -18,7 +18,7 @@ Sunshine is a single host-side daemon (one process) that:
   - The legacy Moonlight/GameStream-compatible stack (`src/nvhttp.cpp`, `src/stream.cpp`, `src/rtsp.cpp`).
   - The built-in HTTPS Web UI + REST API (`src/confighttp.cpp`) which also hosts the **WebRTC** experimental client and signaling API.
 
-At runtime, Sunshine is fundamentally a set of long-lived service threads (HTTP servers, discovery) plus per-stream capture/encode threads. Cross-thread coordination is done primarily via a shared “mailbox” abstraction (`safe::mail_raw_t`, created in `src/main.cpp`) and per-stream mailboxes.
+At runtime, NOUS is fundamentally a set of long-lived service threads (HTTP servers, discovery) plus per-stream capture/encode threads. Cross-thread coordination is done primarily via a shared “mailbox” abstraction (`safe::mail_raw_t`, created in `src/main.cpp`) and per-stream mailboxes.
 
 ---
 
@@ -101,7 +101,7 @@ webrtc_stream::set_rtsp_sessions_active(true);   // on first session start
 webrtc_stream::set_rtsp_sessions_active(false);  // when last session ends
 ```
 
-This is a key architectural constraint: **Sunshine runs either RTSP/GameStream streaming or WebRTC streaming, not both concurrently** (in the current implementation).
+This is a key architectural constraint: **NOUS runs either RTSP/GameStream streaming or WebRTC streaming, not both concurrently** (in the current implementation).
 
 ---
 
@@ -318,7 +318,7 @@ that same policy. Linux private-display mode parsing consumes the same effective
 preparation after reserving the virtual target. Promotion applies only while
 creating or configuring a virtual target; a fallback to physical capture retains
 VerifyOnly. WebRTC resolves it before virtual-output selection is consumed.
-Vibepollo also finalizes preparation after resume fills in the running app's
+NOUS also finalizes preparation after resume fills in the running app's
 display settings, retaining the verified client's original display choice.
 These policy rules do not establish that a physical monitor honors a disable
 request; that requires separate runtime evidence.
@@ -389,7 +389,7 @@ webrtc_capture.active = true;
 
 Important configuration details for WebRTC capture:
 
-- `build_video_config()` selects resolution/fps/bitrate and maps the requested codec to Sunshine’s internal `videoFormat` (`src/webrtc_stream.cpp`).
+- `build_video_config()` selects resolution/fps/bitrate and maps the requested codec to NOUS’s internal `videoFormat` (`src/webrtc_stream.cpp`).
 - `build_audio_config()` sets `bypass_opus = true`, meaning the audio thread will deliver raw PCM frames (WebRTC does its own audio encoding):
 
 ```cpp
@@ -476,7 +476,7 @@ The answer is produced asynchronously by libwebrtc callbacks:
 
 - `on_set_remote_success()` triggers `lwrtc_peer_create_answer(...)`.
 - `on_create_answer_success()` triggers `lwrtc_peer_set_local_description(...)`.
-- `on_set_local_success()` stores the SDP/type in the Sunshine session:
+- `on_set_local_success()` stores the SDP/type in the NOUS session:
 
 ```cpp
 // src/webrtc_stream.cpp
@@ -548,14 +548,14 @@ On the server, `getWebRTCIceStream()` (`src/confighttp.cpp`) continuously emits 
 
 ### 5.7 Media: capture -> encode -> WebRTC sender pipeline
 
-Once the peer is connected, Sunshine must continuously deliver audio/video into libwebrtc. This is done by *bridging*:
+Once the peer is connected, NOUS must continuously deliver audio/video into libwebrtc. This is done by *bridging*:
 
-- Sunshine’s existing capture/encode pipeline (video/audio threads)
+- NOUS’s existing capture/encode pipeline (video/audio threads)
 - `webrtc_stream::submit_*()` APIs
 - a dedicated WebRTC media thread (`media_thread_main`)
 - libwebrtc “sources” (`lwrtc_*_source_push` / `lwrtc_encoded_video_source_push`)
 
-#### 5.7.1 Video production (Sunshine encoder thread)
+#### 5.7.1 Video production (NOUS encoder thread)
 
 Video capture runs in `video::capture(...)` (`src/video.cpp`). For each captured frame:
 
@@ -612,7 +612,7 @@ session.video_track = lwrtc_encoded_video_track_create(webrtc_factory, session.e
 lwrtc_peer_add_video_track(session.peer, session.video_track, stream_id.c_str());
 ```
 
-It also installs a keyframe callback so WebRTC PLI/FIR requests propagate back into Sunshine’s encoder:
+It also installs a keyframe callback so WebRTC PLI/FIR requests propagate back into NOUS’s encoder:
 
 ```cpp
 // src/webrtc_stream.cpp
@@ -635,7 +635,7 @@ All WebRTC "push into libwebrtc" operations occur on `media_thread_main()` (`src
 
 Key mechanics:
 
-- **Keyframe gating**: if `session.needs_keyframe` is true, non-IDR frames are skipped until an IDR arrives; Sunshine periodically requests an IDR via `mail::idr`.
+- **Keyframe gating**: if `session.needs_keyframe` is true, non-IDR frames are skipped until an IDR arrives; NOUS periodically requests an IDR via `mail::idr`.
 - **Pacing modes**: configured per session (`video_pacing_mode`, slack, max frame age).
   - `latency`: no pacing, prefer latest frame, drop old.
   - `balanced`: paced, drop old, prefer latest only while behind or during recovery.
@@ -726,7 +726,7 @@ This reuse of Moonlight-format packets (`moonlight-common-c/src/Input.h`) is an 
 
 #### 5.9.2 Server -> client gamepad feedback (rumble, motion enablement)
 
-Sunshine can also send feedback to the browser (e.g., rumble) over the same data channel:
+NOUS can also send feedback to the browser (e.g., rumble) over the same data channel:
 
 - WebRTC capture creates a `mail::gamepad_feedback` queue.
 - `feedback_thread_main()` drains it and broadcasts JSON payloads to all sessions’ `input_channel`:
@@ -776,7 +776,7 @@ Example value:
 ]
 ```
 
-If unset, Sunshine returns an empty list and the browser will rely on host-candidate connectivity only (often sufficient on LAN, insufficient across NAT).
+If unset, NOUS returns an empty list and the browser will rely on host-candidate connectivity only (often sufficient on LAN, insufficient across NAT).
 
 ### Codec selection and browser capability fallback
 
@@ -834,7 +834,7 @@ These are code-backed observations relevant to maintainability and correctness:
 sequenceDiagram
   participant UI as Web UI (Vue)
   participant PC as Browser RTCPeerConnection
-  participant API as Sunshine confighttp (/api/webrtc)
+  participant API as NOUS confighttp (/api/webrtc)
   participant WS as webrtc_stream (C++)
   participant V as video::capture/encode
   participant A as audio::capture

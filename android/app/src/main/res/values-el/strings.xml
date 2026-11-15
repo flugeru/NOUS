@@ -17,7 +17,7 @@
     <string name="pcview_menu_send_wol">Αποστολή αιτήματος Wake-On-LAN</string>
     <string name="nettest_title_waiting">Δοκιμή σύνδεσης δικτύου</string>
     <string name="nettest_title_done">Ολοκληρώθηκε η δοκιμή δικτύου</string>
-    <string name="nettest_text_inconclusive">Η δοκιμή δικτύου δεν μπορούσε να πραγματοποιηθεί επειδή κανένας από τους διακομιστές δοκιμής σύνδεσης της Moonlight δεν ήταν προσβάσιμος. Ελέγξτε τη σύνδεσή σας στο Internet ή δοκιμάστε ξανά αργότερα.</string>
+    <string name="nettest_text_inconclusive">Η δοκιμή δικτύου δεν μπορούσε να πραγματοποιηθεί επειδή κανένας από τους διακομιστές δοκιμής σύνδεσης της NOUS δεν ήταν προσβάσιμος. Ελέγξτε τη σύνδεσή σας στο Internet ή δοκιμάστε ξανά αργότερα.</string>
     <string name="nettest_text_blocked">Η τρέχουσα σύνδεση δικτύου της συσκευής σας εμποδίζει το NOUS. Η ροή μέσω του Internet ενδέχεται να μην λειτουργεί ενώ είστε συνδεδεμένοι σε αυτό το δίκτυο.</string>
     <string name="pairing">Σύζευξη…</string>
     <string name="pair_pc_offline">Ο υπολογιστής είναι εκτός σύνδεσης</string>
@@ -210,7 +210,7 @@
 \n
 \nΔοκιμάστε να απενεργοποιήσετε τη λειτουργία HDR, να αλλάξετε την ανάλυση ροής ή να αλλάξετε την ανάλυση οθόνης του υπολογιστή φιλοξενίας.</string>
     <string name="pcview_menu_eol">Λήξη Υποστήριξης NVIDA GameStream</string>
-    <string name="pair_pairing_help">Εάν ο υπολογιστής οικοδεσπότης χρησιμοποιεί το Sunshine, πλοηγηθείτε στην διαδικτυακή διεπαφή χρήστη του Sunshine για να εισάγετε το PIN.</string>
+    <string name="pair_pairing_help">Εάν ο υπολογιστής οικοδεσπότης χρησιμοποιεί το NOUS, πλοηγηθείτε στην διαδικτυακή διεπαφή χρήστη του NOUS για να εισάγετε το PIN.</string>
     <string name="title_enable_commit_text">Ενεργοποίηση εισαγωγής commit-text (σάρωση/φωνή)</string>
     <string name="summary_enable_commit_text">Προωθεί κείμενο πολλών χαρακτήρων από τα εικονικά πληκτρολόγια (σάρωση, προτάσεις, φωνητική πληκτρολόγηση). Ίσως προκαλέσει προβλήματα σε παιχνίδια που βασίζονται σε πληκτρολόγηση πλήκτρο-πλήκτρο.</string>
 </resources>

@@ -86,7 +86,7 @@ TEST(HostNameService, UsesValueAndFallsBackForEmptyOrFailure) {
   EXPECT_EQ(platf::services::host_name_or(provider), "deterministic-host");
 
   provider.value = "";
-  EXPECT_EQ(platf::services::host_name_or(provider), "Vibepollo");
+  EXPECT_EQ(platf::services::host_name_or(provider), "NOUS");
 
   provider.throws = true;
   EXPECT_EQ(platf::services::host_name_or(provider, "fallback"), "fallback");

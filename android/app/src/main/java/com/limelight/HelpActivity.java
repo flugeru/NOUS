@@ -119,7 +119,7 @@ public class HelpActivity extends AppCompatActivity {
                 .setTitle(R.string.nous_credits).setMessage(R.string.nous_credits_text)
                 .setPositiveButton(android.R.string.ok, null).show());
         addHelpCard(body, R.string.title_software_update, () -> com.limelight.utils.HelpLauncher.launchUrl(this,
-                "https://github.com/flugeru/Vibepollo/releases"));
+                "https://github.com/flugeru/NOUS/releases"));
         scroll.addView(body);
         container.addView(scroll);
         UiHelper.notifyNewRootView(this);

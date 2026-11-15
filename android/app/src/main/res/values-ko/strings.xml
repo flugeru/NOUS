@@ -55,7 +55,7 @@
     <string name="ip_hint">호스트 PC의 IP 주소</string>
     <string name="searching_pc">로컬 네트워크의 호스트 PC를 검색중…
 \n
-\n 호스트 PC에서 Sunshine이 실행 중인지 또는 GeForce Experience SHIELD 설정에서 GameStream이 활성화되어 있는지 확인하십시오.</string>
+\n 호스트 PC에서 NOUS이 실행 중인지 또는 GeForce Experience SHIELD 설정에서 GameStream이 활성화되어 있는지 확인하십시오.</string>
     <string name="yes">예</string>
     <string name="no">아니오</string>
     <string name="lost_connection">PC 연결 끊김</string>
@@ -129,7 +129,7 @@
 \n
 \n화면 설정과 일치하도록 NVIDIA 제어판에서 사용자 정의 해상도를 생성 할 경우 모니터 손상, PC 불안정 및 기타 잠재적인 문제에 대한 NVIDIA의 경고를 읽고 이해했는지 확인하십시오.
 \n
-\nMoonlight는 PC에서 사용자 지정 해상도를 생성하여 발생하는 문제에 대해 책임을 지지 않습니다.
+\nNOUS는 PC에서 사용자 지정 해상도를 생성하여 발생하는 문제에 대해 책임을 지지 않습니다.
 \n
 \n모니터가 필요한 디스플레이 구성을 지원하지 않을 경우 가상 모니터 설정을 시도할 수 있습니다. 장치나 호스트 PC가 특정 해상도나 새로 고침 빈도로 스트리밍을 지원하지 않을 수 있습니다.</string>
     <string name="title_native_res_dialog">네이티브 해상도 주의사항</string>
@@ -166,7 +166,7 @@
 \n
 \n차단된 네트워크 포트:
 \n</string>
-    <string name="nettest_text_inconclusive">Moonlight의 테스트 서버에 연결할 수 없기 때문에 네트워크 테스트를 할 수 없습니다. 인터넷 연결을 확인하거나 나중에 다시 시도하십시오.</string>
+    <string name="nettest_text_inconclusive">NOUS의 테스트 서버에 연결할 수 없기 때문에 네트워크 테스트를 할 수 없습니다. 인터넷 연결을 확인하거나 나중에 다시 시도하십시오.</string>
     <string name="nettest_text_success">네트워크가 NOUS를 차단하지 않는 것 같습니다. 여전히 연결에 문제가 있으면 PC의 방화벽 설정을 확인하십시오
 \n
 \n인터넷을 통해 연결하려는 경우 PC에 Moonlight Internet Hosting Tool을 설치하고 Internet Streaming Tester를 실행하여 PC의 인터넷 연결을 확인하십시오.</string>
@@ -238,7 +238,7 @@
     <string name="title_troubleshooting">문제 해결 가이드</string>
     <string name="summary_troubleshooting">일반적인 스트리밍 문제 진단 및 해결을 위한 팁 보기</string>
     <string name="title_privacy_policy">개인 정보 정책</string>
-    <string name="summary_privacy_policy">Moonlight의 개인 정보 보호 정책 보기</string>
+    <string name="summary_privacy_policy">NOUS의 개인 정보 보호 정책 보기</string>
     <string name="summary_frame_pacing">비디오 지연 시간과 부드러움의 균형을 맞추는 방법 설정</string>
     <string name="pacing_latency">최저 지연 시간 선호</string>
     <string name="pacing_balanced">균형</string>
@@ -266,7 +266,7 @@
     <string name="summary_checkbox_gamepad_motion_sensors">모션 센서가 있는 컨트롤러를 에뮬레이션할 때 지원되는 호스트가 모션 센서 데이터를 요청할 수 있습니다. 비활성화하면 게임에서 동작 센서를 사용하지 않는 경우 전원 및 네트워크 사용량이 약간 줄어들 수 있습니다.</string>
     <string name="summary_checkbox_gamepad_touchpad_as_mouse">터치패드로 컨트롤러를 에뮬레이션하는 경우에도 호스트 마우스를 제어하기 위해 컨트롤러 터치패드 입력을 강제합니다.</string>
     <string name="pcview_menu_eol">NVIDIA GameStream 지원 종료</string>
-    <string name="pair_pairing_help">호스트 PC에서 Sunshine을 실행 중인 경우 Sunshine 웹 UI로 이동하여 PIN을 입력합니다.</string>
+    <string name="pair_pairing_help">호스트 PC에서 NOUS을 실행 중인 경우 NOUS 웹 UI로 이동하여 PIN을 입력합니다.</string>
     <string name="perf_overlay_hostprocessinglatency">호스트 처리 대기 시간 최소/최대/평균: %1$.1f/%2$.1f/%3$.1f ms</string>
     <string name="fps_suffix_fps">FPS</string>
     <string name="title_native_fps_dialog">네이티브 FPS 주의사항</string>

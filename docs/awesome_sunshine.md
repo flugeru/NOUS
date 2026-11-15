@@ -1,5 +1,7 @@
 # Awesome-Sunshine
 
+External upstream Sunshine ecosystem list. Inclusion does not imply NOUS compatibility or maintenance.
+
 @htmlonly
 <script type="module" src="https://md-block.verou.me/md-block.js"></script>
 <md-block

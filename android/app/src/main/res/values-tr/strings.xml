@@ -42,7 +42,7 @@
 \n
 \nBu bir kaç saniye sürebilir…</string>
     <string name="nettest_title_done">Ağ Testi Tamamlandı</string>
-    <string name="nettest_text_inconclusive">Moonlight\'ın bağlantı testi sunucularından hiçbirine erişilemediği için ağ testi gerçekleştirilemedi. İnternet bağlantınızı kontrol edin veya daha sonra tekrar deneyin.</string>
+    <string name="nettest_text_inconclusive">NOUS\'ın bağlantı testi sunucularından hiçbirine erişilemediği için ağ testi gerçekleştirilemedi. İnternet bağlantınızı kontrol edin veya daha sonra tekrar deneyin.</string>
     <string name="nettest_text_failure">Cihazınızın mevcut ağ bağlantısı NOUS\'ı engelliyor gibi görünüyor. Bu ağa bağlıyken İnternet üzerinden yayın akışı çalışmayabilir.
 \n
 \nAşağıdaki ağ bağlantı noktaları engellenmiş:
@@ -153,7 +153,7 @@
     <string name="title_decoding_reset">Video Ayarlarını Sıfırla</string>
     <string name="searching_pc">Yerel ağınızdaki ana bilgisayarlar aranıyor…
 \n
-\n Sunshine ana bilgisayarınızda çalıştığından veya GeForce Experience SHIELD ayarlarında GameStream etkinleştirildiğinden emin olun.</string>
+\n NOUS ana bilgisayarınızda çalıştığından veya GeForce Experience SHIELD ayarlarında GameStream etkinleştirildiğinden emin olun.</string>
     <string name="applist_connect_msg">Bilgisayara bağlanıyor…</string>
     <string name="no">Hayır</string>
     <string name="perf_overlay_netlatency">Ortalama ağ gecikmesi: %1$d ms (varyans: %2$d ms)</string>
@@ -175,7 +175,7 @@
     <string name="dialog_title_reset_osc">Düzeni Sıfırla</string>
     <string name="title_language_list">Dil</string>
     <string name="category_host_settings">Ana Bilgisayar Ayarları</string>
-    <string name="pair_pairing_help">Ana bilgisayarınız Sunshine çalıştırıyorsa PIN girmek için Sunshine web kullanıcı arayüzüne gidin.</string>
+    <string name="pair_pairing_help">Ana bilgisayarınız NOUS çalıştırıyorsa PIN girmek için NOUS web kullanıcı arayüzüne gidin.</string>
     <string name="frame_conversion_error">Ana bilgisayar önemli bir video kodlama hatası bildirdi.
 \n
 \nHDR kipi devre dışı bırakmayı, akış çözünürlüğünü değiştirmeyi veya ana bilgisayarın ekran çözünürlüğünü değiştirmeyi deneyin.</string>
@@ -231,7 +231,7 @@
     <string name="resolution_480p">480p</string>
     <string name="resolution_1080p">1080p</string>
     <string name="summary_troubleshooting">Yaygın akış sorunlarını teşhis etmeye ve düzeltmeye yönelik ipuçlarını görüntüle</string>
-    <string name="summary_privacy_policy">Moonlight gizlilik politikasını görüntüleyin</string>
+    <string name="summary_privacy_policy">NOUS gizlilik politikasını görüntüleyin</string>
     <string name="toast_controller_type_changed">Hareket sensörü taklidi nedeniyle oyun kumandası türü değiştirilebilir</string>
     <string name="audioconf_51surround">5.1 Surround Ses</string>
     <string name="audioconf_71surround">7.1 Surround Ses</string>

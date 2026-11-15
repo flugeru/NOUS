@@ -1,5 +1,5 @@
 ---
-# Vibepollo uses Dependabot for submodules and Renovate for other dependencies.
+# NOUS uses Dependabot for submodules and Renovate for other dependencies.
 version: 2
 updates:
   - package-ecosystem: "gitsubmodule"

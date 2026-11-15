@@ -11,7 +11,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 function Get-Sha256([string] $Path) { return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant() }
 function New-GitHubHeaders([string] $Token = '') {
-    $headers = @{ Accept = 'application/vnd.github+json'; 'User-Agent' = 'vibepollo-libvirtualdisplay-provenance'; 'X-GitHub-Api-Version' = '2022-11-28' }
+    $headers = @{ Accept = 'application/vnd.github+json'; 'User-Agent' = 'nous-libvirtualdisplay-provenance'; 'X-GitHub-Api-Version' = '2022-11-28' }
     if ($Token) { $headers.Authorization = "Bearer $Token" }
     return $headers
 }

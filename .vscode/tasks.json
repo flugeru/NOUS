@@ -82,13 +82,13 @@
       }
     },
     {
-      "label": "symbols: cv2pdb sunshine",
+      "label": "symbols: cv2pdb NOUS",
       "type": "shell",
       "command": "powershell",
       "args": [
         "-NoProfile",
         "-Command",
-        "& 'C:/Users/Chase/tools/cv2pdb64.exe' '${workspaceFolder}/build/sunshine.exe'; exit 0"
+        "& 'C:/Users/Chase/tools/cv2pdb64.exe' '${workspaceFolder}/build/NOUS.exe'; exit 0"
       ],
       "problemMatcher": [],
       "group": "build"
@@ -100,7 +100,7 @@
       "args": [
         "-NoProfile",
         "-Command",
-        "$dest = 'C:/ProgramData/Sunshine'; $pdb = '${workspaceFolder}/build/sunshine.pdb'; if (-not (Test-Path $dest)) { New-Item -ItemType Directory -Force -Path $dest | Out-Null }; if (Test-Path $pdb) { Copy-Item -Path $pdb -Destination $dest -Force }"
+        "$dest = 'C:/ProgramData/NOUS'; $pdb = '${workspaceFolder}/build/NOUS.pdb'; if (-not (Test-Path $dest)) { New-Item -ItemType Directory -Force -Path $dest | Out-Null }; if (Test-Path $pdb) { Copy-Item -Path $pdb -Destination $dest -Force }"
       ],
       "problemMatcher": []
     },
@@ -108,7 +108,7 @@
       "label": "symbols: strip & copy",
       "dependsOrder": "sequence",
       "dependsOn": [
-        "symbols: cv2pdb sunshine",
+        "symbols: cv2pdb NOUS",
         "symbols: copy to ProgramData"
       ],
       "problemMatcher": [],
@@ -203,7 +203,7 @@
       "group": "build"
     },
     {
-      "label": "install: Vibepollo",
+      "label": "install: NOUS",
       "type": "shell",
       "command": "powershell",
       "args": [
@@ -211,18 +211,18 @@
         "-ExecutionPolicy",
         "Bypass",
         "-File",
-        "${workspaceFolder}/scripts/install_vibepollo.ps1"
+        "${workspaceFolder}/scripts/install_nous.ps1"
       ],
       "problemMatcher": []
     },
     {
-      "label": "clean: sunshine.exe",
+      "label": "clean: NOUS.exe",
       "type": "process",
       "command": "powershell",
       "args": [
         "-NoProfile",
         "-Command",
-        "Remove-Item -Path '${workspaceFolder}/build/sunshine.exe' -Force -ErrorAction SilentlyContinue"
+        "Remove-Item -Path '${workspaceFolder}/build/NOUS.exe' -Force -ErrorAction SilentlyContinue"
       ],
       "problemMatcher": []
     },
@@ -230,12 +230,12 @@
       "label": "debug install",
       "dependsOrder": "sequence",
       "dependsOn": [
-        "clean: sunshine.exe",
+        "clean: NOUS.exe",
         "cmake: build",
-        "symbols: cv2pdb sunshine",
+        "symbols: cv2pdb NOUS",
         "symbols: copy to ProgramData",
         "cpack: custom installer",
-        "install: Vibepollo"
+        "install: NOUS"
       ],
       "problemMatcher": [],
       "group": {
@@ -273,7 +273,7 @@
       "dependsOrder": "sequence",
       "dependsOn": [
         "pipeline: build + pack",
-        "install: Vibepollo"
+        "install: NOUS"
       ],
       "problemMatcher": [],
       "group": {
@@ -286,7 +286,7 @@
       "dependsOrder": "sequence",
       "dependsOn": [
         "cpack: custom installer",
-        "install: Vibepollo"
+        "install: NOUS"
       ],
       "problemMatcher": [],
       "group": {

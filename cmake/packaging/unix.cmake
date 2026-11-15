@@ -13,3 +13,7 @@ if(NOT CMAKE_INSTALL_PREFIX)
 endif()
 
 install(TARGETS sunshine RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
+if(NOT APPLE)
+    # ponytail: legacy units/scripts retain vibepollo until migration updates every caller.
+    install(PROGRAMS "$<TARGET_FILE:sunshine>" DESTINATION "${CMAKE_INSTALL_BINDIR}" RENAME vibepollo)
+endif()

@@ -72,11 +72,11 @@
     <string name="summary_checkbox_xb1_driver">Povolí zabudovaný USB ovladač pro zařízení bez nativní podpory pro Xbox ovladač</string>
     <string name="summary_checkbox_vibrate_fallback">Rozvibruje vaše zařízení pro emulaci vibrací ovladače, pokud je váš herní ovladač nepodporuje</string>
     <string name="suffix_seekbar_deadzone">%</string>
-    <string name="summary_seekbar_deadzone">Poznámka: Některé hry mohou vynutit větší deadzone, než jaká je nastavena v Moonlightu.</string>
+    <string name="summary_seekbar_deadzone">Poznámka: Některé hry mohou vynutit větší deadzone, než jaká je nastavena v NOUS.</string>
     <string name="title_checkbox_xb1_driver">Xbox 360/One USB gamepad ovladač</string>
     <string name="title_checkbox_usb_bind_all">Vynutit nativní podporu herního ovladače Xbox</string>
     <string name="summary_checkbox_mouse_emulation">Dlouhým podržením tlačítka Start přepnete herní ovladač do režimu myši</string>
-    <string name="summary_checkbox_usb_bind_all">Použít USB ovladač Moonlightu pro všechny podporované gamepady, i když existuje nativní podpora pro Xbox ovladač</string>
+    <string name="summary_checkbox_usb_bind_all">Použít USB ovladač NOUS pro všechny podporované gamepady, i když existuje nativní podpora pro Xbox ovladač</string>
     <string name="title_checkbox_mouse_emulation">Emulace myši pomocí herního ovladače</string>
     <string name="title_checkbox_flip_face_buttons">Přehodit tlačítka A/B, X/Y</string>
     <string name="title_checkbox_absolute_mouse_mode">Režim myši pro vzdálenou plochu</string>
@@ -127,7 +127,7 @@
     <string name="pcview_menu_test_network">Otestovat připojení k síti</string>
     <string name="pcview_menu_details">Zobrazit detaily</string>
     <string name="nettest_title_done">Test sítě dokončen</string>
-    <string name="nettest_text_inconclusive">Test sítě nemohl být proveden, protože se nezdařilo připoojení k žádným z testovacíh serverů Moonlight. Zkontrolujte své připojení k Internetu, nebo to zkuste znovu později.</string>
+    <string name="nettest_text_inconclusive">Test sítě nemohl být proveden, protože se nezdařilo připoojení k žádným z testovacíh serverů NOUS. Zkontrolujte své připojení k Internetu, nebo to zkuste znovu později.</string>
     <string name="nettest_text_failure">Současná síť vašeho počítače nejspíš blokuje NOUS. Streamování přes Internet nemusí během připojení k této síti fungovat.
 \n
 \nNásledující porty byly zablokovány:
@@ -191,7 +191,7 @@
     <string name="title_enable_post_stream_toast">Zobrazit informace o zpoždění po streamování</string>
     <string name="summary_enable_post_stream_toast">Zobrazit informace o zpoždění po skončení streamování</string>
     <string name="title_privacy_policy">Zásady ochrany osobních údajů</string>
-    <string name="summary_privacy_policy">Zobrazit zásady ochrany osobních údajů Moonlightu</string>
+    <string name="summary_privacy_policy">Zobrazit zásady ochrany osobních údajů NOUS</string>
     <string name="resolution_360p">360p</string>
     <string name="resolution_480p">480p</string>
     <string name="pacing_balanced_alt">Vyvážené s limitem FPS</string>

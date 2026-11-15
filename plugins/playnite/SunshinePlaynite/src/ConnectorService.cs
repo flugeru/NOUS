@@ -407,7 +407,7 @@ namespace SunshinePlaynite
 
         private void StartCore(PipeConnection connection, CancellationToken token)
         {
-            log.Info("Sunshine core connection accepted");
+            log.Info("NOUS core connection accepted");
             Task.Factory.StartNew(() =>
             {
                 try
@@ -436,7 +436,7 @@ namespace SunshinePlaynite
                 var line = connection.Reader.ReadLine();
                 if (line == null) break;
                 try { if (IsCurrentRun(token)) HandleCoreCommand(ParseObject(line), token); }
-                catch (Exception ex) { log.Warn("Failed to handle Sunshine command: " + ex.Message); }
+                catch (Exception ex) { log.Warn("Failed to handle NOUS command: " + ex.Message); }
             }
         }
 

@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <None Include="extension.yaml" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="../../../src_assets/common/assets/web/public/images/logo-apollo-45.png"
+    <None Include="../../../src_assets/common/assets/web/public/images/logo-nous-45.png"
           Link="icon.png"
           CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

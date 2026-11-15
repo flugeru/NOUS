@@ -11,7 +11,7 @@ on:
         type: string
 jobs:
   arch:
-    if: github.repository == 'Nonary/Vibepollo'
+    if: github.repository == 'flugeru/NOUS'
     permissions:
       contents: read
     uses: ./.github/workflows/ci-archlinux.yml

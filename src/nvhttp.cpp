@@ -2396,7 +2396,7 @@ namespace nvhttp {
       const auto primary = statefile::load_primary_state(root);
       if (primary != statefile::json_load_result_e::loaded &&
           !(allow_missing_state && primary == statefile::json_load_result_e::missing)) {
-        BOOST_LOG(error) << "Refusing to replace unavailable Vibepollo pairing state.";
+        BOOST_LOG(error) << "Refusing to replace unavailable NOUS pairing state.";
         return false;
       }
 
@@ -2485,7 +2485,7 @@ namespace nvhttp {
         if (!state_policy::normalize_snapshot(root)) return false;
         statefile::write_sunshine_state_atomic(root);
       } catch (const std::exception &e) {
-        BOOST_LOG(error) << "Couldn't write Vibepollo pairing state: " << e.what();
+        BOOST_LOG(error) << "Couldn't write NOUS pairing state: " << e.what();
         return false;
       }
 
@@ -2548,7 +2548,7 @@ namespace nvhttp {
           if (!state_policy::normalize_snapshot(tree, [](const std::string &pem) {
                 return exact_certificate_identity(crypto::x509(pem));
               }, false, &collapsed)) {
-            BOOST_LOG(error) << "Vibepollo pairing state contains invalid client certificates.";
+            BOOST_LOG(error) << "NOUS pairing state contains invalid client certificates.";
             return std::nullopt;
           }
           const auto &root = tree["root"];
@@ -2639,7 +2639,7 @@ namespace nvhttp {
           if (!build_paired_client_records(client, identities, records)) return std::nullopt;
           return parsed_state_t {std::move(client), std::move(remote_display_layout), std::move(collapsed)};
         } catch (...) {
-          BOOST_LOG(error) << "Vibepollo pairing state is malformed.";
+          BOOST_LOG(error) << "NOUS pairing state is malformed.";
           return std::nullopt;
         }
       };
@@ -2660,7 +2660,7 @@ namespace nvhttp {
           update::notification::apply(update::state, {});
           return true;
         }
-        BOOST_LOG(error) << "No valid Vibepollo pairing snapshot; refusing to create a replacement identity.";
+        BOOST_LOG(error) << "No valid NOUS pairing snapshot; refusing to create a replacement identity.";
         return false;
       }
       if (!parsed->collapsed.empty()) {
@@ -2685,7 +2685,7 @@ namespace nvhttp {
       try {
         statefile::write_json_atomic(statefile::sunshine_state_backup_path(), tree);
       } catch (const std::exception &e) {
-        BOOST_LOG(warning) << "Could not persist Vibepollo recovery snapshot: " << e.what();
+        BOOST_LOG(warning) << "Could not persist NOUS recovery snapshot: " << e.what();
       }
       const auto &root = tree["root"];
       http::unique_id = root["uniqueid"].get<std::string>();
@@ -3895,7 +3895,7 @@ namespace nvhttp {
       msg.reserve(160);
       msg += "Permission denied: this device lacks the \"";
       msg += perm_label;
-      msg += "\" permission. Enable it on the host in the Vibepollo Web UI under Client Management.";
+      msg += "\" permission. Enable it on the host in the NOUS Web UI under Client Management.";
       return msg;
     }
 

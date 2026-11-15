@@ -672,7 +672,7 @@ test('mobile navigation keeps hidden controls out of the tab order and releases 
   await page.keyboard.press('Tab');
   await expect(page.getByRole('button', { name: 'Refresh', exact: true })).toBeFocused();
   await menu.click();
-  const brand = navigation.getByRole('link', { name: 'Vibepollo overview' });
+  const brand = navigation.getByRole('link', { name: 'NOUS overview' });
   await expect(brand).toBeFocused();
   await page.keyboard.press('Shift+Tab');
   await expect(navigation.getByRole('button', { name: 'Logout' })).toBeFocused();
@@ -1375,7 +1375,7 @@ test('Linux shows an automatic update notice across pages and retries failed che
 }) => {
   await host(page);
   let unavailable = true;
-  await page.route('https://api.github.com/repos/Nonary/Vibepollo/releases?**', async (route) => {
+  await page.route('https://api.github.com/repos/flugeru/NOUS/releases?**', async (route) => {
     await route.fulfill(
       unavailable
         ? { status: 403, json: { message: 'API rate limit exceeded' } }
@@ -1385,8 +1385,8 @@ test('Linux shows an automatic update notice across pages and retries failed che
                 tag_name: 'v1.1.0',
                 draft: false,
                 prerelease: false,
-                assets: [{ name: 'Vibepollo-x86_64.AppImage', state: 'uploaded', size: 100 }],
-                html_url: 'https://github.com/Nonary/Vibepollo/releases/tag/v1.1.0',
+                assets: [{ name: 'NOUS-x86_64.AppImage', state: 'uploaded', size: 100 }],
+                html_url: 'https://github.com/flugeru/NOUS/releases/tag/v1.1.0',
               },
             ],
           },
@@ -1399,29 +1399,29 @@ test('Linux shows an automatic update notice across pages and retries failed che
   ).toBeVisible();
   unavailable = false;
   await notice.getByRole('button', { name: 'Check for updates' }).click();
-  await expect(notice.getByText('Vibepollo 1.1.0 is available')).toBeVisible();
+  await expect(notice.getByText('NOUS 1.1.0 is available')).toBeVisible();
   await expect(notice.getByRole('link', { name: 'Read release notes' })).toHaveAttribute(
     'href',
-    'https://github.com/Nonary/Vibepollo/releases/tag/v1.1.0',
+    'https://github.com/flugeru/NOUS/releases/tag/v1.1.0',
   );
   await page.getByRole('link', { name: 'Library', exact: true }).click();
-  await expect(notice.getByText('Vibepollo 1.1.0 is available')).toBeVisible();
+  await expect(notice.getByText('NOUS 1.1.0 is available')).toBeVisible();
 });
 
 test('Linux stable install respects an explicit prerelease opt-out', async ({ page }) => {
   await host(page, 'linux', { notify_pre_releases: false });
-  await page.route('https://api.github.com/repos/Nonary/Vibepollo/releases?**', async (route) => {
+  await page.route('https://api.github.com/repos/flugeru/NOUS/releases?**', async (route) => {
     await route.fulfill({
       json: [{
         tag_name: 'v2.0.0-beta.1',
         draft: false,
         prerelease: true,
-        assets: [{ name: 'Vibepollo-x86_64.AppImage', state: 'uploaded', size: 100 }],
+        assets: [{ name: 'NOUS-x86_64.AppImage', state: 'uploaded', size: 100 }],
       }],
     });
   });
   const response = page.waitForResponse((response) =>
-    response.url().startsWith('https://api.github.com/repos/Nonary/Vibepollo/releases?'),
+    response.url().startsWith('https://api.github.com/repos/flugeru/NOUS/releases?'),
   );
   await page.goto('/v2/');
   await (await response).finished();
@@ -1444,15 +1444,15 @@ test('Windows default nightly notification validates metadata and dismissal surv
     if (request.url().includes('/api/updates/nightly-metadata') || request.url().includes('/releases/download/'))
       assetRequests.push(request.url());
   });
-  await page.route('https://api.github.com/repos/Nonary/Vibepollo/releases?**', (route) =>
+  await page.route('https://api.github.com/repos/flugeru/NOUS/releases?**', (route) =>
     route.fulfill({
       json: [{
         tag_name: tag,
         body: `<!-- nightly-identity: ${JSON.stringify(metadata)} -->\n`,
         draft: false,
         prerelease: true,
-        html_url: `https://github.com/Nonary/Vibepollo/releases/tag/${tag}`,
-        assets: ['VibepolloSetup.exe', 'nightly-metadata.json', 'SHA256SUMS'].map((name) => ({
+        html_url: `https://github.com/flugeru/NOUS/releases/tag/${tag}`,
+        assets: ['NOUSSetup.exe', 'nightly-metadata.json', 'SHA256SUMS'].map((name) => ({
           name,
           state: 'uploaded',
           size: 100,
@@ -1462,7 +1462,7 @@ test('Windows default nightly notification validates metadata and dismissal surv
   );
   await page.goto('/v2/');
   const notice = page.locator('.update-notice');
-  await expect(notice.getByText(`Vibepollo ${tag} is available`)).toBeVisible();
+  await expect(notice.getByText(`NOUS ${tag} is available`)).toBeVisible();
   await notice.getByRole('button', { name: 'Dismiss this update' }).click();
   await expect(notice).toHaveCount(0);
   const checked = page.waitForResponse((response) => response.url().includes('/releases?per_page=100&page=1'));
@@ -1479,36 +1479,36 @@ test('Windows prerelease install opts out persistently and still receives a stab
   await host(page, 'windows', { notify_pre_releases: 'disabled' }, true, undefined, {
     version: '2.0.0-beta.1',
   });
-  await page.route('https://api.github.com/repos/Nonary/Vibepollo/releases?**', (route) =>
+  await page.route('https://api.github.com/repos/flugeru/NOUS/releases?**', (route) =>
     route.fulfill({
       json: [
         {
           tag_name: '3.0.0-beta.1',
           draft: false,
           prerelease: true,
-          assets: [{ name: 'VibepolloSetup.exe', state: 'uploaded', size: 100 }],
+          assets: [{ name: 'NOUSSetup.exe', state: 'uploaded', size: 100 }],
         },
         {
           tag_name: '2.0.0',
           draft: false,
           prerelease: false,
-          assets: [{ name: 'VibepolloSetup.exe', state: 'uploaded', size: 100 }],
+          assets: [{ name: 'NOUSSetup.exe', state: 'uploaded', size: 100 }],
         },
       ],
     }),
   );
   await page.goto('/v2/');
   await expect(
-    page.locator('.update-notice').getByText('Vibepollo 2.0.0 is available'),
+    page.locator('.update-notice').getByText('NOUS 2.0.0 is available'),
   ).toBeVisible();
   await page.reload();
   await expect(
-    page.locator('.update-notice').getByText('Vibepollo 2.0.0 is available'),
+    page.locator('.update-notice').getByText('NOUS 2.0.0 is available'),
   ).toBeVisible();
 });
 
 // Both production UIs use one origin so their actual shared dismissal policy is exercised.
-const updaterReleasesUrl = 'https://api.github.com/repos/Nonary/Vibepollo/releases';
+const updaterReleasesUrl = 'https://api.github.com/repos/flugeru/NOUS/releases';
 type UpdaterReleaseFixture = {
   tag_name: string;
   draft: boolean;
@@ -1519,12 +1519,12 @@ type UpdaterReleaseFixture = {
   assets: { name: string; state: string; size: number }[];
 };
 
-function updaterRelease(tag: string, assets = ['VibepolloSetup.exe']): UpdaterReleaseFixture {
+function updaterRelease(tag: string, assets = ['NOUSSetup.exe']): UpdaterReleaseFixture {
   return {
     tag_name: tag,
     draft: false,
     prerelease: tag.startsWith('daily-') || /-(alpha|beta|rc)/.test(tag),
-    html_url: `https://github.com/Nonary/Vibepollo/releases/tag/${tag}`,
+    html_url: `https://github.com/flugeru/NOUS/releases/tag/${tag}`,
     name: `Fixture ${tag}`,
     body: `Release notes for ${tag}`,
     assets: assets.map((name) => ({ name, state: 'uploaded', size: 100 })),
@@ -1534,7 +1534,7 @@ function updaterRelease(tag: string, assets = ['VibepolloSetup.exe']): UpdaterRe
 function updaterDaily(tag: string, source = 'a') {
   const date = tag.replace('daily-', '').replaceAll('-', '');
   return {
-    release: updaterRelease(tag, ['VibepolloSetup.exe', 'nightly-metadata.json', 'SHA256SUMS']),
+    release: updaterRelease(tag, ['NOUSSetup.exe', 'nightly-metadata.json', 'SHA256SUMS']),
     metadata: {
       schema_version: 1,
       channel: 'nightly',
@@ -1683,7 +1683,7 @@ test('Apollo updater paginates before selecting a complete release', async ({ pa
       : [updaterRelease('v2.0.0')] });
   });
   await page.goto('/v2/');
-  await expect(page.locator('.update-notice')).toContainText('Vibepollo 2.0.0 is available');
+  await expect(page.locator('.update-notice')).toContainText('NOUS 2.0.0 is available');
   expect(pages).toEqual(['1', '2']);
 });
 
@@ -1716,7 +1716,7 @@ test('Apollo updater interval zero still permits an explicit retry without resum
   await expect(notice.getByText('Release information is unavailable. Try again later.')).toBeVisible();
   config.update_check_interval = 0;
   await notice.getByRole('button', { name: 'Check for updates', exact: true }).click();
-  await expect(notice.getByText('Vibepollo 2.0.0 is available')).toBeVisible();
+  await expect(notice.getByText('NOUS 2.0.0 is available')).toBeVisible();
   expect(calls).toBe(2);
   await page.clock.fastForward(300001);
   expect(calls).toBe(2);
@@ -1800,7 +1800,7 @@ test('legacy updater orders embedded daily versions and shares dismissal across 
   await expect(page.locator('.update-notice')).toHaveCount(0);
   releases.unshift(later.release);
   await page.reload();
-  await expect(page.locator('.update-notice')).toContainText(`Vibepollo ${later.metadata.tag} is available`);
+  await expect(page.locator('.update-notice')).toContainText(`NOUS ${later.metadata.tag} is available`);
   await expect(page.locator('.update-notice').getByRole('link', { name: 'Read release notes' })).toHaveAttribute('href', later.release.html_url);
   await page.locator('.sidebar__legacy[href="/"]').click();
   await expect(notice).toContainText(later.metadata.version);
@@ -1813,7 +1813,7 @@ test('legacy updater rejects malformed metadata and incomplete or wrong-platform
   const incomplete = updaterDaily('daily-2026-10-12', 'b');
   incomplete.release.assets = incomplete.release.assets.filter((asset) => asset.name !== 'SHA256SUMS');
   const wrongPlatform = updaterDaily('daily-2026-10-13', 'c');
-  wrongPlatform.release.assets[0].name = 'Vibepollo-aarch64.AppImage';
+  wrongPlatform.release.assets[0].name = 'NOUS-aarch64.AppImage';
   const empty = updaterDaily('daily-2026-10-14', 'd');
   empty.release.assets[0].size = 0;
   const calls = await mockUpdaterFeed(page, [malformed.release, incomplete.release, wrongPlatform.release, empty.release], {

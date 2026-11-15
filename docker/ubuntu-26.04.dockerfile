@@ -50,7 +50,7 @@ RUN <<_BUILD
 set -e
 ./scripts/linux_build.sh \
   --step=cmake \
-  --publisher-name='LizardByte' \
+  --publisher-name='NOUS' \
   --publisher-website='https://app.lizardbyte.dev' \
   --publisher-issue-url='https://app.lizardbyte.dev/support' \
   --sudo-off

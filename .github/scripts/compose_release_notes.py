@@ -147,7 +147,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--release-version", required=True)
     parser.add_argument("--notes-dir", type=Path, default=Path("release_notes"))
-    parser.add_argument("--product-name", default="Vibeshine")
+    parser.add_argument("--product-name", default="NOUS")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
 

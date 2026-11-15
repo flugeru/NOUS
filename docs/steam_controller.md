@@ -2,7 +2,7 @@
 
 A client that connects a 2026 Steam Controller (today the modified Moonlight
 Android client at <https://github.com/jlobue10/moonlight-android>) reports it
-with the controller type `LI_CTYPE_STEAM`. On Windows, with Vibepollo's own
+with the controller type `LI_CTYPE_STEAM`. On Windows, with NOUS's own
 virtual gamepad driver installed, the host then creates the driver's
 `steam_controller` profile for that slot: Steam sees a real Steam Controller
 with two trackpads, capacitive grips and stick touch, motion sensors, a
@@ -103,7 +103,7 @@ picked up. Attributes are reset whenever the slot is recreated and are re-sent
 with the next arrival.
 
 > **Warning:** Do not start a Steam Controller firmware update from Steam while streaming: the update would target this virtual controller, not the real one. Update with the controller connected directly to a PC.
-> Vibepollo logs this warning every time a Steam Controller slot is created.
+> NOUS logs this warning every time a Steam Controller slot is created.
 
 ## Protocol notes
 

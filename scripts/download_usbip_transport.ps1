@@ -1,6 +1,6 @@
 # Extract original signed driver files; do not execute the vendor installer.
 # Its upgrade path first uninstalls the existing shared transport and reconnects
-# USB root hubs. Vibepollo deliberately never invokes that path.
+# USB root hubs. NOUS deliberately never invokes that path.
 param(
     [Parameter(Mandatory=$true)][string]$OutDir,
     [string]$CacheDir = ''
