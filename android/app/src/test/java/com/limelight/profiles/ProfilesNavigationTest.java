@@ -8,6 +8,8 @@ import android.content.Context;
 import android.app.GameManager;
 
 import com.limelight.PcView;
+import com.limelight.preferences.StreamSettings;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.limelight.ProfilesActivity;
 import com.limelight.R;
 import com.limelight.AppView;
@@ -66,6 +68,29 @@ public class ProfilesNavigationTest {
 
         // Apply an AppCompat theme required by ProfilesActivity
         // ApplicationProvider.getApplicationContext().setTheme(R.style.SettingsTheme);
+    }
+
+    @Test
+    public void settingsTab_switchesContentAndOpensOnlyTheSelectedSection() {
+        prepareEnvironment();
+        PcView activity = Robolectric.buildActivity(PcView.class).setup().get();
+        BottomNavigationView navigation = activity.findViewById(R.id.nous_navigation);
+
+        navigation.setSelectedItemId(R.id.nous_nav_settings);
+        assertEquals(R.id.nous_nav_settings, navigation.getSelectedItemId());
+        assertEquals(View.GONE, activity.findViewById(R.id.nous_main_tab).getVisibility());
+        assertNull("Switching tabs should not start an activity",
+                Shadows.shadowOf(activity).getNextStartedActivity());
+
+        activity.findViewById(R.id.nous_settings_controls).performClick();
+        Intent next = Shadows.shadowOf(activity).getNextStartedActivity();
+        assertNotNull(next);
+        assertEquals(StreamSettings.class.getName(), next.getComponent().getClassName());
+        assertEquals(StreamSettings.Section.CONTROLS.name(),
+                next.getStringExtra(StreamSettings.SECTION));
+
+        navigation.setSelectedItemId(R.id.nous_nav_computers);
+        assertEquals(View.VISIBLE, activity.findViewById(R.id.nous_main_tab).getVisibility());
     }
 
     @Test
