@@ -27,6 +27,8 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+      - name: Set up Android command-line tools
+        uses: android-actions/setup-android@v3
       - name: Install Android SDK and NDK
         run: sdkmanager 'platforms;android-36' 'ndk;27.0.12077973'
       - name: Run unit tests and build the debug client
