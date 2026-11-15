@@ -7,8 +7,17 @@ permissions:
 on:
   workflow_dispatch:
   push:
-    branches: [master]
-    paths: [.github/workflows/fork-test-installer.yml]
+    branches: [master, NOUS-First-steps]
+    paths:
+      - '.github/workflows/fork-test-installer.yml'
+      - '.github/workflows/ci-windows.yml'
+      - '.github/actions/**'
+      - 'src/**'
+      - 'tools/**'
+      - 'cmake/**'
+      - 'CMakeLists.txt'
+      - 'packaging/**'
+      - 'third-party/**'
 
 concurrency:
   group: fork-test-installer-${{ github.ref }}
