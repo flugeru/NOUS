@@ -162,6 +162,14 @@ def run(c):
     shell("settings", "put", "system", "accelerometer_rotation", "0")
     shell("settings", "put", "system", "user_rotation", "0")
     shell("cmd", "locale", "set-app-locales", PACKAGE, "--user", "0", "--locales", "pt-BR")
+    shell("am", "start", "-W", "-a", "android.intent.action.MAIN",
+          "-c", "android.intent.category.HOME")
+    pause(2)
+    width, height = size()
+    shell("input", "swipe", str(width // 2), str(height * 4 // 5),
+          str(width // 2), str(height // 5), "500")
+    wait_for(labels=("NOUS",))
+    c.capture("launcher-app-drawer")
     shell("am", "start", "-W", "-n", PACKAGE + "/com.limelight.PcView")
     wait_for("nous_nav_computers")
     c.capture("computers-on-launch")
