@@ -120,7 +120,6 @@ class Captures:
             for name, labels in expected_dialogs:
                 if name in shown:
                     continue
-                root, _ = tree()
                 node = match(root, labels=labels)
                 if node is None:
                     continue
@@ -132,6 +131,9 @@ class Captures:
                     self.capture(f"dialog-{name}", data)
                     shown.add(name)
                     back()
+                    root, _ = tree()
+                else:
+                    root = dialog
             shell("input", "swipe", str(width // 2), str(height * 4 // 5),
                   str(width // 2), str(height // 3), "480")
             pause()
@@ -180,7 +182,7 @@ def run(c):
         ("fps", ("Taxa de quadros por segundo", "Video frame rate")),
         ("bitrate", ("Taxa de bits", "Video bitrate")),
         ("pacing", ("Ritmo de quadros", "Ritmo de quadros de vídeo", "Video frame pacing", "Frame pacing")),
-        ("codec", ("Formato de vídeo", "Codec de vídeo", "Video codec", "Video format")),
+        ("codec", ("Formato de vídeo", "Codec de vídeo", "Video codec", "Video format", "Change codec settings")),
         ("audio", ("Configurações de som Surround", "Surround sound configuration")),
     ])
     back()
@@ -206,7 +208,7 @@ def run(c):
     status = shell("dumpsys", "input_method")
     if re.search(r"(?:mInputShown|mIsInputViewShown)=true", status):
         back()
-    c.walk_list("profile-preferences")
+    c.walk_list("profile-preferences", max_pages=48)
     select("nous_save_profile")
     wait_for("addProfileFab")
     c.capture("profiles-with-example")
