@@ -37,10 +37,11 @@ jobs:
           cp app/build/outputs/apk/nonRoot_game/debug/*arm64-v8a*.apk build/delivery/NOUS-Android-arm64-debug.apk
       - name: Verify APK identity
         run: |
-          aapt=$(find "$ANDROID_HOME/build-tools" -type f -name aapt | sort -V | tail -n 1)
-          badging=$("$aapt" dump badging build/delivery/NOUS-Android-arm64-debug.apk)
-          grep -F "package: name='com.flugel.nous' " <<< "$badging"
-          grep -Fx "application-label:'NOUS'" <<< "$badging"
+          apk=build/delivery/NOUS-Android-arm64-debug.apk
+          apkanalyzer="$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer"
+          package=$("$apkanalyzer" manifest application-id "$apk")
+          echo "Application ID: $package"
+          test "$package" = com.flugel.nous
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: NOUS-Android-arm64-debug
