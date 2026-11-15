@@ -114,7 +114,7 @@ android {
         abi {
             enable true
             reset()
-            include "arm64-v8a"
+            include(providers.gradleProperty("nousEmulator").isPresent() ? "x86_64" : "arm64-v8a")
         }
     }
 

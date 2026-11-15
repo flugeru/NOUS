@@ -63,3 +63,43 @@ jobs:
             android/app/build/reports/tests/
             android/app/build/test-results/
           if-no-files-found: ignore
+
+  android-emulator:
+    name: Android emulator screenshots
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Initialize Android native dependencies
+        run: git submodule update --init --recursive -- android/app/src/main/jni/moonlight-core/moonlight-common-c
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android SDK and NDK
+        run: '"$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "ndk;27.0.12077973"'
+      - name: Build the x86_64 emulator APK
+        working-directory: android
+        run: bash ./gradlew --no-daemon -PnousEmulator :app:assembleNonRoot_gameDebug
+      - name: Enable emulator hardware acceleration
+        run: sudo chmod 0666 /dev/kvm
+      - name: Capture actual Android screens and list states
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2
+        with:
+          api-level: 35
+          arch: x86_64
+          target: google_apis
+          profile: pixel_7
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: python3 android/tools/capture_nous_android.py --apk android/app/build/outputs/apk/nonRoot_game/debug/*x86_64*.apk --output android/build/emulator-screenshots
+      - name: Upload emulator screenshots and coverage
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: NOUS-Android-emulator-screenshots
+          path: android/build/emulator-screenshots/
+          if-no-files-found: warn
