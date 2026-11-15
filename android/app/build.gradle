@@ -36,7 +36,7 @@ android {
                 }
             }
 
-            applicationId "com.fluger.nous.root"
+            applicationId "com.flugel.nous.root"
             dimension "root"
             buildConfigField "boolean", "ROOT_BUILD", "true"
         }
@@ -48,7 +48,7 @@ android {
                 }
             }
 
-            applicationId "com.fluger.nous"
+            applicationId "com.flugel.nous"
             dimension "root"
             buildConfigField "boolean", "ROOT_BUILD", "false"
         }

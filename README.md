@@ -62,7 +62,7 @@ Clientes de origem: [Moonlight Android](https://github.com/moonlight-stream/moon
 
 O [workflow NOUS Android](.github/workflows/android-client.yml) roda testes unitários e compila o cliente ARM64 de teste. Para compilar localmente, inicialize o submódulo nativo a partir da raiz e execute o Gradle a partir de `android/`. [Configuração de SDK e NDK](docs/latency/android-test-build.md).
 
-As correções listadas acima pertencem ao servidor. Nenhuma otimização nova de MediaCodec foi aplicada ao cliente Android nesta rodada. O APK ARM64 de teste do NOUS usa `com.fluger.nous.debug` e assinatura Android Debug. [Procedência do build anterior](docs/latency/android-test-build.md).
+As correções listadas acima pertencem ao servidor. Nenhuma otimização nova de MediaCodec foi aplicada ao cliente Android nesta rodada. O APK ARM64 de teste do NOUS usa `com.flugel.nous.debug` e assinatura Android Debug. [Procedência do build anterior](docs/latency/android-test-build.md).
 
 AV1 é candidato a ensaio, não escolha universal. Decoder efetivo, perfil, bit depth, FPS sustentado e comportamento térmico do POCO ainda precisam ser medidos.
 
