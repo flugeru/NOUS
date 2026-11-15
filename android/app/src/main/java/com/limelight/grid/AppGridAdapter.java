@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 @SuppressWarnings("unchecked")
@@ -37,7 +38,9 @@ public class AppGridAdapter extends GenericGridAdapter<AppView.AppObject> {
 
     private CachedAppAssetLoader loader;
     private Set<Integer> hiddenAppIds = new HashSet<>();
-    private ArrayList<AppView.AppObject> allApps = new ArrayList<>();
+    private final List<AppView.AppObject> allApps = new ArrayList<>();
+    private final List<AppView.AppObject> searchResults = new ArrayList<>();
+    private String query = "";
 
     public AppGridAdapter(Context context, PreferenceConfiguration prefs, ComputerDetails computer, String uniqueId, boolean showHiddenApps) {
         super(context, getLayoutIdForPreferences(prefs));
@@ -72,6 +75,41 @@ public class AppGridAdapter extends GenericGridAdapter<AppView.AppObject> {
         }
 
         notifyDataSetChanged();
+    }
+
+    public void setQuery(CharSequence text) {
+        String normalized = text.toString().trim().toLowerCase(Locale.ROOT);
+        if (!query.equals(normalized)) {
+            query = normalized;
+            notifyDataSetChanged();
+        }
+    }
+
+    public List<AppView.AppObject> getUnfilteredApps() {
+        return Collections.unmodifiableList(itemList);
+    }
+
+    @Override
+    public int getCount() {
+        return query.isEmpty() ? super.getCount() : searchResults.size();
+    }
+
+    @Override
+    public AppView.AppObject getItem(int position) {
+        return query.isEmpty() ? super.getItem(position) : searchResults.get(position);
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        searchResults.clear();
+        if (!query.isEmpty()) {
+            for (AppView.AppObject app : itemList) {
+                if (app.app.getAppName().toLowerCase(Locale.ROOT).contains(query)) {
+                    searchResults.add(app);
+                }
+            }
+        }
+        super.notifyDataSetChanged();
     }
 
     private static int getLayoutIdForPreferences(PreferenceConfiguration prefs) {
@@ -165,6 +203,7 @@ public class AppGridAdapter extends GenericGridAdapter<AppView.AppObject> {
     public void clear() {
         super.clear();
         allApps.clear();
+        searchResults.clear();
     }
 
     @Override

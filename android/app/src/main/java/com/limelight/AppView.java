@@ -37,6 +37,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,6 +48,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -57,6 +60,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 public class AppView extends AppCompatActivity implements AdapterFragmentCallbacks {
     private AppGridAdapter appGridAdapter;
+    private EditText gameSearch;
     private String uuidString;
     private ShortcutHelper shortcutHelper;
 
@@ -125,6 +129,7 @@ public class AppView extends AppCompatActivity implements AdapterFragmentCallbac
                     }
 
                     appGridAdapter.updateHiddenApps(hiddenAppIds, true);
+                    appGridAdapter.setQuery(gameSearch.getText());
 
                     // Now make the binder visible. We must do this after appGridAdapter
                     // is set to prevent us from reaching updateUiWithServerinfo() and
@@ -306,6 +311,21 @@ public class AppView extends AppCompatActivity implements AdapterFragmentCallbac
 
         setContentView(R.layout.activity_app_view);
         findViewById(R.id.nous_back).setOnClickListener(v -> finish());
+        gameSearch = findViewById(R.id.nous_game_search);
+        gameSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence text, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence text, int start, int before, int count) {
+                if (appGridAdapter != null) {
+                    appGridAdapter.setQuery(text);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable text) { }
+        });
 
         // Allow floating expanded PiP overlays while browsing apps
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -630,8 +650,7 @@ public class AppView extends AppCompatActivity implements AdapterFragmentCallbac
                 boolean updated = false;
 
                     // Look through our current app list to tag the running app
-                for (int i = 0; i < appGridAdapter.getCount(); i++) {
-                    AppObject existingApp = (AppObject) appGridAdapter.getItem(i);
+                for (AppObject existingApp : appGridAdapter.getUnfilteredApps()) {
 
                     // There can only be one or zero apps running.
                     if (existingApp.isRunning &&
@@ -667,13 +686,14 @@ public class AppView extends AppCompatActivity implements AdapterFragmentCallbac
             public void run() {
                 boolean updated = false;
 
+                List<AppObject> unfilteredApps = appGridAdapter.getUnfilteredApps();
+
                 // First handle app updates and additions
                 for (NvApp app : appList) {
                     boolean foundExistingApp = false;
 
                     // Try to update an existing app in the list first
-                    for (int i = 0; i < appGridAdapter.getCount(); i++) {
-                        AppObject existingApp = (AppObject) appGridAdapter.getItem(i);
+                    for (AppObject existingApp : unfilteredApps) {
                         if (existingApp.app.getAppId() == app.getAppId()) {
                             // Found the app; update its properties
                             if (!existingApp.app.getAppName().equals(app.getAppName())) {
@@ -701,9 +721,9 @@ public class AppView extends AppCompatActivity implements AdapterFragmentCallbac
 
                 // Next handle app removals
                 int i = 0;
-                while (i < appGridAdapter.getCount()) {
+                while (i < unfilteredApps.size()) {
                     boolean foundExistingApp = false;
-                    AppObject existingApp = (AppObject) appGridAdapter.getItem(i);
+                    AppObject existingApp = unfilteredApps.get(i);
 
                     // Check if this app is in the latest list
                     for (NvApp app : appList) {
