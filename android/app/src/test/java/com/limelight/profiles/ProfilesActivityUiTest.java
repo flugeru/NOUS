@@ -1,6 +1,6 @@
 package com.limelight.profiles;
 
-import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Looper;
@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 
@@ -24,7 +25,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.Shadows;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowAlertDialog;
+import org.robolectric.shadows.ShadowDialog;
 
 import java.util.UUID;
 
@@ -106,9 +107,9 @@ public class ProfilesActivityUiTest {
         deleteBtn.performClick();
 
         // Confirm the dialog
-        AlertDialog dialog = ShadowAlertDialog.getLatestAlertDialog();
-        assertNotNull(dialog);
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        assertTrue("Expected a Material confirmation dialog", dialog instanceof AlertDialog);
+        ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE).performClick();
 
         // Process queued UI tasks
         Shadows.shadowOf(Looper.getMainLooper()).idle();
