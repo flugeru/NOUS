@@ -34,12 +34,12 @@
 
     <!-- Network test strings -->
     <string name="nettest_title_waiting">Test de la connexion réseau</string>
-    <string name="nettest_text_waiting">Artemis teste votre connexion réseau pour déterminer si les ports requis sont bloqués.\n\nCela peut prendre quelques secondes…</string>
+    <string name="nettest_text_waiting">NOUS teste votre connexion réseau pour déterminer si les ports requis sont bloqués.\n\nCela peut prendre quelques secondes…</string>
     <string name="nettest_title_done">Test du réseau terminé</string>
-    <string name="nettest_text_success">Votre réseau ne semble pas bloquer Artemis. Si vous avez encore des difficultés à vous connecter, vérifiez les paramètres du pare-feu de votre PC.\n\nSi vous essayez de streamer depuis Internet, installez l\'outil Artemis Internet Hosting Tool sur votre PC et exécutez le testeur de streaming Internet inclus pour vérifier la connexion Internet de votre PC.</string>
+    <string name="nettest_text_success">Votre réseau ne semble pas bloquer NOUS. Si vous avez encore des difficultés à vous connecter, vérifiez les paramètres du pare-feu de votre PC.\n\nSi vous essayez de streamer depuis Internet, installez l\'outil Artemis Internet Hosting Tool sur votre PC et exécutez le testeur de streaming Internet inclus pour vérifier la connexion Internet de votre PC.</string>
     <string name="nettest_text_inconclusive">Le test réseau n\'a pas pu être effectué car aucun des serveurs de test de connexion d\'Artemis n\'était accessible. Vérifiez votre connexion Internet ou réessayez plus tard.</string>
-    <string name="nettest_text_failure">La connexion réseau actuelle de votre appareil semble bloquer Artemis. Le streaming sur Internet peut ne pas fonctionner lorsque vous êtes connecté à ce réseau.\n\nLes ports réseau suivants ont été bloqués :</string>
-    <string name="nettest_text_blocked">Votre appareil bloque Artemis. Le streaming sur Internet peut ne pas fonctionner lorsque vous êtes connecté à ce réseau.</string>
+    <string name="nettest_text_failure">La connexion réseau actuelle de votre appareil semble bloquer NOUS. Le streaming sur Internet peut ne pas fonctionner lorsque vous êtes connecté à ce réseau.\n\nLes ports réseau suivants ont été bloqués :</string>
+    <string name="nettest_text_blocked">Votre appareil bloque NOUS. Le streaming sur Internet peut ne pas fonctionner lorsque vous êtes connecté à ce réseau.</string>
 
     <!-- Pair messages -->
     <string name="pairing">Appariement…</string>
@@ -51,7 +51,7 @@
     <string name="pair_pairing_msg">Veuillez entrer le code PIN suivant sur le PC cible :</string>
     <string name="pair_pairing_help">Si votre PC hôte utilise Sunshine, accédez à l\'interface web de Sunshine pour saisir le code PIN.</string>
     <string name="pair_otp_pairing_msg">Appariement, veuillez patienter…</string>
-    <string name="pair_otp_pairing_help">L\'appariement OTP n\'est disponible qu\'avec Apollo, entrez manuellement le code PIN que vous venez de fournir sur l\'interface web si vous utilisez un autre logiciel hôte.</string>
+    <string name="pair_otp_pairing_help">L\'appariement OTP n\'est disponible qu\'avec NOUS, entrez manuellement le code PIN que vous venez de fournir sur l\'interface web si vous utilisez un autre logiciel hôte.</string>
     <string name="pair_incorrect_pin">Code PIN ou phrase secrète incorrect</string>
     <string name="pair_fail">Échec de l\'appariement</string>
     <string name="pair_already_in_progress">Appariement déjà en cours</string>
@@ -78,7 +78,7 @@
     <string name="error_unknown_host">Échec de la résolution de l\'hôte</string>
     <string name="error_404">GFE renvoie une erreur HTTP 404. Assurez-vous que votre PC possède un GPU pris en charge. L\'utilisation d\'un logiciel de bureau à distance peut également provoquer cette erreur. Essayez de redémarrer votre machine ou de réinstaller GFE.</string>
     <string name="title_decoding_error">Le décodeur vidéo a planté</string>
-    <string name="message_decoding_error">Artemis a planté en raison d\'une incompatibilité avec le décodeur vidéo de cet appareil. Essayez d\'ajuster les paramètres de streaming si les plantages continuent.</string>
+    <string name="message_decoding_error">NOUS a planté en raison d\'une incompatibilité avec le décodeur vidéo de cet appareil. Essayez d\'ajuster les paramètres de streaming si les plantages continuent.</string>
     <string name="title_decoding_reset">Réinitialiser les paramètres vidéo</string>
     <string name="message_decoding_reset">Le décodeur vidéo de votre appareil continue de planter avec les paramètres de streaming sélectionnés. Vos paramètres de streaming ont été réinitialisés à ceux par défaut.</string>
     <string name="error_usb_prohibited">L\'accès USB est interdit par l\'administrateur de votre appareil. Vérifiez vos paramètres Knox ou MDM.</string>
@@ -171,7 +171,7 @@
     <string name="summary_seekbar_metered_bitrate">Un débit élevé consomme plus de données, un débit plus faible améliore la fluidité sur les réseaux limités.\nDéfinissez sur 0 pour ¼ de la valeur ci-dessus.</string>
     <string name="suffix_seekbar_bitrate_mbps">Mbps</string>
     <string name="title_resolution_scale_factor">Facteur d\'échelle de la résolution</string>
-    <string name="summary_resolution_scale_factor">La résolution de l\'écran virtuel demandée côté serveur sera multipliée par ce facteur. Le streaming résolution ne sera pas affecté.\nPar exemple, 120 % transformera 2000x1000 en 2400x1200.\nL\'utilisation d\'un facteur d\'échelle plus élevé améliorera la qualité de l\'image pour certains jeux.\nNécessite Apollo pour prendre effet.</string>
+    <string name="summary_resolution_scale_factor">La résolution de l\'écran virtuel demandée côté serveur sera multipliée par ce facteur. Le streaming résolution ne sera pas affecté.\nPar exemple, 120 % transformera 2000x1000 en 2400x1200.\nL\'utilisation d\'un facteur d\'échelle plus élevé améliorera la qualité de l\'image pour certains jeux.\nNécessite NOUS pour prendre effet.</string>
     <string name="resolution_prefix_native">Native</string>
     <string name="resolution_prefix_native_fullscreen">Plein-écran natif</string>
     <string name="resolution_prefix_native_landscape">(Paysage)</string>
@@ -207,7 +207,7 @@
     <string name="title_checkbox_xb1_driver">Pilote USB pour manette Xbox 360/One/NintendoPro</string>
     <string name="summary_checkbox_xb1_driver">Active un pilote USB intégré pour les appareils sans prise en charge native des manettes Xbox/Nintendo Pro</string>
     <string name="title_checkbox_usb_bind_all">Remplacer le support natif des manettes Xbox</string>
-    <string name="summary_checkbox_usb_bind_all">Utilise le pilote USB d\'Artemis pour toutes les manettes prises en charge, même si le support natif des manettes Xbox/Nintendo Pro est présent</string>
+    <string name="summary_checkbox_usb_bind_all">Utilise le pilote USB d\'NOUS pour toutes les manettes prises en charge, même si le support natif des manettes Xbox/Nintendo Pro est présent</string>
     <string name="title_checkbox_mouse_emulation">Émulation de la souris via la manette</string>
     <string name="summary_checkbox_mouse_emulation">Appuyez longuement sur le bouton Start pour basculer la manette en mode souris</string>
     <string name="title_checkbox_flip_face_buttons">Inverser les boutons de façade</string>
@@ -254,7 +254,7 @@
     <string name="title_checkbox_enable_pip">Activer le mode observateur Picture-in-Picture</string>
     <string name="summary_checkbox_enable_pip">Permet de visualiser le flux (sans le contrôler) tout en utilisant une autre application</string>
     <string name="title_language_list">Langue</string>
-    <string name="summary_language_list">Langue à utiliser pour Artemis</string>
+    <string name="summary_language_list">Langue à utiliser pour NOUS</string>
     <string name="title_checkbox_small_icon_mode">Utiliser des petites icônes</string>
     <string name="summary_checkbox_small_icon_mode">Des icônes plus petites permettent d\'afficher plus d\'applications en même temps</string>
 
@@ -328,8 +328,8 @@
     <string name="pacing_balanced_alt">Équilibré avec limite FPS</string>
     <string name="pacing_smoothness">Préférer la qualité vidéo (risque d\'augmenter la latence)</string>
 
-    <string name="keyboard_service_label">Clavier physique Artemis</string>
-    <string name="accessibility_description_text">Utilisé uniquement lorsque les raccourcis clavier physiques sont interceptés par le système. Dans certains systèmes, plusieurs raccourcis clavier sont définis et utilisés par le système Android, empêchant leur transmission au PC hôte. Artemis ne regardera pas votre saisie, ni ne collectera votre mot de passe, votre numéro de carte de crédit ou toute autre information personnelle.</string>
+    <string name="keyboard_service_label">Clavier physique NOUS</string>
+    <string name="accessibility_description_text">Utilisé uniquement lorsque les raccourcis clavier physiques sont interceptés par le système. Dans certains systèmes, plusieurs raccourcis clavier sont définis et utilisés par le système Android, empêchant leur transmission au PC hôte. NOUS ne regardera pas votre saisie, ni ne collectera votre mot de passe, votre numéro de carte de crédit ou toute autre information personnelle.</string>
 
     <!-- In Game menu -->
     <string name="game_menu_toggle_keyboard">Afficher le clavier logiciel</string>
@@ -384,7 +384,7 @@
     <string name="summary_manual_enter_bitrate">Entrez le débit manuellement.\nPeut dépasser la plage maximale de la barre de défilement.</string>
     <string name="dialog_manual_enter_bitrate">Entrez le débit en Mbps. Arrondir à 0,5.</string>
     <string name="title_custom_refresh_rate">Taux de rafraîchissement personnalisé</string>
-    <string name="summary_custom_refresh_rate">Entrez le taux de rafraîchissement manuellement. Seulement pris en charge par Apollo.</string>
+    <string name="summary_custom_refresh_rate">Entrez le taux de rafraîchissement manuellement. Seulement pris en charge par NOUS.</string>
     <string name="dialog_custom_refresh_rate">Entrez le taux de rafraîchissement en Hz. Peut être fractionnaire.</string>
     <string name="title_touchscreen_mode">Mode de l\'écran tactile</string>
     <string name="summary_touchscreen_mode">Choisissez entre les modes MultiTouch/SingleTouch/Trackpad/Désactivé.\nLe stylet/stylo sont toujours utilisables lorsque le mode Désactivé est sélectionné.\nForcé en mode Track Pad(Natural) lors de l\'utilisation d\'un affichage externe.</string>
@@ -409,7 +409,7 @@
     <string name="title_import_special_button">Importer des touches spéciales personnalisées</string>
     <string name="summary_import_special_button">Disponible dans le menu Retour et les touches spéciales.\nRemarque : l\'importation écrasera la configuration actuelle, veuillez sauvegarder en conséquence.</string>
     <string name="title_software_update">Mise à jour du logiciel</string>
-    <string name="summary_software_update">Version Artemis Nior par ClassicOldSong - Visitez la page des versions GitHub pour obtenir la dernière version</string>
+    
     <string name="title_follow_update">Suivre les mises à jour</string>
     <string name="summary_follow_update">Suivre les mises à jour d\'Artemis avec Obtainium</string>
     <string name="title_special_key_layout">Disposition des touches spéciales</string>
@@ -456,7 +456,7 @@
     <string name="title_touchpad_sensitivity_y">Sensibilité du trackpad Y</string>
     <string name="summary_touchpad_sensitivity_y">Pour le mode souris trackpad et le contrôle du bouton tactile spécial du trackpad ;\nLes deux partagent une valeur de sensibilité, mais les performances de sensibilité peuvent être différentes.\nQuelqu\'un utilise-t-il les deux ensemble ?</string>
     <string name="title_device_rumble">Forcer les vibrations sur l\'appareil</string>
-    <string name="summary_device_rumble">Si vous n\'êtes pas satisfait des vibrations de la manette connectée, vous pouvez activer cette option.\nNon valide pour l\'utilisation forcée du pilote USB intégré d\'Artemis</string>
+    <string name="summary_device_rumble">Si vous n\'êtes pas satisfait des vibrations de la manette connectée, vous pouvez activer cette option.\nNon valide pour l\'utilisation forcée du pilote USB intégré d\'NOUS</string>
     <string name="title_clear_default_special_button">Désactiver les touches spéciales par défaut</string>
     <string name="summary_clear_default_special_button">Si vous trouvez que les commandes intégrées dans le menu Retour sont inutiles, vous pouvez les désactiver et utiliser celles que vous avez importées.</string>
     <string name="title_trackpad_sensitivity_x">Sensibilité du trackpad X</string>
@@ -478,7 +478,7 @@
     <string name="title_checkbox_ignore_synth_events">Ignorer les événements synthétiques</string>
     <string name="summary_ignore_synth_events">Ignore les événements synthétiques envoyés par le système Android. Cela peut résoudre les problèmes où les clics de souris déclenchent d\'autres touches inattendues sur certains appareils.\nL\'activation de cette option empêchera le clavier logiciel du système de fonctionner.</string>
     <string name="title_smart_clipboard_sync">Synchronisation intelligente du presse-papiers (expérimental)</string>
-    <string name="summary_smart_clipboard_sync">Télécharger automatiquement le contenu du presse-papiers vers le serveur au démarrage/reprise du flux, télécharger le presse-papiers depuis le serveur lors de la perte de focus (nécessite Apollo).</string>
+    <string name="summary_smart_clipboard_sync">Télécharger automatiquement le contenu du presse-papiers vers le serveur au démarrage/reprise du flux, télécharger le presse-papiers depuis le serveur lors de la perte de focus (nécessite NOUS).</string>
     <string name="title_smart_clipboard_sync_toast">Toast de synchronisation du presse-papiers</string>
     <string name="summary_smart_clipboard_sync_toast">Afficher un toast pour le résultat de la synchronisation du presse-papiers</string>
     <string name="title_hide_clipboard_content">Masquer le contenu du presse-papiers</string>
@@ -496,7 +496,7 @@
     <string name="title_checkbox_ultra_low_latency">Latence ultra faible (expérimental)</string>
     <string name="summary_checkbox_ultra_low_latency">Efficace uniquement pour SD8Gen2/8(s)Gen3/8Elite.</string>
     <string name="title_checkbox_use_virtual_display">Utiliser l\'affichage virtuel</string>
-    <string name="summary_checkbox_use_virtual_display">Utiliser l\'affichage virtuel par défaut.\nL\'affichage virtuel peut correspondre automatiquement à la résolution et au taux de rafraîchissement de votre appareil, offrant une expérience de streaming fluide.\nNécessite Apollo comme logiciel de streaming hôte.</string>
+    <string name="summary_checkbox_use_virtual_display">Utiliser l\'affichage virtuel par défaut.\nL\'affichage virtuel peut correspondre automatiquement à la résolution et au taux de rafraîchissement de votre appareil, offrant une expérience de streaming fluide.\nNécessite NOUS comme logiciel de streaming hôte.</string>
     <string name="title_checkbox_resume_without_confirm">Reprise rapide</string>
     <string name="summary_checkbox_resume_without_confirm">Ne pas afficher le menu de reprise lors du clic sur le bouton de reprise, reprendre l\'application immédiatement.</string>
     <string name="title_checkbox_enable_sticky_modifier_key_virtual_keyboard">Touches modificatrices adhésives</string>
@@ -558,10 +558,10 @@
     <string name="game_menu_fetch_clipboard">Récupérer le presse-papiers</string>
     <string name="game_menu_upload_clipboard">Télécharger le presse-papiers</string>
     <string name="game_dialog_title_server_cmd_empty">Aucune commande de serveur</string>
-    <string name="game_dialog_message_server_cmd_empty">Veuillez vous assurer que vous utilisez Apollo comme logiciel serveur et que vous avez accordé à ce client l\'autorisation "Commande de serveur".</string>
+    <string name="game_dialog_message_server_cmd_empty">Veuillez vous assurer que vous utilisez NOUS comme logiciel serveur et que vous avez accordé à ce client l\'autorisation "Commande de serveur".</string>
     <string name="vdisplay_not_ready">Le pilote d\'affichage virtuel n\'est pas prêt sur le serveur. Veuillez vous assurer que le pilote SudoVDA est installé et activé.</string>
-    <string name="vdisplay_not_supported"><![CDATA[L\'affichage virtuel n\'est pas pris en charge sur ce serveur. Veuillez utiliser <a href=\"https://github.com/ClassicOldSong/Apollo\">Apollo</a> comme logiciel de streaming hôte.]]></string>
-    <string name="clipboard_sync_unsupported">Ce serveur ne prend pas en charge la synchronisation du presse-papiers. Veuillez installer ou mettre à jour votre serveur vers la dernière version d\'Apollo.</string>
+    <string name="vdisplay_not_supported"><![CDATA[L\'affichage virtuel n\'est pas pris en charge sur ce serveur. Veuillez utiliser <a href=\"https://github.com/ClassicOldSong/NOUS\">NOUS</a> comme logiciel de streaming hôte.]]></string>
+    <string name="clipboard_sync_unsupported">Ce serveur ne prend pas en charge la synchronisation du presse-papiers. Veuillez installer ou mettre à jour votre serveur vers la dernière version d\'NOUS.</string>
     <string name="send_clipboard_failed">Échec de l\'envoi du presse-papiers : </string>
     <string name="get_clipboard_failed">Échec de la récupération du presse-papiers : </string>
     <string name="send_clipboard_success">Presse-papiers envoyé avec succès</string>

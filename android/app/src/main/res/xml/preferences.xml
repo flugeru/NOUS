@@ -1016,17 +1016,11 @@
             app:iconSpaceReserved="false" />
 
         <com.limelight.preferences.WebLauncherPreference
-            url="https://github.com/ClassicOldSong/moonlight-android/releases"
+            url="https://github.com/flugeru/Vibepollo/releases"
             android:key="option_software_release"
             android:summary="@string/summary_software_update"
             android:title="@string/title_software_update"
             app:iconSpaceReserved="false" />
 
-        <com.limelight.preferences.WebLauncherPreference
-            url="@string/obtainium_app_url"
-            android:key="option_follow_update"
-            android:summary="@string/summary_follow_update"
-            android:title="@string/title_follow_update"
-            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 </PreferenceScreen>

@@ -230,7 +230,7 @@ if ([string]::IsNullOrWhiteSpace($OutputName)) {
     if ($UninstallOnly) {
         $OutputName = "uninstall.exe"
     } else {
-        $OutputName = "VibepolloSetup.exe"
+        $OutputName = "NOUSSetup.exe"
     }
 }
 
@@ -267,10 +267,10 @@ if ([string]::IsNullOrWhiteSpace($informationalVersion)) {
 }
 if ($UninstallOnly) {
     $assemblyInfoPath = Join-Path $artifactDir "VibepolloUninstall.AssemblyInfo.cs"
-    $assemblyTitle = "Vibepollo Uninstaller"
+    $assemblyTitle = "NOUS Uninstaller"
 } else {
     $assemblyInfoPath = Join-Path $artifactDir "VibepolloInstaller.AssemblyInfo.cs"
-    $assemblyTitle = "Vibepollo Installer"
+    $assemblyTitle = "NOUS Installer"
 }
 $assemblyInfoContent = @(
     "using System.Reflection;",
@@ -297,7 +297,7 @@ if (-not $shouldSignWithSignPath) {
 if ($shouldSignWithSignPath -and -not $UninstallOnly) {
     Invoke-SignPathForArtifact `
         -ArtifactPath $MsiPath `
-        -Description "Vibepollo MSI payload $informationalVersion"
+        -Description "NOUS MSI payload $informationalVersion"
 }
 
 $references = @(
@@ -356,9 +356,9 @@ if ($LASTEXITCODE -ne 0) {
 
 if ($shouldSignWithSignPath) {
     $artifactDescription = if ($UninstallOnly) {
-        "Vibepollo uninstaller $informationalVersion"
+        "NOUS uninstaller $informationalVersion"
     } else {
-        "Vibepollo setup executable $informationalVersion"
+        "NOUS setup executable $informationalVersion"
     }
     Invoke-SignPathForArtifact `
         -ArtifactPath $outputPath `

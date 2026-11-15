@@ -4,9 +4,9 @@ cmake_minimum_required(VERSION 3.20)
 # `cmake_path(CONVERT ... TO_NATIVE_PATH_LIST ...)` requires 3.20
 # todo - set this conditionally
 
-project(Vibepollo VERSION 0.0.0
+project(NOUS VERSION 0.0.0
         DESCRIPTION "Self-hosted game stream host for Moonlight"
-        HOMEPAGE_URL "https://github.com/Nonary/Vibepollo")
+        HOMEPAGE_URL "https://github.com/flugeru/Vibepollo")
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -20,11 +20,11 @@ set(PROJECT_LICENSE "GPL-3.0-only")
 set(PROJECT_FQDN "io.github.Nonary.vibepollo")
 set(WINDOWS_APP_USER_MODEL_ID "Nonary.Vibepollo")
 
-set(PROJECT_BRIEF_DESCRIPTION "GameStream host for Artemis")  # must be <= 35 characters
+set(PROJECT_BRIEF_DESCRIPTION "GameStream host for NOUS")  # must be <= 35 characters
 
 set(PROJECT_LONG_DESCRIPTION "Offering low latency, cloud gaming server capabilities with support for AMD, Intel, \
-and Nvidia GPUs for hardware encoding. Software encoding is also available. You can connect to Apollo from any \
-Artemis client on a variety of devices. A web UI and configuration API are available for configuration, client \
+and Nvidia GPUs for hardware encoding. Software encoding is also available. You can connect to NOUS from any compatible \
+GameStream client on a variety of devices. A web UI and configuration API are available for configuration, client \
 pairing, and integrations.")
 
 # Ensure WiX-specific CPack variables are present early in config generation

@@ -1,4 +1,4 @@
-name: Android Client
+name: NOUS Android
 
 on:
   workflow_dispatch:
@@ -31,10 +31,14 @@ jobs:
         run: '"$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "ndk;27.0.12077973"'
       - name: Build the debug client
         run: bash ./gradlew --no-daemon :app:assembleNonRoot_gameDebug
+      - name: Name the ARM64 APK for distribution
+        run: |
+          mkdir -p build/delivery
+          cp app/build/outputs/apk/nonRoot_game/debug/*arm64-v8a*.apk build/delivery/NOUS-Android-arm64-debug.apk
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: Artemis-Android-debug
-          path: android/app/build/outputs/apk/nonRoot_game/debug/*.apk
+          name: NOUS-Android-arm64-debug
+          path: android/build/delivery/NOUS-Android-arm64-debug.apk
           if-no-files-found: error
       - name: Run Android unit tests
         run: bash ./gradlew --no-daemon :app:testNonRoot_gameDebugUnitTest

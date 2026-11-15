@@ -24,11 +24,11 @@
   <description>
     <p>@PROJECT_LONG_DESCRIPTION@</p>
 
-    <p>NOTE: Vibepollo requires additional installation steps on Flatpak.</p>
+    <p>NOTE: NOUS requires additional installation steps on Flatpak.</p>
     <p>
       <code>flatpak run --command=additional-install.sh @PROJECT_FQDN@</code>
     </p>
-    <p>NOTE: Vibepollo uses a self-signed certificate. The web browser will report it as not secure, but it is safe.</p>
+    <p>NOTE: NOUS uses a self-signed certificate. The web browser will report it as not secure, but it is safe.</p>
   </description>
 
   <releases>
@@ -46,7 +46,7 @@
   <screenshots>
     <screenshot type="default">
       <image>https://raw.githubusercontent.com/Nonary/Vibepollo/master/gh-pages-template/assets/img/screenshots/01-sunshine-welcome-page.png</image>
-      <caption>Vibepollo welcome page</caption>
+      <caption>NOUS welcome page</caption>
     </screenshot>
   </screenshots>
   <content_rating type="oars-1.0">

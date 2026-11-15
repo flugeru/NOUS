@@ -1,5 +1,5 @@
 ---
-name: Desktop Host (Windows)
+name: NOUS Desktop (Windows)
 permissions:
   contents: read
   actions: read
@@ -29,13 +29,13 @@ concurrency:
 
 jobs:
   windows:
-    if: github.repository == 'flugeru/Vibepollo'
+    if: github.repository == 'flugeru/Vibepollo' && !contains(github.event.head_commit.message, '[skip desktop]')
     uses: ./.github/workflows/ci-windows.yml
     with:
       release_commit: ${{ github.sha }}
       release_version: '2.0.0'
-      symbol_product_name: Vibepollo
-      symbol_release_prefix: polo
+      symbol_product_name: NOUS
+      symbol_release_prefix: nous
       build_tests: true
       require_signpath_signing: false
       require_truehdr_runtime: false

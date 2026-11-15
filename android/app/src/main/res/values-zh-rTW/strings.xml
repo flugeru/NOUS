@@ -39,12 +39,12 @@
 
 	<!-- Network test strings -->
 	<string name="nettest_title_waiting">正在測試網路連線</string>
-	<string name="nettest_text_waiting">Artemis 正在測試您的網路連線，以判斷是否有必要的連接埠被阻擋。\n\n這可能需要幾秒鐘…</string>
+	<string name="nettest_text_waiting">NOUS 正在測試您的網路連線，以判斷是否有必要的連接埠被阻擋。\n\n這可能需要幾秒鐘…</string>
 	<string name="nettest_title_done">網路測試完成</string>
-	<string name="nettest_text_success">您的網路似乎沒有阻擋 Artemis。如果您仍然無法連線，請檢查您電腦的防火牆設定。\n\n如果您嘗試透過網際網路進行串流，請在電腦上安裝 Artemis Internet Hosting Tool，並執行內建的 Internet Streaming Tester 以檢查網際網路連線。</string>
+	<string name="nettest_text_success">您的網路似乎沒有阻擋 NOUS。如果您仍然無法連線，請檢查您電腦的防火牆設定。\n\n如果您嘗試透過網際網路進行串流，請在電腦上安裝 Artemis Internet Hosting Tool，並執行內建的 Internet Streaming Tester 以檢查網際網路連線。</string>
 	<string name="nettest_text_inconclusive">無法執行網路測試，因為無法連線至 Artemis 的測試伺服器。請檢查您的網際網路連線，或稍後再試。</string>
-	<string name="nettest_text_failure">您目前的網路連線似乎正在阻擋 Artemis。在此網路下，透過網際網路串流可能無法正常運作。\n\n以下連接埠被阻擋：\n</string>
-	<string name="nettest_text_blocked">您目前的網路連線正在阻擋 Artemis。在此網路下，透過網際網路串流可能無法正常運作。</string>
+	<string name="nettest_text_failure">您目前的網路連線似乎正在阻擋 NOUS。在此網路下，透過網際網路串流可能無法正常運作。\n\n以下連接埠被阻擋：\n</string>
+	<string name="nettest_text_blocked">您目前的網路連線正在阻擋 NOUS。在此網路下，透過網際網路串流可能無法正常運作。</string>
 
 	<!-- Pair messages -->
 	<string name="pairing">正在配對…</string>
@@ -56,7 +56,7 @@
 	<string name="pair_pairing_msg">請在目標電腦上輸入以下 PIN：</string>
 	<string name="pair_pairing_help">如果您的主機電腦正在執行 Sunshine，請進入 Sunshine 的網頁介面輸入 PIN。</string>
 	<string name="pair_otp_pairing_msg">正在進行配對，請稍候…</string>
-	<string name="pair_otp_pairing_help">OTP 配對僅適用於 Apollo，如果您使用其他主機軟體，請在網頁介面手動輸入剛剛提供的 PIN。</string>
+	<string name="pair_otp_pairing_help">OTP 配對僅適用於 NOUS，如果您使用其他主機軟體，請在網頁介面手動輸入剛剛提供的 PIN。</string>
 	<string name="pair_incorrect_pin">PIN 或密碼短語錯誤</string>
 	<string name="pair_fail">配對失敗</string>
 	<string name="pair_already_in_progress">配對已在進行中</string>
@@ -87,7 +87,7 @@
 		使用遠端桌面軟體也可能導致此錯誤。請嘗試重新啟動電腦或重新安裝 GFE。
 	</string>
 	<string name="title_decoding_error">影片解碼器當機</string>
-	<string name="message_decoding_error">Artemis 因與此裝置的影片解碼器不相容而當機。如果當機持續發生，請嘗試調整串流設定。</string>
+	<string name="message_decoding_error">NOUS 因與此裝置的影片解碼器不相容而當機。如果當機持續發生，請嘗試調整串流設定。</string>
 	<string name="title_decoding_reset">影片設定已重設</string>
 	<string name="message_decoding_reset">您的裝置影片解碼器在目前的串流設定下持續當機，串流設定已重設為預設值。</string>
 	<string name="error_usb_prohibited">您的裝置管理員禁止存取 USB。請檢查 Knox 或 MDM 設定。</string>
@@ -116,7 +116,7 @@
 	<!-- General strings -->
 	<string name="ip_hint">主機電腦的 IP 位址</string>
 	<string name="searching_pc">正在搜尋您區域網路中的主機電腦…\n\n
-		請確認 Apollo 已在主機電腦上執行。</string>
+		請確認 NOUS 已在主機電腦上執行。</string>
 	<string name="yes">是</string>
 	<string name="no">否</string>
 	<string name="lost_connection">與電腦的連線中斷</string>
@@ -197,7 +197,7 @@
 	<string name="summary_seekbar_metered_bitrate">較高的位元率會消耗更多數據，較低的位元率可改善在計量網路下的流暢度。\n設定為 0 時，位元率為上述設定的 1/4。</string>
 	<string name="suffix_seekbar_bitrate_mbps">Mbps</string>
 	<string name="title_resolution_scale_factor">解析度縮放係數</string>
-	<string name="summary_resolution_scale_factor">伺服器端請求的虛擬螢幕解析度將乘以此係數。串流解析度不受影響。\n例如：120% 會將 2000x1000 變為 2400x1200。\n設定較高的縮放係數可改善部分遊戲的影像品質。\n需要 Apollo 才能生效。</string>
+	<string name="summary_resolution_scale_factor">伺服器端請求的虛擬螢幕解析度將乘以此係數。串流解析度不受影響。\n例如：120% 會將 2000x1000 變為 2400x1200。\n設定較高的縮放係數可改善部分遊戲的影像品質。\n需要 NOUS 才能生效。</string>
 	<string name="resolution_prefix_native">原生</string>
 	<string name="resolution_prefix_native_fullscreen">原生全螢幕</string>
 	<string name="resolution_prefix_native_landscape">（橫向）</string>
@@ -233,7 +233,7 @@
 	<string name="title_checkbox_xb1_driver">Xbox 360/One/Nintendo Pro USB 手把驅動程式</string>
 	<string name="summary_checkbox_xb1_driver">為不具原生 Xbox/Nintendo Pro 支援的裝置啟用內建 USB 驅動程式</string>
 	<string name="title_checkbox_usb_bind_all">覆寫原生 Xbox 手把支援</string>
-	<string name="summary_checkbox_usb_bind_all">即使裝置具備原生 Xbox/Nintendo Pro 支援，也對所有支援的手把使用 Artemis 的 USB 驅動程式</string>
+	<string name="summary_checkbox_usb_bind_all">即使裝置具備原生 Xbox/Nintendo Pro 支援，也對所有支援的手把使用 NOUS 的 USB 驅動程式</string>
 	<string name="title_checkbox_mouse_emulation">以手把模擬滑鼠</string>
 	<string name="summary_checkbox_mouse_emulation">長按 Start 鍵可在手把模式與滑鼠模式間切換</string>
 	<string name="title_checkbox_remember_mouse_mode">記住滑鼠模式</string>
@@ -283,7 +283,7 @@
 	<string name="title_checkbox_enable_pip">啟用子母畫面旁觀模式</string>
 	<string name="summary_checkbox_enable_pip">允許在多工時觀看串流（不可控制）</string>
 	<string name="title_language_list">語言</string>
-	<string name="summary_language_list">Artemis 使用的語言</string>
+	<string name="summary_language_list">NOUS 使用的語言</string>
 	<string name="title_checkbox_small_icon_mode">使用小型封面圖</string>
 	<string name="summary_checkbox_small_icon_mode">在應用程式格狀檢視中使用較小封面圖，可在同一畫面顯示更多應用程式</string>
 
@@ -362,8 +362,8 @@
 	<string name="pacing_smoothness">優先最流暢影片（可能大幅增加延遲）</string>
 
 
-	<string name="keyboard_service_label">Artemis 實體鍵盤</string>
-	<string name="accessibility_description_text">僅在系統攔截實體鍵盤快捷鍵時使用。在某些系統中，部分快捷鍵已被 Android 系統定義並使用，導致無法傳遞至主機電腦。Artemis 不會檢視您的輸入，也不會收集您的密碼、信用卡號或任何其他私人資訊。</string>
+	<string name="keyboard_service_label">NOUS 實體鍵盤</string>
+	<string name="accessibility_description_text">僅在系統攔截實體鍵盤快捷鍵時使用。在某些系統中，部分快捷鍵已被 Android 系統定義並使用，導致無法傳遞至主機電腦。NOUS 不會檢視您的輸入，也不會收集您的密碼、信用卡號或任何其他私人資訊。</string>
 
 
 	<!-- In Game menu -->
@@ -433,7 +433,7 @@
 	<string name="dialog_manual_enter_bitrate">請以 Mbps 輸入位元率。四捨五入到 0.5。</string>
 
 	<string name="title_custom_refresh_rate">自訂更新率</string>
-	<string name="summary_custom_refresh_rate">手動輸入更新率。僅支援 Apollo。</string>
+	<string name="summary_custom_refresh_rate">手動輸入更新率。僅支援 NOUS。</string>
 	<string name="dialog_custom_refresh_rate">請以 Hz 輸入更新率。可為小數。</string>
 
 	<string name="title_render_mode">渲染模式</string>
@@ -491,7 +491,7 @@
 	<string name="title_share_performance_logs_button">分享效能日誌</string>
 
 	<string name="title_software_update">軟體更新</string>
-	<string name="summary_software_update">Artemis Nior 版本（ClassicOldSong）－前往 GitHub Releases 取得最新版本</string>
+	
 
 	<string name="title_follow_update">追蹤更新</string>
 	<string name="summary_follow_update">使用 Obtainium 追蹤 Artemis 更新</string>
@@ -556,7 +556,7 @@
 	<string name="summary_touchpad_sensitivity_y">適用於滑鼠觸控板模式與虛擬特殊按鍵的觸控板控制；\n兩者共享一個靈敏度值，但實際表現可能不同。\n有人會同時用兩者嗎？</string>
 
 	<string name="title_device_rumble">強制使用裝置震動</string>
-	<string name="summary_device_rumble">若您對連接手把的震動不滿意，可啟用此選項。\n若強制使用 Artemis 內建 USB 驅動程式則無效</string>
+	<string name="summary_device_rumble">若您對連接手把的震動不滿意，可啟用此選項。\n若強制使用 NOUS 內建 USB 驅動程式則無效</string>
 
 	<string name="title_clear_default_special_button">停用預設特殊按鍵</string>
 	<string name="summary_clear_default_special_button">若覺得返回選單中的內建指令無用，可停用並改用您匯入的指令。</string>
@@ -586,7 +586,7 @@
 	<string name="summary_ignore_synth_events">忽略 Android 系統發送的合成事件。可解決部分裝置上滑鼠點擊觸發其他意外按鍵的問題。\n啟用後，系統軟體鍵盤將無法使用。</string>
 
 	<string name="title_smart_clipboard_sync">智慧剪貼簿同步（實驗性）</string>
-	<string name="summary_smart_clipboard_sync">串流開始/恢復時自動上傳剪貼簿內容至伺服器；失去焦點時自伺服器下載（需搭配 Apollo）。</string>
+	<string name="summary_smart_clipboard_sync">串流開始/恢復時自動上傳剪貼簿內容至伺服器；失去焦點時自伺服器下載（需搭配 NOUS）。</string>
 	<string name="title_smart_clipboard_sync_toast">剪貼簿同步提示</string>
 	<string name="summary_smart_clipboard_sync_toast">顯示剪貼簿同步結果的提示訊息</string>
 	<string name="title_hide_clipboard_content">隱藏剪貼簿內容</string>
@@ -611,7 +611,7 @@
 	<string name="summary_checkbox_forceTightThresholds">更緊的 VSync 門檻以降低延遲；可能增加掉幀。</string>
 
 	<string name="title_checkbox_use_virtual_display">使用虛擬顯示器</string>
-	<string name="summary_checkbox_use_virtual_display">預設使用虛擬顯示器。\n虛擬顯示器可自動匹配用戶端解析度與幀率設定，帶來無縫的串流體驗。\n需要 Apollo 作為主機串流軟體。</string>
+	<string name="summary_checkbox_use_virtual_display">預設使用虛擬顯示器。\n虛擬顯示器可自動匹配用戶端解析度與幀率設定，帶來無縫的串流體驗。\n需要 NOUS 作為主機串流軟體。</string>
 
 	<string name="title_checkbox_resume_without_confirm">快速繼續</string>
 	<string name="summary_checkbox_resume_without_confirm">按下繼續按鈕時不顯示選單，直接繼續應用程式。</string>
@@ -685,11 +685,11 @@
 	<string name="game_menu_fetch_clipboard">取得剪貼簿</string>
 	<string name="game_menu_upload_clipboard">上傳剪貼簿</string>
 	<string name="game_dialog_title_server_cmd_empty">無伺服器指令</string>
-	<string name="game_dialog_message_server_cmd_empty">請確認您使用的是 Apollo 作為伺服器軟體，且已授予此客戶端「伺服器指令」權限。</string>
+	<string name="game_dialog_message_server_cmd_empty">請確認您使用的是 NOUS 作為伺服器軟體，且已授予此客戶端「伺服器指令」權限。</string>
 
 	<string name="vdisplay_not_ready">伺服器上的虛擬顯示器驅動尚未就緒。請確認已安裝並啟用 SudoVDA 驅動程式。</string>
-	<string name="vdisplay_not_supported"><![CDATA[此伺服器不支援虛擬顯示器。請使用 <a href="https://github.com/ClassicOldSong/Apollo">Apollo</a> 作為主機串流軟體。]]></string>
-	<string name="clipboard_sync_unsupported">此伺服器不支援剪貼簿同步。請安裝或將伺服器升級至最新版本的 Apollo。</string>
+	<string name="vdisplay_not_supported"><![CDATA[此伺服器不支援虛擬顯示器。請使用 <a href="https://github.com/ClassicOldSong/NOUS">NOUS</a> 作為主機串流軟體。]]></string>
+	<string name="clipboard_sync_unsupported">此伺服器不支援剪貼簿同步。請安裝或將伺服器升級至最新版本的 NOUS。</string>
 	<string name="send_clipboard_failed">傳送剪貼簿失敗： </string>
 
 	<string name="external_display_info">外接顯示器連接：%1$dx%2$d，%3$.1fHz</string>
