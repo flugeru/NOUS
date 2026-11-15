@@ -26,6 +26,8 @@
         <item name="colorOnSurfaceVariant">@color/nous_text_muted</item>
         <item name="colorPrimary">@color/nous_primary</item>
         <item name="colorOnPrimary">@color/nous_on_primary</item>
+        <item name="colorPrimaryContainer">@color/nous_secondary_container</item>
+        <item name="colorOnPrimaryContainer">@color/nous_secondary</item>
         <item name="colorSecondary">@color/nous_secondary</item>
         <item name="colorOnSecondary">@color/nous_on_secondary</item>
         <item name="colorSecondaryContainer">@color/nous_secondary_container</item>
@@ -36,6 +38,7 @@
     </style>
     <style name="NousDialogTheme" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="colorSurface">@color/nous_surface</item>
+        <item name="colorControlActivated">@color/nous_secondary</item>
         <item name="colorSurfaceContainerHigh">@color/nous_surface_high</item>
     </style>
     <style name="Nous.Title" parent="TextAppearance.Material3.HeadlineLarge">

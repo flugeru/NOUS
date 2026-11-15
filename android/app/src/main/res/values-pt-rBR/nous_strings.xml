@@ -28,4 +28,9 @@
     <string name="nous_streaming">Streaming</string>
     <string name="nous_support">Suporte</string>
     <string name="nous_waiting_for_pc">Aguardando confirmação do PC</string>
+    <string name="nous_profiles_short">Salve e alterne configurações de streaming</string>
+    <string name="nous_advanced">Avançado</string>
+    <string name="nous_advanced_summary">Interface, monitor de desempenho e outras opções</string>
+    <string name="nous_scan_title">Buscando computadores</string>
+    <string name="nous_scan_hint">Mantenha este dispositivo e o host na mesma rede. Você também pode adicionar o host pelo endereço.</string>
 </resources>

@@ -161,7 +161,6 @@
             android:launchMode="singleInstance"
             android:taskAffinity=""
             android:theme="@style/ExternalDisplayControllerTheme"/>
-        <activity android:name=".NousSettingsActivity" android:exported="false" />
         <activity
             android:name=".preferences.StreamSettings"
             android:resizeableActivity="true"

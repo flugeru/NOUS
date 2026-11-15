@@ -17,6 +17,7 @@
             android:contentDescription="@string/nous_back"
             android:src="@drawable/ic_nous_back" />
         <TextView
+            android:id="@+id/nous_section_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

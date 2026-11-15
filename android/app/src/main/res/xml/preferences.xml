@@ -220,6 +220,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:key="category_audio_settings"
         android:title="@string/category_audio_settings"
         app:iconSpaceReserved="false">
         <ListPreference
@@ -489,6 +490,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:key="category_host_settings"
         android:title="@string/category_host_settings"
         app:iconSpaceReserved="false">
         <CheckBoxPreference
@@ -506,6 +508,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:key="category_general_settings"
         android:title="@string/category_general_settings"
         app:initialExpandedChildrenCount="1"
         app:iconSpaceReserved="false">

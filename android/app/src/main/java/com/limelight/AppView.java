@@ -314,16 +314,18 @@ public class AppView extends AppCompatActivity implements AdapterFragmentCallbac
         setContentView(R.layout.activity_app_view);
         findViewById(R.id.nous_back).setOnClickListener(v -> finish());
         BottomNavigationView navigation = findViewById(R.id.nous_navigation);
-        navigation.setSelectedItemId(R.id.nous_nav_games);
+        NousSettingsTab settingsTab = new NousSettingsTab(this, navigation, R.id.nous_nav_games);
         navigation.setOnItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.nous_nav_computers) {
+            int id = item.getItemId();
+            if (id == R.id.nous_nav_computers) {
                 startActivity(new Intent(this, PcView.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
                 finish();
-            } else if (item.getItemId() == R.id.nous_nav_settings) {
-                startActivity(new Intent(this, NousSettingsActivity.class).putExtra(NousSettingsActivity.OPEN_FROM_GAMES, true));
+                return false;
             }
-            return false;
+            settingsTab.show(id == R.id.nous_nav_settings);
+            return true;
         });
+        navigation.setSelectedItemId(R.id.nous_nav_games);
         gameSearch = findViewById(R.id.nous_game_search);
         gameSearch.addTextChangedListener(new TextWatcher() {
             @Override

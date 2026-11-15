@@ -139,7 +139,13 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
     private final static int OPEN_MANAGEMENT_PAGE_ID = 20;
     private final static int PAIR_ID_OTP = 21;
 
+    private NousSettingsTab settingsTab;
+
     private void initializeViews() {
+        boolean showSettings = settingsTab != null && settingsTab.isVisible();
+        if (settingsTab != null) {
+            settingsTab.detach();
+        }
         setContentView(R.layout.activity_pc_view);
 
         UiHelper.notifyNewRootView(this);
@@ -161,19 +167,17 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
         ExtendedFloatingActionButton profilesButton = findViewById(R.id.profilesButton);
 
         BottomNavigationView navigation = findViewById(R.id.nous_navigation);
-        navigation.setSelectedItemId(R.id.nous_nav_computers);
+        settingsTab = new NousSettingsTab(this, navigation, R.id.nous_nav_computers);
         navigation.setOnItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.nous_nav_games) {
+            int id = item.getItemId();
+            if (id == R.id.nous_nav_games) {
                 openGamesTab();
-            } else if (item.getItemId() == R.id.nous_nav_settings) {
-                startActivity(new Intent(this, NousSettingsActivity.class));
+                return false;
             }
-            return false;
+            settingsTab.show(id == R.id.nous_nav_settings);
+            return true;
         });
-        if (getIntent().getBooleanExtra(NousSettingsActivity.OPEN_GAMES, false)) {
-            getIntent().removeExtra(NousSettingsActivity.OPEN_GAMES);
-            navigation.post(this::openGamesTab);
-        }
+        navigation.setSelectedItemId(showSettings ? R.id.nous_nav_settings : R.id.nous_nav_computers);
 
         addComputerButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -740,16 +744,6 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
                     .setTitle(R.string.nous_choose_pc)
                     .setItems(names, (dialog, which) -> doAppList(hosts.get(which), false, false))
                     .show();
-        }
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        setIntent(intent);
-        if (pcGridAdapter != null && intent.getBooleanExtra(NousSettingsActivity.OPEN_GAMES, false)) {
-            intent.removeExtra(NousSettingsActivity.OPEN_GAMES);
-            openGamesTab();
         }
     }
 

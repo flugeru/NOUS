@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 
 import com.limelight.R;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Locale;
 
@@ -142,11 +143,11 @@ public class SeekBarPreference extends Preference
         }
         seekBar.setProgress(currentValue - minValue);
 
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+        AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(context);
         dialogBuilder.setTitle(getTitle());
         dialogBuilder.setView(layout);
 
-        dialogBuilder.setPositiveButton("OK", (dialog, which) -> {
+        dialogBuilder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
             if (shouldPersist()) {
                 currentValue = seekBar.getProgress() + minValue;
                 persistInt(currentValue);

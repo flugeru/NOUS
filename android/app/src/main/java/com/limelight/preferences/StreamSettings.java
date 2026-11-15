@@ -41,6 +41,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.widget.EditText;
+import android.widget.TextView;
+import androidx.preference.PreferenceGroup;
+import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.shape.MaterialShapeDrawable;
+import com.google.android.material.shape.ShapeAppearanceModel;
+import android.content.res.ColorStateList;
+import androidx.core.content.ContextCompat;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -66,7 +74,38 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class StreamSettings extends AppCompatActivity {
-    public static final String INITIAL_CATEGORY = "nous.initial_category";
+    public static final String SECTION = "nous.settings_section";
+    public enum Section {
+        ALL(R.string.nous_settings),
+        VIDEO_AUDIO(R.string.nous_video_audio, "category_video_settings", "category_audio_settings", "category_host_settings"),
+        CONTROLS(R.string.nous_controls, "category_gamepad_settings", "category_input_settings",
+                "category_onscreen_controls", "category_special_key_layout", "category_virtual_trackpad_settings"),
+        ADVANCED(R.string.nous_advanced, "category_general_settings", "category_ui_settings",
+                "category_perf_monitor_settings", "category_advanced_settings", "category_settings_misc");
+        final int title;
+        final String[] categories;
+
+        Section(int title, String... categories) {
+            this.title = title;
+            this.categories = categories;
+        }
+
+        boolean includes(String key) {
+            return this == ALL || Arrays.asList(categories).contains(key);
+        }
+
+        static Section fromIntent(Intent intent) {
+            String name = intent.getStringExtra(SECTION);
+            for (Section section : values()) {
+                if (section.name().equals(name)) {
+                    return section;
+                }
+            }
+            return ALL;
+        }
+    }
+
+    private Section section;
     private PreferenceConfiguration previousPrefs;
     private int previousDisplayPixelCount;
 
@@ -87,15 +126,11 @@ public class StreamSettings extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(
                 R.id.stream_settings, prefsFragment
         ).commitAllowingStateLoss();
-        String category = getIntent().getStringExtra(INITIAL_CATEGORY);
-        if (category != null) {
-            prefsFragment.scrollToPreference(category);
-        }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        setTheme(R.style.AppTheme);
+        section = Section.fromIntent(getIntent());
         super.onCreate(savedInstanceState);
 
         previousPrefs = PreferenceConfiguration.readPreferences(this);
@@ -103,6 +138,7 @@ public class StreamSettings extends AppCompatActivity {
         UiHelper.setLocale(this);
 
         setContentView(R.layout.activity_stream_settings);
+        ((TextView) findViewById(R.id.nous_section_title)).setText(section.title);
         findViewById(R.id.nous_back).setOnClickListener(v -> onBackPressed());
 
 //        UiHelper.notifyNewRootView(this);
@@ -336,6 +372,48 @@ public class StreamSettings extends AppCompatActivity {
         @Override
         public void onCreatePreferences(Bundle bundle, String s) {
             initializePreferences();
+            if (requireActivity() instanceof StreamSettings) {
+                applySection(((StreamSettings) requireActivity()).section);
+            }
+        }
+
+        private void applySection(Section section) {
+            PreferenceScreen screen = getPreferenceScreen();
+            for (int i = 0; i < screen.getPreferenceCount(); i++) {
+                Preference preference = screen.getPreference(i);
+                boolean visible = section.includes(preference.getKey());
+                if (!visible) {
+                    preference.setVisible(false);
+                } else if (preference instanceof PreferenceGroup) {
+                    PreferenceGroup category = (PreferenceGroup) preference;
+                    if (section == Section.VIDEO_AUDIO) {
+                        category.setInitialExpandedChildrenCount(Integer.MAX_VALUE);
+                    }
+                    for (int j = 0; j < category.getPreferenceCount(); j++) {
+                        Preference child = category.getPreference(j);
+                        if (child.getClass() == ListPreference.class || child.getClass() == CheckBoxPreference.class
+                                || child.getClass() == SeekBarPreference.class) {
+                            child.setLayoutResource(R.layout.nous_preference_row);
+                            child.setSingleLineTitle(false);
+                            if (section == Section.VIDEO_AUDIO && child instanceof ListPreference) {
+                                ((ListPreference) child).setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onViewCreated(@NonNull View view, Bundle state) {
+            super.onViewCreated(view, state);
+            if (requireActivity() instanceof StreamSettings) {
+                RecyclerView list = getListView();
+                int inset = Math.round(20 * getResources().getDisplayMetrics().density);
+                list.setPadding(inset, inset / 2, inset, inset);
+                list.setClipToPadding(false);
+                setDivider(null);
+            }
         }
 
         public void initializePreferences() {
@@ -1060,7 +1138,34 @@ public class StreamSettings extends AppCompatActivity {
                 DialogFragment dialogFragment = ConfirmDeleteKeyboardPreference.DialogFragmentCompat.newInstance(preference.getKey());
                 dialogFragment.setTargetFragment(this, 0);
                 dialogFragment.show(getFragmentManager(), null);
-            } else super.onDisplayPreferenceDialog(preference);
+            } else if (preference instanceof ListPreference) {
+                ListPreference list = (ListPreference) preference;
+                CharSequence[] entries = list.getEntries();
+                CharSequence[] values = list.getEntryValues();
+                if (entries == null || values == null) {
+                    super.onDisplayPreferenceDialog(preference);
+                    return;
+                }
+                Context context = requireContext();
+                float corner = 28 * context.getResources().getDisplayMetrics().density;
+                MaterialShapeDrawable background = new MaterialShapeDrawable(
+                        ShapeAppearanceModel.builder().setAllCornerSizes(corner).build());
+                background.setFillColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.nous_surface)));
+                new MaterialAlertDialogBuilder(context)
+                        .setBackground(background)
+                        .setTitle(list.getDialogTitle())
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .setSingleChoiceItems(entries, list.findIndexOfValue(list.getValue()), (dialog, which) -> {
+                            String value = values[which].toString();
+                            if (list.callChangeListener(value)) {
+                                list.setValue(value);
+                            }
+                            dialog.dismiss();
+                        })
+                        .show();
+            } else {
+                super.onDisplayPreferenceDialog(preference);
+            }
         }
 
         private File getJsonContent(Context context,File file){
