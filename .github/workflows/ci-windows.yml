@@ -345,7 +345,11 @@ jobs:
           ref: ${{ inputs.release_commit }}
           fetch-depth: ${{ inputs.daily_unsigned && '0' || '1' }}
           fetch-tags: ${{ inputs.daily_unsigned }}
-          submodules: recursive
+          submodules: false
+
+      - name: Initialize desktop dependencies
+        shell: pwsh
+        run: git submodule update --init --recursive -- third-party packaging
 
       - name: Enforce unsigned daily build policy
         if: inputs.daily_unsigned

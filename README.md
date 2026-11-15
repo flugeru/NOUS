@@ -12,6 +12,17 @@ Esta edição reúne correções pontuais, testes de regressão e ferramentas de
 
 [Melhorias desta edição](#melhorias-desta-edição) · [Downloads e instalação](#downloads-e-instalação) · [Documentação](#documentação) · [Compilação](#compilação) · [Créditos](#créditos-e-licença)
 
+## Host e cliente no mesmo repositório
+
+| Componente | Código | Build |
+| --- | --- | --- |
+| Vibepollo, host desktop | [`src/`](src/) e [`CMakeLists.txt`](CMakeLists.txt) na raiz | [Desktop Host (Windows)](.github/workflows/fork-test-installer.yml) |
+| Artemis, cliente Android | [`android/`](android/) | [Android Client](.github/workflows/android-client.yml) |
+
+O código do Artemis foi importado de [`c5cf27f`](https://github.com/ClassicOldSong/moonlight-android/tree/c5cf27f4dc822db0e863c4691e7a70c74bea977a). Para editar a interface, abra `android/` como projeto Gradle no Android Studio. Os layouts e recursos ficam em [`android/app/src/main/res/`](android/app/src/main/res/) e o código das telas em [`android/app/src/main/java/com/limelight/`](android/app/src/main/java/com/limelight/).
+
+A integração mantém os nomes atuais até a migração para NOUS. O cliente incorpora o suporte a displays virtuais da revisão do Artemis acima. Os checks de pacing existentes exercitam a lógica do host em CPU. A cadência observada no POCO X6 Pro, o comportamento ao criar ou trocar o display virtual e a latência ponta a ponta continuam pendentes de medição, seguindo o [protocolo de benchmark](docs/latency/benchmark.md).
+
 ## Visão geral
 
 Vibepollo executa no **PC host**: captura imagem, codifica vídeo e transmite para o cliente. Moonlight ou Artemis executa no dispositivo remoto e cuida da decodificação, apresentação e entrada.
@@ -39,7 +50,7 @@ Detalhes, fontes e resultados em **[docs/latency/README.md](docs/latency/README.
 
 ### Windows
 
-Build de teste: **[Fork Test Installer — GitHub Actions](https://github.com/flugeru/Vibepollo/actions/workflows/fork-test-installer.yml)**.
+Build de teste: **[Desktop Host (Windows) — GitHub Actions](https://github.com/flugeru/Vibepollo/actions/workflows/fork-test-installer.yml)**.
 
 O workflow gera artefatos somente após as etapas de build e validação correspondentes. Abra uma execução bem-sucedida e confira os artefatos; a existência do workflow não garante que o instalador esteja pronto. Artefatos têm retenção de sete dias e o download pelo Actions pode exigir login no GitHub.
 
@@ -48,6 +59,8 @@ O workflow gera artefatos somente após as etapas de build e validação corresp
 ### Android
 
 Clientes de origem: [Moonlight Android](https://github.com/moonlight-stream/moonlight-android) e [Artemis](https://github.com/ClassicOldSong/moonlight-android).
+
+O [workflow Android Client](.github/workflows/android-client.yml) roda testes unitários e compila o cliente ARM64 de teste. Para compilar localmente, inicialize o submódulo nativo a partir da raiz e execute o Gradle a partir de `android/`. [Configuração de SDK e NDK](docs/latency/android-test-build.md).
 
 As correções listadas acima pertencem ao servidor. Nenhuma otimização nova de MediaCodec foi aplicada ao cliente Android nesta rodada. **APK ARM64 de teste compilado e verificado localmente**, com pacote `com.limelight.vibepollotest` e assinatura Android Debug, separado dos aplicativos oficiais. [Versão, hash, fonte e reconstrução](docs/latency/android-test-build.md). O APK não está publicado em Releases; a entrega local fica em `build/delivery/`.
 

@@ -1,5 +1,5 @@
 ---
-name: Fork Test Installer
+name: Desktop Host (Windows)
 permissions:
   contents: read
   actions: read
@@ -13,6 +13,10 @@ on:
       - '.github/workflows/ci-windows.yml'
       - '.github/actions/**'
       - 'src/**'
+      - 'src_assets/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'plugins/**'
       - 'tools/**'
       - 'cmake/**'
       - 'CMakeLists.txt'

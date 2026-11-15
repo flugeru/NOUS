@@ -2,14 +2,9 @@ name: Android Client
 
 on:
   workflow_dispatch:
-  workflow_call:
-    inputs:
-      source_ref:
-        type: string
-        default: ''
   push:
     branches: [master, NOUS-First-steps]
-    paths: ['android/**']
+    paths: ['android/**', '.github/workflows/android-client.yml']
 
 permissions:
   contents: read
@@ -23,7 +18,6 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ inputs.source_ref || github.sha }}
           persist-credentials: false
       - name: Initialize Android native dependencies
         working-directory: .
