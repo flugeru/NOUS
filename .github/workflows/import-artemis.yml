@@ -35,7 +35,7 @@ jobs:
           url=$(git config -f android/.gitmodules --get "submodule.$module.url")
           git config -f .gitmodules "submodule.android/$module.path" "android/$module"
           git config -f .gitmodules "submodule.android/$module.url" "$url"
-          git rm android/.gitmodules
+          git rm -f -- android/.gitmodules
           git apply --directory=android docs/latency/artemis-test.patch
           git add .gitmodules android/app/build.gradle android/gradle/wrapper/gradle-wrapper.properties
           git diff --cached --check -- .gitmodules
