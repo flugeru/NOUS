@@ -7,6 +7,8 @@ import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import android.content.DialogInterface;
 import android.widget.Button;
+import android.widget.TextView;
+import android.view.View;
 
 import com.limelight.R;
 
@@ -16,6 +18,7 @@ public class Dialog implements Runnable {
     private final Activity activity;
     private final Runnable runOnDismiss;
 
+    private String pin;
     private AlertDialog alert;
 
     private static final ArrayList<Dialog> rundownDialogs = new ArrayList<>();
@@ -58,16 +61,31 @@ public class Dialog implements Runnable {
         activity.runOnUiThread(new Dialog(activity, title, message, runOnDismiss));
     }
 
+    public static void displayPairingPin(Activity activity, String hostName, String pin) {
+        Dialog dialog = new Dialog(activity, activity.getString(R.string.pair_pairing_title), hostName, () -> {});
+        dialog.pin = pin;
+        activity.runOnUiThread(dialog);
+    }
+
     @Override
     public void run() {
         // If we're dying, don't bother creating a dialog
         if (activity.isFinishing())
             return;
 
-        alert = new MaterialAlertDialogBuilder(activity).create();
-
-        alert.setTitle(title);
-        alert.setMessage(message);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity).setTitle(title);
+        if (pin != null && pin.length() == 4) {
+            View content = activity.getLayoutInflater().inflate(R.layout.nous_pairing_pin, null);
+            ((TextView) content.findViewById(R.id.nous_pair_host)).setText(message);
+            int[] digitViews = {R.id.nous_pin_0, R.id.nous_pin_1, R.id.nous_pin_2, R.id.nous_pin_3};
+            for (int i = 0; i < digitViews.length; i++) {
+                ((TextView) content.findViewById(digitViews[i])).setText(pin.substring(i, i + 1));
+            }
+            builder.setView(content);
+        } else {
+            builder.setMessage(pin == null ? message : message + "\n\n" + pin);
+        }
+        alert = builder.create();
         alert.setCancelable(false);
         alert.setCanceledOnTouchOutside(false);
  

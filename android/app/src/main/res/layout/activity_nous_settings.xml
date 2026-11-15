@@ -1,0 +1,120 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:background="@color/nous_background">
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:fillViewport="true">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:padding="24dp">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="@string/nous_settings" android:textAppearance="@style/Nous.Title" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="6dp" android:layout_marginBottom="22dp"
+                android:text="@string/nous_settings_hint" android:textAppearance="@style/Nous.Subtitle" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" android:layout_marginBottom="8dp"
+                android:text="@string/nous_streaming"
+                android:textAllCaps="true" android:textColor="@color/nous_secondary" android:textStyle="bold" />
+            <LinearLayout android:id="@+id/nous_settings_video"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:minHeight="70dp" android:layout_marginBottom="8dp"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:background="@drawable/nous_card_ripple" android:focusable="true"
+                android:clickable="true" android:padding="14dp">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp"
+                    android:importantForAccessibility="no" android:tint="@color/nous_secondary"
+                    android:src="@drawable/ic_nous_pc" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:layout_marginStart="14dp" android:orientation="vertical">
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="@string/nous_video_audio" android:textColor="@color/nous_text"
+                        android:textStyle="bold" android:textSize="16sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp" android:text="@string/nous_video_summary"
+                        android:textAppearance="@style/Nous.Subtitle" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:id="@+id/nous_settings_profiles"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:minHeight="70dp" android:layout_marginBottom="8dp"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:background="@drawable/nous_card_ripple" android:focusable="true"
+                android:clickable="true" android:padding="14dp">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp"
+                    android:importantForAccessibility="no" android:tint="@color/nous_secondary"
+                    android:src="@drawable/ic_profiles" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:layout_marginStart="14dp" android:orientation="vertical">
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="@string/nous_profiles" android:textColor="@color/nous_text"
+                        android:textStyle="bold" android:textSize="16sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp" android:text="@string/profile_manager_profiles_description"
+                        android:textAppearance="@style/Nous.Subtitle" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:id="@+id/nous_settings_controls"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:minHeight="70dp" android:layout_marginBottom="8dp"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:background="@drawable/nous_card_ripple" android:focusable="true"
+                android:clickable="true" android:padding="14dp">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp"
+                    android:importantForAccessibility="no" android:tint="@color/nous_secondary"
+                    android:src="@drawable/ic_nous_games" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:layout_marginStart="14dp" android:orientation="vertical">
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="@string/nous_controls" android:textColor="@color/nous_text"
+                        android:textStyle="bold" android:textSize="16sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp" android:text="@string/nous_controls_summary"
+                        android:textAppearance="@style/Nous.Subtitle" />
+                </LinearLayout>
+            </LinearLayout>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" android:layout_marginBottom="8dp"
+                android:text="@string/nous_support"
+                android:textAllCaps="true" android:textColor="@color/nous_secondary" android:textStyle="bold" />
+            <LinearLayout android:id="@+id/nous_settings_diagnostics"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:minHeight="70dp" android:layout_marginBottom="8dp"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:background="@drawable/nous_card_ripple" android:focusable="true"
+                android:clickable="true" android:padding="14dp">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp"
+                    android:importantForAccessibility="no" android:tint="@color/nous_secondary"
+                    android:src="@drawable/ic_nous_settings" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:layout_marginStart="14dp" android:orientation="vertical">
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="@string/nous_diagnostics" android:textColor="@color/nous_text"
+                        android:textStyle="bold" android:textSize="16sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp" android:text="@string/nous_diagnostics_summary"
+                        android:textAppearance="@style/Nous.Subtitle" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:id="@+id/nous_settings_help"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:minHeight="70dp" android:layout_marginBottom="8dp"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:background="@drawable/nous_card_ripple" android:focusable="true"
+                android:clickable="true" android:padding="14dp">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp"
+                    android:importantForAccessibility="no" android:tint="@color/nous_secondary"
+                    android:src="@drawable/ic_help" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:layout_marginStart="14dp" android:orientation="vertical">
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="@string/nous_help" android:textColor="@color/nous_text"
+                        android:textStyle="bold" android:textSize="16sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp" android:text="@string/nous_help_summary"
+                        android:textAppearance="@style/Nous.Subtitle" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+    <include layout="@layout/nous_navigation" />
+</LinearLayout>

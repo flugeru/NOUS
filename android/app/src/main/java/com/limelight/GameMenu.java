@@ -12,6 +12,8 @@ import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
+import android.view.Gravity;
+import android.content.res.Configuration;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -135,6 +137,13 @@ public class GameMenu implements Game.GameMenuCallbacks {
         Window window = currentDialog.getWindow();
 
         if (window != null) {
+            if (title.equals(getString(R.string.quick_menu_title))
+                    && themedContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                android.util.DisplayMetrics metrics = themedContext.getResources().getDisplayMetrics();
+                window.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
+                window.setLayout(Math.min(Math.round(390 * metrics.density), metrics.widthPixels / 2),
+                        android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+            }
             View decorView = window.getDecorView();
             decorView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override

@@ -56,6 +56,8 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import org.xmlpull.v1.XmlPullParserException;
 
 public class AppView extends AppCompatActivity implements AdapterFragmentCallbacks {
@@ -311,6 +313,17 @@ public class AppView extends AppCompatActivity implements AdapterFragmentCallbac
 
         setContentView(R.layout.activity_app_view);
         findViewById(R.id.nous_back).setOnClickListener(v -> finish());
+        BottomNavigationView navigation = findViewById(R.id.nous_navigation);
+        navigation.setSelectedItemId(R.id.nous_nav_games);
+        navigation.setOnItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.nous_nav_computers) {
+                startActivity(new Intent(this, PcView.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+                finish();
+            } else if (item.getItemId() == R.id.nous_nav_settings) {
+                startActivity(new Intent(this, NousSettingsActivity.class).putExtra(NousSettingsActivity.OPEN_FROM_GAMES, true));
+            }
+            return false;
+        });
         gameSearch = findViewById(R.id.nous_game_search);
         gameSearch.addTextChangedListener(new TextWatcher() {
             @Override

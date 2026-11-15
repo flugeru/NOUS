@@ -20,7 +20,9 @@ import com.limelight.nvstream.wol.WakeOnLanSender;
 import com.limelight.preferences.AddComputerManually;
 import com.limelight.preferences.GlPreferences;
 import com.limelight.preferences.PreferenceConfiguration;
-import com.limelight.preferences.StreamSettings;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import java.util.ArrayList;
+import java.util.List;
 import com.limelight.profiles.ProfilesManager;
 import com.limelight.ui.AdapterFragment;
 import com.limelight.ui.AdapterFragmentCallbacks;
@@ -154,17 +156,25 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
         pcGridAdapter.updateLayoutWithPreferences(this, PreferenceConfiguration.readPreferences(this));
 
         // Setup the list view
-        ImageButton settingsButton = findViewById(R.id.settingsButton);
         View addComputerButton = findViewById(R.id.manuallyAddPc);
         ImageButton helpButton = findViewById(R.id.helpButton);
         ExtendedFloatingActionButton profilesButton = findViewById(R.id.profilesButton);
 
-        settingsButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(PcView.this, StreamSettings.class));
+        BottomNavigationView navigation = findViewById(R.id.nous_navigation);
+        navigation.setSelectedItemId(R.id.nous_nav_computers);
+        navigation.setOnItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.nous_nav_games) {
+                openGamesTab();
+            } else if (item.getItemId() == R.id.nous_nav_settings) {
+                startActivity(new Intent(this, NousSettingsActivity.class));
             }
+            return false;
         });
+        if (getIntent().getBooleanExtra(NousSettingsActivity.OPEN_GAMES, false)) {
+            getIntent().removeExtra(NousSettingsActivity.OPEN_GAMES);
+            navigation.post(this::openGamesTab);
+        }
+
         addComputerButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -504,9 +514,7 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
 
                         // Spin the dialog off in a thread because it blocks
                         if (passphrase == null) {
-                            Dialog.displayDialog(PcView.this, getResources().getString(R.string.pair_pairing_title),
-                                    getResources().getString(R.string.pair_pairing_msg)+" "+pinStr+"\n\n"+
-                                            getResources().getString(R.string.pair_pairing_help), false);
+                            Dialog.displayPairingPin(PcView.this, computer.name, pinStr);
                         } else {
                             Dialog.displayDialog(PcView.this, getResources().getString(R.string.pair_pairing_title),
                                     getResources().getString(R.string.pair_otp_pairing_msg)+"\n\n"+
@@ -709,6 +717,38 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
                 });
             }
         }).start();
+    }
+
+    private void openGamesTab() {
+        List<ComputerDetails> hosts = new ArrayList<>();
+        for (int i = 0; i < pcGridAdapter.getCount(); i++) {
+            ComputerDetails host = pcGridAdapter.getItem(i).details;
+            if (host.state == ComputerDetails.State.ONLINE && host.pairState == PairState.PAIRED) {
+                hosts.add(host);
+            }
+        }
+        if (hosts.isEmpty()) {
+            Toast.makeText(this, R.string.nous_games_need_pc, Toast.LENGTH_SHORT).show();
+        } else if (hosts.size() == 1) {
+            doAppList(hosts.get(0), false, false);
+        } else {
+            String[] names = new String[hosts.size()];
+            for (int i = 0; i < hosts.size(); i++) {
+                names[i] = hosts.get(i).name;
+            }
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.nous_choose_pc)
+                    .setItems(names, (dialog, which) -> doAppList(hosts.get(which), false, false))
+                    .show();
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (intent.getBooleanExtra(NousSettingsActivity.OPEN_GAMES, false)) {
+            openGamesTab();
+        }
     }
 
     private void doAppList(ComputerDetails computer, boolean newlyPaired, boolean showHiddenGames) {

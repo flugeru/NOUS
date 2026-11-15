@@ -66,6 +66,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class StreamSettings extends AppCompatActivity {
+    public static final String INITIAL_CATEGORY = "nous.initial_category";
     private PreferenceConfiguration previousPrefs;
     private int previousDisplayPixelCount;
 
@@ -86,6 +87,10 @@ public class StreamSettings extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(
                 R.id.stream_settings, prefsFragment
         ).commitAllowingStateLoss();
+        String category = getIntent().getStringExtra(INITIAL_CATEGORY);
+        if (category != null) {
+            prefsFragment.scrollToPreference(category);
+        }
     }
 
     @Override
