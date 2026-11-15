@@ -8,8 +8,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.widget.ImageButton;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.limelight.profiles.ProfilesAdapter;
 import com.limelight.profiles.ProfilesManager;
@@ -24,6 +22,7 @@ public class ProfilesActivity extends AppCompatActivity implements ProfilesManag
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profiles);
+        findViewById(R.id.nous_back).setOnClickListener(v -> finish());
 
         // Setup RecyclerView
         recyclerView = findViewById(R.id.profilesRecyclerView);

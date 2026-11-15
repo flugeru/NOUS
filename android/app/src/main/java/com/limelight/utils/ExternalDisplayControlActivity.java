@@ -14,7 +14,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -505,7 +504,7 @@ public class ExternalDisplayControlActivity extends AppCompatActivity implements
     private ImageButton createImageButton(int imageResourceId, View.OnClickListener listener) {
         ImageButton button = new ImageButton(this);
         button.setImageResource(imageResourceId);
-        button.setBackgroundColor(Color.TRANSPARENT);
+        button.setBackgroundResource(R.drawable.nous_card_ripple);
         button.setOnClickListener(listener);
         button.setLayoutParams(new LinearLayout.LayoutParams(dpToPx(56), dpToPx(56)));
         return button;

@@ -98,6 +98,7 @@ public class StreamSettings extends AppCompatActivity {
         UiHelper.setLocale(this);
 
         setContentView(R.layout.activity_stream_settings);
+        findViewById(R.id.nous_back).setOnClickListener(v -> onBackPressed());
 
 //        UiHelper.notifyNewRootView(this);
     }

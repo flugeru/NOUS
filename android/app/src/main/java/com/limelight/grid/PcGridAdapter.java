@@ -1,6 +1,7 @@
 package com.limelight.grid;
 
 import android.content.Context;
+import androidx.core.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -67,12 +68,13 @@ public class PcGridAdapter extends GenericGridAdapter<PcView.ComputerObject> {
         }
 
         txtView.setText(obj.details.name);
-        if (obj.details.state == ComputerDetails.State.ONLINE) {
-            txtView.setAlpha(1.0f);
-        }
-        else {
-            txtView.setAlpha(0.4f);
-        }
+        boolean online = obj.details.state == ComputerDetails.State.ONLINE;
+        TextView state = parentView.findViewById(R.id.nous_pc_state);
+        state.setText(online
+                ? (obj.details.pairState == PairingManager.PairState.NOT_PAIRED ? R.string.nous_pair_required : R.string.nous_online)
+                : (obj.details.state == ComputerDetails.State.UNKNOWN ? R.string.nous_checking : R.string.nous_offline));
+        state.setTextColor(ContextCompat.getColor(parentView.getContext(),
+                online ? R.color.nous_secondary : R.color.nous_text_muted));
 
         if (obj.details.state == ComputerDetails.State.OFFLINE) {
             overlayView.setImageResource(R.drawable.ic_pc_offline);

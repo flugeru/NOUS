@@ -305,6 +305,7 @@ public class AppView extends AppCompatActivity implements AdapterFragmentCallbac
         UiHelper.setLocale(this);
 
         setContentView(R.layout.activity_app_view);
+        findViewById(R.id.nous_back).setOnClickListener(v -> finish());
 
         // Allow floating expanded PiP overlays while browsing apps
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="nous_background">#101216</color>
+    <color name="nous_surface">#1B1F25</color>
+    <color name="nous_surface_high">#252A31</color>
+    <color name="nous_outline">#343B45</color>
+    <color name="nous_text">#F2F2F4</color>
+    <color name="nous_text_muted">#B7BEC9</color>
+    <color name="nous_primary">#FF9EA9</color>
+    <color name="nous_on_primary">#3B0A16</color>
+    <color name="nous_secondary">#83DBE4</color>
+    <color name="nous_secondary_container">#21383D</color>
+    <color name="nous_on_secondary">#082C31</color>
+    <color name="nous_hud">#E6171B20</color>
+    <integer name="nous_pc_columns">1</integer>
+    <style name="NousThemeBase" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:colorBackground">@color/nous_background</item>
+        <item name="android:windowBackground">@color/nous_background</item>
+        <item name="colorSurface">@color/nous_background</item>
+        <item name="colorSurfaceVariant">@color/nous_surface</item>
+        <item name="colorSurfaceContainer">@color/nous_surface</item>
+        <item name="colorSurfaceContainerHigh">@color/nous_surface_high</item>
+        <item name="colorSurfaceContainerHighest">@color/nous_surface_high</item>
+        <item name="colorOnSurface">@color/nous_text</item>
+        <item name="colorOnSurfaceVariant">@color/nous_text_muted</item>
+        <item name="colorPrimary">@color/nous_primary</item>
+        <item name="colorOnPrimary">@color/nous_on_primary</item>
+        <item name="colorSecondary">@color/nous_secondary</item>
+        <item name="colorOnSecondary">@color/nous_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/nous_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/nous_secondary</item>
+        <item name="colorOutline">@color/nous_text_muted</item>
+        <item name="colorOutlineVariant">@color/nous_outline</item>
+        <item name="materialAlertDialogTheme">@style/NousDialogTheme</item>
+    </style>
+    <style name="NousDialogTheme" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorSurface">@color/nous_surface</item>
+        <item name="colorSurfaceContainerHigh">@color/nous_surface_high</item>
+    </style>
+    <style name="Nous.Title" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="android:textSize">30sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/nous_text</item>
+    </style>
+    <style name="Nous.Subtitle" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">@color/nous_text_muted</item>
+    </style>
+    <style name="Nous.IconButton" parent="@android:style/Widget.ImageButton">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:scaleType">fitCenter</item>
+    </style>
+</resources>

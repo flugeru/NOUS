@@ -22,7 +22,8 @@ import com.limelight.utils.ServerHelper;
 import com.limelight.utils.SpinnerDialog;
 import com.limelight.utils.UiHelper;
 
-import android.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -323,6 +324,7 @@ public class AddComputerManually extends AppCompatActivity {
         UiHelper.setLocale(this);
 
         setContentView(R.layout.activity_add_computer_manually);
+        findViewById(R.id.nous_back).setOnClickListener(v -> finish());
 
         UiHelper.notifyNewRootView(this);
 
@@ -375,7 +377,7 @@ public class AddComputerManually extends AppCompatActivity {
                 hostName = server;
             }
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            AlertDialog.Builder builder = new MaterialAlertDialogBuilder(this);
             builder.setTitle(R.string.pair_pc_confirm_title);
             builder.setMessage(getString(R.string.pair_pc_confirm_message, hostName));
 

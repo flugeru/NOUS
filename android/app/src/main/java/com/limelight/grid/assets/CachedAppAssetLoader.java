@@ -202,7 +202,7 @@ public class CachedAppAssetLoader {
                 imageView.setImageDrawable(asyncDrawable);
                 imageView.startAnimation(AnimationUtils.loadAnimation(imageView.getContext(), R.anim.boxart_fadein));
                 imageView.setVisibility(View.VISIBLE);
-                textView.setVisibility(View.VISIBLE);
+
                 task.executeOnExecutor(networkExecutor, tuple);
             }
         }
@@ -215,13 +215,9 @@ public class CachedAppAssetLoader {
             }
 
             final ImageView imageView = imageViewRef.get();
-            final TextView textView = textViewRef.get();
             if (getLoaderTask(imageView) == this) {
                 // Fade in the box art
                 if (bitmap != null) {
-                    // Show the text if it's a placeholder
-                    textView.setVisibility(isBitmapPlaceholder(bitmap) ? View.VISIBLE : View.GONE);
-
                     if (imageView.getVisibility() == View.VISIBLE) {
                         // Fade out the placeholder first
                         Animation fadeOutAnimation = AnimationUtils.loadAnimation(imageView.getContext(), R.anim.boxart_fadeout);
@@ -325,12 +321,6 @@ public class CachedAppAssetLoader {
         });
     }
 
-    private boolean isBitmapPlaceholder(ScaledBitmap bitmap) {
-        return (bitmap == null) ||
-                (bitmap.originalWidth == 130 && bitmap.originalHeight == 180) || // GFE 2.0
-                (bitmap.originalWidth == 628 && bitmap.originalHeight == 888); // GFE 3.0
-    }
-
     public boolean populateImageView(NvApp app, ImageView imgView, TextView textView) {
         LoaderTuple tuple = new LoaderTuple(computer, app);
 
@@ -341,7 +331,7 @@ public class CachedAppAssetLoader {
             return true;
         }
 
-        // Always set the name text so we have it if needed later
+        // Keep the game caption visible while its cover loads.
         textView.setText(app.getAppName());
 
         // First, try the memory cache in the current context
@@ -351,8 +341,7 @@ public class CachedAppAssetLoader {
             imgView.setVisibility(View.VISIBLE);
             imgView.setImageBitmap(bmp.bitmap);
 
-            // Show the text if it's a placeholder bitmap
-            textView.setVisibility(isBitmapPlaceholder(bmp) ? View.VISIBLE : View.GONE);
+
             return true;
         }
 
@@ -360,7 +349,7 @@ public class CachedAppAssetLoader {
         // via AsyncDrawable to this view.
         final LoaderTask task = new LoaderTask(imgView, textView, true);
         final AsyncDrawable asyncDrawable = new AsyncDrawable(imgView.getResources(), placeholderBitmap, task);
-        textView.setVisibility(View.INVISIBLE);
+
         imgView.setVisibility(View.INVISIBLE);
         imgView.setImageDrawable(asyncDrawable);
 

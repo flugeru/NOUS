@@ -31,7 +31,8 @@ import com.limelight.utils.ShortcutHelper;
 import com.limelight.utils.UiHelper;
 
 import android.app.ActivityManager;
-import android.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -58,7 +59,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
@@ -71,7 +71,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class PcView extends AppCompatActivity implements AdapterFragmentCallbacks {
-    private RelativeLayout noPcFoundLayout;
+    private View noPcFoundLayout;
     private PcGridAdapter pcGridAdapter;
     private ShortcutHelper shortcutHelper;
     private ComputerManagerService.ComputerManagerBinder managerBinder;
@@ -155,7 +155,7 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
 
         // Setup the list view
         ImageButton settingsButton = findViewById(R.id.settingsButton);
-        ImageButton addComputerButton = findViewById(R.id.manuallyAddPc);
+        View addComputerButton = findViewById(R.id.manuallyAddPc);
         ImageButton helpButton = findViewById(R.id.helpButton);
         ExtendedFloatingActionButton profilesButton = findViewById(R.id.profilesButton);
 
@@ -600,7 +600,7 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
         layout.addView(otpInput);
         layout.addView(passphraseInput);
 
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+        AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(context);
         dialogBuilder.setTitle(R.string.pcview_menu_pair_pc_otp);
         dialogBuilder.setView(layout);
 

@@ -3,8 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="16dp"
-    android:background="?android:attr/selectableItemBackground"
+    android:padding="12dp"
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/nous_card_ripple"
     android:gravity="center_vertical">
 
     <LinearLayout
@@ -17,7 +18,7 @@
             android:id="@+id/profileName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/nous_text"
             android:textSize="16sp"
             android:textStyle="bold"
             android:singleLine="true"
@@ -28,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textColor="#CCCCCC"
+            android:textColor="@color/nous_text_muted"
             android:textSize="12sp" />
 
     </LinearLayout>
@@ -38,9 +39,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp" />
+        android:buttonTint="@color/nous_secondary" />
 
     <ImageButton
         android:id="@+id/editProfile"

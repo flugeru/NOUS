@@ -1,0 +1,16 @@
+<resources>
+    <string name="nous_computers">Computadores</string>
+    <string name="nous_library">Biblioteca</string>
+    <string name="nous_settings">Ajustes</string>
+    <string name="nous_back">Voltar</string>
+    <string name="nous_online">Online</string>
+    <string name="nous_pair_required">Pareamento necessário</string>
+    <string name="nous_checking">Verificando conexão</string>
+    <string name="nous_offline">Offline</string>
+    <string name="nous_manual_connection">Conexão manual</string>
+    <string name="nous_manual_hint">Informe o endereço do computador que executa o host de streaming.</string>
+    <string name="nous_connect">Conectar</string>
+    <string name="nous_profiles">Perfis</string>
+    <string name="nous_diagnostics">Diagnóstico do dispositivo</string>
+    <string name="nous_help">Ajuda</string>
+</resources>

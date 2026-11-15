@@ -6,12 +6,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.window.OnBackInvokedCallback;
 import android.window.OnBackInvokedDispatcher;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.limelight.utils.SpinnerDialog;
+import com.limelight.utils.UiHelper;
 
 public class HelpActivity extends AppCompatActivity {
 
@@ -38,8 +40,19 @@ public class HelpActivity extends AppCompatActivity {
             };
         }
 
+        setContentView(R.layout.activity_nous_help);
+        FrameLayout content = findViewById(R.id.nous_help_content);
         webView = new WebView(this);
-        setContentView(webView);
+        findViewById(R.id.nous_back).setOnClickListener(v -> {
+            if (webView.canGoBack()) {
+                webView.goBack();
+            } else {
+                finish();
+            }
+        });
+        content.addView(webView, new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        UiHelper.notifyNewRootView(this);
 
         // These allow the user to zoom the page
         webView.getSettings().setBuiltInZoomControls(true);

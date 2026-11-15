@@ -46,7 +46,9 @@
         android:layout_gravity="right"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:gravity="right"
-        android:background="#80000000"
+        android:background="@drawable/nous_hud"
+        android:textColor="@color/nous_text"
+        android:padding="8dp"
         android:preferKeepClear="true"
         android:visibility="gone" />
 
@@ -66,16 +68,20 @@
             android:layout_gravity="left"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:gravity="left"
-            android:background="#80000000"
+            android:background="@drawable/nous_hud"
+            android:textColor="@color/nous_text"
+            android:padding="8dp"
             android:preferKeepClear="true"
             android:visibility="gone" />
 
         <TextView
             android:id="@+id/performanceOverlayLite"
             tools:text="延迟/解码：109ms/7ms 丢包率：69% FPS：60"
-            android:textSize="10sp"
+            android:textSize="12sp"
             android:layout_marginTop="4dp"
-            android:background="@drawable/ic_hud_bg"
+            android:background="@drawable/nous_hud"
+            android:fontFamily="monospace"
+            android:textColor="@color/nous_secondary"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:paddingTop="2dp"
