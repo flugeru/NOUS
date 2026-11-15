@@ -89,7 +89,7 @@ AV1 é candidato a ensaio, não escolha universal. Decoder efetivo, perfil, bit 
 
 ## Identidade visual
 
-Os quatro arquivos originais, em PNG e ICO, estão em [branding/NOUS](branding/NOUS/). O launcher Android usa PNG transparente. A compilação do Windows pode ser disparada manualmente no workflow NOUS Desktop.
+Os quatro arquivos originais, em PNG e ICO, estão em [branding/NOUS](branding/NOUS/). O launcher Android usa fundo preto, com ícone adaptativo em Android 8 ou posterior. A compilação do Windows pode ser disparada manualmente no workflow NOUS Desktop.
 
 ## Compilação
 
