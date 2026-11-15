@@ -29,10 +29,12 @@ jobs:
           java-version: '17'
       - name: Install Android SDK and NDK
         run: '"$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "ndk;27.0.12077973"'
-      - name: Run unit tests and build the debug client
-        run: bash ./gradlew --no-daemon :app:testNonRoot_gameDebugUnitTest :app:assembleNonRoot_gameDebug
+      - name: Build the debug client
+        run: bash ./gradlew --no-daemon :app:assembleNonRoot_gameDebug
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: Artemis-Android-debug
           path: android/app/build/outputs/apk/nonRoot_game/debug/*.apk
           if-no-files-found: error
+      - name: Run Android unit tests
+        run: bash ./gradlew --no-daemon :app:testNonRoot_gameDebugUnitTest
