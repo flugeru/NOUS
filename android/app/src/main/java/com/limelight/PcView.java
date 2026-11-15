@@ -746,7 +746,9 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (intent.getBooleanExtra(NousSettingsActivity.OPEN_GAMES, false)) {
+        setIntent(intent);
+        if (pcGridAdapter != null && intent.getBooleanExtra(NousSettingsActivity.OPEN_GAMES, false)) {
+            intent.removeExtra(NousSettingsActivity.OPEN_GAMES);
             openGamesTab();
         }
     }

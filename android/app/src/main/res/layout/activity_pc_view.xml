@@ -102,4 +102,6 @@
         android:text="@string/title_add_pc"
         app:icon="@drawable/ic_add_base"
         app:iconGravity="textStart" />
+
+    <include layout="@layout/nous_navigation" />
 </LinearLayout>
