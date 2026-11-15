@@ -381,25 +381,31 @@ public class StreamSettings extends AppCompatActivity {
             PreferenceScreen screen = getPreferenceScreen();
             for (int i = 0; i < screen.getPreferenceCount(); i++) {
                 Preference preference = screen.getPreference(i);
-                boolean visible = section.includes(preference.getKey());
-                if (!visible) {
-                    preference.setVisible(false);
-                } else if (preference instanceof PreferenceGroup) {
-                    PreferenceGroup category = (PreferenceGroup) preference;
-                    if (section == Section.VIDEO_AUDIO) {
-                        category.setInitialExpandedChildrenCount(Integer.MAX_VALUE);
-                    }
-                    for (int j = 0; j < category.getPreferenceCount(); j++) {
-                        Preference child = category.getPreference(j);
-                        if (child.getClass() == ListPreference.class || child.getClass() == CheckBoxPreference.class
-                                || child.getClass() == SeekBarPreference.class) {
-                            child.setLayoutResource(R.layout.nous_preference_row);
-                            child.setSingleLineTitle(false);
-                            if (section == Section.VIDEO_AUDIO && child instanceof ListPreference) {
-                                ((ListPreference) child).setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
-                            }
-                        }
-                    }
+                if (!section.includes(preference.getKey())) preference.setVisible(false);
+            }
+        }
+
+        private void stylePreferences(Preference preference) {
+            preference.setSingleLineTitle(false);
+            preference.setIconSpaceReserved(false);
+            if (preference instanceof PreferenceGroup) {
+                PreferenceGroup group = (PreferenceGroup) preference;
+                group.setInitialExpandedChildrenCount(Integer.MAX_VALUE);
+                for (int i = 0; i < group.getPreferenceCount(); i++) {
+                    stylePreferences(group.getPreference(i));
+                }
+            } else if (preference.getClass() == ListPreference.class
+                    || preference.getClass() == CheckBoxPreference.class
+                    || preference.getClass() == EditTextPreference.class
+                    || preference.getClass() == SeekBarPreference.class
+                    || preference.getClass() == Preference.class) {
+                preference.setLayoutResource(preference instanceof ListPreference
+                        || preference instanceof SeekBarPreference
+                        ? R.layout.nous_preference_value : R.layout.nous_preference_row);
+                if (preference instanceof ListPreference) {
+                    ((ListPreference) preference).setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+                } else if (preference instanceof SeekBarPreference) {
+                    preference.setSummaryProvider(p -> ((SeekBarPreference) p).getFormattedValue());
                 }
             }
         }
@@ -407,13 +413,20 @@ public class StreamSettings extends AppCompatActivity {
         @Override
         public void onViewCreated(@NonNull View view, Bundle state) {
             super.onViewCreated(view, state);
-            if (requireActivity() instanceof StreamSettings) {
-                RecyclerView list = getListView();
-                int inset = Math.round(20 * getResources().getDisplayMetrics().density);
-                list.setPadding(inset, inset / 2, inset, inset);
-                list.setClipToPadding(false);
-                setDivider(null);
-            }
+            stylePreferences(getPreferenceScreen());
+            RecyclerView list = getListView();
+            int inset = Math.round(24 * getResources().getDisplayMetrics().density);
+            list.setPadding(inset, inset / 2, inset, inset);
+            list.setClipToPadding(false);
+            setDivider(null);
+            list.addItemDecoration(new RecyclerView.ItemDecoration() {
+                @Override
+                public void getItemOffsets(@NonNull android.graphics.Rect outRect,
+                        @NonNull View child, @NonNull RecyclerView parent,
+                        @NonNull RecyclerView.State state) {
+                    outRect.bottom = Math.round(8 * getResources().getDisplayMetrics().density);
+                }
+            });
         }
 
         public void initializePreferences() {

@@ -12,10 +12,25 @@
         android:layout_height="?attr/actionBarSize"
         app:titleTextColor="@color/nous_text" />
 
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp" android:layout_marginVertical="12dp"
+        android:hint="@string/nous_profile_name">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/nous_profile_name" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:inputType="textCapSentences"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
     <FrameLayout
         android:id="@+id/preferences_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/nous_save_profile" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:minHeight="48dp"
+        android:layout_marginHorizontal="24dp" android:layout_marginBottom="12dp"
+        android:text="@string/nous_save_profile" />
 </LinearLayout>

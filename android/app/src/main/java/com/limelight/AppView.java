@@ -326,6 +326,10 @@ public class AppView extends AppCompatActivity implements AdapterFragmentCallbac
             return true;
         });
         navigation.setSelectedItemId(R.id.nous_nav_games);
+        com.google.android.material.chip.ChipGroup filters = findViewById(R.id.nous_game_filters);
+        filters.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            if (appGridAdapter != null) appGridAdapter.setRunningOnly(checkedIds.contains(R.id.nous_filter_running));
+        });
         gameSearch = findViewById(R.id.nous_game_search);
         gameSearch.addTextChangedListener(new TextWatcher() {
             @Override

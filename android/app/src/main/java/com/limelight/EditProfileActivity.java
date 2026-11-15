@@ -74,6 +74,9 @@ public class EditProfileActivity extends AppCompatActivity {
             inMemoryPrefs = new InMemorySharedPreferences(PreferenceManager.getDefaultSharedPreferences(this).getAll());
         }
 
+        android.widget.EditText name = findViewById(R.id.nous_profile_name);
+        name.setText(currentProfile != null ? currentProfile.getName() : "");
+        findViewById(R.id.nous_save_profile).setOnClickListener(v -> saveProfile());
         prefsFragment = new ProfilePreferenceFragment(this, inMemoryPrefs);
 
         // Load preference fragment
@@ -87,8 +90,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.edit_profile_menu, menu);
-        return true;
+        return false;
     }
 
     @Override
@@ -117,6 +119,13 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void saveProfile() {
+        android.widget.EditText name = findViewById(R.id.nous_profile_name);
+        pendingProfileName = name.getText().toString().trim();
+        if (pendingProfileName.isEmpty()) {
+            name.setError(getString(R.string.profile_manager_name_cannot_be_blank));
+            name.requestFocus();
+            return;
+        }
         // Get the profile options from our in-memory prefs
         Map<String, Object> profileOptions = new HashMap<>(inMemoryPrefs.getAll());
 
@@ -124,6 +133,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
         if (currentProfile != null) {
             // Update existing profile
+            currentProfile.setName(pendingProfileName);
             currentProfile.setOptions(profileOptions);
             currentProfile.setModifiedUtc(System.currentTimeMillis());
             displayName = currentProfile.getName();
@@ -164,7 +174,7 @@ public class EditProfileActivity extends AppCompatActivity {
         input.setText(initial);
         input.setSelection(initial.length());
 
-        new AlertDialog.Builder(this)
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.profile_manager_edit_profile_name)
                 .setView(input)
                 .setPositiveButton("OK", (dialog, which) -> {

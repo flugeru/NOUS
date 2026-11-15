@@ -45,10 +45,17 @@ public class ProfilesAdapter extends RecyclerView.Adapter<ProfilesAdapter.Profil
         SettingsProfile activeProfile = profilesManager.getActive();
 
         holder.profileName.setText(profile.getName());
-        holder.profileTimestamp.setText(DateUtils.getRelativeTimeSpanString(
-            profile.getModifiedUtc(), System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS));
-
+        java.util.Map<String, Object> options = profile.getOptions() != null
+                ? profile.getOptions() : java.util.Collections.emptyMap();
+        String resolution = String.valueOf(options.getOrDefault(
+                com.limelight.preferences.PreferenceConfiguration.RESOLUTION_PREF_STRING, "1920x1080"));
+        String fps = String.valueOf(options.getOrDefault(
+                com.limelight.preferences.PreferenceConfiguration.FPS_PREF_STRING, "60"));
+        Object bitrate = options.get(com.limelight.preferences.PreferenceConfiguration.BITRATE_PREF_STRING);
         boolean isActive = activeProfile != null && activeProfile.getUuid().equals(profile.getUuid());
+        holder.profileTimestamp.setText(resolution + " · " + fps + " FPS"
+                + (bitrate instanceof Number ? " · " + (((Number) bitrate).doubleValue() / 1000) + " Mb/s" : "")
+                + "\n" + context.getString(isActive ? R.string.nous_profile_in_use : R.string.nous_profile_available));
         holder.profileActive.setChecked(isActive);
 
         // Set click listeners

@@ -70,6 +70,13 @@ public class SeekBarPreference extends Preference
         seekbarMax = maxValue - minValue;
     }
 
+    public String getFormattedValue() {
+        int value = shouldPersist() ? getPersistedInt(defaultValue) : currentValue;
+        String text = divisor == 1 ? String.valueOf(value)
+                : String.format(Locale.getDefault(), "%.1f", value / (float) divisor);
+        return suffix == null ? text : text + (suffix.length() > 1 ? " " : "") + suffix;
+    }
+
     protected AlertDialog getDialog() {
         if (dialog != null) {
             return dialog;
@@ -149,9 +156,12 @@ public class SeekBarPreference extends Preference
 
         dialogBuilder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
             if (shouldPersist()) {
-                currentValue = seekBar.getProgress() + minValue;
-                persistInt(currentValue);
-                callChangeListener(currentValue);
+                int proposed = seekBar.getProgress() + minValue;
+                if (callChangeListener(proposed)) {
+                    currentValue = proposed;
+                    persistInt(currentValue);
+                    notifyChanged();
+                }
             }
 
             dialog.dismiss();
@@ -184,6 +194,7 @@ public class SeekBarPreference extends Preference
 
     public void setProgress(int progress) {
         this.currentValue = progress;
+        notifyChanged();
         if (seekBar != null) {
             seekBar.setProgress(progress - minValue);
         }
@@ -193,6 +204,7 @@ public class SeekBarPreference extends Preference
     }
 
     public void showDialog() {
+        if (shouldPersist()) currentValue = getPersistedInt(defaultValue);
         AlertDialog dialog = getDialog();
         updateSeekbar();
         dialog.show();

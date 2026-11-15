@@ -41,6 +41,12 @@ public class AppGridAdapter extends GenericGridAdapter<AppView.AppObject> {
     private final List<AppView.AppObject> allApps = new ArrayList<>();
     private final List<AppView.AppObject> searchResults = new ArrayList<>();
     private String query = "";
+    private boolean runningOnly;
+
+    public void setRunningOnly(boolean runningOnly) {
+        this.runningOnly = runningOnly;
+        notifyDataSetChanged();
+    }
 
     public AppGridAdapter(Context context, PreferenceConfiguration prefs, ComputerDetails computer, String uniqueId, boolean showHiddenApps) {
         super(context, getLayoutIdForPreferences(prefs));
@@ -91,22 +97,21 @@ public class AppGridAdapter extends GenericGridAdapter<AppView.AppObject> {
 
     @Override
     public int getCount() {
-        return query.isEmpty() ? super.getCount() : searchResults.size();
+        return searchResults.size();
     }
 
     @Override
     public AppView.AppObject getItem(int position) {
-        return query.isEmpty() ? super.getItem(position) : searchResults.get(position);
+        return searchResults.get(position);
     }
 
     @Override
     public void notifyDataSetChanged() {
         searchResults.clear();
-        if (!query.isEmpty()) {
-            for (AppView.AppObject app : itemList) {
-                if (app.app.getAppName().toLowerCase(Locale.ROOT).contains(query)) {
-                    searchResults.add(app);
-                }
+        for (AppView.AppObject app : itemList) {
+            if ((!runningOnly || app.isRunning)
+                    && app.app.getAppName().toLowerCase(Locale.ROOT).contains(query)) {
+                searchResults.add(app);
             }
         }
         super.notifyDataSetChanged();

@@ -84,7 +84,7 @@
                     android:id="@+id/no_pc_found_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
+                    android:layout_gravity="top"
                     android:layout_marginHorizontal="24dp"
                     android:background="@drawable/nous_card"
                     android:gravity="center"
@@ -101,6 +101,7 @@
                         android:layout_marginTop="12dp"
                         android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
                         android:textColor="@color/nous_text"
+                        android:id="@+id/nous_scan_status"
                         android:text="@string/nous_scan_title" />
                     <TextView
                         android:layout_width="match_parent"
@@ -109,6 +110,11 @@
                         android:gravity="center"
                         android:textAppearance="@style/Nous.Subtitle"
                         android:text="@string/nous_scan_hint" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/nous_scan_retry" style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp" android:text="@string/nous_scan_retry"
+                        android:textColor="@color/nous_secondary" android:visibility="gone" />
                 </LinearLayout>
             </FrameLayout>
 

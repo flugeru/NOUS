@@ -1,0 +1,12 @@
+<resources>
+    <string name="nous_scan_empty">Nenhum PC encontrado</string>
+    <string name="nous_scan_retry">Buscar novamente</string>
+    <string name="nous_host_address">IP ou nome do host</string>
+    <string name="nous_host_help">Use o endereço do host NOUS. O pareamento vem na próxima etapa.</string>
+    <string name="nous_save_profile">Salvar perfil</string>
+    <string name="nous_profile_name">Nome do perfil</string>
+    <string name="nous_all_games">Todos</string>
+    <string name="nous_running_games">Em execução</string>
+    <string name="nous_profile_available">Disponível</string>
+    <string name="nous_profile_in_use">Em uso</string>
+</resources>

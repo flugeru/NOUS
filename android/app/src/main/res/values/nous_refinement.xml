@@ -1,0 +1,12 @@
+<resources>
+    <string name="nous_scan_empty">No PC found</string>
+    <string name="nous_scan_retry">Search again</string>
+    <string name="nous_host_address">IP or host name</string>
+    <string name="nous_host_help">Use the NOUS host address. Pairing comes next.</string>
+    <string name="nous_save_profile">Save profile</string>
+    <string name="nous_profile_name">Profile name</string>
+    <string name="nous_all_games">All</string>
+    <string name="nous_running_games">Running</string>
+    <string name="nous_profile_available">Available</string>
+    <string name="nous_profile_in_use">In use</string>
+</resources>

@@ -73,6 +73,29 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class PcView extends AppCompatActivity implements AdapterFragmentCallbacks {
+    private final android.os.Handler discoveryUi = new android.os.Handler(android.os.Looper.getMainLooper());
+    private boolean discoveryWindowElapsed;
+    private final Runnable finishDiscoveryWindow = () -> {
+        discoveryWindowElapsed = true;
+        renderDiscoveryState();
+    };
+
+    private void renderDiscoveryState() {
+        if (noPcFoundLayout == null) return;
+        noPcFoundLayout.findViewById(R.id.pcs_loading).setVisibility(discoveryWindowElapsed ? View.GONE : View.VISIBLE);
+        ((android.widget.TextView) noPcFoundLayout.findViewById(R.id.nous_scan_status))
+                .setText(discoveryWindowElapsed ? R.string.nous_scan_empty : R.string.nous_scan_title);
+        noPcFoundLayout.findViewById(R.id.nous_scan_retry).setVisibility(discoveryWindowElapsed ? View.VISIBLE : View.GONE);
+    }
+
+    private void beginDiscoveryWindow() {
+        if (!inForeground || isFinishing()) return;
+        discoveryUi.removeCallbacks(finishDiscoveryWindow);
+        discoveryWindowElapsed = false;
+        renderDiscoveryState();
+        discoveryUi.postDelayed(finishDiscoveryWindow, 12000);
+    }
+
     private View noPcFoundLayout;
     private PcGridAdapter pcGridAdapter;
     private ShortcutHelper shortcutHelper;
@@ -211,6 +234,11 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
             .commitAllowingStateLoss();
 
         noPcFoundLayout = findViewById(R.id.no_pc_found_layout);
+        noPcFoundLayout.findViewById(R.id.nous_scan_retry).setOnClickListener(v -> {
+            stopComputerUpdates(false);
+            startComputerUpdates();
+        });
+        renderDiscoveryState();
         if (pcGridAdapter.getCount() == 0) {
             noPcFoundLayout.setVisibility(View.VISIBLE);
         }
@@ -335,6 +363,7 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
                 }
             });
             runningPolling = true;
+            runOnUiThread(this::beginDiscoveryWindow);
         }
     }
 
@@ -375,6 +404,7 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
     @Override
     public void onDestroy() {
         super.onDestroy();
+        discoveryUi.removeCallbacksAndMessages(null);
 
         if (managerBinder != null) {
             unbindService(serviceConnection);
@@ -399,6 +429,7 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
         super.onPause();
 
         inForeground = false;
+        discoveryUi.removeCallbacks(finishDiscoveryWindow);
         stopComputerUpdates(false);
     }
 
