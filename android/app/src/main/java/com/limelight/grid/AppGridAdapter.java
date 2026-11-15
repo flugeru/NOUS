@@ -97,12 +97,12 @@ public class AppGridAdapter extends GenericGridAdapter<AppView.AppObject> {
 
     @Override
     public int getCount() {
-        return searchResults.size();
+        return query.isEmpty() && !runningOnly ? super.getCount() : searchResults.size();
     }
 
     @Override
     public AppView.AppObject getItem(int position) {
-        return searchResults.get(position);
+        return query.isEmpty() && !runningOnly ? super.getItem(position) : searchResults.get(position);
     }
 
     @Override

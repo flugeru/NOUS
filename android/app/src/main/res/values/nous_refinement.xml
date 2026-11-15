@@ -9,4 +9,17 @@
     <string name="nous_running_games">Running</string>
     <string name="nous_profile_available">Available</string>
     <string name="nous_profile_in_use">In use</string>
+    <string name="nous_resume_session">Return to game</string>
+    <string name="nous_help_pair">How to pair a PC</string>
+    <string name="nous_help_connection">Connection problems</string>
+    <string name="nous_credits">Credits and licenses</string>
+    <string name="nous_credits_text">NOUS Android · Flügel\nBased on Artemis and Moonlight Android.\nSource code and license notices are available in the project repository.</string>
+    <string name="nous_retry_session">Try again</string>
+    <string name="nous_back_to_games">Back to games</string>
+    <string name="nous_external_title">Display control</string>
+    <string name="nous_external_hint">Touch the free area to control the session.</string>
+    <string name="nous_copy_diagnostics">Copy diagnostics</string>
+    <string name="nous_edit_controls">Edit controls</string>
+    <string name="nous_control_mode">Mode</string>
+    <string name="nous_save_controls">Save</string>
 </resources>

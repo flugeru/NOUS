@@ -396,7 +396,30 @@ public class ExternalDisplayControlActivity extends AppCompatActivity implements
         rootLayout.setInputCallbacks(Game.instance);
         rootLayout.setCommitTextEnabled(prefConfig.enableCommitText);
 
+        rootLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.nous_background));
         setContentView(rootLayout);
+        LinearLayout displayInfo = new LinearLayout(this);
+        displayInfo.setOrientation(LinearLayout.VERTICAL);
+        int inset = Math.round(24 * getResources().getDisplayMetrics().density);
+        displayInfo.setPadding(inset, inset, inset, inset);
+        android.widget.TextView heading = new android.widget.TextView(this);
+        heading.setText(R.string.nous_external_title);
+        heading.setTextAppearance(R.style.Nous_Title);
+        displayInfo.addView(heading);
+        android.widget.TextView status = new android.widget.TextView(this);
+        Display display = getSecondaryDisplay(this);
+        status.setText(display == null ? getString(R.string.no_external_display)
+                : getString(R.string.external_display_info, display.getMode().getPhysicalWidth(),
+                        display.getMode().getPhysicalHeight(), display.getMode().getRefreshRate()));
+        status.setTextColor(ContextCompat.getColor(this, R.color.nous_secondary));
+        displayInfo.addView(status);
+        android.widget.TextView hint = new android.widget.TextView(this);
+        hint.setText(R.string.nous_external_hint);
+        hint.setTextColor(ContextCompat.getColor(this, R.color.nous_text_muted));
+        displayInfo.addView(hint);
+        FrameLayout.LayoutParams infoParams = new FrameLayout.LayoutParams(-1, -2, Gravity.TOP);
+        infoParams.topMargin = inset * 3;
+        rootLayout.addView(displayInfo, infoParams);
 
         // Top-left buttons
         LinearLayout topLeftButtons = createButtonContainer(Gravity.TOP | Gravity.START);

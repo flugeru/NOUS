@@ -3632,8 +3632,14 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                                     MoonBridge.stringifyPortFlags(portFlags, "\n");
                         }
 
-                        Dialog.displayDialog(Game.this, getResources().getString(R.string.conn_terminated_title),
-                                message, true);
+                        new com.google.android.material.dialog.MaterialAlertDialogBuilder(Game.this)
+                                .setTitle(R.string.conn_terminated_title)
+                                .setMessage(message)
+                                .setCancelable(false)
+                                .setNegativeButton(R.string.nous_back_to_games, (dialog, which) -> finish())
+                                .setPositiveButton(R.string.nous_retry_session, (dialog, which) -> {
+                                    recreate();
+                                }).show();
                     }
                     else {
                         finish();

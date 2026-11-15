@@ -372,6 +372,13 @@ public class StreamSettings extends AppCompatActivity {
         @Override
         public void onCreatePreferences(Bundle bundle, String s) {
             initializePreferences();
+            Preference codec = findPreference("video_format");
+            PreferenceGroup advanced = findPreference("category_advanced_settings");
+            PreferenceGroup video = findPreference("category_video_settings");
+            if (codec != null && advanced != null && video != null) {
+                advanced.removePreference(codec);
+                video.addPreference(codec);
+            }
             if (requireActivity() instanceof StreamSettings) {
                 applySection(((StreamSettings) requireActivity()).section);
             }
@@ -402,6 +409,9 @@ public class StreamSettings extends AppCompatActivity {
                 preference.setLayoutResource(preference instanceof ListPreference
                         || preference instanceof SeekBarPreference
                         ? R.layout.nous_preference_value : R.layout.nous_preference_row);
+                if (preference instanceof CheckBoxPreference) {
+                    preference.setWidgetLayoutResource(R.layout.nous_preference_switch);
+                }
                 if (preference instanceof ListPreference) {
                     ((ListPreference) preference).setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
                 } else if (preference instanceof SeekBarPreference) {
@@ -413,6 +423,13 @@ public class StreamSettings extends AppCompatActivity {
         @Override
         public void onViewCreated(@NonNull View view, Bundle state) {
             super.onViewCreated(view, state);
+            String[] primary = {PreferenceConfiguration.RESOLUTION_PREF_STRING,
+                    PreferenceConfiguration.FPS_PREF_STRING, PreferenceConfiguration.BITRATE_PREF_STRING,
+                    "video_format", "frame_pacing", "checkbox_use_virtual_display"};
+            for (int i = 0; i < primary.length; i++) {
+                Preference preference = findPreference(primary[i]);
+                if (preference != null) preference.setOrder(i - primary.length);
+            }
             stylePreferences(getPreferenceScreen());
             RecyclerView list = getListView();
             int inset = Math.round(24 * getResources().getDisplayMetrics().density);

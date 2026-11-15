@@ -63,6 +63,23 @@ public class VirtualController {
     ControllerInputContext inputContext = new ControllerInputContext();
 
     private Button buttonConfigure = null;
+    private android.widget.LinearLayout editorActions;
+
+    private void updateEditorActions() {
+        if (editorActions != null) {
+            editorActions.setVisibility(currentMode == ControllerMode.Active ? View.GONE : View.VISIBLE);
+            editorActions.bringToFront();
+        }
+    }
+
+    private void saveEditor() {
+        currentMode = ControllerMode.Active;
+        VirtualControllerConfigurationLoader.saveProfile(this, context);
+        showEnabledElements();
+        updateEditorActions();
+        for (VirtualControllerElement element : elements) element.invalidate();
+    }
+
 
     private List<VirtualControllerElement> elements = new ArrayList<>();
 
@@ -111,6 +128,7 @@ public class VirtualController {
 
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 
+                updateEditorActions();
                 buttonConfigure.invalidate();
 
                 for (VirtualControllerElement element : elements) {
@@ -131,12 +149,14 @@ public class VirtualController {
         }
 
         buttonConfigure.setVisibility(View.GONE);
+        if (editorActions != null) editorActions.setVisibility(View.GONE);
     }
 
     public void show() {
         showEnabledElements();
 
         buttonConfigure.setVisibility(View.VISIBLE);
+        updateEditorActions();
     }
 
     public int switchShowHide() {
@@ -168,6 +188,7 @@ public class VirtualController {
         elements.clear();
 
         frame_layout.removeView(buttonConfigure);
+        if (editorActions != null) frame_layout.removeView(editorActions);
     }
 
     public void setOpacity(int opacity) {
@@ -211,6 +232,27 @@ public class VirtualController {
 
         // Apply user preferences onto the default layout
         VirtualControllerConfigurationLoader.loadFromPreferences(this, context);
+        editorActions = new android.widget.LinearLayout(context);
+        editorActions.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        int gap = Math.round(8 * screen.density);
+        editorActions.setPadding(gap * 2, gap, gap * 2, gap);
+        editorActions.setBackgroundResource(R.drawable.nous_hud);
+        android.widget.TextView title = new android.widget.TextView(context);
+        title.setText(R.string.nous_edit_controls);
+        title.setTextColor(androidx.core.content.ContextCompat.getColor(context, R.color.nous_text));
+        editorActions.addView(title, new android.widget.LinearLayout.LayoutParams(0, -2, 1));
+        Button mode = new com.google.android.material.button.MaterialButton(context);
+        mode.setText(R.string.nous_control_mode);
+        mode.setOnClickListener(v -> buttonConfigure.performClick());
+        editorActions.addView(mode);
+        Button save = new com.google.android.material.button.MaterialButton(context);
+        save.setText(R.string.nous_save_controls);
+        save.setOnClickListener(v -> saveEditor());
+        editorActions.addView(save);
+        FrameLayout.LayoutParams actions = new FrameLayout.LayoutParams(-1, -2, android.view.Gravity.BOTTOM);
+        actions.setMargins(gap * 2, gap, gap * 2, gap * 2);
+        frame_layout.addView(editorActions, actions);
+        updateEditorActions();
     }
 
     public ControllerMode getControllerMode() {

@@ -27,6 +27,10 @@ public class HelpActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (getIntent().getData() == null) {
+            showHelpHome();
+            return;
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             onBackInvokedCallback = new OnBackInvokedCallback() {
                 @Override
@@ -91,6 +95,52 @@ public class HelpActivity extends AppCompatActivity {
         webView.loadUrl(getIntent().getData().toString());
     }
 
+    private void showHelpHome() {
+        setContentView(R.layout.activity_nous_help);
+        findViewById(R.id.nous_back).setOnClickListener(v -> finish());
+        FrameLayout container = findViewById(R.id.nous_help_content);
+        android.widget.ScrollView scroll = new android.widget.ScrollView(this);
+        android.widget.LinearLayout body = new android.widget.LinearLayout(this);
+        body.setOrientation(android.widget.LinearLayout.VERTICAL);
+        int space = Math.round(24 * getResources().getDisplayMetrics().density);
+        body.setPadding(space, space, space, space);
+        android.widget.ImageView logo = new android.widget.ImageView(this);
+        logo.setImageResource(R.mipmap.ic_launcher);
+        body.addView(logo, new android.widget.LinearLayout.LayoutParams(space * 3, space * 3));
+        android.widget.TextView brand = new android.widget.TextView(this);
+        brand.setText("NOUS\nAndroid · " + BuildConfig.VERSION_NAME);
+        brand.setTextAppearance(R.style.Nous_Title);
+        body.addView(brand);
+        addHelpCard(body, R.string.nous_help_pair, () -> com.limelight.utils.HelpLauncher.launchUrl(this,
+                "https://github.com/moonlight-stream/moonlight-docs/wiki/Setup-Guide"));
+        addHelpCard(body, R.string.nous_help_connection, () -> com.limelight.utils.HelpLauncher.launchTroubleshooting(this));
+        addHelpCard(body, R.string.nous_diagnostics, () -> startActivity(new android.content.Intent(this, DebugInfoActivity.class)));
+        addHelpCard(body, R.string.nous_credits, () -> new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.nous_credits).setMessage(R.string.nous_credits_text)
+                .setPositiveButton(android.R.string.ok, null).show());
+        addHelpCard(body, R.string.title_software_update, () -> com.limelight.utils.HelpLauncher.launchUrl(this,
+                "https://github.com/flugeru/Vibepollo/releases"));
+        scroll.addView(body);
+        container.addView(scroll);
+        UiHelper.notifyNewRootView(this);
+    }
+
+    private void addHelpCard(android.widget.LinearLayout body, int label, Runnable action) {
+        com.google.android.material.button.MaterialButton card = new com.google.android.material.button.MaterialButton(this);
+        card.setText(label);
+        card.setMaxLines(3);
+        card.setGravity(android.view.Gravity.START | android.view.Gravity.CENTER_VERTICAL);
+        card.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                androidx.core.content.ContextCompat.getColor(this, R.color.nous_surface)));
+        card.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.nous_text));
+        card.setCornerRadius(Math.round(14 * getResources().getDisplayMetrics().density));
+        android.widget.LinearLayout.LayoutParams params = new android.widget.LinearLayout.LayoutParams(-1, -2);
+        params.topMargin = Math.round(12 * getResources().getDisplayMetrics().density);
+        card.setMinHeight(Math.round(64 * getResources().getDisplayMetrics().density));
+        body.addView(card, params);
+        card.setOnClickListener(v -> action.run());
+    }
+
     private void refreshBackDispatchState() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (webView.canGoBack() && !backCallbackRegistered) {
@@ -121,7 +171,7 @@ public class HelpActivity extends AppCompatActivity {
     public void onBackPressed() {
         // Back goes back through the WebView history
         // until no more history remains
-        if (webView.canGoBack()) {
+        if (webView != null && webView.canGoBack()) {
             webView.goBack();
         }
         else {

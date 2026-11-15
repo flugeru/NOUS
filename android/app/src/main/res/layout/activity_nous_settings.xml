@@ -17,9 +17,9 @@
                 android:textAllCaps="true" android:textColor="@color/nous_secondary" android:textStyle="bold" />
             <LinearLayout android:id="@+id/nous_settings_video"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:minHeight="70dp" android:layout_marginBottom="8dp"
+                android:minHeight="64dp" android:layout_marginBottom="8dp"
                 android:orientation="horizontal" android:gravity="center_vertical"
-                android:background="@drawable/nous_card_ripple" android:focusable="true"
+                android:background="@drawable/nous_preference_ripple" android:focusable="true"
                 android:clickable="true" android:padding="14dp">
                 <ImageView android:layout_width="24dp" android:layout_height="24dp"
                     android:importantForAccessibility="no" android:tint="@color/nous_secondary"
@@ -36,9 +36,9 @@
             </LinearLayout>
             <LinearLayout android:id="@+id/nous_settings_profiles"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:minHeight="70dp" android:layout_marginBottom="8dp"
+                android:minHeight="64dp" android:layout_marginBottom="8dp"
                 android:orientation="horizontal" android:gravity="center_vertical"
-                android:background="@drawable/nous_card_ripple" android:focusable="true"
+                android:background="@drawable/nous_preference_ripple" android:focusable="true"
                 android:clickable="true" android:padding="14dp">
                 <ImageView android:layout_width="24dp" android:layout_height="24dp"
                     android:importantForAccessibility="no" android:tint="@color/nous_secondary"
@@ -55,9 +55,9 @@
             </LinearLayout>
             <LinearLayout android:id="@+id/nous_settings_controls"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:minHeight="70dp" android:layout_marginBottom="8dp"
+                android:minHeight="64dp" android:layout_marginBottom="8dp"
                 android:orientation="horizontal" android:gravity="center_vertical"
-                android:background="@drawable/nous_card_ripple" android:focusable="true"
+                android:background="@drawable/nous_preference_ripple" android:focusable="true"
                 android:clickable="true" android:padding="14dp">
                 <ImageView android:layout_width="24dp" android:layout_height="24dp"
                     android:importantForAccessibility="no" android:tint="@color/nous_secondary"
@@ -74,9 +74,9 @@
             </LinearLayout>
             <LinearLayout android:id="@+id/nous_settings_advanced"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:minHeight="70dp" android:layout_marginBottom="8dp"
+                android:minHeight="64dp" android:layout_marginBottom="8dp"
                 android:orientation="horizontal" android:gravity="center_vertical"
-                android:background="@drawable/nous_card_ripple" android:focusable="true"
+                android:background="@drawable/nous_preference_ripple" android:focusable="true"
                 android:clickable="true" android:padding="14dp">
                 <ImageView android:layout_width="24dp" android:layout_height="24dp"
                     android:importantForAccessibility="no" android:tint="@color/nous_secondary"
@@ -97,9 +97,9 @@
                 android:textAllCaps="true" android:textColor="@color/nous_secondary" android:textStyle="bold" />
             <LinearLayout android:id="@+id/nous_settings_diagnostics"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:minHeight="70dp" android:layout_marginBottom="8dp"
+                android:minHeight="64dp" android:layout_marginBottom="8dp"
                 android:orientation="horizontal" android:gravity="center_vertical"
-                android:background="@drawable/nous_card_ripple" android:focusable="true"
+                android:background="@drawable/nous_preference_ripple" android:focusable="true"
                 android:clickable="true" android:padding="14dp">
                 <ImageView android:layout_width="24dp" android:layout_height="24dp"
                     android:importantForAccessibility="no" android:tint="@color/nous_secondary"
@@ -116,9 +116,9 @@
             </LinearLayout>
             <LinearLayout android:id="@+id/nous_settings_help"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:minHeight="70dp" android:layout_marginBottom="8dp"
+                android:minHeight="64dp" android:layout_marginBottom="8dp"
                 android:orientation="horizontal" android:gravity="center_vertical"
-                android:background="@drawable/nous_card_ripple" android:focusable="true"
+                android:background="@drawable/nous_preference_ripple" android:focusable="true"
                 android:clickable="true" android:padding="14dp">
                 <ImageView android:layout_width="24dp" android:layout_height="24dp"
                     android:importantForAccessibility="no" android:tint="@color/nous_secondary"

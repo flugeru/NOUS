@@ -46,7 +46,7 @@ public class HelpLauncher {
     }
 
     public static void launchSetupGuide(Context context) {
-        launchUrl(context, "https://github.com/moonlight-stream/moonlight-docs/wiki/Setup-Guide");
+        context.startActivity(new Intent(context, HelpActivity.class));
     }
 
     public static void launchTroubleshooting(Context context) {

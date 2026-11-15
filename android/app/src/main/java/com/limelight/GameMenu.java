@@ -117,7 +117,40 @@ public class GameMenu implements Game.GameMenuCallbacks {
 
         final ArrayAdapter<String> actions = new ArrayAdapter<>(themedContext, android.R.layout.simple_list_item_1);
 
-        builder.setAdapter(actions, (dialog, which) -> {
+        boolean sessionMenu = title.equals(getString(R.string.quick_menu_title));
+        if (sessionMenu) {
+            android.widget.ScrollView scroll = new android.widget.ScrollView(themedContext);
+            android.widget.LinearLayout panel = new android.widget.LinearLayout(themedContext);
+            panel.setOrientation(android.widget.LinearLayout.VERTICAL);
+            int gap = Math.round(8 * themedContext.getResources().getDisplayMetrics().density);
+            panel.setPadding(gap * 3, gap, gap * 3, gap * 2);
+            scroll.addView(panel);
+            for (MenuOption option : options) {
+                com.google.android.material.button.MaterialButton button =
+                        new com.google.android.material.button.MaterialButton(themedContext);
+                button.setText(option.label);
+                button.setMaxLines(3);
+                button.setCornerRadius(gap * 3);
+                boolean resume = option.label.equals(getString(R.string.nous_resume_session));
+                boolean destructive = option.label.equals(getString(R.string.game_menu_quit_session))
+                        || option.label.equals(getString(R.string.game_menu_disconnect));
+                int background = resume ? R.color.nous_primary
+                        : destructive ? R.color.nous_surface_high : R.color.nous_secondary_container;
+                int foreground = resume ? R.color.nous_on_primary
+                        : destructive ? R.color.nous_primary : R.color.nous_secondary;
+                button.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                        androidx.core.content.ContextCompat.getColor(themedContext, background)));
+                button.setTextColor(androidx.core.content.ContextCompat.getColor(themedContext, foreground));
+                android.widget.LinearLayout.LayoutParams params = new android.widget.LinearLayout.LayoutParams(-1, -2);
+                params.bottomMargin = gap;
+                panel.addView(button, params);
+                button.setOnClickListener(v -> {
+                    hideMenu();
+                    run(option);
+                });
+            }
+            builder.setView(scroll);
+        } else builder.setAdapter(actions, (dialog, which) -> {
             String label = actions.getItem(which);
             for (MenuOption option : options) {
                 if (label != null && label.equals(option.label)) {
@@ -142,7 +175,7 @@ public class GameMenu implements Game.GameMenuCallbacks {
                 android.util.DisplayMetrics metrics = themedContext.getResources().getDisplayMetrics();
                 window.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
                 window.setLayout(Math.min(Math.round(390 * metrics.density), metrics.widthPixels / 2),
-                        android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+                        android.view.ViewGroup.LayoutParams.MATCH_PARENT);
             }
             View decorView = window.getDecorView();
             decorView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -297,6 +330,12 @@ public class GameMenu implements Game.GameMenuCallbacks {
 
     public void showMenu(GameInputDevice device) {
         List<MenuOption> options = new ArrayList<>();
+        options.add(new MenuOption(getString(R.string.nous_resume_session), null));
+        options.add(new MenuOption(getString(R.string.game_menu_toggle_keyboard), true, game::toggleKeyboard));
+        if (dialogScreenContext == game) {
+            options.add(new MenuOption(getString(R.string.game_menu_toggle_virtual_model), true, game::toggleVirtualController));
+        }
+        options.add(new MenuOption(getString(R.string.game_menu_toggle_hud), true, game::toggleHUD));
 
         options.add(new MenuOption(getString(R.string.game_menu_disconnect), game::disconnect));
 
@@ -323,9 +362,6 @@ public class GameMenu implements Game.GameMenuCallbacks {
                         this.showServerCmd(serverCmds);
                     }
                 }));
-
-        options.add(new MenuOption(getString(R.string.game_menu_toggle_keyboard), true,
-                game::toggleKeyboard));
 
         options.add(new MenuOption(getString(game.isZoomModeEnabled() ? R.string.game_menu_disable_zoom_mode : R.string.game_menu_enable_zoom_mode), true,
                 game::toggleZoomMode));

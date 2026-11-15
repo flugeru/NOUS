@@ -53,3 +53,13 @@ jobs:
           if-no-files-found: error
       - name: Run Android unit tests
         run: bash ./gradlew --no-daemon :app:testNonRoot_gameDebugUnitTest
+      - name: Upload layout previews and test reports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: NOUS-Android-validation
+          path: |
+            android/app/build/outputs/nous-layout-previews/
+            android/app/build/reports/tests/
+            android/app/build/test-results/
+          if-no-files-found: ignore

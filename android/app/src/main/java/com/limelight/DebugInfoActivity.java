@@ -60,6 +60,12 @@ public class DebugInfoActivity extends AppCompatActivity implements View.OnClick
         sb.append("\n" + getString(R.string.debug_info_kernel_version) + kernelVersion);
         sb.append("\n" + getString(R.string.debug_info_brand_model) + DeviceUtils.getManufacturer() + "\t-\t" + DeviceUtils.getModel());
         tx_content.setText(sb.toString());
+        findViewById(R.id.nous_copy_diagnostics).setOnClickListener(v -> {
+            android.content.ClipboardManager clipboard = (android.content.ClipboardManager)
+                    getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboard.setPrimaryClip(android.content.ClipData.newPlainText(getString(R.string.nous_diagnostics),
+                    tx_content.getText() + "\n\n" + tx_gamepad_info.getText()));
+        });
 
         boolean hasVibrator = ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).hasVibrator();
         String content = hasVibrator ? getString(R.string.debug_info_has_vibration_motor) : getString(R.string.debug_info_no_vibration_motor);

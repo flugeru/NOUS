@@ -98,6 +98,10 @@
                 android:padding="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/nous_copy_diagnostics" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_marginTop="20dp"
+                android:text="@string/nous_copy_diagnostics" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
