@@ -1,6 +1,7 @@
 package com.limelight.preferences;
 
 import android.os.Bundle;
+import android.os.Looper;
 import android.widget.SeekBar;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.junit.Assert.*;
 
 @RunWith(RobolectricTestRunner.class)
@@ -56,16 +60,25 @@ public class SeekBarPreferenceDialogTest {
             assertNotNull(slider);
             slider.setProgress(49);
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).performClick();
+            Shadows.shadowOf(Looper.getMainLooper()).idle();
             assertEquals(20, prefs.getInt("dialog_test", -1));
-            preference.setOnPreferenceChangeListener((p, value) -> false);
+
+            AtomicInteger rejectedValue = new AtomicInteger();
+            preference.setOnPreferenceChangeListener((p, value) -> {
+                rejectedValue.set((Integer) value);
+                return false;
+            });
             preference.showDialog();
             slider.setProgress(69);
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+            Shadows.shadowOf(Looper.getMainLooper()).idle();
+            assertEquals(70, rejectedValue.get());
             assertEquals(20, prefs.getInt("dialog_test", -1));
             preference.setOnPreferenceChangeListener((p, value) -> true);
             preference.showDialog();
             slider.setProgress(39);
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+            Shadows.shadowOf(Looper.getMainLooper()).idle();
             assertEquals(40, prefs.getInt("dialog_test", -1));
             assertEquals("40", preference.getFormattedValue());
         }
