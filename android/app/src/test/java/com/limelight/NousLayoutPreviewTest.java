@@ -96,6 +96,22 @@ public class NousLayoutPreviewTest {
         }
     }
 
+    @Test
+    @Config(shadows = {com.limelight.shadows.ShadowMoonBridge.class, com.limelight.shadows.ShadowGameManager.class})
+    public void systemBackAppliesChangedSettingsLanguage() {
+        try (org.robolectric.android.controller.ActivityController<com.limelight.preferences.StreamSettings> controller =
+                     Robolectric.buildActivity(com.limelight.preferences.StreamSettings.class).setup()) {
+            com.limelight.preferences.StreamSettings activity = controller.get();
+            android.preference.PreferenceManager.getDefaultSharedPreferences(activity).edit()
+                    .putString("list_languages", "en").commit();
+            activity.getOnBackPressedDispatcher().onBackPressed();
+            assertTrue(activity.isFinishing());
+            android.content.Intent restart = org.robolectric.Shadows.shadowOf(activity).getNextStartedActivity();
+            assertNotNull(restart);
+            assertEquals(PcView.class.getName(), restart.getComponent().getClassName());
+        }
+    }
+
     @Test public void detachedLibraryDoesNotHandleHostContextMenu() {
         assertFalse(new GamesFragment().onContextItemSelected(null));
     }

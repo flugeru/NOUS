@@ -140,6 +140,11 @@ public class StreamSettings extends AppCompatActivity {
         setContentView(R.layout.activity_stream_settings);
         ((TextView) findViewById(R.id.nous_section_title)).setText(section.title);
         findViewById(R.id.nous_back).setOnClickListener(v -> onBackPressed());
+        getOnBackPressedDispatcher().addCallback(this, new androidx.activity.OnBackPressedCallback(true) {
+            @Override public void handleOnBackPressed() {
+                StreamSettings.this.onBackPressed();
+            }
+        });
 
 //        UiHelper.notifyNewRootView(this);
     }
@@ -181,12 +186,10 @@ public class StreamSettings extends AppCompatActivity {
     }
 
     @Override
-    // NOTE: This will NOT be called on Android 13+ with android:enableOnBackInvokedCallback="true"
     public void onBackPressed() {
         finish();
 
-        // Language changes are handled via configuration changes in Android 13+,
-        // so manual activity relaunching is no longer required.
+        // The in-app language preference requires rebuilding the host views.
         PreferenceConfiguration newPrefs = PreferenceConfiguration.readPreferences(this);
         if (!newPrefs.language.equals(previousPrefs.language)) {
             Intent intent = new Intent(this, PcView.class);
