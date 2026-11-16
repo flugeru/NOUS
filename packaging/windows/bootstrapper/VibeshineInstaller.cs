@@ -518,7 +518,7 @@ namespace VibepolloInstaller {
       installStack.Children.Add(_installLocationTitleText);
 
       _installLocationHintText = new TextBlock {
-        Text = "Choose where NOUS will be installed. The default is recommended.",
+        Text = "Choose where NOUS will be installed. Setup also installs Nefarius ViGEmBus for virtual controllers when needed.",
         FontSize = 12.5,
         Foreground = new SolidColorBrush(Color.FromRgb(209, 222, 241)),
         Margin = new Thickness(0, 0, 0, 10),
@@ -653,7 +653,7 @@ namespace VibepolloInstaller {
       });
 
       sshStack.Children.Add(new TextBox {
-        Text = "NOUSSetup.exe /qn /norestart",
+        Text = "setup.exe /qn /norestart",
         IsReadOnly = true,
         FontFamily = new FontFamily("Consolas"),
         FontSize = 12.5,
@@ -2449,8 +2449,8 @@ namespace VibepolloInstaller {
       Console.WriteLine("  Self-hosted game streaming server — stream your PC to any device.");
       Console.WriteLine();
       Console.WriteLine("Usage:");
-      Console.WriteLine("  NOUSSetup.exe                Launch graphical installer UI");
-      Console.WriteLine("  NOUSSetup.exe [MSI options]  Pass options to msiexec");
+      Console.WriteLine("  setup.exe                Launch graphical installer UI");
+      Console.WriteLine("  setup.exe [MSI options]  Pass options to msiexec");
       Console.WriteLine();
       Console.WriteLine("Wrapper options:");
       Console.WriteLine("  --msi <path>    Use a specific MSI payload instead of the embedded one");
@@ -2468,15 +2468,15 @@ namespace VibepolloInstaller {
       Console.WriteLine("                            Requires a compatible Moonlight client; shared driver is retained on uninstall");
       Console.WriteLine();
       Console.WriteLine("Examples:");
-      Console.WriteLine("  NOUSSetup.exe /qn");
-      Console.WriteLine("  NOUSSetup.exe /qn INSTALL_ROOT=\"D:\\NOUS\"");
-      Console.WriteLine("  NOUSSetup.exe /x {PRODUCT-CODE} /qn");
-      Console.WriteLine("  NOUSSetup.exe /qn INSTALL_VIRTUAL_DISPLAY_DRIVER=0");
-      Console.WriteLine("  NOUSSetup.exe /qn INSTALL_VIRTUAL_GAMEPAD_DRIVER=0");
-      Console.WriteLine("  NOUSSetup.exe /qn INSTALL_USBIP_TRANSPORT=1");
-      Console.WriteLine("  NOUSSetup.exe /uninstall");
-      Console.WriteLine("  NOUSSetup.exe /uninstall /quiet");
-      Console.WriteLine("  NOUSSetup.exe --msi C:\\temp\\NOUS.msi /passive");
+      Console.WriteLine("  setup.exe /qn");
+      Console.WriteLine("  setup.exe /qn INSTALL_ROOT=\"D:\\NOUS\"");
+      Console.WriteLine("  setup.exe /x {PRODUCT-CODE} /qn");
+      Console.WriteLine("  setup.exe /qn INSTALL_VIRTUAL_DISPLAY_DRIVER=0");
+      Console.WriteLine("  setup.exe /qn INSTALL_VIRTUAL_GAMEPAD_DRIVER=0");
+      Console.WriteLine("  setup.exe /qn INSTALL_USBIP_TRANSPORT=1");
+      Console.WriteLine("  setup.exe /uninstall");
+      Console.WriteLine("  setup.exe /uninstall /quiet");
+      Console.WriteLine("  setup.exe --msi C:\\temp\\NOUS.msi /passive");
 #endif
     }
 
@@ -3951,7 +3951,11 @@ namespace VibepolloInstaller {
         }
       }
 
-      var resultMessage = BuildResultMessage("Install", exitCode, logPath);
+      if (exitCode == 0 || exitCode == 3010) {
+        var driverExitCode = InstallBundledViGEmBus(logPath);
+        if (driverExitCode != 0) exitCode = driverExitCode;
+      }
+      var resultMessage = BuildResultMessage("Install (including Nefarius ViGEmBus)", exitCode, logPath);
       if (saveInstallLogs) {
         if (!string.IsNullOrWhiteSpace(savedLogPath)) {
           resultMessage += " Saved log copy: " + savedLogPath;
@@ -3985,6 +3989,69 @@ namespace VibepolloInstaller {
       };
       AttachMsiRegistrationRecoveryProduct(result, registrationRecoveryProduct);
       return result;
+    }
+
+    private static int InstallBundledViGEmBus(string logPath) {
+      // Shared driver stays installed when NOUS is removed. Never downgrade an existing driver.
+      var driverPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32", "drivers", "ViGEmBus.sys");
+      try {
+        if (File.Exists(driverPath)) {
+          var info = FileVersionInfo.GetVersionInfo(driverPath);
+          if (new Version(info.FileMajorPart, info.FileMinorPart, info.FileBuildPart, info.FilePrivatePart)
+              >= new Version(1, 21, 442, 0)) {
+            AppendInstallerLogMessage(logPath, "Preserving existing ViGEmBus driver " + info.FileVersion + ".");
+            return 0;
+          }
+        }
+        var directory = Path.Combine(Path.GetTempPath(), "NOUS-ViGEmBus-" + Guid.NewGuid().ToString("N"));
+        var security = new DirectorySecurity();
+        security.SetAccessRuleProtection(true, false);
+        foreach (var sid in new[] {
+          WindowsIdentity.GetCurrent().User,
+          new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null),
+          new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null)
+        }) {
+          security.AddAccessRule(new FileSystemAccessRule(sid, FileSystemRights.FullControl,
+            InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit,
+            PropagationFlags.None, AccessControlType.Allow));
+        }
+        Directory.CreateDirectory(directory, security);
+        var installerPath = Path.Combine(directory, "ViGEmBus.exe");
+        using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("ViGEmBus.exe")) {
+          if (stream == null) throw new InvalidOperationException("Bundled ViGEmBus payload missing.");
+          using (var output = new FileStream(installerPath, FileMode.CreateNew, FileAccess.Write, FileShare.None)) {
+            stream.CopyTo(output);
+          }
+        }
+        if (!FileHashMatches(installerPath, "89220a7865076b342892f98865f3499fb7c4cfd673159e89d352c360fd014c6a")) {
+          throw new InvalidOperationException("Bundled ViGEmBus SHA-256 mismatch.");
+        }
+        AppendInstallerLogMessage(logPath, "Installing official Nefarius ViGEmBus 1.22.0 silently, outside MSI transaction.");
+        var start = new ProcessStartInfo(installerPath, "/quiet /norestart") {
+          UseShellExecute = true,
+          Verb = IsProcessElevated() ? "open" : "runas"
+        };
+        using (var process = Process.Start(start)) {
+          if (process == null) throw new InvalidOperationException("ViGEmBus installer did not start.");
+          if (!process.WaitForExit(15 * 60 * 1000)) {
+            AppendInstallerLogMessage(logPath, "ViGEmBus install timed out; installer may still be running. Do not start another install.");
+            return 1460;
+          }
+          var code = process.ExitCode;
+          AppendInstallerLogMessage(logPath, "ViGEmBus installer exit code: " + code);
+          TryDeleteFile(installerPath);
+          if (code == 0 && !File.Exists(driverPath)) {
+            AppendInstallerLogMessage(logPath, "ViGEmBus driver missing after setup; restart and verify controller support.");
+            return 3010;
+          }
+          // NOUS service may have probed controllers before this driver was installed.
+          // Require restart so its ViGEmClient reconnects against the newly installed bus.
+          return code == 0 ? 3010 : code;
+        }
+      } catch (Exception ex) {
+        AppendInstallerLogMessage(logPath, "ViGEmBus installation failed: " + ex.Message);
+        return 1603;
+      }
     }
 
     private static InstallerResult UninstallLegacySunshineRegistration() {
@@ -6166,6 +6233,10 @@ namespace VibepolloInstaller {
       }
       if (exitCode != 0 && exitCode != 3010) {
         TryRecoverServiceStateAfterFailedInstall();
+      }
+      if (isInstallOperation && (exitCode == 0 || exitCode == 3010)) {
+        var driverExitCode = InstallBundledViGEmBus(logPath);
+        if (driverExitCode != 0) exitCode = driverExitCode;
       }
       var cliResult = new InstallerResult {
         Operation = isUninstallOperation ? InstallerOperation.Uninstall : InstallerOperation.Install,

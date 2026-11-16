@@ -57,6 +57,8 @@ final class NousSettingsTab {
         if (visible) {
             WindowCompat.getInsetsController(activity.getWindow(), navigation).hide(WindowInsetsCompat.Type.ime());
         }
+        View libraryHeader = activity.findViewById(R.id.nous_library_header);
+        if (libraryHeader != null) libraryHeader.setVisibility(visible ? View.GONE : View.VISIBLE);
         mainTab.setVisibility(visible ? View.GONE : View.VISIBLE);
         back.setEnabled(visible);
     }

@@ -2,6 +2,14 @@ name: NOUS Android
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'android/**'
+      - '.github/workflows/android-client.yml'
+  pull_request:
+    paths:
+      - 'android/**'
+      - '.github/workflows/android-client.yml'
 
 permissions:
   contents: read
@@ -26,6 +34,8 @@ jobs:
           java-version: '17'
       - name: Install Android SDK and NDK
         run: '"$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "ndk;27.0.12077973"'
+      - name: Check supported languages
+        run: python3 tools/check_supported_languages.py
       - name: Build the debug client
         run: bash ./gradlew --no-daemon :app:assembleNonRoot_gameDebug
       - name: Name the ARM64 APK for distribution

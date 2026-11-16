@@ -1352,7 +1352,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
 
-          $installerName = "$($env:SYMBOL_PRODUCT_NAME)Setup.exe"
+          $installerName = 'setup.exe'
           $signedMsi = Join-Path (Join-Path $PWD 'signed-msi') $env:MSI_NAME
           if (-not (Test-Path -LiteralPath $signedMsi)) {
             throw "MSI artifact was not downloaded: $signedMsi"

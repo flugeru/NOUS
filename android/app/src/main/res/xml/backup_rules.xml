@@ -2,4 +2,5 @@
 <full-backup-content>
     <!-- Don't sync preferences because it often contains device-specific data -->
     <exclude domain="sharedpref" path="."/>
+    <exclude domain="file" path="client.key"/>
 </full-backup-content>

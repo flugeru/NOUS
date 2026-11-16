@@ -6,6 +6,16 @@ permissions:
 
 on:
   workflow_dispatch:
+  push:
+    paths-ignore:
+      - 'android/**'
+      - 'docs/**'
+      - '**/*.md'
+  pull_request:
+    paths-ignore:
+      - 'android/**'
+      - 'docs/**'
+      - '**/*.md'
 
 concurrency:
   group: fork-test-installer-${{ github.ref }}
@@ -13,7 +23,7 @@ concurrency:
 
 jobs:
   windows:
-    if: github.repository == 'flugeru/NOUS' && !contains(github.event.head_commit.message, '[skip desktop]')
+    if: github.repository == 'flugeru/NOUS'
     uses: ./.github/workflows/ci-windows.yml
     with:
       release_commit: ${{ github.sha }}

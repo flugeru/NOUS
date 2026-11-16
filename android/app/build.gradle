@@ -10,6 +10,7 @@ android {
     defaultConfig {
         minSdk 21
         targetSdk 34
+        resourceConfigurations += ['en', 'pt-rBR']
 
         versionName "1.0.0"
         versionCode = 58

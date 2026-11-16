@@ -1,0 +1,51 @@
+﻿[
+    {
+        "original":  "src_assets/common/assets/web/apps.html",
+        "backup":  "Backup de arquivos nao utilizados/src_assets/common/assets/web/apps.html",
+        "sha256":  "77127cee0e2c988bb0e92a2ea86cd8ae4b0587833a0e67c1d9120336bfe0dcc4",
+        "reason":  "Copia legada sem referencias; V2 usa index.html e router.ts; V1 usa web-legacy",
+        "validation":  "npm run build; npm run test:unit: 118/118"
+    },
+    {
+        "original":  "src_assets/common/assets/web/ClientCard.vue",
+        "backup":  "Backup de arquivos nao utilizados/src_assets/common/assets/web/ClientCard.vue",
+        "sha256":  "ca3d0495bcd2d2b3eb13aa388853378672adad15be9681332bf14daa9100c813",
+        "reason":  "Copia legada sem referencias; V2 usa index.html e router.ts; V1 usa web-legacy",
+        "validation":  "npm run build; npm run test:unit: 118/118"
+    },
+    {
+        "original":  "src_assets/common/assets/web/login.html",
+        "backup":  "Backup de arquivos nao utilizados/src_assets/common/assets/web/login.html",
+        "sha256":  "a359c3051ef1b0b8f729f811ada9499dd92b0d708f052b5b90754757081693b8",
+        "reason":  "Copia legada sem referencias; V2 usa index.html e router.ts; V1 usa web-legacy",
+        "validation":  "npm run build; npm run test:unit: 118/118"
+    },
+    {
+        "original":  "src_assets/common/assets/web/password.html",
+        "backup":  "Backup de arquivos nao utilizados/src_assets/common/assets/web/password.html",
+        "sha256":  "1a3371c26b71fd94f63056347d452814a7ed9d0de417eb3729c863f86337e912",
+        "reason":  "Copia legada sem referencias; V2 usa index.html e router.ts; V1 usa web-legacy",
+        "validation":  "npm run build; npm run test:unit: 118/118"
+    },
+    {
+        "original":  "src_assets/common/assets/web/pin.html",
+        "backup":  "Backup de arquivos nao utilizados/src_assets/common/assets/web/pin.html",
+        "sha256":  "86f6a8dcf8dda1f548c91c7c923dff49202844222090cbcb1f89bf991da32fe3",
+        "reason":  "Copia legada sem referencias; V2 usa index.html e router.ts; V1 usa web-legacy",
+        "validation":  "npm run build; npm run test:unit: 118/118"
+    },
+    {
+        "original":  "src_assets/common/assets/web/troubleshooting.html",
+        "backup":  "Backup de arquivos nao utilizados/src_assets/common/assets/web/troubleshooting.html",
+        "sha256":  "8e7109cc9a4b8af2519d922bf8702a0daa9a17974ec610249b4aecf51fbd65cf",
+        "reason":  "Copia legada sem referencias; V2 usa index.html e router.ts; V1 usa web-legacy",
+        "validation":  "npm run build; npm run test:unit: 118/118"
+    },
+    {
+        "original":  "src_assets/common/assets/web/welcome.html",
+        "backup":  "Backup de arquivos nao utilizados/src_assets/common/assets/web/welcome.html",
+        "sha256":  "602cd374f582ab95991c6d1b090f09d56a8fb4f651a4f6ef58c5201d4a6dbe17",
+        "reason":  "Copia legada sem referencias; V2 usa index.html e router.ts; V1 usa web-legacy",
+        "validation":  "npm run build; npm run test:unit: 118/118"
+    }
+]

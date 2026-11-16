@@ -3,7 +3,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$installer = Join-Path $BuildDir 'cpack_artifacts\NOUSSetup.exe'
+$installer = Join-Path $BuildDir 'cpack_artifacts\setup.exe'
 if (-not (Test-Path -LiteralPath $installer -PathType Leaf)) {
     throw "NOUS installer missing: $installer. Build the custom installer first."
 }

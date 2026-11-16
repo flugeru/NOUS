@@ -29,7 +29,7 @@ public class PosterContentProvider extends ContentProvider {
 
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        sUriMatcher.addURI(AUTHORITY, BOXART_PATH, BOXART_URI_ID);
+        sUriMatcher.addURI(AUTHORITY, BOXART_PATH + "/*/#", BOXART_URI_ID);
     }
 
     @Override
@@ -38,8 +38,7 @@ public class PosterContentProvider extends ContentProvider {
         if (match == BOXART_URI_ID) {
             return openBoxArtFile(uri, mode);
         }
-        return openBoxArtFile(uri, mode);
-
+        throw new FileNotFoundException("Unsupported artwork URI");
     }
 
     public ParcelFileDescriptor openBoxArtFile(Uri uri, String mode) throws FileNotFoundException {
@@ -53,9 +52,32 @@ public class PosterContentProvider extends ContentProvider {
         }
         String appId = segments.get(APP_ID_PATH_INDEX);
         String uuid = segments.get(COMPUTER_UUID_PATH_INDEX);
-        File file = mDiskAssetLoader.getFile(uuid, Integer.parseInt(appId));
-        if (file.exists()) {
-            return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+        if (!ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())
+                || !AUTHORITY.equals(uri.getAuthority())
+                || !BOXART_PATH.equals(segments.get(0))
+                || !uuid.matches("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
+                || !appId.matches("[0-9]{1,10}")) {
+            throw new FileNotFoundException("Invalid artwork URI");
+        }
+        final int parsedAppId;
+        try {
+            parsedAppId = Integer.parseInt(appId);
+        } catch (NumberFormatException e) {
+            throw new FileNotFoundException("Invalid app ID");
+        }
+        File file = mDiskAssetLoader.getFile(uuid, parsedAppId);
+        try {
+            File root = new File(getContext().getCacheDir(), BOXART_PATH).getCanonicalFile();
+            File canonical = file.getCanonicalFile();
+            if (!canonical.getPath().startsWith(root.getPath() + File.separator)
+                    || !canonical.equals(file.getAbsoluteFile())) {
+                throw new FileNotFoundException("Artwork outside cache");
+            }
+            if (canonical.isFile()) {
+                return ParcelFileDescriptor.open(canonical, ParcelFileDescriptor.MODE_READ_ONLY);
+            }
+        } catch (java.io.IOException e) {
+            throw new FileNotFoundException("Artwork unavailable");
         }
         throw new FileNotFoundException();
     }

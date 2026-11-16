@@ -3339,7 +3339,7 @@ namespace VDISPLAY_SUNSHINE {
 
     std::array<char, TEMPORARY_DISPLAY_NAME_CHARS> make_temporary_display_name(const char *client_name) {
       std::array<char, TEMPORARY_DISPLAY_NAME_CHARS> name {};
-      const char *fallback = "Vibepollo";
+      const char *fallback = "NOUS";
       const char *source = (client_name && std::strlen(client_name) > 0) ? client_name : fallback;
       std::size_t out = 0;
 

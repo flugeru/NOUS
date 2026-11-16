@@ -18,7 +18,8 @@ public class AdapterFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        callbacks = (AdapterFragmentCallbacks) activity;
+        callbacks = getParentFragment() instanceof AdapterFragmentCallbacks
+                ? (AdapterFragmentCallbacks) getParentFragment() : (AdapterFragmentCallbacks) activity;
     }
 
     @Override

@@ -6,7 +6,7 @@
     <string name="summary_enable_hdr">Transmita HDR quando o jogo e a GPU do PC suportarem. O HDR requer uma GPU da série GTX 1000 ou posterior.</string>
     <string name="summary_enable_post_stream_toast">Exibe uma mensagem com informações de latência após o término da transmissão</string>
     <string name="summary_unlock_fps">Transmitir a 90 ou 120 FPS pode reduzir a latência em dispositivos de última geração, mas pode causar atraso ou instabilidade em dispositivos que não suportam</string>
-    <string name="summary_checkbox_vibrate_osc">Vibra seu dispositivo para emular rumble nos controles de tela</string>
+    <string name="summary_checkbox_vibrate_osc">Faz o dispositivo vibrar ao usar os controles na tela</string>
     <string name="pcview_menu_header_offline">Indisponível</string>
     <string name="pcview_menu_header_unknown">Atualizando</string>
     <string name="pacing_smoothness">Preferir vídeo mais suave (pode aumentar significativamente a latência)</string>
@@ -20,17 +20,15 @@
     <string name="title_checkbox_mouse_nav_buttons">Habilitar os botões de voltar e avançar do mouse</string>
     <string name="addpc_fail">Não foi possível conectar ao computador especificado. Certifique-se de que as portas necessárias sejam permitidas pelo firewall.</string>
     <string name="conn_error_msg">Falha ao iniciar</string>
-    <string name="ip_hint">Endereço de IP do PC GeForce</string>
-    <string name="searching_pc">Procurando por PCs rodando o GameStream...
-\n
-\nCertifique-se de que o GameStream esteja ativado nas configurações do SHIELD do GeForce Experience.</string>
+    <string name="ip_hint">IP ou nome do computador com NOUS</string>
+    <string name="searching_pc">Procurando computadores com NOUS na rede. Confira se o NOUS está aberto no PC.</string>
     <string name="nettest_text_success">Sua rede não parece estar bloqueando o NOUS. Se você ainda tiver problemas para se conectar, verifique as configurações de firewall do seu PC.
 \n
 \nSe você estiver tentando transmitir pela Internet, instale o Moonlight Internet Hosting Tool em seu PC e execute o Internet Streaming Tester para verificar a conexão com a Internet do seu PC.</string>
     <string name="check_ports_msg">Verifique o firewall e permita a(s) seguinte(s) para porta(s):</string>
     <string name="wol_no_mac">Não foi possível acordar o PC porque não tem um endereço MAC armazenado</string>
     <string name="wol_waking_msg">Pode levar alguns segundos para o seu PC acordar. Se isso não acontecer, verifique se ele está configurado corretamente para Wake-On-LAN.</string>
-    <string name="error_404">GFE retornou um erro HTTP 404. Verifique se o seu PC está executando uma GPU compatível. O uso do software de área de trabalho remota também pode causar esse erro. Tente reiniciar sua máquina ou reinstalar o GFE.</string>
+    <string name="error_404">O computador retornou HTTP 404. Atualize a biblioteca e confira se o aplicativo ainda está cadastrado no host NOUS.</string>
     <string name="message_decoding_error">NOUS crashou devido a uma incompatibilidade com o decodificador de vídeo deste dispositivo. Tente ajustar as configurações de transmissão se as falhas continuarem.</string>
     <string name="message_decoding_reset">O decodificador de vídeo do seu dispositivo continua crashando nas configurações de transmissão selecionadas. Suas configurações de transmissão foram redefinidas para o padrão.</string>
     <string name="error_usb_prohibited">O acesso USB é proibido pelo administrador do seu dispositivo. Verifique suas configurações de Knox ou MDM.</string>
@@ -52,7 +50,7 @@
     <string name="videoformat_hevcalways">Prefira HEVC</string>
     <string name="videoformat_auto">Automático (recomendado)</string>
     <string name="fps_120">120 FPS</string>
-    <string name="audioconf_stereo">Stereo</string>
+    <string name="audioconf_stereo">Estéreo</string>
     <string name="audioconf_51surround">5.1 Surround</string>
     <string name="audioconf_71surround">7.1 Surround</string>
     <string name="fps_90">90 FPS</string>
@@ -177,19 +175,19 @@
     <string name="title_only_l3r3">Mostrar somente L3 e R3</string>
     <string name="summary_only_l3r3">Esconde todos os botões virtuais exceto o L3 e R3</string>
     <string name="title_checkbox_touchscreen_trackpad">Usar a tela como um trackpad</string>
-    <string name="title_checkbox_multi_controller">Detecção automática de gamepad</string>
-    <string name="summary_checkbox_multi_controller">Desmarque esta opção para forçar o gamepad a estar sempre presente</string>
-    <string name="title_checkbox_vibrate_fallback">Emular suporte rumble com vibração</string>
-    <string name="summary_checkbox_vibrate_fallback">Vibra seu dispositivo para emular rumble se seu gamepad não suportar</string>
+    <string name="title_checkbox_multi_controller">Detecção automática de controle</string>
+    <string name="summary_checkbox_multi_controller">Desative para manter um controle sempre disponível no computador</string>
+    <string name="title_checkbox_vibrate_fallback">Emular vibração do controle</string>
+    <string name="summary_checkbox_vibrate_fallback">Usa a vibração deste dispositivo quando o controle não oferece esse recurso</string>
     <string name="title_seekbar_deadzone">Ajustar zona morta do analógico</string>
     <string name="suffix_seekbar_deadzone">%</string>
-    <string name="title_checkbox_xb1_driver">Driver de gamepad USB Xbox 360/One</string>
-    <string name="title_checkbox_usb_bind_all">Substituir o suporte nativo ao gamepad do Xbox</string>
-    <string name="summary_checkbox_usb_bind_all">Use o driver USB do NOUS para todos os gamepads suportados, mesmo se houver suporte nativo ao controle Xbox</string>
-    <string name="title_checkbox_mouse_emulation">Emulação de mouse via gamepad</string>
-    <string name="summary_checkbox_mouse_emulation">Segure o botão Start para mudar o gamepad para o modo de mouse</string>
+    <string name="title_checkbox_xb1_driver">Driver de controle USB Xbox 360/One</string>
+    <string name="title_checkbox_usb_bind_all">Substituir o suporte nativo ao controle do Xbox</string>
+    <string name="summary_checkbox_usb_bind_all">Use o driver USB do NOUS para todos os controles suportados, mesmo se houver suporte nativo ao controle Xbox</string>
+    <string name="title_checkbox_mouse_emulation">Emulação de mouse via controle</string>
+    <string name="summary_checkbox_mouse_emulation">Segure o botão Start para mudar o controle para o modo de mouse</string>
     <string name="summary_checkbox_mouse_nav_buttons">Ativar esta opção pode bugar o clique com o botão direito em alguns dispositivos com bugs</string>
-    <string name="summary_checkbox_flip_face_buttons">Inverte os botões A/B e X/Y dos gamepads e controles de tela</string>
+    <string name="summary_checkbox_flip_face_buttons">Inverte os botões A/B e X/Y dos controles e controles de tela</string>
     <string name="category_on_screen_controls_settings">Configurações de Controles de Tela</string>
     <string name="title_checkbox_flip_face_buttons">Inverter botões</string>
     <string name="title_unlock_fps">Liberar todas as taxas de quadros possíveis</string>
@@ -243,11 +241,11 @@
 \n
 \nTente desativar o modo HDR, alterar a resolução de streaming ou alterar a resolução do PC host.</string>
     <string name="summary_full_range">Isso causará perda de detalhes em áreas claras e escuras se o seu dispositivo não exibir corretamente todo o conteúdo de vídeo em cores.</string>
-    <string name="analogscroll_none">Nenhum (ambos os sticks movem o rato)</string>
-    <string name="analogscroll_right">Stick analógico direito</string>
-    <string name="analogscroll_left">Stick analógico esquerdo</string>
-    <string name="title_analog_scrolling">Usar um stick analógico para fazer scroll</string>
-    <string name="summary_analog_scrolling">Selecciona um stick analógico para fazer scroll quando a emulação de rato está ativada</string>
+    <string name="analogscroll_none">Nenhum (ambos os analógicos movem o mouse)</string>
+    <string name="analogscroll_right">Analógico direito</string>
+    <string name="analogscroll_left">Analógico esquerdo</string>
+    <string name="title_analog_scrolling">Usar analógico para rolagem</string>
+    <string name="summary_analog_scrolling">Escolhe o analógico usado para rolagem no modo de emulação de mouse</string>
     <string name="error_code_prefix">Código de erro:</string>
     <string name="fps_suffix_fps">FPS</string>
     <string name="title_enable_commit_text">Ativar envio de texto concluído (gesto/voz)</string>

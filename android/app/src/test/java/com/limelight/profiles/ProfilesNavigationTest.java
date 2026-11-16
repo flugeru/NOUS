@@ -119,13 +119,16 @@ public class ProfilesNavigationTest {
         ActivityController<AppView> controller = Robolectric.buildActivity(AppView.class, intent).setup();
         AppView appView = controller.get();
 
-        View btn = appView.findViewById(R.id.profilesButton);
-        assertNotNull("profilesButton not found in AppView", btn);
+        Intent redirect = Shadows.shadowOf(appView).getNextStartedActivity();
+        assertNotNull("Library shortcut should open unified navigation", redirect);
+        assertEquals(PcView.class.getName(), redirect.getComponent().getClassName());
+        assertEquals("test-uuid", redirect.getStringExtra(AppView.UUID_EXTRA));
+        assertTrue(appView.isFinishing());
 
-        btn.performClick();
-
-        Intent next = Shadows.shadowOf(appView).getNextStartedActivity();
-        assertNotNull("ProfilesActivity should be launched from AppView", next);
+        PcView pcView = Robolectric.buildActivity(PcView.class, redirect).setup().get();
+        pcView.findViewById(R.id.profilesButton).performClick();
+        Intent next = Shadows.shadowOf(pcView).getNextStartedActivity();
+        assertNotNull(next);
         assertEquals(ProfilesActivity.class.getName(), next.getComponent().getClassName());
     }
 

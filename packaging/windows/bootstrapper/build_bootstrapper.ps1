@@ -230,7 +230,7 @@ if ([string]::IsNullOrWhiteSpace($OutputName)) {
     if ($UninstallOnly) {
         $OutputName = "uninstall.exe"
     } else {
-        $OutputName = "NOUSSetup.exe"
+        $OutputName = "setup.exe"
     }
 }
 
@@ -327,6 +327,15 @@ if ($UninstallOnly) {
     $args += "/define:UNINSTALL_ONLY"
 } else {
     $args += "/resource:$MsiPath,Payload.msi"
+    $vigemPath = Resolve-PathStrict (Join-Path $repoRoot "packaging/windows/ViGEmBus_1.22.0.exe")
+    if ((Get-FileHash -LiteralPath $vigemPath -Algorithm SHA256).Hash -ne "89220A7865076B342892F98865F3499FB7C4CFD673159E89D352C360FD014C6A") {
+        throw "ViGEmBus installer SHA-256 mismatch"
+    }
+    $signature = Get-AuthenticodeSignature -LiteralPath $vigemPath
+    if ($signature.Status -ne 'Valid' -or $signature.SignerCertificate.Subject -notmatch 'O=Nefarius Software Solutions e.U.') {
+        throw "ViGEmBus installer signature invalid"
+    }
+    $args += "/resource:$vigemPath,ViGEmBus.exe"
 }
 
 foreach ($reference in $references) {

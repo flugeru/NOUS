@@ -1,0 +1,55 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:background="@color/nous_background">
+    <LinearLayout android:id="@+id/nous_library_header"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:minHeight="48dp" android:gravity="center_vertical"
+        android:paddingStart="8dp" android:paddingEnd="12dp">
+        <ImageButton android:id="@+id/nous_back" style="@style/Nous.IconButton"
+            android:contentDescription="@string/nous_back" android:src="@drawable/ic_nous_back" />
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="@string/nous_library"
+            android:textColor="@color/nous_text" android:textSize="18sp" android:textStyle="bold" />
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/profilesButton" android:layout_width="48dp" android:layout_height="48dp"
+            android:contentDescription="@string/profile_manager_choose_profile"
+            app:icon="@drawable/ic_profiles" app:iconSize="22dp" />
+    </LinearLayout>
+    <FrameLayout android:id="@+id/nous_tab_content"
+        android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <LinearLayout android:id="@+id/nous_main_tab"
+            android:layout_width="match_parent" android:layout_height="match_parent"
+            android:orientation="vertical">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:gravity="center_vertical" android:paddingHorizontal="16dp">
+                <TextView android:id="@+id/appListText"
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                    android:layout_marginEnd="12dp" android:textAppearance="@style/Nous.Subtitle"
+                    android:ellipsize="end" android:maxLines="1" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="2"
+                    android:layout_marginEnd="12dp" android:hint="@string/nous_search_games"
+                    app:endIconMode="clear_text">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/nous_game_search" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:inputType="textFilter" android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.chip.ChipGroup android:id="@+id/nous_game_filters"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    app:singleSelection="true" app:selectionRequired="true">
+                    <com.google.android.material.chip.Chip android:id="@+id/nous_filter_all"
+                        style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:text="@string/nous_all_games" android:checked="true" />
+                    <com.google.android.material.chip.Chip android:id="@+id/nous_filter_running"
+                        style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:text="@string/nous_running_games" />
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
+            <FrameLayout android:id="@+id/appFragmentContainer"
+                android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+        </LinearLayout>
+    </FrameLayout>
+    <include layout="@layout/nous_navigation" />
+</LinearLayout>

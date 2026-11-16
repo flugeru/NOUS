@@ -57,7 +57,7 @@ $pathsToManage = @(
     (Join-Path $rootDir "tools")
 )
 
-Write-Output "Apollo root directory: $rootDir"
+Write-Output "NOUS root directory: $rootDir"
 
 $key = $null
 try {
@@ -100,7 +100,7 @@ try {
         if ($changed) {
             $newPath = Join-PathEntries -Entries $entries
             $key.SetValue($valueName, $newPath, [Microsoft.Win32.RegistryValueKind]::ExpandString)
-            Write-Output "Successfully added Apollo directories to PATH"
+            Write-Output "Successfully added NOUS directories to PATH"
         } else {
             Write-Output "No changes needed to PATH"
         }
@@ -137,7 +137,7 @@ try {
                 Write-Output "Removing from path: $entry"
             }
 
-            Write-Output "Successfully removed Apollo directories from PATH"
+            Write-Output "Successfully removed NOUS directories from PATH"
         } else {
             foreach ($pathToRemove in $pathsToManage) {
                 Write-Output "$pathToRemove not found in path"
@@ -149,9 +149,9 @@ try {
     }
 } catch {
     if ($Action -eq "add") {
-        Write-Output "Failed to add Apollo directories to PATH"
+        Write-Output "Failed to add NOUS directories to PATH"
     } else {
-        Write-Output "Failed to remove Apollo directories from PATH"
+        Write-Output "Failed to remove NOUS directories from PATH"
     }
     Write-Output $_.Exception.Message
     exit 1

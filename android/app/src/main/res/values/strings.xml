@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="nous_move">Move</string>
+    <string name="nous_resize">Resize</string>
+    <string name="nous_hdr_display_unsupported">Display does not support HDR10</string>
+    <string name="nous_hdr_android_unsupported">HDR requires Android 7.0 or later</string>
+    <string name="nous_hdr_decoder_unsupported">Decoder does not support HDR10 profile</string>
+    <string name="nous_hevc_decoder_missing">No HEVC decoder found</string>
+    <string name="nous_av1_decoder_missing">No AV1 decoder found</string>
+    <string name="nous_controller_mouse_on">Controller mouse emulation enabled</string>
+    <string name="nous_controller_mouse_off">Controller mouse emulation disabled</string>
+    <string name="nous_keys_load_error">Error loading custom keys: %s</string>
+    <string name="nous_configuration">Configuration</string>
+    <string name="nous_language_system">System language</string>
     <!-- Shortcut strings -->
     <string name="scut_deleted_pc">PC deleted</string>
     <string name="scut_not_paired">PC not paired</string>

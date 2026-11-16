@@ -4,6 +4,7 @@
     android:orientation="vertical"
     android:background="@color/nous_background">
     <LinearLayout
+        android:id="@+id/nous_library_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="56dp"

@@ -9,6 +9,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
+        <FrameLayout android:id="@+id/nous_games_container"
+            android:layout_width="match_parent" android:layout_height="match_parent"
+            android:visibility="gone" />
         <LinearLayout
             android:id="@+id/nous_main_tab"
             android:layout_width="match_parent"
@@ -16,7 +19,8 @@
             android:orientation="vertical">
           <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="wrap_content"
+                android:minHeight="56dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:paddingStart="20dp"
@@ -80,12 +84,15 @@
                     android:id="@+id/pcFragmentContainer"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
-                <LinearLayout
+                <ScrollView
                     android:id="@+id/no_pc_found_layout"
                     android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:paddingHorizontal="24dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="top"
-                    android:layout_marginHorizontal="24dp"
                     android:background="@drawable/nous_card"
                     android:gravity="center"
                     android:orientation="vertical"
@@ -116,6 +123,7 @@
                         android:layout_marginTop="12dp" android:text="@string/nous_scan_retry"
                         android:textColor="@color/nous_secondary" android:visibility="gone" />
                 </LinearLayout>
+                </ScrollView>
             </FrameLayout>
 
             <com.google.android.material.button.MaterialButton

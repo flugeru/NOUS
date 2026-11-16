@@ -88,7 +88,15 @@ if(NOT CMAKE_SYSTEM_PROCESSOR MATCHES "AMD64" AND DEFINED _MINHOOK_DLL)
     install(FILES "${_MINHOOK_DLL}" DESTINATION "." COMPONENT application)
 endif()
 
-# ViGEmBus installer is no longer bundled or managed by the installer
+# Official signed shared driver. Verify the reviewed release before packaging.
+file(SHA256 "${CMAKE_SOURCE_DIR}/packaging/windows/ViGEmBus_1.22.0.exe" _vigembus_sha256)
+if(NOT _vigembus_sha256 STREQUAL "89220a7865076b342892f98865f3499fb7c4cfd673159e89d352c360fd014c6a")
+    message(FATAL_ERROR "ViGEmBus installer SHA-256 mismatch")
+endif()
+install(FILES "${CMAKE_SOURCE_DIR}/packaging/windows/ViGEmBus_1.22.0.exe"
+    DESTINATION "scripts" RENAME vigembus_installer.exe COMPONENT application)
+install(FILES "${CMAKE_SOURCE_DIR}/packaging/windows/ViGEmBus_LICENSE.txt"
+    DESTINATION "licenses" COMPONENT application)
 
 # Adding tools
 install(TARGETS dxgi-info RUNTIME DESTINATION "tools" COMPONENT dxgi)

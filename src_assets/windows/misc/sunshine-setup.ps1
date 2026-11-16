@@ -1,5 +1,5 @@
-# Apollo Setup Script
-# This script orchestrates the installation and uninstallation of Apollo
+# NOUS Setup Script
+# This script orchestrates the installation and uninstallation of NOUS
 # Usage: powershell.exe -File sunshine-setup.ps1 -Action [install|uninstall] [-Silent]
 
 param(
@@ -204,11 +204,11 @@ function Write-LogFile {
 # If Action is not provided, prompt the user
 if (-not $Action) {
     Write-Information ""
-    Write-FramedText -Message "?? Apollo Setup Script" -Level "Information" -Color "Cyan"
+    Write-FramedText -Message "?? NOUS Setup Script" -Level "Information" -Color "Cyan"
     Write-Information ""
     Write-LogMessage -Message "Please select an action:" -Level "Information" -Color "Yellow"
-    Write-LogMessage -Message "  1. Install Apollo" -Level "Information" -Color "Green"
-    Write-LogMessage -Message "  2. Uninstall Apollo" -Level "Information" -Color "Red"
+    Write-LogMessage -Message "  1. Install NOUS" -Level "Information" -Color "Green"
+    Write-LogMessage -Message "  2. Uninstall NOUS" -Level "Information" -Color "Red"
     Write-Information ""
 
     $validChoice = $false
@@ -263,7 +263,7 @@ $RootDir = Split-Path -Parent $ScriptDir
 
 # Set up transcript logging
 $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
-$logDir = Join-Path $env:TEMP "Apollo\logs\$Action"
+$logDir = Join-Path $env:TEMP "NOUS\logs\$Action"
 $LogPath = Join-Path $logDir "${timestamp}.log"
 
 # Ensure the log directory exists
@@ -416,7 +416,7 @@ function Invoke-SunshineIfExist {
             }
 
             if ($process.ExitCode -ne 0) {
-                Write-LogMessage -Message "  ? Apollo exited with code $($process.ExitCode)" -Level "Warning"
+                Write-LogMessage -Message "  ? NOUS exited with code $($process.ExitCode)" -Level "Warning"
                 return $process.ExitCode
             } else {
                 Write-LogMessage -Message "  ? Done" -Level "Success"
@@ -442,7 +442,7 @@ Write-Information ""
 
 if ($Action -eq "install") {
     Write-FramedText `
-        -Message "?? Apollo Installation Script" `
+        -Message "?? NOUS Installation Script" `
         -Level "Information" `
         -Color "Yellow"
     Write-Information ""
@@ -453,7 +453,7 @@ if ($Action -eq "install") {
     # Reset permissions on the install directory
     $currentStep++
     Write-Progress `
-        -Activity "Installing Apollo" `
+        -Activity "Installing NOUS" `
         -Status "Resetting permissions on installation directory" `
         -PercentComplete (($currentStep / $totalSteps) * 100)
     Write-LogMessage -Message "?? Resetting permissions on installation directory" -Level "Step"
@@ -520,21 +520,21 @@ if ($Action -eq "install") {
     # 1. Update PATH (add)
     $currentStep++
     Write-Progress `
-        -Activity "Installing Apollo" `
+        -Activity "Installing NOUS" `
         -Status "Updating system PATH" `
         -PercentComplete (($currentStep / $totalSteps) * 100)
     $updatePathScript = Join-Path $RootDir "scripts\update-path.bat"
     Invoke-ScriptIfExist `
         -ScriptPath $updatePathScript `
         -Arguments "add" `
-        -Description "Adding Apollo directories to PATH" `
+        -Description "Adding NOUS directories to PATH" `
         -Emoji "??"
     Write-Information ""
 
     # 2. Migrate configuration
     $currentStep++
     Write-Progress `
-        -Activity "Installing Apollo" `
+        -Activity "Installing NOUS" `
         -Status "Migrating configuration" `
         -PercentComplete (($currentStep / $totalSteps) * 100)
     $migrateConfigScript = Join-Path $RootDir "scripts\migrate-config.bat"
@@ -547,7 +547,7 @@ if ($Action -eq "install") {
     # 3. Add firewall rules
     $currentStep++
     Write-Progress `
-        -Activity "Installing Apollo" `
+        -Activity "Installing NOUS" `
         -Status "Configuring firewall" `
         -PercentComplete (($currentStep / $totalSteps) * 100)
     $addFirewallScript = Join-Path $RootDir "scripts\add-firewall-rule.bat"
@@ -560,7 +560,7 @@ if ($Action -eq "install") {
     # 4. Install service
     $currentStep++
     Write-Progress `
-        -Activity "Installing Apollo" `
+        -Activity "Installing NOUS" `
         -Status "Installing service" `
         -PercentComplete (($currentStep / $totalSteps) * 100)
     $installServiceScript = Join-Path $RootDir "scripts\install-service.bat"
@@ -573,7 +573,7 @@ if ($Action -eq "install") {
     # 5. Configure autostart
     $currentStep++
     Write-Progress `
-        -Activity "Installing Apollo" `
+        -Activity "Installing NOUS" `
         -Status "Configuring autostart" `
         -PercentComplete (($currentStep / $totalSteps) * 100)
     $autostartScript = Join-Path $RootDir "scripts\autostart-service.bat"
@@ -583,8 +583,8 @@ if ($Action -eq "install") {
         -Emoji "??"
     Write-Information ""
 
-    Write-Progress -Activity "Installing Apollo" -Completed
-    Write-FramedText -Message "? Apollo installation completed successfully!" -Level "Success"
+    Write-Progress -Activity "Installing NOUS" -Completed
+    Write-FramedText -Message "? NOUS installation completed successfully!" -Level "Success"
 
     # Open documentation in browser (only if not running silently)
     if (-not $Silent) {
@@ -604,7 +604,7 @@ if ($Action -eq "install") {
 
 } elseif ($Action -eq "uninstall") {
     Write-FramedText `
-        -Message "???  Apollo Uninstallation Script" `
+        -Message "???  NOUS Uninstallation Script" `
         -Level "Information" `
         -Color "Yellow"
     Write-Information ""
@@ -615,7 +615,7 @@ if ($Action -eq "install") {
     # 1. Delete firewall rules
     $currentStep++
     Write-Progress `
-        -Activity "Uninstalling Apollo" `
+        -Activity "Uninstalling NOUS" `
         -Status "Removing firewall rules" `
         -PercentComplete (($currentStep / $totalSteps) * 100)
     $deleteFirewallScript = Join-Path $RootDir "scripts\delete-firewall-rule.bat"
@@ -628,7 +628,7 @@ if ($Action -eq "install") {
     # 2. Uninstall service
     $currentStep++
     Write-Progress `
-        -Activity "Uninstalling Apollo" `
+        -Activity "Uninstalling NOUS" `
         -Status "Uninstalling service" `
         -PercentComplete (($currentStep / $totalSteps) * 100)
     $uninstallServiceScript = Join-Path $RootDir "scripts\uninstall-service.bat"
@@ -641,7 +641,7 @@ if ($Action -eq "install") {
     # 3. Restore NVIDIA preferences
     $currentStep++
     Write-Progress `
-        -Activity "Uninstalling Apollo" `
+        -Activity "Uninstalling NOUS" `
         -Status "Restoring NVIDIA settings" `
         -PercentComplete (($currentStep / $totalSteps) * 100)
     Invoke-SunshineIfExist `
@@ -653,7 +653,7 @@ if ($Action -eq "install") {
     # 4. Update PATH (remove)
     $currentStep++
     Write-Progress `
-        -Activity "Uninstalling Apollo" `
+        -Activity "Uninstalling NOUS" `
         -Status "Cleaning up system PATH" `
         -PercentComplete (($currentStep / $totalSteps) * 100)
     $updatePathScript = Join-Path $RootDir "scripts\update-path.bat"
@@ -664,9 +664,9 @@ if ($Action -eq "install") {
         -Emoji "??"
     Write-Information ""
 
-    Write-Progress -Activity "Uninstalling Apollo" -Completed
+    Write-Progress -Activity "Uninstalling NOUS" -Completed
     Write-FramedText `
-        -Message "? Apollo uninstallation completed successfully!" `
+        -Message "? NOUS uninstallation completed successfully!" `
         -Level "Success"
 }
 

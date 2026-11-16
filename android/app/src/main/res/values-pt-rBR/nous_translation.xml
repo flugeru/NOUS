@@ -47,7 +47,7 @@
     <string name="summary_checkbox_ultra_low_latency">Disponível para Snapdragon 8 Gen 2, 8(s) Gen 3, 8 Elite e dispositivos MediaTek.</string>
     <string name="title_checkbox_forceTightThresholds">VSync estrito (experimental)</string>
     <string name="summary_checkbox_forceTightThresholds">Reduz a tolerância de sincronização para diminuir a latência. Pode aumentar a perda de quadros.</string>
-    <string name="title_checkbox_use_virtual_display">Display virtual</string>
+    <string name="title_checkbox_use_virtual_display">Monitor virtual</string>
     <string name="summary_checkbox_use_virtual_display">Cria um monitor no host NOUS com resolução e frequência correspondentes ao cliente.</string>
     <string name="title_checkbox_resume_without_confirm">Retomada rápida</string>
     <string name="summary_checkbox_resume_without_confirm">Volta diretamente ao aplicativo sem abrir o menu de retomada.</string>

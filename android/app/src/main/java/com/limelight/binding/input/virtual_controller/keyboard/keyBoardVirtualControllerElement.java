@@ -242,17 +242,17 @@ public abstract class keyBoardVirtualControllerElement extends View {
     protected void showConfigurationDialog() {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
 
-        alertBuilder.setTitle("Configuration");
+        alertBuilder.setTitle(com.limelight.R.string.nous_configuration);
 
         CharSequence functions[] = new CharSequence[]{
-                "Move",
-                "Resize",
+                getContext().getString(com.limelight.R.string.nous_move),
+                getContext().getString(com.limelight.R.string.nous_resize),
             /*election
             "Set n
             Disable color sormal color",
             "Set pressed color",
             */
-                "Cancel"
+                getContext().getString(com.limelight.R.string.cancel)
         };
 
         alertBuilder.setItems(functions, new DialogInterface.OnClickListener() {

@@ -495,7 +495,7 @@ public class KeyBoardController {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(context, "Error loading custom keys: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, context.getString(com.limelight.R.string.nous_keys_load_error, e.getMessage()), Toast.LENGTH_SHORT).show();
                 }
             }
 

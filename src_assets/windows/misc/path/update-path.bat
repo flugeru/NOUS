@@ -4,8 +4,8 @@ setlocal DisableDelayedExpansion
 rem Check if parameter is provided
 if "%~1"=="" (
     echo Usage: %~nx0 [add^|remove]
-    echo   add    - Adds Apollo directories to system PATH
-    echo   remove - Removes Apollo directories from system PATH
+    echo   add    - Adds NOUS directories to system PATH
+    echo   remove - Removes NOUS directories from system PATH
     exit /b 1
 )
 

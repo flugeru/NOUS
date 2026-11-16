@@ -120,6 +120,7 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
 
                     // Start updates
                     startComputerUpdates();
+                    runOnUiThread(() -> openLibraryShortcut());
 
                     // Force a keypair to be generated early to avoid discovery delays
                     new AndroidCryptoProvider(PcView.this).getClientCertificate();
@@ -142,8 +143,7 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
         // This is not prone to races because both callbacks are invoked
         // in the main thread.
         if (completeOnCreateCalled) {
-            // Reinitialize views just in case orientation changed
-            initializeViews();
+            recreate();
         }
 
         refreshProfileButton();
@@ -163,6 +163,37 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
     private final static int PAIR_ID_OTP = 21;
 
     private NousSettingsTab settingsTab;
+    private volatile ComputerManagerListener gamesListener;
+    private int restoredTab = R.id.nous_nav_computers;
+
+    @Override
+    protected void onSaveInstanceState(Bundle state) {
+        BottomNavigationView navigation = findViewById(R.id.nous_navigation);
+        state.putInt("nous.tab", navigation == null ? restoredTab : navigation.getSelectedItemId());
+        super.onSaveInstanceState(state);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        openLibraryShortcut();
+    }
+
+    private void openLibraryShortcut() {
+        String uuid = getIntent().getStringExtra(AppView.UUID_EXTRA);
+        if (uuid == null || managerBinder == null || settingsTab == null) return;
+        ComputerDetails host = managerBinder.getComputer(uuid);
+        getIntent().removeExtra(AppView.UUID_EXTRA);
+        if (host != null) doAppList(host,
+                getIntent().getBooleanExtra(AppView.NEW_PAIR_EXTRA, false),
+                getIntent().getBooleanExtra(AppView.SHOW_HIDDEN_APPS_EXTRA, false));
+        else Toast.makeText(this, R.string.nous_games_need_pc, Toast.LENGTH_SHORT).show();
+    }
+
+    void setGamesListener(ComputerManagerListener listener) {
+        gamesListener = listener;
+    }
 
     private void initializeViews() {
         boolean showSettings = settingsTab != null && settingsTab.isVisible();
@@ -194,13 +225,17 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
         navigation.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nous_nav_games) {
-                openGamesTab();
-                return false;
+                return openGamesTab();
             }
+            findViewById(R.id.nous_games_container).setVisibility(View.GONE);
             settingsTab.show(id == R.id.nous_nav_settings);
             return true;
         });
         navigation.setSelectedItemId(showSettings ? R.id.nous_nav_settings : R.id.nous_nav_computers);
+        if (restoredTab == R.id.nous_nav_settings) navigation.setSelectedItemId(R.id.nous_nav_settings);
+        else if (restoredTab == R.id.nous_nav_games && getFragmentManager().findFragmentByTag("games") != null) showGamesContent();
+        restoredTab = R.id.nous_nav_computers;
+        openLibraryShortcut();
 
         addComputerButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -251,6 +286,7 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) restoredTab = savedInstanceState.getInt("nous.tab", R.id.nous_nav_computers);
 
         // Assume we're in the foreground when created to avoid a race
         // between binding to CMS and onResume()
@@ -323,6 +359,17 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
         pcGridAdapter = new PcGridAdapter(this, PreferenceConfiguration.readPreferences(this));
 
         initializeViews();
+        getOnBackPressedDispatcher().addCallback(this, new androidx.activity.OnBackPressedCallback(true) {
+            @Override public void handleOnBackPressed() {
+                BottomNavigationView navigation = findViewById(R.id.nous_navigation);
+                if (navigation.getSelectedItemId() != R.id.nous_nav_computers) showComputers();
+                else {
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                    setEnabled(true);
+                }
+            }
+        });
     }
 
     private void startComputerUpdates() {
@@ -333,6 +380,8 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
             managerBinder.startPolling(new ComputerManagerListener() {
                 @Override
                 public void notifyComputerUpdated(final ComputerDetails details) {
+                    ComputerManagerListener listener = gamesListener;
+                    if (listener != null) listener.notifyComputerUpdated(details);
                     if (!freezeUpdates) {
                         PcView.this.runOnUiThread(new Runnable() {
                             @Override
@@ -442,6 +491,10 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+        if (findViewById(R.id.nous_games_container).getVisibility() == View.VISIBLE) {
+            super.onCreateContextMenu(menu, v, menuInfo);
+            return;
+        }
         stopComputerUpdates(false);
 
         // Call superclass
@@ -754,7 +807,16 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
         }).start();
     }
 
-    private void openGamesTab() {
+    void showComputers() {
+        ((BottomNavigationView) findViewById(R.id.nous_navigation)).setSelectedItemId(R.id.nous_nav_computers);
+    }
+
+    private boolean openGamesTab() {
+        android.app.Fragment existing = getFragmentManager().findFragmentByTag("games");
+        if (existing != null && !existing.isRemoving()) {
+            showGamesContent();
+            return true;
+        }
         List<ComputerDetails> hosts = new ArrayList<>();
         for (int i = 0; i < pcGridAdapter.getCount(); i++) {
             ComputerDetails host = pcGridAdapter.getItem(i).details;
@@ -776,6 +838,7 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
                     .setItems(names, (dialog, which) -> doAppList(hosts.get(which), false, false))
                     .show();
         }
+        return hosts.size() == 1;
     }
 
     private void doAppList(ComputerDetails computer, boolean newlyPaired, boolean showHiddenGames) {
@@ -788,16 +851,31 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
             return;
         }
 
-        Intent i = new Intent(this, AppView.class);
-        i.putExtra(AppView.NAME_EXTRA, computer.name);
-        i.putExtra(AppView.UUID_EXTRA, computer.uuid);
-        i.putExtra(AppView.NEW_PAIR_EXTRA, newlyPaired);
-        i.putExtra(AppView.SHOW_HIDDEN_APPS_EXTRA, showHiddenGames);
-        startActivity(i);
+        Bundle arguments = new Bundle();
+        arguments.putString(AppView.NAME_EXTRA, computer.name);
+        arguments.putString(AppView.UUID_EXTRA, computer.uuid);
+        arguments.putBoolean(AppView.NEW_PAIR_EXTRA, newlyPaired);
+        arguments.putBoolean(AppView.SHOW_HIDDEN_APPS_EXTRA, showHiddenGames);
+        GamesFragment games = new GamesFragment();
+        games.setArguments(arguments);
+        getFragmentManager().beginTransaction().replace(R.id.nous_games_container, games, "games").commitAllowingStateLoss();
+        showGamesContent();
+    }
+
+    private void showGamesContent() {
+        settingsTab.show(false);
+        View header = findViewById(R.id.nous_games_container).findViewById(R.id.nous_library_header);
+        if (header != null) header.setVisibility(View.GONE);
+        findViewById(R.id.nous_main_tab).setVisibility(View.GONE);
+        findViewById(R.id.nous_games_container).setVisibility(View.VISIBLE);
+        ((BottomNavigationView) findViewById(R.id.nous_navigation)).getMenu().findItem(R.id.nous_nav_games).setChecked(true);
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+        if (findViewById(R.id.nous_games_container).getVisibility() == View.VISIBLE) {
+            return super.onContextItemSelected(item);
+        }
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
         final ComputerObject computer = (ComputerObject) pcGridAdapter.getItem(info.position);
         switch (item.getItemId()) {

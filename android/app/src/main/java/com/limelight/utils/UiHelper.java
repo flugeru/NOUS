@@ -83,8 +83,11 @@ public class UiHelper {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 // On Android 13, migrate this non-default language setting into the OS native API
                 LocaleManager localeManager = activity.getSystemService(LocaleManager.class);
+                LocaleList appLocales = localeManager.getApplicationLocales();
                 LocaleList systemLocales = localeManager.getSystemLocales();
-                if (!systemLocales.isEmpty()) {
+                if (!appLocales.isEmpty()) {
+                    config.locale = appLocales.get(0);
+                } else if (!systemLocales.isEmpty()) {
                     config.locale = systemLocales.get(0);
                 }
             }
@@ -103,6 +106,9 @@ public class UiHelper {
             }
         }
 
+        Locale selected = config.locale;
+        config.setLocale(selected != null && "pt".equals(selected.getLanguage())
+                ? new Locale("pt", "BR") : Locale.ENGLISH);
         activity.getResources().updateConfiguration(config, activity.getResources().getDisplayMetrics());
     }
 

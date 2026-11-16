@@ -91,7 +91,10 @@ public class StartupTest {
 
         AppView activity = Robolectric.buildActivity(AppView.class, intent).create().get();
         assertNotNull("AppView activity should be created", activity);
-        assertFalse("Activity should not be finishing", activity.isFinishing());
+        assertTrue("Compatibility activity should finish after redirect", activity.isFinishing());
+        Intent next = org.robolectric.Shadows.shadowOf(activity).getNextStartedActivity();
+        assertEquals(PcView.class.getName(), next.getComponent().getClassName());
+        assertEquals("test-uuid-123", next.getStringExtra(AppView.UUID_EXTRA));
     }
 
     @Test

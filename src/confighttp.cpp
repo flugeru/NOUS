@@ -6213,7 +6213,7 @@ namespace confighttp {
     boost::filesystem::path working_dir = boost::filesystem::path(installer_path.string()).parent_path();
     platf::bp::environment env = platf::bp::this_process::env();
 
-    const std::string install_cmd = std::format("{} /quiet", installer_path.string());
+    const std::string install_cmd = std::format("\"{}\" /quiet /norestart", installer_path.string());
     auto child = platf::run_command(true, false, install_cmd, working_dir, env, nullptr, ec, nullptr);
 
     if (ec) {
@@ -6230,9 +6230,10 @@ namespace confighttp {
       output_tree["error"] = "Installer failed: " + ec.message();
     } else {
       int exit_code = child.exit_code();
-      output_tree["status"] = (exit_code == 0);
+      output_tree["status"] = (exit_code == 0 || exit_code == 3010);
       output_tree["exit_code"] = exit_code;
-      if (exit_code != 0) {
+      output_tree["restart_required"] = (exit_code == 3010);
+      if (exit_code != 0 && exit_code != 3010) {
         output_tree["error"] = std::format("Installer exited with code {}", exit_code);
       }
     }
