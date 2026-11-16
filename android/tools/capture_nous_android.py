@@ -213,7 +213,17 @@ def run(c):
     select("nous_profile_name")
     shell("input", "text", "NOUS%semulator")
     # The hardware keyboard is usable even when no software IME is showing.
-    status = shell("dumpsys", "input_method")
+    # dumpsys has its own timeout, independent of the adb subprocess timeout.
+    # Retry a temporary service timeout before deciding whether to press Back.
+    for attempt in range(3):
+        try:
+            status = shell("dumpsys", "-t", "20", "input_method")
+            break
+        except subprocess.CalledProcessError as exc:
+            if attempt == 2:
+                detail = (exc.stderr or exc.stdout or "").strip()
+                raise RuntimeError(f"Could not inspect emulator keyboard state: {detail}") from exc
+            pause(1)
     if re.search(r"(?:mInputShown|mIsInputViewShown)=true", status):
         back()
     c.walk_list("profile-preferences", max_pages=48)
