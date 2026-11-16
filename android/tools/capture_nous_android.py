@@ -162,14 +162,27 @@ def run(c):
     shell("settings", "put", "system", "accelerometer_rotation", "0")
     shell("settings", "put", "system", "user_rotation", "0")
     shell("cmd", "locale", "set-app-locales", PACKAGE, "--user", "0", "--locales", "pt-BR")
-    shell("am", "start", "-W", "-a", "android.intent.action.MAIN",
-          "-c", "android.intent.category.HOME")
-    pause(2)
     width, height = size()
-    shell("input", "swipe", str(width // 2), str(height * 4 // 5),
-          str(width // 2), str(height // 5), "500")
-    wait_for(labels=("NOUS",))
-    c.capture("launcher-app-drawer")
+    for attempt in range(2):
+        shell("am", "start", "-W", "-a", "android.intent.action.MAIN",
+              "-c", "android.intent.category.HOME")
+        pause(5)
+        shell("input", "swipe", str(width // 2), str(height * 4 // 5),
+              str(width // 2), str(height // 5), "500")
+        try:
+            wait_for(labels=("NOUS",))
+        except RuntimeError:
+            root, _ = tree()
+            launcher_anr = match(root, labels=("Pixel Launcher isn't responding",))
+            close = match(root, labels=("Close app",))
+            if not launcher_anr or close is None:
+                raise
+            tap(close)
+            if attempt == 1:
+                c.optional_missing.append("launcher-app-drawer: Pixel Launcher did not respond")
+        else:
+            c.capture("launcher-app-drawer")
+            break
     shell("am", "start", "-W", "-n", PACKAGE + "/com.limelight.PcView")
     wait_for("nous_nav_computers")
     c.capture("computers-on-launch")
