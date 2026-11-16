@@ -1187,6 +1187,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        UiHelper.setLocale(this);
 
         // Set requested orientation for possible new screen size
         setPreferredOrientationForActivity();
