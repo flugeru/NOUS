@@ -112,6 +112,26 @@ public class NousLayoutPreviewTest {
         }
     }
 
+    @Test public void legacyLibraryShortcutPreservesExtras() {
+        android.content.Intent shortcut = new android.content.Intent()
+                .putExtra(AppView.UUID_EXTRA, "fixture-pc")
+                .putExtra(AppView.NAME_EXTRA, "Fixture PC")
+                .putExtra(AppView.SHOW_HIDDEN_APPS_EXTRA, true);
+        try (org.robolectric.android.controller.ActivityController<AppView> controller =
+                     Robolectric.buildActivity(AppView.class, shortcut).setup()) {
+            AppView activity = controller.get();
+            android.content.Intent target = org.robolectric.Shadows.shadowOf(activity).getNextStartedActivity();
+            assertTrue(activity.isFinishing());
+            assertNotNull(target);
+            assertEquals(PcView.class.getName(), target.getComponent().getClassName());
+            assertEquals("fixture-pc", target.getStringExtra(AppView.UUID_EXTRA));
+            assertEquals("Fixture PC", target.getStringExtra(AppView.NAME_EXTRA));
+            assertTrue(target.getBooleanExtra(AppView.SHOW_HIDDEN_APPS_EXTRA, false));
+            assertEquals(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP | android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP,
+                    target.getFlags());
+        }
+    }
+
     @Test public void detachedLibraryDoesNotHandleHostContextMenu() {
         assertFalse(new GamesFragment().onContextItemSelected(null));
     }
