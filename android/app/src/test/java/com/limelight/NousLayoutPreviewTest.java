@@ -96,6 +96,10 @@ public class NousLayoutPreviewTest {
         }
     }
 
+    @Test public void detachedLibraryDoesNotHandleHostContextMenu() {
+        assertFalse(new GamesFragment().onContextItemSelected(null));
+    }
+
     @Test public void helpHomeWorksWithoutAnExternalUrl() {
         try (org.robolectric.android.controller.ActivityController<HelpActivity> controller =
                      Robolectric.buildActivity(HelpActivity.class).setup()) {
