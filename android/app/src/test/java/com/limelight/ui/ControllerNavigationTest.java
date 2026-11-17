@@ -46,6 +46,7 @@ public class ControllerNavigationTest {
             button.setOnClickListener(view -> clicks.incrementAndGet());
             host.setContentView(button);
             assertTrue(button.requestFocus());
+            assertTrue(host.getWindow().getCallback() instanceof ControllerNavigation);
 
             press(host.getWindow(), KeyEvent.KEYCODE_BUTTON_A);
             Shadows.shadowOf(Looper.getMainLooper()).idle();
@@ -60,6 +61,22 @@ public class ControllerNavigationTest {
                     .show();
             press(dialog.getWindow(), KeyEvent.KEYCODE_BUTTON_B);
             assertFalse(dialog.isShowing());
+
+            AtomicInteger cancellations = new AtomicInteger();
+            AlertDialog confirmation = new ControllerDialogBuilder(host)
+                    .setMessage("Confirm?")
+                    .setNegativeButton(android.R.string.cancel, (ignored, which) -> cancellations.incrementAndGet())
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
+            press(confirmation.getWindow(), KeyEvent.KEYCODE_DPAD_DOWN);
+            Button confirm = confirmation.getButton(AlertDialog.BUTTON_POSITIVE);
+            Button cancel = confirmation.getButton(AlertDialog.BUTTON_NEGATIVE);
+            assertTrue(confirm.getCompoundDrawablesRelative()[0] != null);
+            assertTrue(cancel.getCompoundDrawablesRelative()[0] != null);
+            press(confirmation.getWindow(), KeyEvent.KEYCODE_BUTTON_B);
+            Shadows.shadowOf(Looper.getMainLooper()).idle();
+            assertEquals(1, cancellations.get());
+            assertFalse(confirmation.isShowing());
         }
     }
 

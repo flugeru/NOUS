@@ -251,6 +251,11 @@ def run(c):
     select("nous_save_profile")
     wait_for("addProfileFab")
     c.capture("profiles-with-example")
+    select("deleteProfile")
+    controller_key("KEYCODE_DPAD_DOWN")
+    c.capture("dialog-profile-delete-controller")
+    controller_key("KEYCODE_BUTTON_B")
+    wait_for("profileActive")
     select("profileActive")
     back()
 

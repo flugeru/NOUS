@@ -15,6 +15,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.EditText;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.WindowCallbackWrapper;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
@@ -26,30 +27,70 @@ final class ControllerNavigation extends WindowCallbackWrapper {
     private static final float RELEASE = 0.35f;
     private static final int NO_DIRECTION = KeyEvent.KEYCODE_UNKNOWN;
 
+    private static int lastControllerId = Integer.MIN_VALUE;
+
     private final Window window;
     private final Runnable goBack;
+    private final ControllerDialogActions dialogActions;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable repeat = this::repeatDirection;
     private int heldDirection = NO_DIRECTION;
     private int heldDevice;
+    private View confirmFocus;
+    private boolean dispatchNativeConfirm;
 
     static void attach(Window window, Runnable goBack) {
         if (!(window.getCallback() instanceof ControllerNavigation)) {
-            window.setCallback(new ControllerNavigation(window, goBack));
+            window.setCallback(new ControllerNavigation(window, goBack, null));
         }
     }
 
     static void attach(Dialog dialog) {
         Window window = dialog.getWindow();
-        if (window != null) {
+        if (window == null || window.getCallback() instanceof ControllerNavigation) {
+            return;
+        }
+        if (dialog instanceof AlertDialog) {
+            ControllerDialogActions actions = new ControllerDialogActions((AlertDialog) dialog);
+            window.setCallback(new ControllerNavigation(window, actions::back, actions));
+        } else {
             attach(window, dialog::onBackPressed);
         }
     }
 
-    private ControllerNavigation(Window window, Runnable goBack) {
+    private ControllerNavigation(Window window, Runnable goBack, ControllerDialogActions dialogActions) {
         super(window.getCallback());
         this.window = window;
         this.goBack = goBack;
+        this.dialogActions = dialogActions;
+    }
+
+    private static InputDevice connectedController() {
+        InputDevice last = InputDevice.getDevice(lastControllerId);
+        if (isController(last)) {
+            return last;
+        }
+        for (int id : InputDevice.getDeviceIds()) {
+            InputDevice device = InputDevice.getDevice(id);
+            if (isController(device)) {
+                return device;
+            }
+        }
+        return null;
+    }
+
+    private static boolean isController(InputDevice device) {
+        return device != null && !device.isVirtual() && (device.supportsSource(InputDevice.SOURCE_GAMEPAD)
+                || device.supportsSource(InputDevice.SOURCE_JOYSTICK));
+    }
+
+    private void controllerUsed(InputDevice device, int keyCode) {
+        if (isController(device)) {
+            lastControllerId = device.getId();
+        }
+        if (dialogActions != null) {
+            dialogActions.show(device, keyCode);
+        }
     }
 
     @Override
@@ -60,30 +101,14 @@ final class ControllerNavigation extends WindowCallbackWrapper {
             return super.dispatchKeyEvent(event);
         }
 
+        if (event.isFromSource(InputDevice.SOURCE_GAMEPAD)
+                || event.isFromSource(InputDevice.SOURCE_JOYSTICK)) {
+            controllerUsed(event.getDevice(), event.getKeyCode());
+        }
         switch (event.getKeyCode()) {
             case KeyEvent.KEYCODE_BUTTON_1:
             case KeyEvent.KEYCODE_BUTTON_A:
-                View focus = window.getCurrentFocus();
-                if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                    if (focus == null) {
-                        focusFirst(View.FOCUS_DOWN);
-                        return true;
-                    }
-                    if (focus.isInTouchMode()) {
-                        focus.requestFocusFromTouch();
-                    }
-                    if (focus instanceof EditText) {
-                        WindowCompat.getInsetsController(window, focus).show(WindowInsetsCompat.Type.ime());
-                        return true;
-                    }
-                } else if (focus instanceof EditText) {
-                    return true;
-                }
-                KeyEvent confirm = new KeyEvent(event.getDownTime(), event.getEventTime(),
-                        event.getAction(), KeyEvent.KEYCODE_DPAD_CENTER, event.getRepeatCount(),
-                        event.getMetaState(), event.getDeviceId(), event.getScanCode(),
-                        event.getFlags(), event.getSource());
-                return super.dispatchKeyEvent(confirm);
+                return confirm(event);
 
             case KeyEvent.KEYCODE_BUTTON_2:
             case KeyEvent.KEYCODE_BUTTON_B:
@@ -126,6 +151,63 @@ final class ControllerNavigation extends WindowCallbackWrapper {
         return super.dispatchKeyEvent(event);
     }
 
+    private boolean confirm(KeyEvent event) {
+        View focus = window.getCurrentFocus();
+        if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+            clearConfirmFocus();
+            dispatchNativeConfirm = false;
+            if (focus == null) {
+                focusFirst(View.FOCUS_DOWN);
+                return true;
+            }
+            if (focus.isInTouchMode()) {
+                focus.requestFocusFromTouch();
+            }
+            if (focus instanceof EditText) {
+                WindowCompat.getInsetsController(window, focus).show(WindowInsetsCompat.Type.ime());
+                return true;
+            }
+            if (focus instanceof AbsListView || focus.isClickable()) {
+                confirmFocus = focus;
+                if (!(focus instanceof AbsListView)) {
+                    focus.setPressed(true);
+                }
+            } else {
+                dispatchNativeConfirm = true;
+            }
+        } else if (event.getAction() == KeyEvent.ACTION_UP && confirmFocus != null) {
+            View target = confirmFocus;
+            clearConfirmFocus();
+            if (target == focus && target.isEnabled() && target.isShown() && !event.isCanceled()) {
+                if (target instanceof AbsListView) {
+                    AbsListView list = (AbsListView) target;
+                    View row = list.getSelectedView();
+                    if (row != null) {
+                        list.performItemClick(row, list.getSelectedItemPosition(), list.getSelectedItemId());
+                    }
+                } else {
+                    target.performClick();
+                }
+            }
+        }
+
+        if (!dispatchNativeConfirm) {
+            return true;
+        }
+        KeyEvent nativeConfirm = new KeyEvent(event.getDownTime(), event.getEventTime(),
+                event.getAction(), KeyEvent.KEYCODE_DPAD_CENTER, event.getRepeatCount(),
+                event.getMetaState(), event.getDeviceId(), event.getScanCode(),
+                event.getFlags(), event.getSource());
+        return super.dispatchKeyEvent(nativeConfirm);
+    }
+
+    private void clearConfirmFocus() {
+        if (confirmFocus != null) {
+            confirmFocus.setPressed(false);
+            confirmFocus = null;
+        }
+    }
+
     @Override
     public boolean dispatchGenericMotionEvent(MotionEvent event) {
         if (event.getActionMasked() != MotionEvent.ACTION_MOVE
@@ -146,6 +228,7 @@ final class ControllerNavigation extends WindowCallbackWrapper {
             if (direction != NO_DIRECTION) {
                 heldDirection = direction;
                 heldDevice = device;
+                controllerUsed(event.getDevice(), NO_DIRECTION);
                 navigate(direction);
                 handler.postDelayed(repeat, 340);
             }
@@ -167,6 +250,13 @@ final class ControllerNavigation extends WindowCallbackWrapper {
     public void onWindowFocusChanged(boolean hasFocus) {
         if (!hasFocus) {
             stopRepeating();
+            clearConfirmFocus();
+            dispatchNativeConfirm = false;
+        } else if (dialogActions != null) {
+            InputDevice device = connectedController();
+            if (device != null) {
+                dialogActions.show(device, NO_DIRECTION);
+            }
         }
         super.onWindowFocusChanged(hasFocus);
     }
