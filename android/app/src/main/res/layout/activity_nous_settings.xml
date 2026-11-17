@@ -25,7 +25,7 @@
                 android:paddingTop="8dp" android:paddingBottom="8dp">
                 <ImageView android:layout_width="24dp" android:layout_height="24dp"
                     android:importantForAccessibility="no" android:tint="@color/nous_secondary"
-                    android:src="@drawable/ic_nous_pc" />
+                    android:src="@drawable/ic_video_audio" />
                 <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                     android:layout_weight="1" android:layout_marginStart="14dp" android:orientation="vertical">
                     <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -46,7 +46,7 @@
                 android:paddingTop="8dp" android:paddingBottom="8dp">
                 <ImageView android:layout_width="24dp" android:layout_height="24dp"
                     android:importantForAccessibility="no" android:tint="@color/nous_secondary"
-                    android:src="@drawable/ic_profiles" />
+                    android:src="@drawable/ic_stream_profiles" />
                 <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                     android:layout_weight="1" android:layout_marginStart="14dp" android:orientation="vertical">
                     <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
                 android:paddingTop="8dp" android:paddingBottom="8dp">
                 <ImageView android:layout_width="24dp" android:layout_height="24dp"
                     android:importantForAccessibility="no" android:tint="@color/nous_secondary"
-                    android:src="@drawable/ic_nous_games" />
+                    android:src="@drawable/ic_controls" />
                 <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                     android:layout_weight="1" android:layout_marginStart="14dp" android:orientation="vertical">
                     <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -88,7 +88,7 @@
                 android:paddingTop="8dp" android:paddingBottom="8dp">
                 <ImageView android:layout_width="24dp" android:layout_height="24dp"
                     android:importantForAccessibility="no" android:tint="@color/nous_secondary"
-                    android:src="@drawable/ic_nous_settings" />
+                    android:src="@drawable/ic_advanced" />
                 <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                     android:layout_weight="1" android:layout_marginStart="14dp" android:orientation="vertical">
                     <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -113,7 +113,7 @@
                 android:paddingTop="8dp" android:paddingBottom="8dp">
                 <ImageView android:layout_width="24dp" android:layout_height="24dp"
                     android:importantForAccessibility="no" android:tint="@color/nous_secondary"
-                    android:src="@drawable/ic_nous_settings" />
+                    android:src="@drawable/ic_device_diagnostics" />
                 <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                     android:layout_weight="1" android:layout_marginStart="14dp" android:orientation="vertical">
                     <TextView android:layout_width="match_parent" android:layout_height="wrap_content"

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="drawable" name="ic_computer">@drawable/ic_nous_pc</item>
+    <item type="drawable" name="ic_close_external">@drawable/ic_close</item>
+    <item type="drawable" name="ic_menu_external">@drawable/ic_menu</item>
+</resources>

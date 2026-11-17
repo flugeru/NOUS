@@ -1,7 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Google Material Symbols Rounded: keyboard_full. Licensed under Apache-2.0. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp" android:height="24dp" android:viewportWidth="24"
-    android:viewportHeight="24">
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M3,5v14h18V5H3zM5,7h3v2H5V7zm4,0h3v2H9V7zm4,0h3v2h-3V7zm4,0h3v2h-3V7zM5,10h14v6H5v-6zm2,1v1.5h2V11H7zm3,0v1.5h2V11h-2zm3,0v1.5h2V11h-2z" />
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960">
+    <group android:translateY="960">
+        <path
+            android:fillColor="@android:color/white"
+            android:pathData="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm0-240h640v-320H160v320Z" />
+    </group>
 </vector>

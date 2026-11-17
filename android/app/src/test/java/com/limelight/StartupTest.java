@@ -69,6 +69,23 @@ public class StartupTest {
     }
 
     @Test
+    public void computerHeaderActionsOpenManualConnectionAndProfiles() {
+        try (var controller = Robolectric.buildActivity(PcView.class).create()) {
+            PcView activity = controller.get();
+            var shadow = org.robolectric.Shadows.shadowOf(activity);
+            String manualConnection = com.limelight.preferences.AddComputerManually.class.getName();
+
+            assertTrue(activity.findViewById(R.id.nous_add_computer).performClick());
+            assertEquals(manualConnection, shadow.getNextStartedActivity().getComponent().getClassName());
+            assertTrue(activity.findViewById(R.id.manuallyAddPc).performClick());
+            assertEquals(manualConnection, shadow.getNextStartedActivity().getComponent().getClassName());
+            assertTrue(activity.findViewById(R.id.profilesButton).performClick());
+            assertEquals(ProfilesActivity.class.getName(),
+                    shadow.getNextStartedActivity().getComponent().getClassName());
+        }
+    }
+
+    @Test
     public void testPcViewActivityWithIntent() {
         // Test PcView with various intent extras that might cause crashes
         Intent intent = new Intent();

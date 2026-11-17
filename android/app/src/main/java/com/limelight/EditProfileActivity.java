@@ -46,6 +46,7 @@ public class EditProfileActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_nous_back);
 
         // Get profile UUID from intent
         profileUuid = getIntent().getStringExtra("profileUuid");

@@ -112,23 +112,25 @@ public class HelpActivity extends AppCompatActivity {
         brand.setText("NOUS\nAndroid · " + BuildConfig.VERSION_NAME);
         brand.setTextAppearance(R.style.Nous_Title);
         body.addView(brand);
-        addHelpCard(body, R.string.nous_help_pair, () -> com.limelight.utils.HelpLauncher.launchUrl(this,
+        addHelpCard(body, R.string.nous_help_pair, R.drawable.ic_pairing, () -> com.limelight.utils.HelpLauncher.launchUrl(this,
                 "https://github.com/moonlight-stream/moonlight-docs/wiki/Setup-Guide"));
-        addHelpCard(body, R.string.nous_help_connection, () -> com.limelight.utils.HelpLauncher.launchTroubleshooting(this));
-        addHelpCard(body, R.string.nous_diagnostics, () -> startActivity(new android.content.Intent(this, DebugInfoActivity.class)));
-        addHelpCard(body, R.string.nous_credits, () -> new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+        addHelpCard(body, R.string.nous_help_connection, R.drawable.ic_connection_help, () -> com.limelight.utils.HelpLauncher.launchTroubleshooting(this));
+        addHelpCard(body, R.string.nous_diagnostics, R.drawable.ic_device_diagnostics, () -> startActivity(new android.content.Intent(this, DebugInfoActivity.class)));
+        addHelpCard(body, R.string.nous_credits, R.drawable.ic_credits, () -> new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.nous_credits).setMessage(R.string.nous_credits_text)
                 .setPositiveButton(android.R.string.ok, null).show());
-        addHelpCard(body, R.string.title_software_update, () -> com.limelight.utils.HelpLauncher.launchUrl(this,
+        addHelpCard(body, R.string.title_software_update, R.drawable.ic_versions, () -> com.limelight.utils.HelpLauncher.launchUrl(this,
                 "https://github.com/flugeru/NOUS/releases"));
         scroll.addView(body);
         container.addView(scroll);
         UiHelper.notifyNewRootView(this);
     }
 
-    private void addHelpCard(android.widget.LinearLayout body, int label, Runnable action) {
+    private void addHelpCard(android.widget.LinearLayout body, int label, int icon, Runnable action) {
         com.google.android.material.button.MaterialButton card = new com.google.android.material.button.MaterialButton(this);
         card.setText(label);
+        card.setIconResource(icon);
+        card.setIconTint(android.content.res.ColorStateList.valueOf(androidx.core.content.ContextCompat.getColor(this, R.color.nous_secondary)));
         card.setMaxLines(3);
         card.setGravity(android.view.Gravity.START | android.view.Gravity.CENTER_VERTICAL);
         card.setBackgroundTintList(android.content.res.ColorStateList.valueOf(

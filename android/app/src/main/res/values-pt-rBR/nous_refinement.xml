@@ -13,7 +13,7 @@
     <string name="nous_help_pair">Como parear um PC</string>
     <string name="nous_help_connection">Problemas de conexão</string>
     <string name="nous_credits">Créditos e licenças</string>
-    <string name="nous_credits_text">NOUS Android · Flügel\nBaseado em Artemis e Moonlight Android.\nO código-fonte e os avisos de licença estão disponíveis no repositório do projeto.</string>
+    <string name="nous_credits_text">NOUS Android · Flügel\nBaseado em Artemis e Moonlight Android.\nÍcones Material Symbols Rounded do Google (Apache 2.0).\nO código-fonte e os avisos de licença estão disponíveis no repositório do projeto.</string>
     <string name="nous_retry_session">Tentar de novo</string>
     <string name="nous_back_to_games">Voltar aos jogos</string>
     <string name="nous_external_title">Controle de tela</string>

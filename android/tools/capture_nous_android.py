@@ -188,7 +188,7 @@ def run(c):
     c.capture("computers-on-launch")
     pause(7)
     c.capture("computers-no-host")
-    select("manuallyAddPc")
+    select("nous_add_computer")
     wait_for("hostTextView")
     c.capture("manual-connection")
     back()

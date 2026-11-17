@@ -13,7 +13,7 @@
     <string name="nous_help_pair">How to pair a PC</string>
     <string name="nous_help_connection">Connection problems</string>
     <string name="nous_credits">Credits and licenses</string>
-    <string name="nous_credits_text">NOUS Android · Flügel\nBased on Artemis and Moonlight Android.\nSource code and license notices are available in the project repository.</string>
+    <string name="nous_credits_text">NOUS Android · Flügel\nBased on Artemis and Moonlight Android.\nGoogle Material Symbols Rounded icons (Apache 2.0).\nSource code and license notices are available in the project repository.</string>
     <string name="nous_retry_session">Try again</string>
     <string name="nous_back_to_games">Back to games</string>
     <string name="nous_external_title">Display control</string>
