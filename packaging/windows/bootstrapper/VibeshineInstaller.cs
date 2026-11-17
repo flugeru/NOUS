@@ -937,7 +937,8 @@ namespace VibepolloInstaller {
       };
       _licenseButton.Click += LicenseClicked;
       ApplyFlatButtonTemplate(_licenseButton, 8);
-      secondaryActions.Children.Add(_licenseButton);
+      if (BuildFlavor.IsUninstallOnly) buttonRow.Children.Add(_licenseButton);
+      else secondaryActions.Children.Add(_licenseButton);
 
       _closeButton = new Button {
         Content = "_Fechar",
