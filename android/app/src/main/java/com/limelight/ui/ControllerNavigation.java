@@ -69,6 +69,9 @@ final class ControllerNavigation extends WindowCallbackWrapper {
                         focusFirst(View.FOCUS_DOWN);
                         return true;
                     }
+                    if (focus.isInTouchMode()) {
+                        focus.requestFocusFromTouch();
+                    }
                     if (focus instanceof EditText) {
                         WindowCompat.getInsetsController(window, focus).show(WindowInsetsCompat.Type.ime());
                         return true;
@@ -174,7 +177,8 @@ final class ControllerNavigation extends WindowCallbackWrapper {
     }
 
     private void repeatDirection() {
-        if (heldDirection != NO_DIRECTION && window.getDecorView().hasWindowFocus()) {
+        if (heldDirection != NO_DIRECTION && InputDevice.getDevice(heldDevice) != null
+                && window.getDecorView().hasWindowFocus()) {
             navigate(heldDirection);
             if (heldDirection != NO_DIRECTION) {
                 handler.postDelayed(repeat, 115);
@@ -191,6 +195,9 @@ final class ControllerNavigation extends WindowCallbackWrapper {
             focusFirst(direction);
             return;
         }
+        if (current.isInTouchMode()) {
+            current.requestFocusFromTouch();
+        }
         long time = SystemClock.uptimeMillis();
         KeyEvent down = new KeyEvent(time, time, KeyEvent.ACTION_DOWN, code,
                 0, 0, heldDevice, 0, 0, InputDevice.SOURCE_DPAD);
@@ -206,6 +213,13 @@ final class ControllerNavigation extends WindowCallbackWrapper {
 
     private boolean focusFirst(int direction) {
         ViewGroup root = (ViewGroup) window.getDecorView();
+        if (root.isInTouchMode()) {
+            root.requestFocusFromTouch();
+            View focused = root.findFocus();
+            if (focused != null && focused != root) {
+                return true;
+            }
+        }
         View next = FocusFinder.getInstance().findNextFocus(root, null, direction);
         return next != null && next.requestFocusFromTouch();
     }

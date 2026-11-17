@@ -298,6 +298,10 @@ def run(c):
     c.capture("dialog-credits")
     controller_key("KEYCODE_BUTTON_B")
     wait_for("nous_help_content")
+    tap(wait_for(labels=("Créditos e licenças", "Credits and licenses")))
+    shell("input", "dpad", "keyevent", "KEYCODE_DPAD_DOWN")
+    controller_key("KEYCODE_BUTTON_A")
+    wait_for("nous_help_content")
     controller_key("KEYCODE_BUTTON_B")
 
     wait_for("nous_nav_computers")

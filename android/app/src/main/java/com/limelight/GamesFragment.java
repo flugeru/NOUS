@@ -779,7 +779,7 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
             }
 
             case HIDE_APP_ID: {
-                if (item.isChecked()) {
+                if (app.isHidden) {
                     // Transitioning hidden to shown
                     hiddenAppIds.remove(app.app.getAppId());
                 } else {
