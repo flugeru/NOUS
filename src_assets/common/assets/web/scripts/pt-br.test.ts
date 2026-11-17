@@ -13,7 +13,7 @@ function flatten(value: Record<string, unknown>, prefix = ''): Record<string, st
 test('PT-BR core screens cover English keys and preserve interpolation parameters', () => {
   const english = catalog('en');
   const portuguese = catalog('pt_BR');
-  for (const section of ['app', 'auth', 'common', 'nav', 'shell', 'status', 'system', 'pair', 'overview', 'library', 'devices', 'browser_stream', 'logs', 'sessions', 'maintenance', 'api_tokens']) {
+  for (const section of ['app', 'auth', 'common', 'nav', 'shell', 'status', 'system', 'pair', 'overview', 'library', 'devices', 'browser_stream', 'logs', 'sessions', 'maintenance', 'api_tokens', 'integrations']) {
     const expected = flatten(english.ui[section]);
     const actual = flatten(portuguese.ui[section]);
     assert.deepEqual(Object.keys(actual).sort(), Object.keys(expected).sort(), section);
