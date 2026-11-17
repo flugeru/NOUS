@@ -84,6 +84,11 @@ def back():
     pause()
 
 
+def controller_key(key):
+    shell("input", "gamepad", "keyevent", key)
+    pause()
+
+
 def size():
     return tuple(map(int, re.findall(r"(\d+)x(\d+)", shell("wm", "size"))[-1]))
 
@@ -291,8 +296,9 @@ def run(c):
     c.capture("help")
     tap(wait_for(labels=("Créditos e licenças", "Credits and licenses")))
     c.capture("dialog-credits")
-    back()
-    back()
+    controller_key("KEYCODE_BUTTON_B")
+    wait_for("nous_help_content")
+    controller_key("KEYCODE_BUTTON_B")
 
     wait_for("nous_nav_computers")
     shell("settings", "put", "system", "user_rotation", "1")

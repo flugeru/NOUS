@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
+import com.limelight.ui.ControllerMenuActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceGroup;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class EditProfileActivity extends AppCompatActivity {
+public class EditProfileActivity extends ControllerMenuActivity {
     private String profileUuid;
     private SettingsProfile currentProfile;
     private InMemorySharedPreferences inMemoryPrefs;
@@ -175,7 +175,7 @@ public class EditProfileActivity extends AppCompatActivity {
         input.setText(initial);
         input.setSelection(initial.length());
 
-        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+        new com.limelight.ui.ControllerDialogBuilder(this)
                 .setTitle(R.string.profile_manager_edit_profile_name)
                 .setView(input)
                 .setPositiveButton("OK", (dialog, which) -> {

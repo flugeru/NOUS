@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 import android.app.Activity;
 import androidx.appcompat.app.AlertDialog;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.limelight.ui.ControllerDialogBuilder;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -93,7 +93,7 @@ public class SpinnerDialog implements Runnable,OnCancelListener {
             messageView.setText(message);
             messageView.setPadding(padding, 0, 0, 0);
             content.addView(messageView, new LinearLayout.LayoutParams(0, -2, 1));
-            progress = new MaterialAlertDialogBuilder(activity).setTitle(title).setView(content).create();
+            progress = new ControllerDialogBuilder(activity).setTitle(title).setView(content).create();
             progress.setOnCancelListener(this);
 
             // If we want to finish the activity when this is killed, make it cancellable

@@ -23,7 +23,7 @@ import com.limelight.utils.SpinnerDialog;
 import com.limelight.utils.UiHelper;
 
 import androidx.appcompat.app.AlertDialog;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.limelight.ui.ControllerDialogBuilder;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -39,9 +39,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.limelight.ui.ControllerMenuActivity;
 
-public class AddComputerManually extends AppCompatActivity {
+public class AddComputerManually extends ControllerMenuActivity {
     private TextView hostText;
     private ComputerManagerService.ComputerManagerBinder managerBinder;
     private final LinkedBlockingQueue<String> computersToAdd = new LinkedBlockingQueue<>();
@@ -377,7 +377,7 @@ public class AddComputerManually extends AppCompatActivity {
                 hostName = server;
             }
 
-            AlertDialog.Builder builder = new MaterialAlertDialogBuilder(this);
+            AlertDialog.Builder builder = new ControllerDialogBuilder(this);
             builder.setTitle(R.string.pair_pc_confirm_title);
             builder.setMessage(getString(R.string.pair_pc_confirm_message, hostName));
 

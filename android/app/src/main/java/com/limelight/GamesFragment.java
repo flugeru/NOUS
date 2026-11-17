@@ -15,6 +15,7 @@ import com.limelight.nvstream.http.PairingManager;
 import com.limelight.preferences.PreferenceConfiguration;
 import com.limelight.ui.AdapterFragment;
 import com.limelight.ui.AdapterFragmentCallbacks;
+import com.limelight.ui.ControllerDialogBuilder;
 import com.limelight.utils.CacheHelper;
 import com.limelight.utils.Dialog;
 import com.limelight.utils.ServerHelper;
@@ -39,12 +40,10 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
@@ -56,10 +55,10 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuBuilder;
 
 import androidx.core.view.OneShotPreDrawListener;
 import androidx.core.view.WindowCompat;
@@ -652,14 +651,8 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
         }
     }
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-        AppView.AppObject selectedApp = (AppView.AppObject) appGridAdapter.getItem(info.position);
-
-        menu.setHeaderTitle(selectedApp.app.getAppName());
+    private void showGameActions(View row, AppView.AppObject selectedApp) {
+        MenuBuilder menu = new MenuBuilder(getActivity());
 
         if (lastRunningAppId == 0) {
             if (prefConfig.useVirtualDisplay) {
@@ -695,7 +688,7 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Only add an option to create shortcut if box art is loaded
             // and when we're in grid-mode (not list-mode).
-            ImageView appImageView = info.targetView.findViewById(R.id.grid_image);
+            ImageView appImageView = row.findViewById(R.id.grid_image);
             if (appImageView != null) {
                 // We have a grid ImageView, so we must be in grid-mode
                 BitmapDrawable drawable = (BitmapDrawable)appImageView.getDrawable();
@@ -707,14 +700,12 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
         }
 
         menu.add(Menu.NONE, EXPORT_LAUNCHER_FILE_ID, 6, getResources().getString(R.string.applist_menu_export_launcher));
+        new ControllerDialogBuilder(getActivity()).showActions(selectedApp.app.getAppName(), menu,
+                id -> handleGameAction(row, selectedApp, id), null);
     }
 
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
+    boolean handleGameAction(View row, AppView.AppObject app, int itemId) {
         if (getView() == null || !getView().isShown()) return false;
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-        final AppView.AppObject app = (AppView.AppObject) appGridAdapter.getItem(info.position);
-        int itemId = item.getItemId();
         switch (itemId) {
             case START_WITH_QUIT:
             case START_WITH_QUIT_VDISPLAY: {
@@ -800,7 +791,7 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
             }
 
             case CREATE_SHORTCUT_ID: {
-                ImageView appImageView = info.targetView.findViewById(R.id.grid_image);
+                ImageView appImageView = row.findViewById(R.id.grid_image);
                 Bitmap appBits = ((BitmapDrawable) appImageView.getDrawable()).getBitmap();
                 if (!shortcutHelper.createPinnedGameShortcut(computer, app.app, appBits)) {
                     Toast.makeText(getActivity(), getResources().getString(R.string.unable_to_pin_shortcut), Toast.LENGTH_LONG).show();
@@ -826,7 +817,7 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
             }
 
             default: {
-                return super.onContextItemSelected(item);
+                return false;
             }
         }
     }
@@ -969,7 +960,7 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
                     if (prefConfig.resumeWithoutConfirm && lastRunningAppId == app.app.getAppId()) {
                         ServerHelper.doStart(getActivity(), app.app, computer, managerBinder, prefConfig.useVirtualDisplay);
                     } else {
-                        getActivity().openContextMenu(arg1);
+                        showGameActions(arg1, app);
                     }
                 } else {
                     if (prefConfig.useVirtualDisplay && !(computer.vDisplaySupported && computer.vDisplayDriverReady)) {
@@ -986,7 +977,10 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
             }
         });
 
-        registerForContextMenu(listView);
+        listView.setOnItemLongClickListener((parent, row, position, id) -> {
+            showGameActions(row, appGridAdapter.getItem(position));
+            return true;
+        });
         listView.requestFocus();
     }
 

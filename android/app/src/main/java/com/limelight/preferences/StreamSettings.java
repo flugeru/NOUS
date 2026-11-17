@@ -18,6 +18,7 @@ import android.os.Vibrator;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import com.limelight.ui.ControllerMenuActivity;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.CheckBoxPreference;
@@ -46,7 +47,7 @@ import android.widget.TextView;
 import androidx.preference.PreferenceGroup;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.limelight.ui.ControllerDialogBuilder;
 import com.google.android.material.shape.MaterialShapeDrawable;
 import com.google.android.material.shape.ShapeAppearanceModel;
 import android.content.res.ColorStateList;
@@ -75,7 +76,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 
-public class StreamSettings extends AppCompatActivity {
+public class StreamSettings extends ControllerMenuActivity {
     public static final String SECTION = "nous.settings_section";
     public enum Section {
         ALL(R.string.nous_settings),
@@ -1183,7 +1184,7 @@ public class StreamSettings extends AppCompatActivity {
                 MaterialShapeDrawable background = new MaterialShapeDrawable(
                         ShapeAppearanceModel.builder().setAllCornerSizes(corner).build());
                 background.setFillColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.nous_surface)));
-                new MaterialAlertDialogBuilder(context)
+                new ControllerDialogBuilder(context)
                         .setBackground(background)
                         .setTitle(list.getDialogTitle())
                         .setNegativeButton(android.R.string.cancel, null)

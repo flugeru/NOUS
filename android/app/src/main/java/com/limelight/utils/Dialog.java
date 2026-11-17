@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import androidx.appcompat.app.AlertDialog;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.limelight.ui.ControllerDialogBuilder;
 import android.content.DialogInterface;
 import android.widget.Button;
 import android.widget.TextView;
@@ -73,7 +73,7 @@ public class Dialog implements Runnable {
         if (activity.isFinishing())
             return;
 
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity).setTitle(title);
+        AlertDialog.Builder builder = new ControllerDialogBuilder(activity).setTitle(title);
         if (pin != null && pin.length() == 4) {
             View content = activity.getLayoutInflater().inflate(R.layout.nous_pairing_pin, null);
             ((TextView) content.findViewById(R.id.nous_pair_host)).setText(message);

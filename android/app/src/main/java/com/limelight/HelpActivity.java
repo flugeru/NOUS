@@ -10,12 +10,12 @@ import android.widget.FrameLayout;
 import android.window.OnBackInvokedCallback;
 import android.window.OnBackInvokedDispatcher;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.limelight.ui.ControllerMenuActivity;
 
 import com.limelight.utils.SpinnerDialog;
 import com.limelight.utils.UiHelper;
 
-public class HelpActivity extends AppCompatActivity {
+public class HelpActivity extends ControllerMenuActivity {
 
     private SpinnerDialog loadingDialog;
     private WebView webView;
@@ -116,7 +116,7 @@ public class HelpActivity extends AppCompatActivity {
                 "https://github.com/moonlight-stream/moonlight-docs/wiki/Setup-Guide"));
         addHelpCard(body, R.string.nous_help_connection, R.drawable.ic_connection_help, () -> com.limelight.utils.HelpLauncher.launchTroubleshooting(this));
         addHelpCard(body, R.string.nous_diagnostics, R.drawable.ic_device_diagnostics, () -> startActivity(new android.content.Intent(this, DebugInfoActivity.class)));
-        addHelpCard(body, R.string.nous_credits, R.drawable.ic_credits, () -> new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+        addHelpCard(body, R.string.nous_credits, R.drawable.ic_credits, () -> new com.limelight.ui.ControllerDialogBuilder(this)
                 .setTitle(R.string.nous_credits).setMessage(R.string.nous_credits_text)
                 .setPositiveButton(android.R.string.ok, null).show());
         addHelpCard(body, R.string.title_software_update, R.drawable.ic_versions, () -> com.limelight.utils.HelpLauncher.launchUrl(this,

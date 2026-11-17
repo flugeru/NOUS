@@ -22,7 +22,7 @@
                 android:id="@+id/nous_landscape_library_heading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="60dp"
+                android:minHeight="44dp"
                 android:gravity="center_vertical"
                 android:paddingStart="@dimen/nous_main_content_inset"
                 android:paddingEnd="@dimen/nous_main_content_inset">
@@ -40,6 +40,7 @@
                     android:visibility="gone">
                     <com.google.android.material.textfield.TextInputEditText
                         style="@style/Nous.InputText"
+                        android:minHeight="44dp"
                         app:drawableStartCompat="@drawable/ic_nous_search"
                         android:id="@+id/nous_game_search" android:layout_width="match_parent"
                         android:layout_height="wrap_content"

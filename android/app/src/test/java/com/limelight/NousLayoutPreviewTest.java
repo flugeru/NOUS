@@ -310,7 +310,7 @@ public class NousLayoutPreviewTest {
     }
 
     @Test public void detachedLibraryDoesNotHandleHostContextMenu() {
-        assertFalse(new GamesFragment().onContextItemSelected(null));
+        assertFalse(new GamesFragment().handleGameAction(null, null, 0));
     }
 
     @Test public void helpHomeWorksWithoutAnExternalUrl() {

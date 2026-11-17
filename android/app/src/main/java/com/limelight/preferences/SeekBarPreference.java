@@ -11,7 +11,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 
 import com.limelight.R;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.limelight.ui.ControllerDialogBuilder;
 
 import java.util.Locale;
 
@@ -150,7 +150,7 @@ public class SeekBarPreference extends Preference
         }
         seekBar.setProgress(currentValue - minValue);
 
-        AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(context);
+        AlertDialog.Builder dialogBuilder = new ControllerDialogBuilder(context);
         dialogBuilder.setTitle(getTitle());
         dialogBuilder.setView(layout);
 

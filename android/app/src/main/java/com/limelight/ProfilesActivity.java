@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.limelight.ui.ControllerMenuActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -13,7 +13,7 @@ import com.limelight.profiles.ProfilesAdapter;
 import com.limelight.profiles.ProfilesManager;
 import com.limelight.utils.UiHelper;
 
-public class ProfilesActivity extends AppCompatActivity implements ProfilesManager.ProfileChangeListener {
+public class ProfilesActivity extends ControllerMenuActivity implements ProfilesManager.ProfileChangeListener {
     private ProfilesAdapter adapter;
     private RecyclerView recyclerView;
     private View emptyState;
