@@ -1,0 +1,4 @@
+<resources>
+    <!-- GridView.AUTO_FIT, using each grid's preferred column width. -->
+    <integer name="nous_game_grid_columns">-1</integer>
+</resources>

@@ -13,7 +13,8 @@
     <color name="nous_on_secondary">#082C31</color>
     <color name="nous_hud">#E6171B20</color>
     <integer name="nous_pc_columns">1</integer>
-    <dimen name="nous_computers_inset">24dp</dimen>
+    <integer name="nous_game_grid_columns">2</integer>
+    <dimen name="nous_main_content_inset">24dp</dimen>
     <dimen name="nous_settings_inset">20dp</dimen>
     <dimen name="nous_settings_row_inset">14dp</dimen>
     <dimen name="nous_settings_row_gap">6dp</dimen>

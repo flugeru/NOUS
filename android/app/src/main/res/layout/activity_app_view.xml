@@ -44,8 +44,8 @@
                 android:id="@+id/appListText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingStart="24dp"
-                android:paddingEnd="24dp"
+                android:paddingStart="@dimen/nous_main_content_inset"
+                android:paddingEnd="@dimen/nous_main_content_inset"
                 android:paddingTop="6dp"
                 android:paddingBottom="12dp"
                 android:textAppearance="@style/Nous.Title"
@@ -56,8 +56,8 @@
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginStart="@dimen/nous_main_content_inset"
+                android:layout_marginEnd="@dimen/nous_main_content_inset"
                 android:layout_marginBottom="8dp"
                 android:hint="@string/nous_search_games"
                 app:endIconMode="clear_text">
@@ -71,7 +71,8 @@
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/nous_game_filters" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:layout_marginHorizontal="24dp"
+                android:layout_height="wrap_content" android:layout_marginStart="@dimen/nous_main_content_inset"
+                android:layout_marginEnd="@dimen/nous_main_content_inset"
                 android:layout_marginBottom="12dp" app:singleSelection="true" app:selectionRequired="true">
                 <com.google.android.material.chip.Chip android:id="@+id/nous_filter_all"
                     style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content"

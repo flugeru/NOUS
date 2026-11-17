@@ -81,6 +81,46 @@ public class NousLayoutPreviewTest {
             logo.recycle();
         }
     }
+    @Test public void portraitLibraryUsesTwoColumnsAndWidescreenCovers() {
+        try (org.robolectric.android.controller.ActivityController<Host> controller =
+                     Robolectric.buildActivity(Host.class).setup()) {
+            Host host = controller.get();
+            for (int layout : new int[]{R.layout.app_grid_view, R.layout.app_grid_view_small}) {
+                android.widget.GridView grid = (android.widget.GridView) host.getLayoutInflater()
+                        .inflate(layout, null, false);
+                grid.measure(View.MeasureSpec.makeMeasureSpec(393, View.MeasureSpec.EXACTLY),
+                        View.MeasureSpec.makeMeasureSpec(600, View.MeasureSpec.EXACTLY));
+                assertEquals(2, grid.getNumColumns());
+                assertEquals(24, grid.getPaddingStart());
+                assertEquals(24, grid.getPaddingEnd());
+            }
+            for (int layout : new int[]{R.layout.app_grid_item, R.layout.app_grid_item_small}) {
+                View row = host.getLayoutInflater().inflate(layout, null, false);
+                row.measure(View.MeasureSpec.makeMeasureSpec(168, View.MeasureSpec.EXACTLY),
+                        View.MeasureSpec.UNSPECIFIED);
+                android.widget.ImageView cover = row.findViewById(R.id.grid_image);
+                assertEquals(168, cover.getMeasuredWidth());
+                assertEquals(95, cover.getMeasuredHeight());
+                assertEquals(android.widget.ImageView.ScaleType.CENTER_CROP, cover.getScaleType());
+            }
+        }
+    }
+
+    @Test
+    @Config(qualifiers = "+land")
+    public void landscapeLibraryAdaptsColumnsToAvailableWidth() {
+        try (org.robolectric.android.controller.ActivityController<Host> controller =
+                     Robolectric.buildActivity(Host.class).setup()) {
+            android.widget.GridView grid = (android.widget.GridView) controller.get().getLayoutInflater()
+                    .inflate(R.layout.app_grid_view, null, false);
+            int height = View.MeasureSpec.makeMeasureSpec(340, View.MeasureSpec.EXACTLY);
+            grid.measure(View.MeasureSpec.makeMeasureSpec(640, View.MeasureSpec.EXACTLY), height);
+            assertEquals(3, grid.getNumColumns());
+            grid.measure(View.MeasureSpec.makeMeasureSpec(852, View.MeasureSpec.EXACTLY), height);
+            assertEquals(4, grid.getNumColumns());
+        }
+    }
+
     @Test public void computerProfileButtonAlignsWithTheCardAndManualAction() {
         try (org.robolectric.android.controller.ActivityController<Host> controller =
                      Robolectric.buildActivity(Host.class).setup()) {
