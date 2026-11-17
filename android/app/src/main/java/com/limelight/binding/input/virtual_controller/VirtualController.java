@@ -49,6 +49,8 @@ public class VirtualController {
     private final ControllerHandler controllerHandler;
     private final Context context;
     private final Handler handler;
+    private final int previewWidth;
+    private final int previewHeight;
 
     private final Runnable delayedRetransmitRunnable = new Runnable() {
         @Override
@@ -88,10 +90,26 @@ public class VirtualController {
     private final VibrationEffect defaultVibrationEffect;
 
     public VirtualController(final ControllerHandler controllerHandler, FrameLayout layout, final Context context) {
+        this(controllerHandler, layout, context, 0, 0);
+    }
+
+    VirtualController(FrameLayout layout, Context context, int width, int height) {
+        this(null, layout, context, width, height);
+    }
+
+    private VirtualController(ControllerHandler controllerHandler, FrameLayout layout, Context context,
+                              int previewWidth, int previewHeight) {
         this.controllerHandler = controllerHandler;
+        this.previewWidth = previewWidth;
+        this.previewHeight = previewHeight;
         this.frame_layout = layout;
         this.context = context;
         this.handler = new Handler(Looper.getMainLooper());
+
+        if (previewWidth != 0) {
+            defaultVibrationEffect = null;
+            return;
+        }
 
         this.vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -137,6 +155,14 @@ public class VirtualController {
             }
         });
 
+    }
+
+    int layoutWidth() {
+        return previewWidth == 0 ? context.getResources().getDisplayMetrics().widthPixels : previewWidth;
+    }
+
+    int layoutHeight() {
+        return previewHeight == 0 ? context.getResources().getDisplayMetrics().heightPixels : previewHeight;
     }
 
     Handler getHandler() {
@@ -187,7 +213,7 @@ public class VirtualController {
         }
         elements.clear();
 
-        frame_layout.removeView(buttonConfigure);
+        if (buttonConfigure != null) frame_layout.removeView(buttonConfigure);
         if (editorActions != null) frame_layout.removeView(editorActions);
     }
 

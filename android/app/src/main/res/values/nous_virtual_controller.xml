@@ -1,0 +1,21 @@
+<resources>
+    <string name="nous_osc_editor_title">Virtual controller</string>
+    <string name="nous_osc_editor_summary">Arrange the controls shown during streaming</string>
+    <string name="nous_osc_editor_hint">Tap or drag a control in the preview, or select it from the list.</string>
+    <string name="nous_osc_pick">Control: %1$s</string>
+    <string name="nous_osc_pick_title">Select a control</string>
+    <string name="nous_osc_size_format">Size · %1$d%%</string>
+    <string name="nous_osc_opacity_format">Controller opacity · %1$d%%</string>
+    <string name="nous_osc_visible">Show during streaming</string>
+    <string name="nous_osc_reset">Restore default layout</string>
+    <string name="nous_osc_discard">Discard changes?</string>
+    <string name="nous_osc_discard_action">Discard</string>
+    <string name="nous_osc_saved">Controller layout saved</string>
+    <string name="nous_osc_dpad">D-pad</string>
+    <string name="nous_osc_left_stick">Left stick</string>
+    <string name="nous_osc_right_stick">Right stick</string>
+    <string name="nous_osc_back_button">Back</string>
+    <string name="nous_osc_start_button">Start</string>
+    <string name="nous_osc_guide_button">Guide</string>
+    <string name="nous_osc_touchpad">Touchpad</string>
+</resources>

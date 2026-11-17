@@ -127,6 +127,10 @@ public class DigitalButton extends VirtualControllerElement {
         listeners.add(listener);
     }
 
+    String getLabel() {
+        return text;
+    }
+
     public void setText(String text) {
         this.text = text;
         invalidate();
@@ -172,12 +176,11 @@ public class DigitalButton extends VirtualControllerElement {
             canvas.drawText(text, getPercent(getWidth(), 50), getPercent(getHeight(), 63), paint);
             return;
         }
-        int oscOpacity=PreferenceConfiguration.readPreferences(getContext()).oscOpacity;
         //虚拟手柄皮肤
         if (icon != -1) {
             Drawable d = getResources().getDrawable(isPressed()?iconPress:icon);
             d.setBounds(5, 5, getWidth() - 5, getHeight() - 5);
-            d.setAlpha((int) (oscOpacity*2.55));
+            d.setAlpha(Color.alpha(normalColor));
             d.draw(canvas);
         }else{
             paint.setStyle(Paint.Style.STROKE);

@@ -136,6 +136,10 @@
             <meta-data android:name="WindowManagerPreference:FreeformWindowOrientation" android:value="landscape" />
         </activity>
         <activity
+            android:name=".binding.input.virtual_controller.VirtualControllerEditorActivity"
+            android:exported="false"
+            android:theme="@style/SettingsTheme" />
+        <activity
             android:name=".ProfilesActivity"
             android:resizeableActivity="true"
             android:enableOnBackInvokedCallback="true"

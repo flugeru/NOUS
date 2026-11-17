@@ -440,6 +440,42 @@ def run(c):
     c.capture("games-offline-search-after-rotation")
 
 
+    select("nous_nav_settings")
+    select("nous_settings_virtual_controller")
+    wait_for("nous_osc_size_value", labels=("Tamanho · 100%", "Size · 100%"))
+    root, hierarchy = tree()
+    dpad_labels = ("Direcional", "D-pad")
+    dpad = next(node for node in root.iter("node") if node.get("content-desc") in dpad_labels)
+    original_dpad = bounds(dpad)
+    c.capture("virtual-controller-editor", hierarchy)
+    x0, y0, x1, y1 = original_dpad
+    x, y = (x0 + x1) // 2, (y0 + y1) // 2
+    shell("input", "swipe", str(x), str(y), str(x + (x1 - x0)), str(y - (y1 - y0) // 2), "450")
+    root, _ = tree()
+    moved_dpad = next(node for node in root.iter("node") if node.get("content-desc") in dpad_labels)
+    if bounds(moved_dpad)[0] <= x0:
+        raise RuntimeError("Dragging a controller button should update its position")
+
+    x0, y0, x1, y1 = bounds(wait_for("nous_osc_size"))
+    shell("input", "tap", str(x0 + (x1 - x0) * 3 // 4), str((y0 + y1) // 2))
+    size = wait_for("nous_osc_size_value").get("text")
+    if "100%" in size:
+        raise RuntimeError("Resizing a controller button should update its displayed size")
+    select("nous_osc_visible")
+    rotate(1)
+    wait_for("nous_osc_size_value", labels=(size,))
+    if wait_for("nous_osc_visible").get("checked") != "false":
+        raise RuntimeError("Controller editor draft should survive rotation")
+    c.capture("virtual-controller-editor-landscape")
+    select("nous_osc_save")
+
+    select_in_landscape_settings("nous_settings_virtual_controller")
+    wait_for("nous_osc_size_value", labels=(size,))
+    if wait_for("nous_osc_visible").get("checked") != "false":
+        raise RuntimeError("Controller button visibility should persist after saving")
+    select("nous_back")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--apk", type=Path, required=True)

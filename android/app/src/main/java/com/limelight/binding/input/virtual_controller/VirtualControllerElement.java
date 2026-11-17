@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -178,8 +177,7 @@ public abstract class VirtualControllerElement extends View {
     }
 
     protected int getDefaultStrokeWidth() {
-        DisplayMetrics screen = getResources().getDisplayMetrics();
-        return (int)(screen.heightPixels*0.004f);
+        return (int) (virtualController.layoutHeight() * 0.004f);
     }
 
     protected void showConfigurationDialog() {
@@ -343,17 +341,40 @@ public abstract class VirtualControllerElement extends View {
         configuration.put("WIDTH", layoutParams.width);
         configuration.put("HEIGHT", layoutParams.height);
         configuration.put("ENABLED", enabled);
+        configuration.put("CANVAS_WIDTH", virtualController.layoutWidth());
+        configuration.put("CANVAS_HEIGHT", virtualController.layoutHeight());
         return configuration;
     }
 
     public void loadConfiguration(JSONObject configuration) throws JSONException {
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) getLayoutParams();
 
-        layoutParams.leftMargin = configuration.getInt("LEFT");
-        layoutParams.topMargin = configuration.getInt("TOP");
-        layoutParams.width = configuration.getInt("WIDTH");
-        layoutParams.height = configuration.getInt("HEIGHT");
+        int left = configuration.getInt("LEFT");
+        int top = configuration.getInt("TOP");
+        int width = configuration.getInt("WIDTH");
+        int height = configuration.getInt("HEIGHT");
         enabled = configuration.getBoolean("ENABLED");
+
+        int savedWidth = configuration.optInt("CANVAS_WIDTH");
+        int savedHeight = configuration.optInt("CANVAS_HEIGHT");
+        int canvasWidth = virtualController.layoutWidth();
+        int canvasHeight = virtualController.layoutHeight();
+        if (savedWidth > 0 && savedHeight > 0 && canvasWidth > 0 && canvasHeight > 0
+                && (savedWidth != canvasWidth || savedHeight != canvasHeight)) {
+            float scale = (float) Math.min(canvasWidth, canvasHeight) / Math.min(savedWidth, savedHeight);
+            int scaledWidth = Math.max(1, Math.min(canvasWidth, Math.round(width * scale)));
+            int scaledHeight = Math.max(1, Math.min(canvasHeight, Math.round(height * scale)));
+            left = Math.round((left + width / 2f) / savedWidth * canvasWidth - scaledWidth / 2f);
+            top = Math.round((top + height / 2f) / savedHeight * canvasHeight - scaledHeight / 2f);
+            width = scaledWidth;
+            height = scaledHeight;
+            left = Math.max(0, Math.min(left, canvasWidth - width));
+            top = Math.max(0, Math.min(top, canvasHeight - height));
+        }
+        layoutParams.leftMargin = left;
+        layoutParams.topMargin = top;
+        layoutParams.width = width;
+        layoutParams.height = height;
         setVisibility(enabled ? VISIBLE: GONE);
         requestLayout();
     }

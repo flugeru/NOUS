@@ -7,7 +7,6 @@ package com.limelight.binding.input.virtual_controller;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.DisplayMetrics;
 
 import com.limelight.R;
 import com.limelight.nvstream.input.ControllerPacket;
@@ -209,13 +208,11 @@ public class VirtualControllerConfigurationLoader {
 
     public static void createDefaultLayout(final VirtualController controller, final Context context) {
 
-        DisplayMetrics screen = context.getResources().getDisplayMetrics();
         PreferenceConfiguration config = PreferenceConfiguration.readPreferences(context);
 
         // Displace controls on the right by this amount of pixels to account for different aspect ratios
-        int rightDisplacement = screen.widthPixels - screen.heightPixels * 16 / 9;
-
-        int height = screen.heightPixels;
+        int height = controller.layoutHeight();
+        int rightDisplacement = controller.layoutWidth() - height * 16 / 9;
 
         // NOTE: Some of these getPercent() expressions seem like they can be combined
         // into a single call. Due to floating point rounding, this isn't actually possible.

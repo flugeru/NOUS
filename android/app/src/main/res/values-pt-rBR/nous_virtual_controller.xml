@@ -1,0 +1,21 @@
+<resources>
+    <string name="nous_osc_editor_title">Controle virtual</string>
+    <string name="nous_osc_editor_summary">Organize os controles exibidos durante a transmissão</string>
+    <string name="nous_osc_editor_hint">Toque ou arraste um botão na prévia, ou selecione-o na lista.</string>
+    <string name="nous_osc_pick">Botão: %1$s</string>
+    <string name="nous_osc_pick_title">Selecionar botão</string>
+    <string name="nous_osc_size_format">Tamanho · %1$d%%</string>
+    <string name="nous_osc_opacity_format">Opacidade do controle · %1$d%%</string>
+    <string name="nous_osc_visible">Mostrar durante a transmissão</string>
+    <string name="nous_osc_reset">Restaurar layout padrão</string>
+    <string name="nous_osc_discard">Descartar alterações?</string>
+    <string name="nous_osc_discard_action">Descartar</string>
+    <string name="nous_osc_saved">Layout do controle salvo</string>
+    <string name="nous_osc_dpad">Direcional</string>
+    <string name="nous_osc_left_stick">Analógico esquerdo</string>
+    <string name="nous_osc_right_stick">Analógico direito</string>
+    <string name="nous_osc_back_button">Voltar</string>
+    <string name="nous_osc_start_button">Iniciar</string>
+    <string name="nous_osc_guide_button">Guia</string>
+    <string name="nous_osc_touchpad">Touchpad</string>
+</resources>
