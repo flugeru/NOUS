@@ -228,10 +228,15 @@ def run(c):
     c.capture("computers-on-launch")
     pause(7)
     c.capture("computers-no-host")
+    capture_virtual_controller_editor(c)
+    rotate(0)
+    wait_for("nous_nav_computers")
+    select("nous_nav_computers")
     select("manuallyAddPc")
     wait_for("hostTextView")
     c.capture("manual-connection")
-    back()
+    select("nous_back")
+    wait_for("manuallyAddPc")
 
     select("nous_nav_settings")
     wait_for("nous_settings_hub_hint")
@@ -439,7 +444,6 @@ def run(c):
     wait_for("nous_game_search", labels=("Genshin",))
     c.capture("games-offline-search-after-rotation")
 
-    capture_virtual_controller_editor(c)
 
 
 def capture_virtual_controller_editor(c):
