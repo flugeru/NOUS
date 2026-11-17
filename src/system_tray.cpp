@@ -52,6 +52,7 @@
   #include "config.h"
   #include "confighttp.h"
   #include "logging.h"
+  #include "http_policy.h"
   #include "network.h"
   #include "platform/common.h"
   #include "platform/windows/service_constants.h"
@@ -556,8 +557,8 @@ namespace system_tray {
     });
   }
 
-  void update_tray_require_pin() {
-    run_on_tray_thread([]() {
+  void update_tray_require_pin(std::string device_name) {
+    run_on_tray_thread([device_name = std::move(device_name)]() {
       tray.notification_title = nullptr;
       tray.notification_text = nullptr;
       tray.notification_cb = nullptr;
@@ -568,10 +569,18 @@ namespace system_tray {
       tray.notification_text = "Click here to complete the pairing process";
       tray.notification_icon = TRAY_ICON_LOCKED;
       tray.tooltip = PROJECT_NAME;
+      static std::string pairing_path;
+      pairing_path = "/v2/pair?name=" + http::policy::percent_encode(device_name.substr(0, 256));
       tray.notification_cb = []() {
-        launch_ui("/clients");
+        launch_ui(pairing_path);
       };
       tray_update(&tray);
+      static auto last_open = std::chrono::steady_clock::time_point::min();
+      const auto now = std::chrono::steady_clock::now();
+      if (last_open == std::chrono::steady_clock::time_point::min() || now - last_open >= std::chrono::seconds(30)) {
+        last_open = now;
+        launch_ui(pairing_path);
+      }
     });
   }
 

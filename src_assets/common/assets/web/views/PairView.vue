@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRoute } from 'vue-router';
 
 import { ApiError, apiPost } from '@/api/client';
 import { AppButton, InlineAlert, PageHeader, StatusBadge, UiIcon } from '@/components/ui';
@@ -11,7 +12,8 @@ interface PairResponse {
   status?: boolean;
 }
 
-const name = ref('');
+const requestedName = useRoute().query.name;
+const name = ref(typeof requestedName === 'string' ? requestedName.slice(0, 96) : '');
 const pin = ref('');
 const submitting = ref(false);
 const error = ref('');

@@ -184,7 +184,7 @@ namespace VibepolloInstaller {
     private DateTime _overlayAutoCloseDeadlineUtc;
     private bool _isBusy;
     private readonly bool _uninstallUiRequested;
-    private readonly Brush _statusNormalBrush = new SolidColorBrush(Color.FromRgb(245, 249, 255));
+    private readonly Brush _statusNormalBrush = new SolidColorBrush(Color.FromRgb(242, 242, 244));
     private readonly Brush _statusBusyBrush = new SolidColorBrush(Color.FromRgb(147, 197, 253));
     private readonly Brush _statusSuccessBrush = new SolidColorBrush(Color.FromRgb(16, 185, 129));
     private readonly Brush _statusWarningBrush = new SolidColorBrush(Color.FromRgb(251, 191, 36));
@@ -258,7 +258,7 @@ namespace VibepolloInstaller {
       UseLayoutRounding = true;
 
       var root = new Grid {
-        Background = new SolidColorBrush(Color.FromRgb(6, 10, 24))
+        Background = new SolidColorBrush(Color.FromRgb(16, 18, 22))
       };
       root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
       root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
@@ -266,7 +266,7 @@ namespace VibepolloInstaller {
 
       var titleBar = new Border {
         Height = 36,
-        Background = new SolidColorBrush(Color.FromRgb(10, 16, 30)),
+        Background = new SolidColorBrush(Color.FromRgb(27, 31, 37)),
         BorderBrush = new SolidColorBrush(Color.FromRgb(52, 64, 94)),
         BorderThickness = new Thickness(0, 0, 0, 1)
       };
@@ -330,10 +330,10 @@ namespace VibepolloInstaller {
       var card = new Border {
         CornerRadius = new CornerRadius(18),
         Margin = new Thickness(12, 10, 12, 12),
-        Padding = new Thickness(12),
-        Background = new SolidColorBrush(Color.FromArgb(238, 14, 20, 36)),
-        BorderBrush = new SolidColorBrush(Color.FromArgb(145, 99, 102, 241)),
-        BorderThickness = new Thickness(1.2),
+        Padding = new Thickness(24),
+        Background = new SolidColorBrush(Color.FromRgb(16, 18, 22)),
+        BorderBrush = new SolidColorBrush(Color.FromRgb(52, 59, 69)),
+        BorderThickness = new Thickness(0),
         VerticalAlignment = VerticalAlignment.Stretch
       };
       Grid.SetRow(card, 1);
@@ -371,7 +371,7 @@ namespace VibepolloInstaller {
         Height = 4,
         CornerRadius = new CornerRadius(3),
         Margin = new Thickness(0, 0, 0, 14),
-        Background = new SolidColorBrush(Color.FromRgb(99, 102, 241))
+        Background = new SolidColorBrush(Color.FromRgb(255, 158, 169))
       };
       Grid.SetRow(_overlayAccentBar, 0);
       overlayLayout.Children.Add(_overlayAccentBar);
@@ -392,7 +392,7 @@ namespace VibepolloInstaller {
       _overlayTitleText = new TextBlock {
         FontSize = 17,
         FontWeight = FontWeights.SemiBold,
-        Foreground = new SolidColorBrush(Color.FromRgb(245, 249, 255)),
+        Foreground = new SolidColorBrush(Color.FromRgb(242, 242, 244)),
         Margin = new Thickness(0, 0, 0, 10),
         TextWrapping = TextWrapping.Wrap
       };
@@ -409,7 +409,7 @@ namespace VibepolloInstaller {
 
       _overlayHintText = new TextBlock {
         FontSize = 12,
-        Foreground = new SolidColorBrush(Color.FromRgb(165, 180, 252)),
+        Foreground = new SolidColorBrush(Color.FromRgb(255, 158, 169)),
         Margin = new Thickness(0, 0, 0, 8),
         Visibility = Visibility.Collapsed,
         TextWrapping = TextWrapping.Wrap
@@ -423,7 +423,7 @@ namespace VibepolloInstaller {
         Value = 0,
         Visibility = Visibility.Collapsed,
         Margin = new Thickness(2, 0, 2, 12),
-        Foreground = new SolidColorBrush(Color.FromRgb(99, 102, 241)),
+        Foreground = new SolidColorBrush(Color.FromRgb(255, 158, 169)),
         Background = new SolidColorBrush(Color.FromRgb(24, 34, 58)),
         BorderThickness = new Thickness(0)
       };
@@ -451,9 +451,9 @@ namespace VibepolloInstaller {
         Margin = new Thickness(0, 0, 10, 0),
         Padding = new Thickness(16, 0, 16, 0),
         FontWeight = FontWeights.SemiBold,
-        Background = new SolidColorBrush(Color.FromRgb(16, 24, 42)),
+        Background = new SolidColorBrush(Color.FromRgb(37, 42, 49)),
         Foreground = new SolidColorBrush(Color.FromRgb(232, 239, 253)),
-        BorderBrush = new SolidColorBrush(Color.FromRgb(82, 96, 141))
+        BorderBrush = new SolidColorBrush(Color.FromRgb(52, 59, 69))
       };
       _overlaySecondaryButton.Click += (sender, eventArgs) => ResolveOverlay("secondary");
       ApplyFlatButtonTemplate(_overlaySecondaryButton, 8);
@@ -466,9 +466,9 @@ namespace VibepolloInstaller {
         MinWidth = 108,
         Padding = new Thickness(16, 0, 16, 0),
         FontWeight = FontWeights.SemiBold,
-        Background = new SolidColorBrush(Color.FromRgb(99, 102, 241)),
-        Foreground = new SolidColorBrush(Color.FromRgb(245, 249, 255)),
-        BorderBrush = new SolidColorBrush(Color.FromRgb(165, 180, 252))
+        Background = new SolidColorBrush(Color.FromRgb(255, 158, 169)),
+        Foreground = new SolidColorBrush(Color.FromRgb(59, 10, 22)),
+        BorderBrush = new SolidColorBrush(Color.FromRgb(255, 158, 169))
       };
       _overlayPrimaryButton.Click += (sender, eventArgs) => ResolveOverlay("primary");
       ApplyFlatButtonTemplate(_overlayPrimaryButton, 8);
@@ -492,13 +492,33 @@ namespace VibepolloInstaller {
         Orientation = Orientation.Vertical
       };
       contentScroll.Content = contentStack;
+      contentStack.Children.Add(new TextBlock {
+        Text = "NOUS",
+        FontSize = 36,
+        FontWeight = FontWeights.SemiBold,
+        Foreground = new SolidColorBrush(Color.FromRgb(242, 242, 244)),
+        Margin = new Thickness(4, 4, 0, 4)
+      });
+      contentStack.Children.Add(new TextBlock {
+        Text = BuildFlavor.IsUninstallOnly ? "Manage your host" : "Your games. Your screen. Anywhere.",
+        FontSize = 20,
+        Foreground = new SolidColorBrush(Color.FromRgb(131, 219, 228)),
+        TextWrapping = TextWrapping.Wrap,
+        Margin = new Thickness(4, 0, 0, 8)
+      });
+      contentStack.Children.Add(new TextBlock {
+        Text = "NOUS Host  ·  " + displayVersion,
+        FontSize = 13,
+        Foreground = new SolidColorBrush(Color.FromRgb(183, 190, 201)),
+        Margin = new Thickness(4, 0, 0, 24)
+      });
 
       _installSection = new Border {
         CornerRadius = new CornerRadius(10),
         Padding = new Thickness(16),
         Margin = new Thickness(0, 0, 0, 10),
-        Background = new SolidColorBrush(Color.FromArgb(44, 99, 102, 241)),
-        BorderBrush = new SolidColorBrush(Color.FromArgb(112, 128, 133, 255)),
+        Background = new SolidColorBrush(Color.FromRgb(27, 31, 37)),
+        BorderBrush = new SolidColorBrush(Color.FromRgb(52, 59, 69)),
         BorderThickness = new Thickness(1)
       };
       contentStack.Children.Add(_installSection);
@@ -537,10 +557,10 @@ namespace VibepolloInstaller {
         Padding = new Thickness(10, 6, 10, 6),
         VerticalContentAlignment = VerticalAlignment.Center,
         Text = _preferredInstallDirectory,
-        Background = new SolidColorBrush(Color.FromRgb(10, 16, 30)),
-        Foreground = new SolidColorBrush(Color.FromRgb(245, 249, 255)),
+        Background = new SolidColorBrush(Color.FromRgb(27, 31, 37)),
+        Foreground = new SolidColorBrush(Color.FromRgb(242, 242, 244)),
         BorderBrush = new SolidColorBrush(Color.FromRgb(96, 111, 171)),
-        CaretBrush = new SolidColorBrush(Color.FromRgb(245, 249, 255)),
+        CaretBrush = new SolidColorBrush(Color.FromRgb(242, 242, 244)),
         ToolTip = "Used when installing or updating NOUS"
       };
       _installPathGrid.Children.Add(_installPathTextBox);
@@ -552,9 +572,9 @@ namespace VibepolloInstaller {
         Height = 36,
         Padding = new Thickness(16, 0, 16, 0),
         FontWeight = FontWeights.SemiBold,
-        Background = new SolidColorBrush(Color.FromRgb(16, 24, 42)),
+        Background = new SolidColorBrush(Color.FromRgb(37, 42, 49)),
         Foreground = new SolidColorBrush(Color.FromRgb(232, 239, 253)),
-        BorderBrush = new SolidColorBrush(Color.FromRgb(82, 96, 141)),
+        BorderBrush = new SolidColorBrush(Color.FromRgb(52, 59, 69)),
         ToolTip = "Choose a different install location"
       };
       _browseButton.Click += BrowseClicked;
@@ -659,9 +679,9 @@ namespace VibepolloInstaller {
         FontSize = 12.5,
         Margin = new Thickness(0, 0, 0, 8),
         Padding = new Thickness(10, 8, 10, 8),
-        Background = new SolidColorBrush(Color.FromRgb(16, 24, 42)),
+        Background = new SolidColorBrush(Color.FromRgb(37, 42, 49)),
         Foreground = new SolidColorBrush(Color.FromRgb(226, 235, 250)),
-        BorderBrush = new SolidColorBrush(Color.FromRgb(82, 96, 141)),
+        BorderBrush = new SolidColorBrush(Color.FromRgb(52, 59, 69)),
         CaretBrush = new SolidColorBrush(Color.FromRgb(226, 235, 250))
       });
 
@@ -669,8 +689,8 @@ namespace VibepolloInstaller {
         CornerRadius = new CornerRadius(10),
         Padding = new Thickness(16),
         Margin = new Thickness(0, 0, 0, 10),
-        Background = new SolidColorBrush(Color.FromArgb(44, 99, 102, 241)),
-        BorderBrush = new SolidColorBrush(Color.FromArgb(112, 128, 133, 255)),
+        Background = new SolidColorBrush(Color.FromRgb(27, 31, 37)),
+        BorderBrush = new SolidColorBrush(Color.FromRgb(52, 59, 69)),
         BorderThickness = new Thickness(1)
       };
       contentStack.Children.Add(_installVirtualDisplaySection);
@@ -688,8 +708,8 @@ namespace VibepolloInstaller {
         CornerRadius = new CornerRadius(10),
         Padding = new Thickness(16),
         Margin = new Thickness(0, 0, 0, 10),
-        Background = new SolidColorBrush(Color.FromArgb(44, 99, 102, 241)),
-        BorderBrush = new SolidColorBrush(Color.FromArgb(112, 128, 133, 255)),
+        Background = new SolidColorBrush(Color.FromRgb(27, 31, 37)),
+        BorderBrush = new SolidColorBrush(Color.FromRgb(52, 59, 69)),
         BorderThickness = new Thickness(1)
       };
       contentStack.Children.Add(_installVirtualGamepadSection);
@@ -735,8 +755,8 @@ namespace VibepolloInstaller {
         CornerRadius = new CornerRadius(10),
         Padding = new Thickness(16),
         Margin = new Thickness(0, 0, 0, 10),
-        Background = new SolidColorBrush(Color.FromArgb(44, 99, 102, 241)),
-        BorderBrush = new SolidColorBrush(Color.FromArgb(112, 128, 133, 255)),
+        Background = new SolidColorBrush(Color.FromRgb(27, 31, 37)),
+        BorderBrush = new SolidColorBrush(Color.FromRgb(52, 59, 69)),
         BorderThickness = new Thickness(1)
       };
       contentStack.Children.Add(_installUsbIpTransportSection);
@@ -833,7 +853,7 @@ namespace VibepolloInstaller {
         Height = 4,
         IsIndeterminate = true,
         Visibility = Visibility.Collapsed,
-        Foreground = new SolidColorBrush(Color.FromRgb(99, 102, 241)),
+        Foreground = new SolidColorBrush(Color.FromRgb(255, 158, 169)),
         Margin = new Thickness(8, 4, 8, 8)
       };
       Grid.SetRow(_progressBar, 1);
@@ -852,9 +872,9 @@ namespace VibepolloInstaller {
         Margin = new Thickness(8, 4, 0, 0),
         Padding = new Thickness(16, 0, 16, 0),
         FontWeight = FontWeights.SemiBold,
-        Background = new SolidColorBrush(Color.FromRgb(99, 102, 241)),
-        Foreground = new SolidColorBrush(Color.FromRgb(245, 249, 255)),
-        BorderBrush = new SolidColorBrush(Color.FromRgb(165, 180, 252)),
+        Background = new SolidColorBrush(Color.FromRgb(255, 158, 169)),
+        Foreground = new SolidColorBrush(Color.FromRgb(59, 10, 22)),
+        BorderBrush = new SolidColorBrush(Color.FromRgb(255, 158, 169)),
         BorderThickness = new Thickness(1.5),
         IsDefault = true,
         ToolTip = "Run the selected action"
@@ -873,7 +893,7 @@ namespace VibepolloInstaller {
         Padding = new Thickness(16, 0, 16, 0),
         FontWeight = FontWeights.SemiBold,
         Background = new SolidColorBrush(Color.FromRgb(225, 29, 72)),
-        Foreground = new SolidColorBrush(Color.FromRgb(245, 249, 255)),
+        Foreground = new SolidColorBrush(Color.FromRgb(242, 242, 244)),
         BorderBrush = new SolidColorBrush(Color.FromRgb(251, 113, 133)),
         BorderThickness = new Thickness(1.5),
         Visibility = Visibility.Visible
@@ -891,9 +911,9 @@ namespace VibepolloInstaller {
         Margin = new Thickness(8, 4, 0, 0),
         Padding = new Thickness(16, 0, 16, 0),
         FontWeight = FontWeights.SemiBold,
-        Background = new SolidColorBrush(Color.FromRgb(16, 24, 42)),
+        Background = new SolidColorBrush(Color.FromRgb(37, 42, 49)),
         Foreground = new SolidColorBrush(Color.FromRgb(232, 239, 253)),
-        BorderBrush = new SolidColorBrush(Color.FromRgb(82, 96, 141)),
+        BorderBrush = new SolidColorBrush(Color.FromRgb(52, 59, 69)),
         ToolTip = "View software license"
       };
       _licenseButton.Click += LicenseClicked;
@@ -907,9 +927,9 @@ namespace VibepolloInstaller {
         Margin = new Thickness(8, 4, 0, 0),
         Padding = new Thickness(16, 0, 16, 0),
         FontWeight = FontWeights.SemiBold,
-        Background = new SolidColorBrush(Color.FromRgb(16, 24, 42)),
+        Background = new SolidColorBrush(Color.FromRgb(37, 42, 49)),
         Foreground = new SolidColorBrush(Color.FromRgb(232, 239, 253)),
-        BorderBrush = new SolidColorBrush(Color.FromRgb(82, 96, 141)),
+        BorderBrush = new SolidColorBrush(Color.FromRgb(52, 59, 69)),
         IsCancel = true,
         ToolTip = "Close this installer window"
       };
@@ -933,13 +953,7 @@ namespace VibepolloInstaller {
     }
 
     private static Brush CreateBackgroundBrush() {
-      var brush = new LinearGradientBrush();
-      brush.StartPoint = new Point(0, 0);
-      brush.EndPoint = new Point(1, 1);
-      brush.GradientStops.Add(new GradientStop(Color.FromRgb(6, 10, 24), 0.0));
-      brush.GradientStops.Add(new GradientStop(Color.FromRgb(14, 20, 36), 0.42));
-      brush.GradientStops.Add(new GradientStop(Color.FromRgb(12, 18, 34), 1.0));
-      return brush;
+      return new SolidColorBrush(Color.FromRgb(16, 18, 22));
     }
 
     private static void ApplyFlatButtonTemplate(Button button, double cornerRadius) {
@@ -1101,13 +1115,13 @@ namespace VibepolloInstaller {
     }
 
     private void ContinueButtonMouseEnter(object sender, MouseEventArgs e) {
-      _continueButton.Background = new SolidColorBrush(Color.FromRgb(129, 140, 248));
-      _continueButton.BorderBrush = new SolidColorBrush(Color.FromRgb(199, 210, 254));
+      _continueButton.Background = new SolidColorBrush(Color.FromRgb(255, 185, 193));
+      _continueButton.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 185, 193));
     }
 
     private void ContinueButtonMouseLeave(object sender, MouseEventArgs e) {
-      _continueButton.Background = new SolidColorBrush(Color.FromRgb(99, 102, 241));
-      _continueButton.BorderBrush = new SolidColorBrush(Color.FromRgb(165, 180, 252));
+      _continueButton.Background = new SolidColorBrush(Color.FromRgb(255, 158, 169));
+      _continueButton.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 158, 169));
     }
 
     private void UninstallButtonMouseEnter(object sender, MouseEventArgs e) {
@@ -1609,8 +1623,8 @@ namespace VibepolloInstaller {
         "NOUS software license terms:",
         "Close",
         string.Empty,
-        new SolidColorBrush(Color.FromRgb(99, 102, 241)),
-        new SolidColorBrush(Color.FromRgb(165, 180, 252)),
+        new SolidColorBrush(Color.FromRgb(255, 158, 169)),
+        new SolidColorBrush(Color.FromRgb(255, 158, 169)),
         false,
         content => {
           var licenseTextBox = new TextBox {
@@ -1624,7 +1638,7 @@ namespace VibepolloInstaller {
             MaxHeight = maxTextHeight,
             Background = new SolidColorBrush(Color.FromRgb(8, 14, 28)),
             Foreground = new SolidColorBrush(Color.FromRgb(226, 235, 250)),
-            BorderBrush = new SolidColorBrush(Color.FromRgb(82, 96, 141)),
+            BorderBrush = new SolidColorBrush(Color.FromRgb(52, 59, 69)),
             Margin = new Thickness(0, 0, 0, 4),
             Padding = new Thickness(12)
           };
@@ -1735,15 +1749,15 @@ namespace VibepolloInstaller {
 
       _overlayTitleText.Text = title ?? string.Empty;
       _overlayMessageText.Text = message ?? string.Empty;
-      _overlayAccentBar.Background = primaryBackground ?? new SolidColorBrush(Color.FromRgb(99, 102, 241));
+      _overlayAccentBar.Background = primaryBackground ?? new SolidColorBrush(Color.FromRgb(255, 158, 169));
       _overlayContentHost.Children.Clear();
       if (buildContent != null) {
         buildContent(_overlayContentHost);
       }
 
       _overlayPrimaryButton.Content = primaryText ?? "OK";
-      _overlayPrimaryButton.Background = primaryBackground ?? new SolidColorBrush(Color.FromRgb(99, 102, 241));
-      _overlayPrimaryButton.BorderBrush = primaryBorder ?? new SolidColorBrush(Color.FromRgb(165, 180, 252));
+      _overlayPrimaryButton.Background = primaryBackground ?? new SolidColorBrush(Color.FromRgb(255, 158, 169));
+      _overlayPrimaryButton.BorderBrush = primaryBorder ?? new SolidColorBrush(Color.FromRgb(255, 158, 169));
 
       _overlaySecondaryButton.Content = secondaryText ?? "Cancel";
       _overlaySecondaryButton.Visibility = showSecondary ? Visibility.Visible : Visibility.Collapsed;
@@ -1829,10 +1843,10 @@ namespace VibepolloInstaller {
     private async Task<bool> ShowOverlayConfirmAsync(string title, string message, string confirmText, string cancelText, bool destructive) {
       var primaryBg = destructive
         ? (Brush)new SolidColorBrush(Color.FromRgb(225, 29, 72))
-        : new SolidColorBrush(Color.FromRgb(99, 102, 241));
+        : new SolidColorBrush(Color.FromRgb(255, 158, 169));
       var primaryBorder = destructive
         ? (Brush)new SolidColorBrush(Color.FromRgb(251, 113, 133))
-        : new SolidColorBrush(Color.FromRgb(165, 180, 252));
+        : new SolidColorBrush(Color.FromRgb(255, 158, 169));
       var result = await ShowOverlayAsync(title, message, confirmText, cancelText, primaryBg, primaryBorder, true, null, 0);
       return string.Equals(result, "primary", StringComparison.OrdinalIgnoreCase);
     }
@@ -1843,8 +1857,8 @@ namespace VibepolloInstaller {
         message,
         "OK",
         string.Empty,
-        new SolidColorBrush(Color.FromRgb(99, 102, 241)),
-        new SolidColorBrush(Color.FromRgb(165, 180, 252)),
+        new SolidColorBrush(Color.FromRgb(255, 158, 169)),
+        new SolidColorBrush(Color.FromRgb(255, 158, 169)),
         false,
         null,
         5);
@@ -1916,8 +1930,8 @@ namespace VibepolloInstaller {
         failureDetail + "\n\nSave logs now, then report this issue on GitHub or Discord.",
         "Save logs",
         "Not now",
-        new SolidColorBrush(Color.FromRgb(99, 102, 241)),
-        new SolidColorBrush(Color.FromRgb(165, 180, 252)),
+        new SolidColorBrush(Color.FromRgb(255, 158, 169)),
+        new SolidColorBrush(Color.FromRgb(255, 158, 169)),
         true,
         content => {
           content.Children.Add(BuildSupportLinksTextBlock());
@@ -1938,8 +1952,8 @@ namespace VibepolloInstaller {
         warningDetail + "\n\nSave logs now, then report this issue on GitHub or Discord.",
         "Save logs",
         "Not now",
-        new SolidColorBrush(Color.FromRgb(99, 102, 241)),
-        new SolidColorBrush(Color.FromRgb(165, 180, 252)),
+        new SolidColorBrush(Color.FromRgb(255, 158, 169)),
+        new SolidColorBrush(Color.FromRgb(255, 158, 169)),
         true,
         content => {
           content.Children.Add(BuildSupportLinksTextBlock());

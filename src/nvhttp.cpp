@@ -4091,7 +4091,7 @@ namespace nvhttp {
             return;
           } else {
 #if defined SUNSHINE_TRAY && SUNSHINE_TRAY >= 1
-            system_tray::update_tray_require_pin();
+            system_tray::update_tray_require_pin(ptr->second.client.name);
 #endif
             ptr->second.async_insert_pin.response = std::move(response);
 

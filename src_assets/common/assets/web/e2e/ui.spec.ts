@@ -5,6 +5,22 @@ import { localRoute, test, expect, type Page } from './fixtures';
 
 const screenshotDirectory = process.env.VIBEPOLLO_TEST_OUTPUT || process.env.VIBESHINE_TEST_OUTPUT || join(tmpdir(), 'vibepollo-ui-results');
 
+test('pairing request prefills an editable device name without approving automatically', async ({ page }) => {
+  await host(page, 'windows');
+  let submitted: Record<string, unknown> | undefined;
+  await localRoute(page, '**/api/pin', async (route) => {
+    submitted = route.request().postDataJSON();
+    await route.fulfill({ json: { status: true } });
+  });
+  await page.goto(`/v2/pair?name=${encodeURIComponent('NOUS Android & TV')}`);
+  await expect(page.locator('#pair-name')).toHaveValue('NOUS Android & TV');
+  expect(submitted).toBeUndefined();
+  await page.locator('#pair-name').fill('Sala');
+  await page.locator('#pair-pin').fill('1234');
+  await page.locator('.pair-form button[type="submit"]').click();
+  await expect.poll(() => submitted).toEqual({ pin: '1234', name: 'Sala' });
+});
+
 async function host(
   page: Page,
   platform = 'linux',
