@@ -262,7 +262,7 @@ test('Lossless Scaling controls remain usable at desktop and mobile widths', asy
     fullPage: false,
   });
   await page.setViewportSize({ width: 390, height: 1000 });
-  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en-US');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await losslessPanel.scrollIntoViewIfNeeded();
   const panelBox = await losslessPanel.boundingBox();

@@ -10,6 +10,7 @@ interface HostOptions {
   apps?: Array<Record<string, unknown>>;
   browse?: boolean;
   playniteUndetected?: boolean;
+  metadataDelayMs?: number;
   golden?: Record<string, unknown>;
   config?: Record<string, unknown>;
   termination?: Record<string, unknown>;
@@ -66,6 +67,7 @@ async function setupHost(page: Page, options: HostOptions = {}) {
     } else if (path === '/api/csrf-token') {
       body = { csrf_token: 'test-token' };
     } else if (path === '/api/metadata') {
+      if (options.metadataDelayMs) await new Promise((resolve) => setTimeout(resolve, options.metadataDelayMs));
       body = {
         platform,
         version: '1.0.0',
@@ -258,6 +260,13 @@ test('Windows maintenance exposes every crash part and recovers a failed part', 
     animations: 'disabled',
     fullPage: false,
   });
+});
+
+test('Windows integrations load after delayed host metadata without a manual refresh', async ({ page }) => {
+  const calls = await setupHost(page, { metadataDelayMs: 300 });
+  await page.goto('/v2/integrations');
+  await expect(page.getByRole('button', { name: 'Launch Playnite' })).toBeVisible();
+  expect(calls.playniteStatus).toBeGreaterThan(0);
 });
 
 test('Windows Playnite launch is actionable and auto-sync purge is separately confirmed', async ({

@@ -546,6 +546,29 @@ test('browser PT-BR overrides host English and uses Android cyan navigation', as
   await expect(page.getByRole('heading', { name: 'Biblioteca', exact: true })).toBeVisible();
 });
 
+for (const theme of ['light', 'dark']) {
+  for (const width of [320, 768, 1440]) {
+    test(`PT-BR screens fit at ${width}px in ${theme} theme`, async ({ page }) => {
+      await host(page, 'windows');
+      await page.addInitScript((theme) => {
+        Object.defineProperty(navigator, 'languages', { get: () => ['pt-BR'] });
+        localStorage.setItem('vibepollo.theme', theme);
+      }, theme);
+      await page.setViewportSize({ width, height: 1000 });
+      const errors: string[] = [];
+      page.on('pageerror', (error) => errors.push(error.message));
+      for (const path of ['', 'library', 'library/new', 'devices', 'integrations', 'settings', 'maintenance', 'logs', 'api-tokens', 'stats', 'stream']) {
+        await page.goto(`/v2/${path}`);
+        await expect(page.locator('html')).toHaveAttribute('lang', 'pt-BR');
+        await expect(page.locator('main h1').first()).toBeVisible();
+        await expect.poll(() => page.evaluate(() => [...document.querySelectorAll('main, main *')].filter((element) => element.getBoundingClientRect().right > innerWidth + 1).map((element) => `${element.tagName}.${element.className}`).slice(0, 12)), { message: path }).toEqual([]);
+        await expect(page.locator('main')).not.toContainText(/ui\.(?:application|settings|integrations|topology)\./);
+      }
+      expect(errors).toEqual([]);
+    });
+  }
+}
+
 test('mobile navigation traps focus and returns it to the menu button', async ({ page }) => {
   await host(page);
   await page.setViewportSize({ width: 390, height: 844 });
@@ -1645,9 +1668,9 @@ async function legacyUpdaterHost(
 
 function classicUpdaterUrl() {
   const url = process.env.VIBEPOLLO_LEGACY_TEST_URL;
-  test.skip(!url, 'Set VIBEPOLLO_LEGACY_TEST_URL to a classic production build on the v2 test origin.');
   const baseUrl = test.info().project.use.baseURL;
-  if (baseUrl) expect(new URL(url!).origin).toBe(new URL(baseUrl).origin);
+  test.skip(!url || (Boolean(baseUrl) && new URL(url).origin !== new URL(baseUrl!).origin),
+    'Updater storage parity requires a classic production build on the v2 test origin.');
   return url!;
 }
 

@@ -1274,6 +1274,9 @@ watch(
     document.getElementById(route.hash.slice(1))?.scrollIntoView({ block: 'start' });
   },
 );
+watch(() => system.metadata, (metadata, previous) => {
+  if (metadata && !previous) void nextTick(() => load());
+});
 onMounted(() => void load());
 const librarySetupOpen = ref(false);
 function libraryRequest(
@@ -1302,7 +1305,7 @@ function libraryRequest(
       <template #actions>
         <AppButton
           icon="integrations"
-          label="Setup Game Library Integration"
+          :label="t('ui.library.actions.setup')"
           @click="librarySetupOpen = true"
         />
         <AppButton

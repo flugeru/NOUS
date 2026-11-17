@@ -77,7 +77,7 @@ for (const locale of ['en', 'en_US', 'en_GB']) {
     page,
   }, testInfo) => {
     const writes = await host(page, locale);
-    await page.goto('/applications');
+    await page.goto(`${process.env.VIBEPOLLO_LEGACY_TEST_URL || 'http://127.0.0.1:5174'}/applications`);
     await page.getByRole('button', { name: /Resolution help app/ }).click();
     await expect(page.locator('#configure_display_resolution input')).toHaveValue('1920x1080');
     await expect(page.locator('#configure_display_refresh_rate input')).toHaveValue('90');
@@ -101,7 +101,7 @@ for (const locale of ['en', 'en_US', 'en_GB']) {
     page,
   }, testInfo) => {
     const writes = await host(page, locale);
-    await page.goto('/settings?sec=av&jump=dd_manual_refresh_rate');
+    await page.goto(`${process.env.VIBEPOLLO_LEGACY_TEST_URL || 'http://127.0.0.1:5174'}/settings?sec=av&jump=dd_manual_refresh_rate`);
     await expect(page.locator('#dd_manual_resolution input')).toHaveValue('1280x720');
     await expect(page.locator('#dd_manual_refresh_rate input')).toHaveValue('75');
     await page.locator('#dd_manual_refresh_rate input').scrollIntoViewIfNeeded();

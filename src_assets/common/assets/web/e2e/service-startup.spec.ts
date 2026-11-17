@@ -73,7 +73,7 @@ async function host(page: Page, options: HostOptions = {}) {
 }
 
 for (const [interfaceName, path] of [
-  ['legacy', '/troubleshooting'],
+  ['legacy', `${process.env.VIBEPOLLO_LEGACY_TEST_URL || 'http://127.0.0.1:5174'}/troubleshooting`],
   ['v2', '/v2/maintenance'],
 ]) {
   test(`${interfaceName} changes automatic startup to manual and back without restart`, async ({

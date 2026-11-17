@@ -31,6 +31,8 @@
 .vs-button,
 .button {
   min-block-size: var(--vs-size-control-md);
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
   gap: var(--vs-space-control-gap);
   padding-inline: var(--vs-button-padding-inline, var(--vs-space-16));
 }
