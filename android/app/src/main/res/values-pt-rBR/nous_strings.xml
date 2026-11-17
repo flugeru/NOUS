@@ -6,6 +6,7 @@
     <string name="nous_development_summary">Opções para testar o app</string>
     <string name="nous_development_offline_library">Biblioteca de jogos offline</string>
     <string name="nous_development_offline_library_summary">Exibe jogos e launchers de demonstração quando não há um PC pareado disponível.</string>
+    <string name="nous_demo_desktop">Desktop</string>
     <string name="nous_demo_launchers">Launchers</string>
     <string name="nous_demo_genshin">Genshin Impact</string>
     <string name="nous_demo_zenless">Zenless Zone Zero</string>
@@ -25,7 +26,7 @@
     <string name="nous_profiles">Perfis</string>
     <string name="nous_diagnostics">Diagnóstico do dispositivo</string>
     <string name="nous_help">Ajuda</string>
-    <string name="nous_search_games">Buscar jogos</string>
+    <string name="nous_search_library">Buscar na biblioteca</string>
     <string name="nous_games">Jogos</string>
     <string name="nous_computers_hint">Escolha um PC para abrir a biblioteca de jogos.</string>
     <string name="nous_games_need_pc">Conecte-se a um PC pareado para abrir seus jogos.</string>

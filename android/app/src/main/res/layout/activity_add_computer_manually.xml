@@ -52,16 +52,21 @@
                 android:textAppearance="@style/Nous.Subtitle"
                 android:text="@string/nous_manual_hint" />
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                style="@style/Nous.InputField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="26dp"
-                android:hint="@string/nous_host_address">
+                android:layout_marginTop="20dp"
+                app:startIconDrawable="@drawable/ic_nous_pc">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/hostTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textNoSuggestions"
+                    android:gravity="center_vertical"
+                    android:minHeight="52dp"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:hint="@string/nous_host_address"
+                    android:inputType="textUri|textNoSuggestions"
                     android:imeOptions="actionDone"
                     android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>

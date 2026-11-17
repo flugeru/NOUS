@@ -26,6 +26,7 @@ import com.limelight.profiles.ProfileButton;
 import android.app.Activity;
 import android.app.Service;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -43,11 +44,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -341,6 +345,15 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
             if (appGridAdapter != null) appGridAdapter.setRunningOnly(checkedIds.contains(R.id.nous_filter_running));
         });
         gameSearch = findViewById(R.id.nous_game_search);
+        gameSearch.setOnEditorActionListener((view, actionId, event) -> {
+            if (actionId != EditorInfo.IME_ACTION_SEARCH) {
+                return false;
+            }
+            InputMethodManager keyboard = (InputMethodManager) view.getContext()
+                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+            keyboard.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            return true;
+        });
         gameSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence text, int start, int count, int after) { }
@@ -372,11 +385,17 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
             TextView label = findViewById(R.id.appListText);
             label.setText(R.string.nous_demo_library);
             appGridAdapter = AppGridAdapter.createOfflineDemo(getActivity(), prefConfig);
-            com.google.android.material.chip.ChipGroup categories = findViewById(R.id.nous_offline_categories);
+            RadioGroup categories = findViewById(R.id.nous_offline_categories);
             categories.setVisibility(View.VISIBLE);
-            categories.setOnCheckedStateChangeListener((group, checkedIds) ->
-                    appGridAdapter.setLaunchersOnly(checkedIds.contains(R.id.nous_offline_launchers)));
-            appGridAdapter.setLaunchersOnly(categories.getCheckedChipId() == R.id.nous_offline_launchers);
+            categories.setOnCheckedChangeListener((group, checkedId) -> {
+                if (checkedId == R.id.nous_offline_desktop) {
+                    appGridAdapter.setCategory(AppGridAdapter.LibraryCategory.DESKTOP);
+                } else if (checkedId == R.id.nous_offline_launchers) {
+                    appGridAdapter.setCategory(AppGridAdapter.LibraryCategory.LAUNCHERS);
+                } else {
+                    appGridAdapter.setCategory(AppGridAdapter.LibraryCategory.GAMES);
+                }
+            });
             appGridAdapter.setQuery(gameSearch.getText());
             appGridAdapter.setRunningOnly(filters.getCheckedChipId() == R.id.nous_filter_running);
             if (getChildFragmentManager().findFragmentById(R.id.appFragmentContainer) == null) {
@@ -802,6 +821,7 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
     public void receiveAbsListView(AbsListView listView) {
         listView.setAdapter(appGridAdapter);
         if (isOfflineDemo()) {
+            listView.setEmptyView(findViewById(R.id.nous_library_empty));
             listView.setOnItemClickListener((parent, view, position, id) ->
                     Toast.makeText(parent.getContext(), R.string.nous_demo_item, Toast.LENGTH_SHORT).show());
             return;

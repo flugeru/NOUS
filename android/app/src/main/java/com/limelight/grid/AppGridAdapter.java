@@ -2,6 +2,7 @@ package com.limelight.grid;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.View;
 import android.widget.ImageView;
@@ -45,18 +46,20 @@ public class AppGridAdapter extends GenericGridAdapter<AppView.AppObject> {
     private final List<AppView.AppObject> searchResults = new ArrayList<>();
     private String query = "";
     private boolean runningOnly;
-    private int demoLauncherId;
-    private boolean launchersOnly;
+    public enum LibraryCategory { DESKTOP, GAMES, LAUNCHERS }
 
-    public void setLaunchersOnly(boolean launchersOnly) {
-        if (this.launchersOnly != launchersOnly) {
-            this.launchersOnly = launchersOnly;
+    private final SparseArray<LibraryCategory> demoCategories = new SparseArray<>();
+    private LibraryCategory category = LibraryCategory.GAMES;
+
+    public void setCategory(LibraryCategory category) {
+        if (this.category != category) {
+            this.category = category;
             notifyDataSetChanged();
         }
     }
 
     private boolean hasFilters() {
-        return !query.isEmpty() || runningOnly || demoLauncherId != 0;
+        return !query.isEmpty() || runningOnly || demoCategories.size() != 0;
     }
 
     public void setRunningOnly(boolean runningOnly) {
@@ -76,25 +79,32 @@ public class AppGridAdapter extends GenericGridAdapter<AppView.AppObject> {
 
     public static AppGridAdapter createOfflineDemo(Context context, PreferenceConfiguration prefs) {
         AppGridAdapter adapter = new AppGridAdapter(context, prefs, null, null, false);
-        adapter.addDemoGame(context, R.string.nous_demo_genshin, R.drawable.nous_demo_genshin, false);
-        adapter.addDemoGame(context, R.string.nous_demo_zenless, R.drawable.nous_demo_zenless, false);
-        adapter.addDemoGame(context, R.string.nous_demo_cyberpunk, R.drawable.nous_demo_cyberpunk, true);
-        adapter.addDemoGame(context, R.string.nous_demo_honkai, R.drawable.nous_demo_honkai, false);
-        adapter.demoLauncherId = adapter.addDemoGame(
-                context, R.string.nous_demo_steam, R.drawable.nous_demo_steam, false);
+        adapter.addDemoItem(context, R.string.nous_demo_desktop, R.drawable.nous_demo_desktop,
+                LibraryCategory.DESKTOP, false);
+        adapter.addDemoItem(context, R.string.nous_demo_genshin, R.drawable.nous_demo_genshin,
+                LibraryCategory.GAMES, false);
+        adapter.addDemoItem(context, R.string.nous_demo_zenless, R.drawable.nous_demo_zenless,
+                LibraryCategory.GAMES, false);
+        adapter.addDemoItem(context, R.string.nous_demo_cyberpunk, R.drawable.nous_demo_cyberpunk,
+                LibraryCategory.GAMES, true);
+        adapter.addDemoItem(context, R.string.nous_demo_honkai, R.drawable.nous_demo_honkai,
+                LibraryCategory.GAMES, false);
+        adapter.addDemoItem(context, R.string.nous_demo_steam, R.drawable.nous_demo_steam,
+                LibraryCategory.LAUNCHERS, false);
         adapter.notifyDataSetChanged();
         return adapter;
     }
 
-    private int addDemoGame(Context context, int title, int artwork, boolean running) {
+    private void addDemoItem(Context context, int title, int artwork, LibraryCategory category,
+                             boolean running) {
         int id = bundledArtwork.size() + 1;
         bundledArtwork.put(id, artwork);
+        demoCategories.put(id, category);
         NvApp game = new NvApp(context.getString(title), "", id, false);
         game.setAppIndex(id);
         AppView.AppObject item = new AppView.AppObject(game);
         item.isRunning = running;
         addApp(item);
-        return id;
     }
 
     public void updateHiddenApps(Set<Integer> newHiddenAppIds, boolean hideImmediately) {
@@ -148,8 +158,8 @@ public class AppGridAdapter extends GenericGridAdapter<AppView.AppObject> {
     public void notifyDataSetChanged() {
         searchResults.clear();
         for (AppView.AppObject app : itemList) {
-            boolean matchesCategory = demoLauncherId == 0
-                    || (app.app.getAppId() == demoLauncherId) == launchersOnly;
+            boolean matchesCategory = demoCategories.size() == 0
+                    || demoCategories.get(app.app.getAppId()) == category;
             if (matchesCategory && (!runningOnly || app.isRunning)
                     && app.app.getAppName().toLowerCase(Locale.ROOT).contains(query)) {
                 searchResults.add(app);

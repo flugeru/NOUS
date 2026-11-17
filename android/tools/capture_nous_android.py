@@ -271,6 +271,9 @@ def run(c):
     select("nous_offline_launchers")
     wait_for(labels=("Steam Big Picture",))
     c.capture("games-offline-launchers")
+    select("nous_offline_desktop")
+    wait_for("grid_text", labels=("Desktop",))
+    c.capture("games-offline-desktop")
     select("nous_offline_games")
 
     select("nous_nav_settings")

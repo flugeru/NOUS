@@ -1,0 +1,40 @@
+<resources>
+    <style name="Nous.InputField" parent="Widget.Material3.TextInputLayout.FilledBox">
+        <item name="boxBackgroundColor">@color/nous_surface_high</item>
+        <item name="boxCornerRadiusTopStart">14dp</item>
+        <item name="boxCornerRadiusTopEnd">14dp</item>
+        <item name="boxCornerRadiusBottomStart">14dp</item>
+        <item name="boxCornerRadiusBottomEnd">14dp</item>
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+        <item name="hintEnabled">false</item>
+        <item name="startIconTint">@color/nous_text_muted</item>
+        <item name="endIconMode">clear_text</item>
+        <item name="endIconTint">@color/nous_text_muted</item>
+    </style>
+
+    <style name="Nous.LibraryCategory" parent="Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:button">@null</item>
+        <item name="android:background">@drawable/nous_library_category_background</item>
+        <item name="android:textColor">@color/nous_library_category_text</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Nous.LibraryFilter" parent="Widget.Material3.Chip.Filter">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/nous_library_filter_text</item>
+        <item name="checkedIconVisible">false</item>
+        <item name="chipBackgroundColor">@color/nous_library_filter_background</item>
+        <item name="chipStrokeColor">@color/nous_library_filter_outline</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="chipMinHeight">30dp</item>
+        <item name="chipCornerRadius">15dp</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Full</item>
+    </style>
+</resources>

@@ -126,10 +126,21 @@ public class ProfilesNavigationTest {
             assertEquals(1, grid.getAdapter().getCount());
             assertEquals(activity.getString(R.string.nous_demo_cyberpunk), grid.getAdapter().getItem(0).toString());
             filters.check(R.id.nous_filter_all);
-            com.google.android.material.chip.ChipGroup categories = library.findViewById(R.id.nous_offline_categories);
+            android.widget.RadioGroup categories = library.findViewById(R.id.nous_offline_categories);
+            categories.check(R.id.nous_offline_desktop);
+            assertEquals(1, grid.getAdapter().getCount());
+            assertEquals(activity.getString(R.string.nous_demo_desktop), grid.getAdapter().getItem(0).toString());
+            filters.check(R.id.nous_filter_running);
+            assertEquals(0, grid.getAdapter().getCount());
+            filters.check(R.id.nous_filter_all);
             categories.check(R.id.nous_offline_launchers);
             assertEquals(1, grid.getAdapter().getCount());
             assertEquals(activity.getString(R.string.nous_demo_steam), grid.getAdapter().getItem(0).toString());
+            search.setText("Cyberpunk");
+            assertEquals(0, grid.getAdapter().getCount());
+            categories.check(R.id.nous_offline_games);
+            assertEquals(1, grid.getAdapter().getCount());
+            assertEquals(activity.getString(R.string.nous_demo_cyberpunk), grid.getAdapter().getItem(0).toString());
             grid.performItemClick(new View(activity), 0, grid.getAdapter().getItemId(0));
             assertNull("Demo apps cannot open a streaming activity", Shadows.shadowOf(activity).getNextStartedActivity());
 
