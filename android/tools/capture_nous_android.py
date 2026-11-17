@@ -234,6 +234,7 @@ def run(c):
     back()
 
     select("nous_nav_settings")
+    wait_for("nous_settings_hub_hint")
     wait_for("nous_settings_video")
     c.capture("settings-hub")
     select("nous_settings_video")
@@ -341,9 +342,13 @@ def run(c):
     wait_for("nous_help_content")
     controller_key("KEYCODE_BUTTON_B")
 
-    wait_for("nous_nav_computers")
+    wait_for("nous_settings_video")
     rotate(1)
-    c.capture("settings-landscape")
+    wait_for("nous_settings_video")
+    root, hierarchy = tree()
+    if match(root, "nous_settings_hub_hint") is not None:
+        raise RuntimeError("Settings subtitle should be hidden in landscape")
+    c.capture("settings-landscape", hierarchy)
     select("nous_settings_video")
     wait_for("nous_section_title")
     c.capture("video-settings-landscape")
@@ -446,6 +451,10 @@ def main():
         run(captures)
     except (RuntimeError, subprocess.SubprocessError, ValueError) as exc:
         (args.output / "failure.txt").write_text(str(exc) + "\n")
+        try:
+            (args.output / "crash-logcat.txt").write_text(adb("logcat", "-b", "crash", "-d"))
+        except subprocess.SubprocessError:
+            pass
         try:
             captures.capture("failure-state")
         except Exception:

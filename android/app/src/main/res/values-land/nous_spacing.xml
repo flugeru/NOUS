@@ -10,5 +10,7 @@
     <dimen name="nous_pc_card_height">66dp</dimen>
     <dimen name="nous_pc_card_padding">8dp</dimen>
     <dimen name="nous_settings_hub_title_size">24sp</dimen>
-    <integer name="nous_settings_hub_hint_visibility">8</integer>
+    <style name="NousSettingsHubHint">
+        <item name="android:visibility">gone</item>
+    </style>
 </resources>
