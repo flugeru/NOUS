@@ -45,15 +45,16 @@
 
             <include layout="@layout/nous_profile_button" />
 
-            <ImageButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@id/manuallyAddPc"
-                style="@style/Nous.IconButton"
+                style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginStart="6dp"
-                android:background="@drawable/nous_library_search_button"
                 android:contentDescription="@string/title_add_pc"
                 android:tooltipText="@string/title_add_pc"
-                android:src="@drawable/ic_add_base"
-                app:tint="@color/nous_secondary" />
+                app:icon="@drawable/ic_add_base"
+                app:iconTint="@color/nous_secondary" />
         </LinearLayout>
 
         <FrameLayout

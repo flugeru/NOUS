@@ -27,13 +27,14 @@
             android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
             android:textColor="@color/nous_text" />
 
-        <ImageButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@id/addProfileFab"
-            style="@style/Nous.IconButton"
-            android:background="@drawable/nous_library_search_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:contentDescription="@string/profile_manager_new_profile"
             android:tooltipText="@string/profile_manager_new_profile"
             android:src="@drawable/ic_add_base"
+            app:fabCustomSize="48dp"
             app:tint="@color/nous_secondary" />
     </LinearLayout>
 

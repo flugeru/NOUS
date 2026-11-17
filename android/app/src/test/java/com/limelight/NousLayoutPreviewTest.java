@@ -183,6 +183,44 @@ public class NousLayoutPreviewTest {
         }
     }
 
+    @Test
+    public void computerAndProfileActionsRestoreViewStateAcrossRotation() {
+        try (org.robolectric.android.controller.ActivityController<Host> controller =
+                     Robolectric.buildActivity(Host.class).setup()) {
+            Host host = controller.get();
+            android.content.res.Configuration landscape = new android.content.res.Configuration(
+                    host.getResources().getConfiguration());
+            landscape.orientation = android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+            landscape.screenWidthDp = 852;
+            landscape.screenHeightDp = 393;
+            android.view.ContextThemeWrapper landscapeContext = new android.view.ContextThemeWrapper(
+                    host.createConfigurationContext(landscape), R.style.AppTheme);
+            android.view.LayoutInflater landscapeInflater = host.getLayoutInflater().cloneInContext(landscapeContext);
+
+            for (int[] layoutAndAction : new int[][]{
+                    {R.layout.activity_pc_view, R.id.manuallyAddPc},
+                    {R.layout.activity_profiles, R.id.addProfileFab}
+            }) {
+                View portrait = host.getLayoutInflater().inflate(layoutAndAction[0], null, false);
+                View horizontal = landscapeInflater.inflate(layoutAndAction[0], null, false);
+                if (layoutAndAction[0] == R.layout.activity_pc_view) {
+                    assertTrue(horizontal.findViewById(R.id.nous_navigation)
+                            instanceof com.google.android.material.navigationrail.NavigationRailView);
+                } else {
+                    assertTrue(horizontal instanceof android.widget.LinearLayout);
+                }
+                assertEquals(portrait.findViewById(layoutAndAction[1]).getClass(),
+                        horizontal.findViewById(layoutAndAction[1]).getClass());
+                android.util.SparseArray<android.os.Parcelable> saved = new android.util.SparseArray<>();
+                portrait.saveHierarchyState(saved);
+                horizontal.restoreHierarchyState(saved);
+                saved.clear();
+                horizontal.saveHierarchyState(saved);
+                portrait.restoreHierarchyState(saved);
+            }
+        }
+    }
+
     @Test public void computerProfileButtonAlignsWithTheCardAndManualAction() {
         try (org.robolectric.android.controller.ActivityController<Host> controller =
                      Robolectric.buildActivity(Host.class).setup()) {
