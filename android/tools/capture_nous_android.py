@@ -4,6 +4,7 @@
 import argparse
 import json
 import re
+import struct
 import subprocess
 import time
 import unicodedata
@@ -93,6 +94,19 @@ def size():
     return tuple(map(int, re.findall(r"(\d+)x(\d+)", shell("wm", "size"))[-1]))
 
 
+def rotate(rotation):
+    shell("wm", "user-rotation", "lock", str(rotation))
+    landscape = rotation in (1, 3)
+    for _ in range(20):
+        screenshot = adb("exec-out", "screencap", "-p", binary=True)
+        width, height = struct.unpack_from(">II", screenshot, offset=16)
+        if (width > height) == landscape:
+            pause(1)
+            return
+        pause(0.75)
+    raise RuntimeError(f"Emulator rotation {rotation} did not take effect ({width}x{height})")
+
+
 class Captures:
     def __init__(self, output):
         self.output = output
@@ -167,8 +181,8 @@ class Captures:
 def run(c):
     shell("wm", "size", "1080x2340")
     shell("wm", "density", "440")
-    shell("settings", "put", "system", "accelerometer_rotation", "0")
-    shell("settings", "put", "system", "user_rotation", "0")
+    shell("wm", "fixed-to-user-rotation", "enabled")
+    rotate(0)
     shell("cmd", "locale", "set-app-locales", PACKAGE, "--user", "0", "--locales", "pt-BR")
     width, height = size()
     for attempt in range(2):
@@ -310,8 +324,7 @@ def run(c):
     controller_key("KEYCODE_BUTTON_B")
 
     wait_for("nous_nav_computers")
-    shell("settings", "put", "system", "user_rotation", "1")
-    pause(2)
+    rotate(1)
     c.capture("settings-landscape")
     select("nous_settings_video")
     wait_for("nous_section_title")
@@ -391,8 +404,7 @@ def run(c):
         raise RuntimeError("Closing landscape search should retain its filter")
     wait_for(labels=("Genshin Impact",))
 
-    shell("settings", "put", "system", "user_rotation", "0")
-    pause(2)
+    rotate(0)
     wait_for("nous_game_search", labels=("Genshin",))
     c.capture("games-offline-search-after-rotation")
 
