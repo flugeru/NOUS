@@ -22,6 +22,22 @@ def load_workflow(name: str) -> dict:
 
 
 class ReleaseWorkflowSplitTest(unittest.TestCase):
+    def test_windows_download_contains_only_setup(self) -> None:
+        windows = load_workflow("ci-windows.yml")["jobs"]
+        steps = windows["finalize_windows"]["steps"]
+        upload = next(step for step in steps if step.get("name") == "Upload Artifacts")
+        self.assertEqual(upload["with"]["path"], "artifacts/setup.exe")
+        self.assertFalse(any("portable ZIP" in step.get("name", "") for step in windows["build_windows"]["steps"]))
+        self.assertFalse(any(step.get("name") == "Include symbols in build artifact" for step in steps))
+        for workflow, job, name in [
+            ("daily-prerelease.yml", "publish", "Download internal release provenance"),
+            ("sign-release.yml", "release", "Download internal Windows provenance"),
+        ]:
+            jobs = load_workflow(workflow)["jobs"]
+            matches = [step for value in jobs.values() for step in value.get("steps", []) if step.get("name") == name]
+            self.assertEqual(len(matches), 1)
+            self.assertEqual(matches[0]["with"]["name"], "release-provenance")
+
     def test_release_tag_uses_hosted_runners_with_explicit_manual_opt_in(self) -> None:
         ci_workflow = load_workflow("ci.yml")
         dispatch_input = ci_workflow["on"]["workflow_dispatch"]["inputs"][
@@ -249,7 +265,7 @@ class ReleaseWorkflowSplitTest(unittest.TestCase):
         script = step["run"].split("python <<'PY'\n", 1)[1].rsplit("\nPY", 1)[0]
         portable_steps = [step for step in load_workflow("ci-windows.yml")["jobs"]["build_windows"]["steps"]
                           if step.get("name", "").endswith("Windows portable ZIP (CI only)")]
-        self.assertEqual(len(portable_steps), 2)
+        self.assertEqual(portable_steps, [])
         fallback = re.fullmatch(
             r"\$\{\{ needs\.release-candidate\.outputs\.release_version \|\| '([^']+)' \}\}",
             workflow["jobs"]["build-windows"]["with"]["release_version"],
@@ -800,8 +816,9 @@ esac
         )
         windows = load_workflow("ci-windows.yml")
         finalize_steps = {step["name"]: step for step in windows["jobs"]["finalize_windows"]["steps"] if "name" in step}
-        self.assertEqual(finalize_steps["Include symbols in build artifact"]["if"],
-                         "inputs.upload_symbols_artifact && !inputs.daily_unsigned")
+        self.assertNotIn("Include symbols in build artifact", finalize_steps)
+        self.assertEqual(finalize_steps["Upload Artifacts"]["with"]["path"], "artifacts/setup.exe")
+        self.assertEqual(publish_steps["Download internal release provenance"]["with"]["name"], "release-provenance")
         publish_script = "\n".join(step.get("run", "") for step in publish["steps"])
         self.assertIn('event_type:"daily-release-published"', publish_script)
 

@@ -164,6 +164,11 @@ jobs:
         with:
           name: build-Windows
           path: daily-assets
+      - name: Download internal release provenance
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: release-provenance
+          path: daily-assets
       - name: Download exact-build Windows symbols from this run
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:

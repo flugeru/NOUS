@@ -892,36 +892,6 @@ jobs:
             fi
           done
 
-      - name: Package and validate Windows portable ZIP (CI only)
-        if: github.event_name != 'pull_request' && inputs.release_version != '' && !startsWith(inputs.release_version, '0.0.0') && !startsWith(inputs.release_version, 'v0.0.0')
-        shell: msys2 {0}
-        env:
-          PORTABLE_PRODUCT: ${{ inputs.symbol_product_name }}
-        run: |
-          set -euo pipefail
-          # A failed CPack invocation must never upload an older valid ZIP.
-          rm -f -- build/cpack_artifacts/*-portable.zip ci-portable/*.zip
-          cmake --build build --target package_portable --parallel "$CMAKE_BUILD_PARALLEL_LEVEL"
-
-      - name: Validate Windows portable ZIP with host Python
-        if: github.event_name != 'pull_request' && inputs.release_version != '' && !startsWith(inputs.release_version, '0.0.0') && !startsWith(inputs.release_version, 'v0.0.0')
-        shell: pwsh
-        env:
-          PORTABLE_PRODUCT: ${{ inputs.symbol_product_name }}
-        run: |
-          python .github/scripts/validate_windows_portable.py --repository . --build build --product $env:PORTABLE_PRODUCT --version $env:BUILD_VERSION --output ci-portable
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-
-      - name: Upload Windows portable ZIP (CI only)
-        if: github.event_name != 'pull_request' && inputs.release_version != '' && !startsWith(inputs.release_version, '0.0.0') && !startsWith(inputs.release_version, 'v0.0.0')
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
-        with:
-          name: ci-portable-${{ matrix.name }}
-          path: ci-portable/*.zip
-          if-no-files-found: error
-          retention-days: ${{ inputs.release_artifact_retention_days }}
-          overwrite: true
-
       # WiX already installed before configure so env:WIX is available
 
       - name: Validate SignPath configuration
@@ -1546,21 +1516,6 @@ jobs:
           path: symbols
           run-id: ${{ needs.release_artifacts.outputs.source_run_id }}
 
-      - name: Include symbols in build artifact
-        if: inputs.upload_symbols_artifact && !inputs.daily_unsigned
-        shell: pwsh
-        env:
-          SYMBOL_PACK_NAME: ${{ needs.release_artifacts.outputs.symbol_pack_name }}
-        run: |
-          $ErrorActionPreference = 'Stop'
-          $symbolPack = Join-Path (Join-Path $PWD 'symbols') $env:SYMBOL_PACK_NAME
-          if (-not (Test-Path -LiteralPath $symbolPack)) {
-            Get-ChildItem -Path symbols -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_.FullName }
-            throw "Private symbol pack not found: $symbolPack"
-          }
-          New-Item -ItemType Directory -Path (Join-Path $PWD 'artifacts') -Force | Out-Null
-          Copy-Item -LiteralPath $symbolPack -Destination (Join-Path $PWD 'artifacts') -Force
-
       - name: Resolve audited producer identity for signed payload verification
         if: env.SIGNPATH_ENABLED == 'true'
         shell: pwsh
@@ -1964,7 +1919,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
           name: build-Windows
-          path: artifacts/
+          path: artifacts/setup.exe
           if-no-files-found: error
           # Keep published release recovery at 90 days; validation honors its caller.
           retention-days: ${{ inputs.release_tag != '' && 90 || inputs.release_artifact_retention_days }}

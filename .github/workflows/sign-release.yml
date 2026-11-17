@@ -560,6 +560,12 @@ jobs:
           name: build-Windows
           path: artifacts
 
+      - name: Download internal Windows provenance
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: release-provenance
+          path: artifacts
+
       - name: Download Arch Linux artifacts
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131  # v7.0.0
         with:
