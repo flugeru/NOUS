@@ -6,6 +6,9 @@ test('host dark theme matches NOUS Android Material 3 roles', () => {
   const tokens = JSON.parse(readFileSync(new URL('../design/tokens.json', import.meta.url), 'utf8'));
   const android = readFileSync(new URL('../../../../../android/app/src/main/res/values/nous.xml', import.meta.url), 'utf8');
   const colors = tokens.primitive.color.dark;
+  assert.equal(tokens.semantic.dark.color.navigation.container.$value,
+    android.match(/<color name="nous_secondary_container">(#[\da-f]+)<\/color>/i)?.[1]);
+  assert.equal(tokens.semantic.dark.color.navigation.selected.$value, '{primitive.color.dark.info}');
   for (const [role, name] of Object.entries({
     canvas: 'background', surface: 'surface', subtle: 'surface_high',
     textPrimary: 'text', textSecondary: 'text_muted', borderSubtle: 'outline',

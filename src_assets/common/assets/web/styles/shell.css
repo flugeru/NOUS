@@ -68,7 +68,7 @@
 }
 .nav-list {
   display: grid;
-  gap: var(--vs-space-2);
+  gap: var(--vs-space-4);
   padding: 0;
   margin: 0;
   list-style: none;
@@ -96,8 +96,8 @@
 }
 .nav-link--current,
 .nav-link--current:hover {
-  color: var(--vs-color-accent-default);
-  background: color-mix(in srgb, var(--vs-color-accent-default) 16%, var(--vs-color-bg-surface));
+  color: var(--vs-color-navigation-selected);
+  background: var(--vs-color-navigation-container);
 }
 .sidebar__footer {
   padding: var(--vs-space-12);

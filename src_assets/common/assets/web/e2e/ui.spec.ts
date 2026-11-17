@@ -530,6 +530,22 @@ test('Windows Playnite policies load and save inside v2', async ({ page }) => {
   expect(patches[0]).toEqual({ playnite_auto_sync: false });
 });
 
+test('browser PT-BR overrides host English and uses Android cyan navigation', async ({ page }) => {
+  await host(page);
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'languages', { get: () => ['pt-BR', 'en-US'] });
+  });
+  await page.goto('/v2/');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'pt-BR');
+  await expect(page.getByRole('heading', { name: 'Visão geral', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Ajustes', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Escuro', exact: true }).click();
+  await expect(page.locator('.nav-link--current')).toHaveCSS('color', 'rgb(131, 219, 228)');
+  await expect(page.locator('.nav-link--current')).toHaveCSS('background-color', 'rgb(33, 56, 61)');
+  await page.getByRole('link', { name: 'Biblioteca', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Biblioteca', exact: true })).toBeVisible();
+});
+
 test('mobile navigation traps focus and returns it to the menu button', async ({ page }) => {
   await host(page);
   await page.setViewportSize({ width: 390, height: 844 });

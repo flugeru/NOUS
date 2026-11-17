@@ -1,10 +1,7 @@
 import { createI18n, type LocaleMessageValue } from 'vue-i18n';
+import { browserLocale } from './utils/browserLocale';
 
 type LocaleMessages = Record<string, LocaleMessageValue>;
-
-interface LocaleResponse {
-  locale?: string;
-}
 
 async function loadJson(path: string): Promise<LocaleMessages> {
   const response = await fetch(path, {
@@ -49,27 +46,12 @@ async function loadMessages(locale: string): Promise<LocaleMessages> {
   }
 }
 
-async function configuredLocale(): Promise<string> {
-  try {
-    const response = await fetch('/api/configLocale', {
-      credentials: 'same-origin',
-      headers: { Accept: 'application/json' },
-    });
-    if (!response.ok) return 'en';
-    const payload = (await response.json()) as LocaleResponse;
-    const locale = payload.locale?.trim() ?? '';
-    return /^[a-z]{2}(?:_[A-Z]{2})?$/.test(locale) ? locale : 'en';
-  } catch {
-    return 'en';
-  }
-}
-
 function browserLocaleTag(locale: string): string {
   return locale.replace(/_/g, '-');
 }
 
 export async function createVibepolloI18n() {
-  const configured = await configuredLocale();
+  const configured = browserLocale(navigator.languages?.length ? navigator.languages : [navigator.language]);
   let activeLocale = 'en';
   const english = await loadMessages('en');
   const messages: Record<string, LocaleMessages> = { en: english };
