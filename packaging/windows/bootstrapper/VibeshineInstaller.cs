@@ -227,7 +227,6 @@ namespace VibepolloInstaller {
       _preferredInstallDirectory = ResolvePreferredInstallDirectory();
       _useSudoVdaSelectedInConfig = IsSudoVdaSelectedInConfiguration(_preferredInstallDirectory);
       _uninstallUiRequested = BuildFlavor.IsUninstallOnly || arguments.UninstallUiRequested;
-      var showInstallLocation = !BuildFlavor.IsUninstallOnly && _installedProduct == null;
       _showInstallVirtualDisplayOption = !BuildFlavor.IsUninstallOnly;
       _showInstallVirtualGamepadOption = !BuildFlavor.IsUninstallOnly
         && _payloadMsiInfo != null
@@ -235,18 +234,13 @@ namespace VibepolloInstaller {
       _showInstallUsbIpTransportOption = !BuildFlavor.IsUninstallOnly
         && _payloadMsiInfo != null
         && _payloadMsiInfo.HasBundledUsbIpTransport;
-      var showInstallOptions = showInstallLocation
-        || _showInstallVirtualDisplayOption
-        || _showInstallVirtualGamepadOption
-        || _showInstallUsbIpTransportOption;
-      var useCompactUpdateLayout = !BuildFlavor.IsUninstallOnly && _installedProduct != null && !showInstallOptions;
       var displayVersion = GetTargetVersionText();
-      Title = (BuildFlavor.IsUninstallOnly ? "NOUS Uninstaller v" : "NOUS Installer v") + displayVersion;
+      Title = (BuildFlavor.IsUninstallOnly ? "NOUS · Desinstalar · v" : "NOUS · Instalar · v") + displayVersion;
       // WorkArea and WPF window dimensions are both device-independent units.
       // Keep the initial window on screen even with a large display scale.
       var workArea = SystemParameters.WorkArea;
-      Width = Math.Min(720, workArea.Width);
-      Height = Math.Min(showInstallOptions ? 640 : useCompactUpdateLayout ? 430 : 500, workArea.Height);
+      Width = Math.Min(680, workArea.Width);
+      Height = Math.Min(560, workArea.Height);
       MinWidth = Math.Min(480, workArea.Width);
       MinHeight = Math.Min(320, workArea.Height);
       WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -299,7 +293,7 @@ namespace VibepolloInstaller {
         BorderBrush = Brushes.Transparent,
         BorderThickness = new Thickness(0),
         FontSize = 16,
-        ToolTip = "Minimize"
+        ToolTip = "Minimizar"
       };
       titleMinimizeButton.MouseEnter += TitleMinimizeMouseEnter;
       titleMinimizeButton.MouseLeave += TitleButtonMouseLeave;
@@ -318,7 +312,7 @@ namespace VibepolloInstaller {
         BorderBrush = Brushes.Transparent,
         BorderThickness = new Thickness(0),
         FontSize = 12,
-        ToolTip = "Close"
+        ToolTip = "Fechar"
       };
       _titleCloseButton.MouseEnter += TitleCloseMouseEnter;
       _titleCloseButton.MouseLeave += TitleButtonMouseLeave;
@@ -371,7 +365,7 @@ namespace VibepolloInstaller {
         Height = 4,
         CornerRadius = new CornerRadius(3),
         Margin = new Thickness(0, 0, 0, 14),
-        Background = new SolidColorBrush(Color.FromRgb(255, 158, 169))
+        Background = new SolidColorBrush(Color.FromRgb(103, 221, 232))
       };
       Grid.SetRow(_overlayAccentBar, 0);
       overlayLayout.Children.Add(_overlayAccentBar);
@@ -409,7 +403,7 @@ namespace VibepolloInstaller {
 
       _overlayHintText = new TextBlock {
         FontSize = 12,
-        Foreground = new SolidColorBrush(Color.FromRgb(255, 158, 169)),
+        Foreground = new SolidColorBrush(Color.FromRgb(103, 221, 232)),
         Margin = new Thickness(0, 0, 0, 8),
         Visibility = Visibility.Collapsed,
         TextWrapping = TextWrapping.Wrap
@@ -423,7 +417,7 @@ namespace VibepolloInstaller {
         Value = 0,
         Visibility = Visibility.Collapsed,
         Margin = new Thickness(2, 0, 2, 12),
-        Foreground = new SolidColorBrush(Color.FromRgb(255, 158, 169)),
+        Foreground = new SolidColorBrush(Color.FromRgb(103, 221, 232)),
         Background = new SolidColorBrush(Color.FromRgb(24, 34, 58)),
         BorderThickness = new Thickness(0)
       };
@@ -445,7 +439,7 @@ namespace VibepolloInstaller {
       overlayLayout.Children.Add(overlayButtons);
 
       _overlaySecondaryButton = new Button {
-        Content = "Cancel",
+        Content = "Cancelar",
         Height = 38,
         MinWidth = 96,
         Margin = new Thickness(0, 0, 10, 0),
@@ -466,9 +460,9 @@ namespace VibepolloInstaller {
         MinWidth = 108,
         Padding = new Thickness(16, 0, 16, 0),
         FontWeight = FontWeights.SemiBold,
-        Background = new SolidColorBrush(Color.FromRgb(255, 158, 169)),
-        Foreground = new SolidColorBrush(Color.FromRgb(59, 10, 22)),
-        BorderBrush = new SolidColorBrush(Color.FromRgb(255, 158, 169))
+        Background = new SolidColorBrush(Color.FromRgb(103, 221, 232)),
+        Foreground = new SolidColorBrush(Color.FromRgb(8, 37, 42)),
+        BorderBrush = new SolidColorBrush(Color.FromRgb(103, 221, 232))
       };
       _overlayPrimaryButton.Click += (sender, eventArgs) => ResolveOverlay("primary");
       ApplyFlatButtonTemplate(_overlayPrimaryButton, 8);
@@ -493,25 +487,47 @@ namespace VibepolloInstaller {
       };
       contentScroll.Content = contentStack;
       contentStack.Children.Add(new TextBlock {
-        Text = "NOUS",
-        FontSize = 36,
+        Text = "N O U S   /   WINDOWS",
+        FontSize = 13,
         FontWeight = FontWeights.SemiBold,
         Foreground = new SolidColorBrush(Color.FromRgb(242, 242, 244)),
         Margin = new Thickness(4, 4, 0, 4)
       });
       contentStack.Children.Add(new TextBlock {
-        Text = BuildFlavor.IsUninstallOnly ? "Manage your host" : "Your games. Your screen. Anywhere.",
-        FontSize = 20,
-        Foreground = new SolidColorBrush(Color.FromRgb(131, 219, 228)),
+        Text = BuildFlavor.IsUninstallOnly ? "Gerenciar instalação" : _installedProduct == null ? "Seu PC. Seus jogos. Onde quiser." : BuildInstallButtonLabel(),
+        FontSize = 28,
+        FontWeight = FontWeights.SemiBold,
+        Foreground = Brushes.White,
         TextWrapping = TextWrapping.Wrap,
-        Margin = new Thickness(4, 0, 0, 8)
+        Margin = new Thickness(4, 18, 0, 10)
       });
       contentStack.Children.Add(new TextBlock {
-        Text = "NOUS Host  ·  " + displayVersion,
+        Text = "NOUS Host  ·  Versão " + displayVersion,
         FontSize = 13,
         Foreground = new SolidColorBrush(Color.FromRgb(183, 190, 201)),
-        Margin = new Thickness(4, 0, 0, 24)
+        Margin = new Thickness(4, 0, 0, 28)
       });
+      contentStack.Children.Add(new TextBlock {
+        Text = BuildFlavor.IsUninstallOnly
+          ? "Remova o host deste computador. Você poderá escolher quais dados e drivers manter antes de confirmar."
+          : "Tudo pronto para transmitir deste computador. Revise os componentes se precisar personalizar a instalação.",
+        FontSize = 14,
+        LineHeight = 22,
+        Foreground = new SolidColorBrush(Color.FromRgb(183, 190, 201)),
+        TextWrapping = TextWrapping.Wrap,
+        Margin = new Thickness(4, 0, 4, 24)
+      });
+      var advancedOptions = new Expander {
+        Header = "Personalizar instalação",
+        IsExpanded = false,
+        FontSize = 14,
+        Foreground = new SolidColorBrush(Color.FromRgb(131, 219, 228)),
+        Margin = new Thickness(0, 0, 0, 20),
+        Visibility = BuildFlavor.IsUninstallOnly ? Visibility.Collapsed : Visibility.Visible
+      };
+      contentStack.Children.Add(advancedOptions);
+      var optionsStack = new StackPanel { Margin = new Thickness(0, 14, 0, 0) };
+      advancedOptions.Content = optionsStack;
 
       _installSection = new Border {
         CornerRadius = new CornerRadius(10),
@@ -521,7 +537,7 @@ namespace VibepolloInstaller {
         BorderBrush = new SolidColorBrush(Color.FromRgb(52, 59, 69)),
         BorderThickness = new Thickness(1)
       };
-      contentStack.Children.Add(_installSection);
+      optionsStack.Children.Add(_installSection);
 
       var installStack = new StackPanel {
         Orientation = Orientation.Vertical
@@ -529,7 +545,7 @@ namespace VibepolloInstaller {
       _installSection.Child = installStack;
 
       _installLocationTitleText = new TextBlock {
-        Text = "Install Location",
+        Text = "Pasta de instalação",
         FontSize = 14,
         FontWeight = FontWeights.SemiBold,
         Foreground = Brushes.White,
@@ -538,7 +554,7 @@ namespace VibepolloInstaller {
       installStack.Children.Add(_installLocationTitleText);
 
       _installLocationHintText = new TextBlock {
-        Text = "Choose where NOUS will be installed. Setup also installs Nefarius ViGEmBus for virtual controllers when needed.",
+        Text = "Escolha onde instalar o NOUS. O Nefarius ViGEmBus também será instalado para controles virtuais quando necessário.",
         FontSize = 12.5,
         Foreground = new SolidColorBrush(Color.FromRgb(209, 222, 241)),
         Margin = new Thickness(0, 0, 0, 10),
@@ -561,12 +577,12 @@ namespace VibepolloInstaller {
         Foreground = new SolidColorBrush(Color.FromRgb(242, 242, 244)),
         BorderBrush = new SolidColorBrush(Color.FromRgb(96, 111, 171)),
         CaretBrush = new SolidColorBrush(Color.FromRgb(242, 242, 244)),
-        ToolTip = "Used when installing or updating NOUS"
+        ToolTip = "Pasta usada para instalar ou atualizar o NOUS"
       };
       _installPathGrid.Children.Add(_installPathTextBox);
 
       _browseButton = new Button {
-        Content = "_Browse...",
+        Content = "_Escolher…",
         Margin = new Thickness(10, 0, 0, 0),
         MinWidth = 104,
         Height = 36,
@@ -575,7 +591,7 @@ namespace VibepolloInstaller {
         Background = new SolidColorBrush(Color.FromRgb(37, 42, 49)),
         Foreground = new SolidColorBrush(Color.FromRgb(232, 239, 253)),
         BorderBrush = new SolidColorBrush(Color.FromRgb(52, 59, 69)),
-        ToolTip = "Choose a different install location"
+        ToolTip = "Escolher outra pasta"
       };
       _browseButton.Click += BrowseClicked;
       ApplyFlatButtonTemplate(_browseButton, 7);
@@ -583,7 +599,7 @@ namespace VibepolloInstaller {
       _installPathGrid.Children.Add(_browseButton);
 
       var virtualDisplayDriverLabel = new TextBlock {
-        Text = "Virtual display driver",
+        Text = "Tela virtual",
         FontSize = 13,
         FontWeight = FontWeights.SemiBold,
         Foreground = new SolidColorBrush(Color.FromRgb(226, 235, 250)),
@@ -591,7 +607,7 @@ namespace VibepolloInstaller {
       };
 
       _virtualDisplayDriverCheckBox = new CheckBox {
-        Content = "Install or update the virtual display driver",
+        Content = "Instalar ou atualizar driver de tela virtual",
         IsChecked = _driverSelections.DisplayEnabled,
         Foreground = new SolidColorBrush(Color.FromRgb(232, 239, 253)),
         Margin = new Thickness(0, 0, 0, 8)
@@ -602,22 +618,24 @@ namespace VibepolloInstaller {
       _virtualDisplayDriverComboBox = new ComboBox {
         FontSize = 13,
         MinHeight = 32,
-        MaxWidth = 340,
+        MaxWidth = 420,
+        Foreground = Brushes.Black,
+        Background = Brushes.White,
         HorizontalAlignment = HorizontalAlignment.Left,
         VerticalContentAlignment = VerticalAlignment.Center,
         Margin = new Thickness(0, 0, 0, 8),
-        ToolTip = "Choose which bundled virtual display driver NOUS uses. The NOUS Display Driver is the recommended default."
+        ToolTip = "Escolha o driver de tela virtual incluído. NOUS Display Driver é o recomendado."
       };
       _virtualDisplayDriverComboBox.Items.Add(new ComboBoxItem {
-        Content = "NOUS Display Driver (recommended)"
+        Content = "NOUS Display Driver (recomendado)"
       });
       _virtualDisplayDriverComboBox.Items.Add(new ComboBoxItem {
-        Content = "SudoVDA (legacy)"
+        Content = "SudoVDA (legado)"
       });
       _virtualDisplayDriverComboBox.SelectedIndex = _useSudoVdaSelectedInConfig ? 1 : 0;
 
       var installVirtualDisplayHintText = new TextBlock {
-        Text = "The NOUS Display Driver is installed and selected by default for virtual displays. Pick SudoVDA (legacy) only if you need to keep using the previous driver.",
+        Text = "NOUS Display Driver vem selecionado por padrão. Use SudoVDA somente se precisar manter o driver anterior.",
         FontSize = 12,
         Foreground = new SolidColorBrush(Color.FromRgb(190, 208, 236)),
         TextWrapping = TextWrapping.Wrap
@@ -639,17 +657,15 @@ namespace VibepolloInstaller {
       tipsSection.Child = tipsStack;
 
       tipsStack.Children.Add(new TextBlock {
-        Text = "Quick Tips",
+        Text = "Antes de continuar",
         FontSize = 14,
         FontWeight = FontWeights.SemiBold,
         Foreground = Brushes.White,
-        Margin = new Thickness(0, 0, 0, 4)
+        Margin = new Thickness(0, 0, 0, 8)
       });
 
       tipsStack.Children.Add(new TextBlock {
-        Text = "You can install or upgrade NOUS while actively streaming. Optional driver changes may require a Windows restart. "
-          + "After you click Install or Upgrade, the current streaming session will end, then you can usually "
-          + "start streaming again after about 1–2 minutes without issues.",
+        Text = "A transmissão atual será encerrada durante a instalação. Alterações nos drivers podem exigir reiniciar o Windows.",
         FontSize = 12.5,
         Foreground = new SolidColorBrush(Color.FromRgb(211, 220, 246)),
         Margin = new Thickness(0, 0, 0, 10),
@@ -657,7 +673,7 @@ namespace VibepolloInstaller {
       });
 
       var sshDetails = new Expander {
-        Header = "Install from SSH",
+        Header = "Instalação por SSH",
         Foreground = new SolidColorBrush(Color.FromRgb(203, 219, 241)),
         FontSize = 12.5
       };
@@ -665,7 +681,7 @@ namespace VibepolloInstaller {
       var sshStack = new StackPanel { Margin = new Thickness(0, 6, 0, 0) };
       sshDetails.Content = sshStack;
       sshStack.Children.Add(new TextBlock {
-        Text = "Run in an elevated shell on this host:",
+        Text = "Execute como administrador neste computador:",
         FontSize = 13,
         Foreground = new SolidColorBrush(Color.FromRgb(203, 219, 241)),
         Margin = new Thickness(0, 0, 0, 6),
@@ -693,7 +709,7 @@ namespace VibepolloInstaller {
         BorderBrush = new SolidColorBrush(Color.FromRgb(52, 59, 69)),
         BorderThickness = new Thickness(1)
       };
-      contentStack.Children.Add(_installVirtualDisplaySection);
+      optionsStack.Children.Add(_installVirtualDisplaySection);
 
       var driverStack = new StackPanel {
         Orientation = Orientation.Vertical
@@ -712,32 +728,32 @@ namespace VibepolloInstaller {
         BorderBrush = new SolidColorBrush(Color.FromRgb(52, 59, 69)),
         BorderThickness = new Thickness(1)
       };
-      contentStack.Children.Add(_installVirtualGamepadSection);
+      optionsStack.Children.Add(_installVirtualGamepadSection);
 
       var gamepadStack = new StackPanel {
         Orientation = Orientation.Vertical
       };
       _installVirtualGamepadSection.Child = gamepadStack;
       gamepadStack.Children.Add(new TextBlock {
-        Text = "Virtual gamepad driver",
+        Text = "Controle virtual",
         FontSize = 13,
         FontWeight = FontWeights.SemiBold,
         Foreground = new SolidColorBrush(Color.FromRgb(226, 235, 250)),
         Margin = new Thickness(0, 0, 0, 6)
       });
       _virtualGamepadDriverCheckBox = new CheckBox {
-        Content = "Install NOUS virtual gamepad driver",
+        Content = "Instalar driver de controle virtual NOUS",
         FontSize = 13,
         Foreground = new SolidColorBrush(Color.FromRgb(232, 239, 253)),
         IsChecked = _driverSelections.GamepadEnabled,
         Margin = new Thickness(0, 0, 0, 6),
-        ToolTip = "Installs the bundled user-mode virtual gamepad driver."
+        ToolTip = "Instala o driver de controle virtual incluído."
       };
       _virtualGamepadDriverCheckBox.Checked += (sender, e) => _driverSelections.SelectGamepad(true);
       _virtualGamepadDriverCheckBox.Unchecked += (sender, e) => _driverSelections.SelectGamepad(false);
       gamepadStack.Children.Add(_virtualGamepadDriverCheckBox);
       gamepadStack.Children.Add(new TextBlock {
-        Text = "Enable this to install or update NOUS's bundled virtual gamepad driver.",
+        Text = "Ative para instalar ou atualizar o driver de controle virtual incluído.",
         FontSize = 12,
         Foreground = new SolidColorBrush(Color.FromRgb(190, 208, 236)),
         TextWrapping = TextWrapping.Wrap
@@ -745,7 +761,7 @@ namespace VibepolloInstaller {
 
       if (_payloadMsiInfo != null && _payloadMsiInfo.HasLocalGamepadCertificate) {
         gamepadStack.Children.Add(new TextBlock {
-          Text = "Installing a missing or newer beta gamepad driver also adds persistent machine-wide trust for its verified bundled signing certificate. Equal or newer installed drivers remain unchanged. Windows security enforcement stays enabled.",
+          Text = "Instalar um driver beta ausente ou mais recente também adiciona confiança persistente, para todo o computador, no certificado de assinatura verificado incluído. Drivers instalados de versão igual ou superior permanecem inalterados. As proteções de segurança do Windows continuam ativas.",
           FontSize = 11,
           Foreground = new SolidColorBrush(Color.FromRgb(190, 208, 236)),
           TextWrapping = TextWrapping.Wrap
@@ -759,13 +775,13 @@ namespace VibepolloInstaller {
         BorderBrush = new SolidColorBrush(Color.FromRgb(52, 59, 69)),
         BorderThickness = new Thickness(1)
       };
-      contentStack.Children.Add(_installUsbIpTransportSection);
+      optionsStack.Children.Add(_installUsbIpTransportSection);
       var usbIpStack = new StackPanel {
         Orientation = Orientation.Vertical
       };
       _installUsbIpTransportSection.Child = usbIpStack;
       usbIpStack.Children.Add(new TextBlock {
-        Text = "DualSense USB audio and haptics",
+        Text = "DualSense · Áudio e resposta tátil",
         FontSize = 13,
         FontWeight = FontWeights.SemiBold,
         Foreground = new SolidColorBrush(Color.FromRgb(226, 235, 250)),
@@ -773,21 +789,21 @@ namespace VibepolloInstaller {
       });
       _usbIpTransportCheckBox = new CheckBox {
         Content = new TextBlock {
-          Text = "Install signed USB/IP driver for DualSense waveform haptics",
+          Text = "Instalar driver USB/IP assinado para resposta tátil do DualSense",
           TextWrapping = TextWrapping.Wrap
         },
         FontSize = 13,
         Foreground = new SolidColorBrush(Color.FromRgb(232, 239, 253)),
         IsChecked = _arguments.InstallUsbIpTransportRequested,
         Margin = new Thickness(0, 0, 0, 6),
-        ToolTip = "Optional Microsoft-signed USB/IP transport for controller audio and waveform haptics."
+        ToolTip = "Transporte USB/IP opcional, assinado pela Microsoft, para áudio e resposta tátil."
       };
       usbIpStack.Children.Add(_usbIpTransportCheckBox);
       usbIpStack.Children.Add(new TextBlock {
-        Text = "Presents the streamed controller to Windows games as a wired USB DualSense with an audio endpoint for waveform haptics. Requires a compatible Moonlight client. "
-          + "Installs the Microsoft-signed usbip-win2 driver; Windows may require a restart. "
-          + "USB devices may briefly reconnect during installation. "
-          + "This shared driver remains installed when NOUS is uninstalled.",
+        Text = "Apresenta o controle remoto aos jogos como DualSense USB com áudio para resposta tátil. Exige cliente Moonlight compatível. "
+          + "Instala o driver usbip-win2 assinado pela Microsoft; pode exigir reiniciar o Windows. "
+          + "Dispositivos USB podem reconectar durante a instalação. "
+          + "Este driver compartilhado permanece instalado após remover o NOUS.",
         FontSize = 12,
         Foreground = new SolidColorBrush(Color.FromRgb(190, 208, 236)),
         TextWrapping = TextWrapping.Wrap
@@ -816,7 +832,7 @@ namespace VibepolloInstaller {
       statusCard.Child = statusStack;
 
       statusStack.Children.Add(new TextBlock {
-        Text = "STATUS",
+        Text = "ANDAMENTO",
         FontSize = 11,
         FontWeight = FontWeights.SemiBold,
         Foreground = new SolidColorBrush(Color.FromRgb(176, 207, 238)),
@@ -853,7 +869,7 @@ namespace VibepolloInstaller {
         Height = 4,
         IsIndeterminate = true,
         Visibility = Visibility.Collapsed,
-        Foreground = new SolidColorBrush(Color.FromRgb(255, 158, 169)),
+        Foreground = new SolidColorBrush(Color.FromRgb(103, 221, 232)),
         Margin = new Thickness(8, 4, 8, 8)
       };
       Grid.SetRow(_progressBar, 1);
@@ -862,22 +878,24 @@ namespace VibepolloInstaller {
       var buttonRow = new WrapPanel {
         HorizontalAlignment = HorizontalAlignment.Right
       };
+      var secondaryActions = new WrapPanel { Margin = new Thickness(0, 10, 0, 16) };
+      optionsStack.Children.Add(secondaryActions);
       Grid.SetRow(buttonRow, 2);
       footerGrid.Children.Add(buttonRow);
 
       _continueButton = new Button {
-        Content = "Next",
+        Content = "Continuar",
         Height = 40,
         MinWidth = 136,
         Margin = new Thickness(8, 4, 0, 0),
         Padding = new Thickness(16, 0, 16, 0),
         FontWeight = FontWeights.SemiBold,
-        Background = new SolidColorBrush(Color.FromRgb(255, 158, 169)),
-        Foreground = new SolidColorBrush(Color.FromRgb(59, 10, 22)),
-        BorderBrush = new SolidColorBrush(Color.FromRgb(255, 158, 169)),
+        Background = new SolidColorBrush(Color.FromRgb(103, 221, 232)),
+        Foreground = new SolidColorBrush(Color.FromRgb(8, 37, 42)),
+        BorderBrush = new SolidColorBrush(Color.FromRgb(103, 221, 232)),
         BorderThickness = new Thickness(1.5),
         IsDefault = true,
-        ToolTip = "Run the selected action"
+        ToolTip = "Executar ação selecionada"
       };
       _continueButton.MouseEnter += ContinueButtonMouseEnter;
       _continueButton.MouseLeave += ContinueButtonMouseLeave;
@@ -886,15 +904,15 @@ namespace VibepolloInstaller {
       buttonRow.Children.Add(_continueButton);
 
       _uninstallButton = new Button {
-        Content = "Uninstall NOUS",
+        Content = "Desinstalar NOUS",
         Height = 40,
         MinWidth = 152,
         Margin = new Thickness(8, 4, 0, 0),
         Padding = new Thickness(16, 0, 16, 0),
         FontWeight = FontWeights.SemiBold,
-        Background = new SolidColorBrush(Color.FromRgb(225, 29, 72)),
+        Background = new SolidColorBrush(Color.FromRgb(37, 42, 49)),
         Foreground = new SolidColorBrush(Color.FromRgb(242, 242, 244)),
-        BorderBrush = new SolidColorBrush(Color.FromRgb(251, 113, 133)),
+        BorderBrush = new SolidColorBrush(Color.FromRgb(75, 58, 67)),
         BorderThickness = new Thickness(1.5),
         Visibility = Visibility.Visible
       };
@@ -902,10 +920,11 @@ namespace VibepolloInstaller {
       _uninstallButton.MouseLeave += UninstallButtonMouseLeave;
       _uninstallButton.Click += UninstallNowClicked;
       ApplyFlatButtonTemplate(_uninstallButton, 8);
-      buttonRow.Children.Add(_uninstallButton);
+      if (BuildFlavor.IsUninstallOnly) buttonRow.Children.Add(_uninstallButton);
+      else secondaryActions.Children.Add(_uninstallButton);
 
       _licenseButton = new Button {
-        Content = "_License",
+        Content = "_Licença",
         Height = 40,
         MinWidth = 102,
         Margin = new Thickness(8, 4, 0, 0),
@@ -914,14 +933,14 @@ namespace VibepolloInstaller {
         Background = new SolidColorBrush(Color.FromRgb(37, 42, 49)),
         Foreground = new SolidColorBrush(Color.FromRgb(232, 239, 253)),
         BorderBrush = new SolidColorBrush(Color.FromRgb(52, 59, 69)),
-        ToolTip = "View software license"
+        ToolTip = "Ver licença do software"
       };
       _licenseButton.Click += LicenseClicked;
       ApplyFlatButtonTemplate(_licenseButton, 8);
-      buttonRow.Children.Add(_licenseButton);
+      secondaryActions.Children.Add(_licenseButton);
 
       _closeButton = new Button {
-        Content = "Cl_ose",
+        Content = "_Fechar",
         Height = 40,
         MinWidth = 102,
         Margin = new Thickness(8, 4, 0, 0),
@@ -931,22 +950,22 @@ namespace VibepolloInstaller {
         Foreground = new SolidColorBrush(Color.FromRgb(232, 239, 253)),
         BorderBrush = new SolidColorBrush(Color.FromRgb(52, 59, 69)),
         IsCancel = true,
-        ToolTip = "Close this installer window"
+        ToolTip = "Fechar instalador"
       };
       _closeButton.Click += (sender, eventArgs) => Close();
       ApplyFlatButtonTemplate(_closeButton, 8);
       buttonRow.Children.Add(_closeButton);
 
-      _continueButton.Content = BuildFlavor.IsUninstallOnly ? "Uninstall NOUS" : BuildInstallButtonLabel();
+      _continueButton.Content = BuildFlavor.IsUninstallOnly ? "Desinstalar NOUS" : BuildInstallButtonLabel();
       if (_uninstallUiRequested && _installedProduct == null) {
         SetStatus(
-          "NOUS is not installed.",
+          "NOUS não está instalado.",
           BuildFlavor.IsUninstallOnly
-            ? "No uninstall action is required."
-            : "Uninstall is unavailable. Choose Install NOUS to continue.",
+            ? "Nada para desinstalar."
+            : "Desinstalação indisponível. Escolha Instalar NOUS para continuar.",
           _statusNormalBrush);
       } else {
-        SetStatus("Ready.", string.Empty, _statusNormalBrush);
+        SetStatus("Pronto.", string.Empty, _statusNormalBrush);
       }
       UpdateActionUiState();
       Loaded += InstallerWindowLoaded;
@@ -959,7 +978,7 @@ namespace VibepolloInstaller {
     private static void ApplyFlatButtonTemplate(Button button, double cornerRadius) {
       button.OverridesDefaultStyle = true;
       button.Template = CreateFlatButtonTemplate(cornerRadius);
-      button.FocusVisualStyle = null;
+
       button.Cursor = Cursors.Hand;
     }
 
@@ -984,6 +1003,10 @@ namespace VibepolloInstaller {
 
       var template = new ControlTemplate(typeof(Button));
       template.VisualTree = border;
+
+      var focusTrigger = new Trigger { Property = UIElement.IsKeyboardFocusedProperty, Value = true };
+      focusTrigger.Setters.Add(new Setter(Control.BorderBrushProperty, Brushes.White));
+      template.Triggers.Add(focusTrigger);
 
       var pressedTrigger = new Trigger {
         Property = Button.IsPressedProperty,
@@ -1034,7 +1057,7 @@ namespace VibepolloInstaller {
     }
 
     private void FocusDefaultActionControl() {
-      if (_installSection.Visibility == Visibility.Visible) {
+      if (_installPathTextBox.IsVisible && _installPathTextBox.IsEnabled) {
         _installPathTextBox.Focus();
         _installPathTextBox.SelectAll();
       } else if (BuildFlavor.IsUninstallOnly && _uninstallButton.Visibility == Visibility.Visible) {
@@ -1115,13 +1138,13 @@ namespace VibepolloInstaller {
     }
 
     private void ContinueButtonMouseEnter(object sender, MouseEventArgs e) {
-      _continueButton.Background = new SolidColorBrush(Color.FromRgb(255, 185, 193));
-      _continueButton.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 185, 193));
+      _continueButton.Background = new SolidColorBrush(Color.FromRgb(149, 237, 244));
+      _continueButton.BorderBrush = new SolidColorBrush(Color.FromRgb(149, 237, 244));
     }
 
     private void ContinueButtonMouseLeave(object sender, MouseEventArgs e) {
-      _continueButton.Background = new SolidColorBrush(Color.FromRgb(255, 158, 169));
-      _continueButton.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 158, 169));
+      _continueButton.Background = new SolidColorBrush(Color.FromRgb(103, 221, 232));
+      _continueButton.BorderBrush = new SolidColorBrush(Color.FromRgb(103, 221, 232));
     }
 
     private void UninstallButtonMouseEnter(object sender, MouseEventArgs e) {
@@ -1130,8 +1153,8 @@ namespace VibepolloInstaller {
     }
 
     private void UninstallButtonMouseLeave(object sender, MouseEventArgs e) {
-      _uninstallButton.Background = new SolidColorBrush(Color.FromRgb(225, 29, 72));
-      _uninstallButton.BorderBrush = new SolidColorBrush(Color.FromRgb(251, 113, 133));
+      _uninstallButton.Background = new SolidColorBrush(Color.FromRgb(37, 42, 49));
+      _uninstallButton.BorderBrush = new SolidColorBrush(Color.FromRgb(75, 58, 67));
     }
 
     private void BrowseClicked(object sender, RoutedEventArgs e) {
@@ -1140,7 +1163,7 @@ namespace VibepolloInstaller {
         currentPath = _preferredInstallDirectory;
       }
 
-      var selectedPath = ModernFolderPicker.TryPickFolder(this, "Select the NOUS install folder", currentPath);
+      var selectedPath = ModernFolderPicker.TryPickFolder(this, "Selecione a pasta de instalação do NOUS", currentPath);
       if (!string.IsNullOrWhiteSpace(selectedPath)) {
         _installPathTextBox.Text = selectedPath;
       }
@@ -1156,8 +1179,8 @@ namespace VibepolloInstaller {
 
     private async void UninstallNowClicked(object sender, RoutedEventArgs e) {
       if (_installedProduct == null) {
-        SetStatus("Uninstall not started.", "No NOUS installation was found on this PC.", _statusNormalBrush);
-        await ShowOverlayInfoAsync("Nothing to uninstall", "NOUS is not currently installed on this PC.");
+        SetStatus("Desinstalação não iniciada.", "Nenhuma instalação do NOUS encontrada neste computador.", _statusNormalBrush);
+        await ShowOverlayInfoAsync("Nada para desinstalar", "NOUS não está instalado neste computador.");
         return;
       }
 
@@ -1177,8 +1200,8 @@ namespace VibepolloInstaller {
         installPathFailureDetail = BuildFailureDetail(ex.Message);
       }
       if (!string.IsNullOrWhiteSpace(installPathFailureDetail)) {
-        SetStatus("Install not started.", installPathFailureDetail, _statusErrorBrush);
-        await ShowOverlayInfoAsync("Installer error", installPathFailureDetail);
+        SetStatus("Instalação não iniciada.", installPathFailureDetail, _statusErrorBrush);
+        await ShowOverlayInfoAsync("Erro do instalador", installPathFailureDetail);
         return;
       }
       _installPathTextBox.Text = selectedPath;
@@ -1186,13 +1209,13 @@ namespace VibepolloInstaller {
       var vibeshineProduct = InstallerRunner.GetInstalledVibeshineProduct();
       if (vibeshineProduct != null) {
         var proceed = await ShowOverlayConfirmAsync(
-          "Sunshine ecosystem detected",
+          "Ecossistema Sunshine detectado",
           BuildVibeshineInstallWarning(vibeshineProduct),
-          "Continue with NOUS",
-          "Cancel",
+          "Continuar com NOUS",
+          "Cancelar",
           false);
         if (!proceed) {
-          SetStatus("Install canceled.", "No changes were made.", _statusNormalBrush);
+          SetStatus("Instalação cancelada.", "Nenhuma alteração feita.", _statusNormalBrush);
           return;
         }
       }
@@ -1200,39 +1223,39 @@ namespace VibepolloInstaller {
       var apolloProduct = InstallerRunner.GetInstalledApolloProduct();
       if (apolloProduct != null) {
         var proceed = await ShowOverlayConfirmAsync(
-          "Apollo detected",
+          "Apollo detectado",
           BuildApolloInstallWarning(apolloProduct),
-          "Uninstall Apollo",
-          "Cancel",
+          "Desinstalar Apollo",
+          "Cancelar",
           false);
         if (!proceed) {
-          SetStatus("Install canceled.", "No changes were made.", _statusNormalBrush);
+          SetStatus("Instalação cancelada.", "Nenhuma alteração feita.", _statusNormalBrush);
           return;
         }
       }
 
       if (_legacyApolloRegistration != null) {
         var proceed = await ShowOverlayConfirmAsync(
-          "Legacy Apollo detected",
+          "Apollo legado detectado",
           BuildLegacyApolloMigrationWarning(),
-          "Uninstall Apollo",
-          "Cancel",
+          "Desinstalar Apollo",
+          "Cancelar",
           false);
         if (!proceed) {
-          SetStatus("Install canceled.", "No changes were made.", _statusNormalBrush);
+          SetStatus("Instalação cancelada.", "Nenhuma alteração feita.", _statusNormalBrush);
           return;
         }
       }
 
       if (_legacySunshineProduct != null || _legacySunshineRegistration != null) {
         var proceedWithRemoval = await ShowOverlayConfirmAsync(
-          "Sunshine detected",
+          "Sunshine detectado",
           BuildLegacySunshineMigrationWarning(),
-          "Uninstall Sunshine",
-          "Cancel",
+          "Desinstalar Sunshine",
+          "Cancelar",
           false);
         if (!proceedWithRemoval) {
-          SetStatus("Install canceled.", "No changes were made.", _statusNormalBrush);
+          SetStatus("Instalação cancelada.", "Nenhuma alteração feita.", _statusNormalBrush);
           return;
         }
       }
@@ -1240,9 +1263,9 @@ namespace VibepolloInstaller {
       // Warn about low disk space but allow the user to proceed
       var spaceWarning = CheckDiskSpace(selectedPath);
       if (spaceWarning != null) {
-        var proceed = await ShowOverlayConfirmAsync("Low disk space", spaceWarning + "\n\nContinue anyway?", "Continue", "Cancel", false);
+        var proceed = await ShowOverlayConfirmAsync("Pouco espaço em disco", spaceWarning + "\n\nContinue anyway?", "Continuar", "Cancelar", false);
         if (!proceed) {
-          SetStatus("Install not started.", "Choose a drive with more free space.", _statusNormalBrush);
+          SetStatus("Instalação não iniciada.", "Escolha uma unidade com mais espaço livre.", _statusNormalBrush);
           return;
         }
       }
@@ -1260,7 +1283,7 @@ namespace VibepolloInstaller {
           installVirtualGamepadDriver,
           installUsbIpTransport,
           false));
-      }, "Install", "Installing or updating NOUS...", "NOUS installation completed.");
+      }, "Install", "Instalando ou atualizando NOUS…", "Instalação do NOUS concluída.");
     }
 
     private bool ShouldInstallVirtualDisplayDriver() {
@@ -1277,14 +1300,14 @@ namespace VibepolloInstaller {
 
     private async Task RunUninstallFlow() {
       if (_installedProduct == null) {
-        SetStatus("Uninstall not started.", "No NOUS installation was found on this PC.", _statusNormalBrush);
-        await ShowOverlayInfoAsync("Nothing to uninstall", "NOUS is not currently installed on this PC.");
+        SetStatus("Desinstalação não iniciada.", "Nenhuma instalação do NOUS encontrada neste computador.", _statusNormalBrush);
+        await ShowOverlayInfoAsync("Nada para desinstalar", "NOUS não está instalado neste computador.");
         return;
       }
 
       var uninstallOptions = await ShowOverlayUninstallOptionsAsync();
       if (uninstallOptions == null) {
-        SetStatus("Uninstall canceled.", "No changes were made.", _statusNormalBrush);
+        SetStatus("Desinstalação cancelada.", "Nenhuma alteração feita.", _statusNormalBrush);
         return;
       }
 
@@ -1295,13 +1318,13 @@ namespace VibepolloInstaller {
           uninstallOptions.Value.RemoveVirtualDisplayDriver,
           removeVirtualGamepadDriver: uninstallOptions.Value.RemoveVirtualGamepadDriver)),
         "Uninstall",
-        "Removing NOUS...",
-        "NOUS uninstall completed.");
+        "Removendo NOUS…",
+        "Desinstalação do NOUS concluída.");
     }
 
     private async Task RunOperationAsync(Func<Task<InstallerResult>> actionFactory, string actionLabel, string inProgressText, string successText) {
       SetBusyState(true);
-      SetStatus(inProgressText, "This can take a minute. Admin approval is requested only after the operation starts.", _statusBusyBrush);
+      SetStatus(inProgressText, "Pode levar alguns minutos. A autorização de administrador será solicitada após iniciar a operação.", _statusBusyBrush);
       string exceptionFailureDetail = null;
       try {
         var result = await actionFactory();
@@ -1313,8 +1336,8 @@ namespace VibepolloInstaller {
           if (!string.IsNullOrWhiteSpace(result.UserDetail)) {
             detail += "\n" + result.UserDetail;
           }
-          SetStatus("Restart required before installation can continue.", detail, _statusWarningBrush);
-          await ShowOverlayInfoAsync("Restart required", _statusText.Text);
+          SetStatus("Reinicie o Windows para continuar a instalação.", detail, _statusWarningBrush);
+          await ShowOverlayInfoAsync("Reinicialização necessária", _statusText.Text);
           Close();
           return;
         }
@@ -1325,19 +1348,19 @@ namespace VibepolloInstaller {
             if (!string.IsNullOrWhiteSpace(result.UserDetail)) {
               warningDetail += "\n" + result.UserDetail;
             }
-            SetStatus("NOUS installation completed with warnings.", warningDetail, _statusWarningBrush);
+            SetStatus("Instalação do NOUS concluída com avisos.", warningDetail, _statusWarningBrush);
             await ShowInstallPartialSuccessDialogAsync(result);
             Close();
             return;
           }
           var detail = result.ExitCode == 3010
-            ? "The operation completed and Windows restart is required."
-            : "All selected changes were applied successfully.";
+            ? "Operação concluída. Reinicie o Windows."
+            : "Todas as alterações selecionadas foram aplicadas.";
           if (!string.IsNullOrWhiteSpace(result.UserDetail)) {
             detail += "\n" + result.UserDetail;
           }
           SetStatus(successText, detail, _statusSuccessBrush);
-          await ShowOverlayInfoAsync("Complete", _statusText.Text);
+          await ShowOverlayInfoAsync("Concluído", _statusText.Text);
           Close();
           return;
         }
@@ -1345,8 +1368,8 @@ namespace VibepolloInstaller {
         if (result.ExitCode == 1223) {
           ProcessExitCode = result.ExitCode;
           SetStatus(
-            actionLabel + " cancelled.",
-            "No changes were made because the elevation prompt was cancelled.",
+            (actionLabel == "Install" ? "Instalação" : "Desinstalação") + " cancelada.",
+            "Nenhuma alteração feita: autorização de administrador cancelada.",
             _statusNormalBrush);
           return;
         }
@@ -1354,25 +1377,25 @@ namespace VibepolloInstaller {
         if (result.Operation == InstallerOperation.Uninstall && result.ExitCode == 1605) {
           ProcessExitCode = 0;
           SetStatus(
-            "NOUS is not installed.",
-            "Nothing needed to be removed.",
+            "NOUS não está instalado.",
+            "Nada precisava ser removido.",
             _statusNormalBrush);
-          await ShowOverlayInfoAsync("Nothing to uninstall", "NOUS is not currently installed on this PC.");
+          await ShowOverlayInfoAsync("Nada para desinstalar", "NOUS não está instalado neste computador.");
           return;
         }
 
         ProcessExitCode = result.ExitCode;
         var failureDetail = BuildFailureDetail(result.Message);
-        SetStatus(actionLabel + " failed.", failureDetail, _statusErrorBrush);
+        SetStatus((actionLabel == "Install" ? "Instalação" : "Desinstalação") + " falhou.", failureDetail, _statusErrorBrush);
         if (result.Operation == InstallerOperation.Install) {
           await ShowInstallFailureSupportDialogAsync(failureDetail, result);
         } else {
-          await ShowOverlayInfoAsync("Installer error", failureDetail);
+          await ShowOverlayInfoAsync("Erro do instalador", failureDetail);
         }
       } catch (Exception ex) {
         ProcessExitCode = 1;
         exceptionFailureDetail = BuildFailureDetail(ex.Message);
-        SetStatus(actionLabel + " failed.", exceptionFailureDetail, _statusErrorBrush);
+        SetStatus((actionLabel == "Install" ? "Instalação" : "Desinstalação") + " falhou.", exceptionFailureDetail, _statusErrorBrush);
       } finally {
         SetBusyState(false);
       }
@@ -1388,18 +1411,18 @@ namespace VibepolloInstaller {
             Message = exceptionFailureDetail
           });
         } else {
-          await ShowOverlayInfoAsync("Installer error", exceptionFailureDetail);
+          await ShowOverlayInfoAsync("Erro do instalador", exceptionFailureDetail);
         }
       }
     }
 
     private static string BuildComponentFailureDetail(IReadOnlyList<string> componentFailures) {
       if (componentFailures == null || componentFailures.Count == 0) {
-        return "The operation completed with warnings.";
+        return "Operação concluída com avisos.";
       }
 
       var lines = new List<string> {
-        "The operation completed, but some components failed:"
+        "Operação concluída, mas alguns componentes falharam:"
       };
       foreach (var failure in componentFailures.Where(item => !string.IsNullOrWhiteSpace(item))) {
         lines.Add("- " + failure.Trim());
@@ -1410,7 +1433,7 @@ namespace VibepolloInstaller {
     private static string NormalizeInstallPath(string installPath) {
       var trimmedPath = (installPath ?? string.Empty).Trim();
       if (trimmedPath.Length == 0) {
-        throw new InvalidOperationException("Choose an install folder before clicking Install or Update.");
+        throw new InvalidOperationException("Escolha uma pasta antes de instalar ou atualizar.");
       }
 
       string fullPath;
@@ -1418,14 +1441,14 @@ namespace VibepolloInstaller {
         fullPath = Path.GetFullPath(trimmedPath);
       } catch (Exception ex) {
         if (ex is ArgumentException || ex is NotSupportedException || ex is PathTooLongException) {
-          throw new InvalidOperationException("The install folder path is invalid. Choose a different folder and try again.");
+          throw new InvalidOperationException("Caminho inválido. Escolha outra pasta e tente novamente.");
         }
         throw;
       }
 
       // Block UNC / network paths — Windows services cannot reliably run from network locations
       if (fullPath.StartsWith(@"\\", StringComparison.Ordinal)) {
-        throw new InvalidOperationException("Network paths (UNC) are not supported. NOUS runs as a Windows service and must be installed on a local drive.");
+        throw new InvalidOperationException("Caminhos de rede (UNC) não são aceitos. NOUS executa como serviço do Windows e exige unidade local.");
       }
 
       // Verify the drive exists
@@ -1578,13 +1601,13 @@ namespace VibepolloInstaller {
     private string BuildInstallButtonLabel() {
       switch (GetInstallActionKind()) {
         case InstallActionKind.Install:
-          return "Install NOUS";
+          return "Instalar NOUS";
         case InstallActionKind.Upgrade:
-          return "Upgrade NOUS";
+          return "Atualizar NOUS";
         case InstallActionKind.Downgrade:
-          return "Downgrade NOUS";
+          return "Instalar versão anterior";
         default:
-          return "Reinstall NOUS";
+          return "Reinstalar NOUS";
       }
     }
 
@@ -1619,12 +1642,12 @@ namespace VibepolloInstaller {
       }
 
       await ShowOverlayAsync(
-        "License",
-        "NOUS software license terms:",
-        "Close",
+        "Licença",
+        "Termos da licença do NOUS:",
+        "Fechar",
         string.Empty,
-        new SolidColorBrush(Color.FromRgb(255, 158, 169)),
-        new SolidColorBrush(Color.FromRgb(255, 158, 169)),
+        new SolidColorBrush(Color.FromRgb(103, 221, 232)),
+        new SolidColorBrush(Color.FromRgb(103, 221, 232)),
         false,
         content => {
           var licenseTextBox = new TextBox {
@@ -1648,7 +1671,7 @@ namespace VibepolloInstaller {
     }
 
     private static string LoadEmbeddedLicenseText() {
-      const string fallbackText = "License text is unavailable in this installer build.";
+      const string fallbackText = "Texto da licença indisponível neste instalador.";
       try {
         var assembly = Assembly.GetExecutingAssembly();
         using (var stream = assembly.GetManifestResourceStream("License.txt")) {
@@ -1749,17 +1772,17 @@ namespace VibepolloInstaller {
 
       _overlayTitleText.Text = title ?? string.Empty;
       _overlayMessageText.Text = message ?? string.Empty;
-      _overlayAccentBar.Background = primaryBackground ?? new SolidColorBrush(Color.FromRgb(255, 158, 169));
+      _overlayAccentBar.Background = primaryBackground ?? new SolidColorBrush(Color.FromRgb(103, 221, 232));
       _overlayContentHost.Children.Clear();
       if (buildContent != null) {
         buildContent(_overlayContentHost);
       }
 
       _overlayPrimaryButton.Content = primaryText ?? "OK";
-      _overlayPrimaryButton.Background = primaryBackground ?? new SolidColorBrush(Color.FromRgb(255, 158, 169));
-      _overlayPrimaryButton.BorderBrush = primaryBorder ?? new SolidColorBrush(Color.FromRgb(255, 158, 169));
+      _overlayPrimaryButton.Background = primaryBackground ?? new SolidColorBrush(Color.FromRgb(103, 221, 232));
+      _overlayPrimaryButton.BorderBrush = primaryBorder ?? new SolidColorBrush(Color.FromRgb(103, 221, 232));
 
-      _overlaySecondaryButton.Content = secondaryText ?? "Cancel";
+      _overlaySecondaryButton.Content = secondaryText ?? "Cancelar";
       _overlaySecondaryButton.Visibility = showSecondary ? Visibility.Visible : Visibility.Collapsed;
       if (autoCloseSeconds > 0 && !showSecondary) {
         _overlayHintText.Visibility = Visibility.Visible;
@@ -1832,21 +1855,21 @@ namespace VibepolloInstaller {
       _overlayAutoCloseProgressBar.Value = secondsElapsed;
       var displaySeconds = (int)Math.Ceiling(secondsRemaining);
       if (displaySeconds <= 0) {
-        _overlayHintText.Text = "Closing…";
+        _overlayHintText.Text = "Fechando…";
         return true;
       }
 
-      _overlayHintText.Text = "This message closes automatically in " + displaySeconds + " seconds.";
+      _overlayHintText.Text = "Esta mensagem fecha automaticamente em " + displaySeconds + " segundos.";
       return false;
     }
 
     private async Task<bool> ShowOverlayConfirmAsync(string title, string message, string confirmText, string cancelText, bool destructive) {
       var primaryBg = destructive
         ? (Brush)new SolidColorBrush(Color.FromRgb(225, 29, 72))
-        : new SolidColorBrush(Color.FromRgb(255, 158, 169));
+        : new SolidColorBrush(Color.FromRgb(103, 221, 232));
       var primaryBorder = destructive
         ? (Brush)new SolidColorBrush(Color.FromRgb(251, 113, 133))
-        : new SolidColorBrush(Color.FromRgb(255, 158, 169));
+        : new SolidColorBrush(Color.FromRgb(103, 221, 232));
       var result = await ShowOverlayAsync(title, message, confirmText, cancelText, primaryBg, primaryBorder, true, null, 0);
       return string.Equals(result, "primary", StringComparison.OrdinalIgnoreCase);
     }
@@ -1857,8 +1880,8 @@ namespace VibepolloInstaller {
         message,
         "OK",
         string.Empty,
-        new SolidColorBrush(Color.FromRgb(255, 158, 169)),
-        new SolidColorBrush(Color.FromRgb(255, 158, 169)),
+        new SolidColorBrush(Color.FromRgb(103, 221, 232)),
+        new SolidColorBrush(Color.FromRgb(103, 221, 232)),
         false,
         null,
         5);
@@ -1872,39 +1895,39 @@ namespace VibepolloInstaller {
 
     private async Task<UninstallOptions?> ShowOverlayUninstallOptionsAsync() {
       var removeDriverCheckBox = new CheckBox {
-        Content = "Remove virtual display driver",
+        Content = "Remover driver de tela virtual",
         FontSize = 13,
         Foreground = new SolidColorBrush(Color.FromRgb(226, 235, 250)),
         Margin = new Thickness(0, 0, 0, 8),
         IsChecked = false
       };
       var removeGamepadDriverCheckBox = new CheckBox {
-        Content = "Also remove NOUS virtual gamepad driver package",
+        Content = "Remover também driver de controle virtual NOUS",
         FontSize = 13,
         Foreground = new SolidColorBrush(Color.FromRgb(226, 235, 250)),
         Margin = new Thickness(0, 0, 0, 8),
         IsChecked = false
       };
       var deleteFolderCheckBox = new CheckBox {
-        Content = "Factory reset (deletes NOUS settings, preserves user-added files)",
+        Content = "Restaurar padrões (apaga configurações do NOUS, preserva arquivos adicionados por você)",
         FontSize = 13,
         Foreground = new SolidColorBrush(Color.FromRgb(226, 235, 250)),
         Margin = new Thickness(0, 0, 0, 0),
         IsChecked = false
       };
 
-      var message = "Choose what to remove during uninstall.\n\n"
-        + "Uninstall always removes the NOUS service, firewall rules, and MSI-installed program files. "
-        + "Files you added after installation are preserved. "
-        + "The optional shared usbip-win2 driver remains installed for other applications.";
+      var message = "Escolha o que remover durante a desinstalação.\n\n"
+        + "A desinstalação sempre remove o serviço NOUS, regras de firewall e arquivos instalados pelo MSI. "
+        + "Arquivos adicionados por você são preservados. "
+        + "O driver compartilhado usbip-win2 permanece instalado para outros aplicativos.";
 
       var result = await ShowOverlayAsync(
-        "Uninstall NOUS",
+        "Desinstalar NOUS",
         message,
-        "Uninstall",
-        "Cancel",
-        new SolidColorBrush(Color.FromRgb(225, 29, 72)),
-        new SolidColorBrush(Color.FromRgb(251, 113, 133)),
+        "Desinstalar",
+        "Cancelar",
+        new SolidColorBrush(Color.FromRgb(37, 42, 49)),
+        new SolidColorBrush(Color.FromRgb(75, 58, 67)),
         true,
         content => {
           content.Children.Add(removeDriverCheckBox);
@@ -1926,12 +1949,12 @@ namespace VibepolloInstaller {
 
     private async Task ShowInstallFailureSupportDialogAsync(string failureDetail, InstallerResult installResult) {
       var decision = await ShowOverlayAsync(
-        "Install failed",
-        failureDetail + "\n\nSave logs now, then report this issue on GitHub or Discord.",
-        "Save logs",
-        "Not now",
-        new SolidColorBrush(Color.FromRgb(255, 158, 169)),
-        new SolidColorBrush(Color.FromRgb(255, 158, 169)),
+        "Falha na instalação",
+        failureDetail + "\n\nSalve os registros e relate o problema no GitHub ou Discord.",
+        "Salvar registros",
+        "Agora não",
+        new SolidColorBrush(Color.FromRgb(103, 221, 232)),
+        new SolidColorBrush(Color.FromRgb(103, 221, 232)),
         true,
         content => {
           content.Children.Add(BuildSupportLinksTextBlock());
@@ -1948,12 +1971,12 @@ namespace VibepolloInstaller {
     private async Task ShowInstallPartialSuccessDialogAsync(InstallerResult installResult) {
       var warningDetail = BuildComponentFailureDetail(installResult == null ? null : installResult.ComponentFailures);
       var decision = await ShowOverlayAsync(
-        "Install completed with warnings",
-        warningDetail + "\n\nSave logs now, then report this issue on GitHub or Discord.",
-        "Save logs",
-        "Not now",
-        new SolidColorBrush(Color.FromRgb(255, 158, 169)),
-        new SolidColorBrush(Color.FromRgb(255, 158, 169)),
+        "Instalação concluída com avisos",
+        warningDetail + "\n\nSalve os registros e relate o problema no GitHub ou Discord.",
+        "Salvar registros",
+        "Agora não",
+        new SolidColorBrush(Color.FromRgb(103, 221, 232)),
+        new SolidColorBrush(Color.FromRgb(103, 221, 232)),
         true,
         content => {
           content.Children.Add(BuildSupportLinksTextBlock());
@@ -1993,14 +2016,14 @@ namespace VibepolloInstaller {
       }
 
       if (!string.IsNullOrWhiteSpace(error)) {
-        SetStatus("Could not save support logs.", error, _statusErrorBrush);
+        SetStatus("Não foi possível salvar registros de suporte.", error, _statusErrorBrush);
         await ShowOverlayInfoAsync("Could not save logs", error);
         return;
       }
 
       var nextStep = "Attach this file on GitHub: https://github.com/flugeru/NOUS/issues\n"
         + "Or Discord (#vibeshine): https://discord.com/invite/CGg5JxN";
-      SetStatus("Support logs saved.", outputPath, _statusSuccessBrush);
+      SetStatus("Registros de suporte salvos.", outputPath, _statusSuccessBrush);
       await ShowOverlayInfoAsync(
         "Logs saved",
         "Saved support logs to:\n" + outputPath + "\n\n" + nextStep);
@@ -2032,14 +2055,14 @@ namespace VibepolloInstaller {
       }
 
       if (!string.IsNullOrWhiteSpace(error)) {
-        SetStatus("Could not save support logs.", error, _statusErrorBrush);
+        SetStatus("Não foi possível salvar registros de suporte.", error, _statusErrorBrush);
         await ShowOverlayInfoAsync("Could not save logs", error);
         return;
       }
 
       var nextStep = "Attach this file on GitHub: https://github.com/flugeru/NOUS/issues\n"
         + "Or Discord (#vibeshine): https://discord.com/invite/CGg5JxN";
-      SetStatus("Support logs saved.", outputPath, _statusSuccessBrush);
+      SetStatus("Registros de suporte salvos.", outputPath, _statusSuccessBrush);
       await ShowOverlayInfoAsync(
         "Logs saved",
         "Saved support logs to:\n" + outputPath + "\n\n" + nextStep);

@@ -12,8 +12,10 @@ test('pairing request prefills an editable device name without approving automat
     submitted = route.request().postDataJSON();
     await route.fulfill({ json: { status: true } });
   });
-  await page.goto(`/v2/pair?name=${encodeURIComponent('NOUS Android & TV')}`);
-  await expect(page.locator('#pair-name')).toHaveValue('NOUS Android & TV');
+  await page.goto('/v2/pair?name=2311DRK48G');
+  await expect(page.locator('#pair-name')).toHaveValue('2311DRK48G');
+  await page.reload();
+  await expect(page.locator('#pair-name')).toHaveValue('2311DRK48G');
   expect(submitted).toBeUndefined();
   await page.locator('#pair-name').fill('Sala');
   await page.locator('#pair-pin').fill('1234');

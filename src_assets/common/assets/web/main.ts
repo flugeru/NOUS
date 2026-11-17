@@ -19,5 +19,5 @@ router.afterEach((route) => {
 });
 
 const app = createApp(App).use(createPinia()).use(router).use(i18n);
-await router.isReady();
-app.mount('#app');
+// Do not block module evaluation: lazy route chunks import shared exports from this entry.
+void router.isReady().then(() => app.mount('#app'));

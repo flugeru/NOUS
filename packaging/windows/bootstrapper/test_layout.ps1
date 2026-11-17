@@ -34,6 +34,12 @@ internal static class LayoutTest {
     root.Arrange(new Rect(0, 0, 720, 640));
     root.UpdateLayout();
     var scroll = Find<ScrollViewer>(root);
+    if (Find<Expander>(root).IsExpanded) throw new Exception("Technical options must start collapsed.");
+    var preview = new System.Windows.Media.Imaging.RenderTargetBitmap(720, 640, 96, 96, PixelFormats.Pbgra32);
+    preview.Render(root);
+    var encoder = new System.Windows.Media.Imaging.PngBitmapEncoder();
+    encoder.Frames.Add(System.Windows.Media.Imaging.BitmapFrame.Create(preview));
+    using (var file = System.IO.File.Create(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "nous-installer-preview.png"))) encoder.Save(file);
     int checks = 0;
     foreach (bool options in new[] { false, true }) {
       foreach (string name in new[] { "_installSection", "_installVirtualDisplaySection", "_installVirtualGamepadSection", "_installUsbIpTransportSection" })
@@ -50,6 +56,10 @@ internal static class LayoutTest {
             root.UpdateLayout();
             foreach (string name in new[] { "_continueButton", "_uninstallButton", "_licenseButton", "_closeButton" }) {
               var button = Field<Button>(window, name);
+              if (name == "_uninstallButton" || name == "_licenseButton") {
+                if (expanded && button.ActualHeight < 40) throw new Exception(name + " has no usable height.");
+                continue; // Secondary actions belong to scrollable advanced options, not fixed footer.
+              }
               for (var parent = VisualTreeHelper.GetParent(button); parent != null; parent = VisualTreeHelper.GetParent(parent)) {
                 var element = parent as FrameworkElement;
                 if (element == null) continue;
