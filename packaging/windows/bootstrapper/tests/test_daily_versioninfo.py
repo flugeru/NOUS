@@ -41,6 +41,15 @@ class DailyVersionTests(unittest.TestCase):
                                  '-P', str(SCRIPT)], text=True, capture_output=True)
         return result, output
 
+    def test_untagged_local_build_retains_cached_anchor(self):
+        output = self.root / 'local-anchor.h'
+        cache = Path(str(output) + '.cache')
+        cache.write_text(f'key=2.0.390\nrevision=8\nanchor_time={self.anchor - 1200}\n')
+        result, output = self.emit('local-anchor', 1201, version='2.0.3-local', patch=3)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn(f'anchor={self.anchor - 1200}', result.stdout)
+        self.assertIn('RC_VERSION_REVISION 21', output.read_text())
+
     def test_shallow_checkout_requires_fetched_history_and_tags(self):
         clone = self.root / 'shallow-clone'
         subprocess.run(['git', 'clone', '--quiet', '--depth=1', '--no-tags', self.root.as_uri(), str(clone)], check=True)
