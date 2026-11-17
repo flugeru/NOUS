@@ -18,4 +18,12 @@
     <string name="nous_osc_start_button">Iniciar</string>
     <string name="nous_osc_guide_button">Guia</string>
     <string name="nous_osc_touchpad">Touchpad</string>
+    <string name="nous_osc_tool_size">Tamanho</string>
+    <string name="nous_osc_tool_opacity">Opacidade</string>
+    <string name="nous_osc_tool_visible">Visibilidade</string>
+    <string name="nous_osc_tool_layout">Layout</string>
+    <string name="nous_osc_tool_test">Testar</string>
+    <string name="nous_osc_undo">Desfazer</string>
+    <string name="nous_osc_redo">Refazer</string>
+    <string name="nous_osc_button_opacity_format">Opacidade do botão · %1$d%%</string>
 </resources>

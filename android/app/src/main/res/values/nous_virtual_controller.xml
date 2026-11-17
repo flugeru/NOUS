@@ -18,4 +18,26 @@
     <string name="nous_osc_start_button">Start</string>
     <string name="nous_osc_guide_button">Guide</string>
     <string name="nous_osc_touchpad">Touchpad</string>
+    <string name="nous_osc_tool_size">Size</string>
+    <string name="nous_osc_tool_opacity">Opacity</string>
+    <string name="nous_osc_tool_visible">Visibility</string>
+    <string name="nous_osc_tool_layout">Layout</string>
+    <string name="nous_osc_tool_test">Test</string>
+    <string name="nous_osc_undo">Undo</string>
+    <string name="nous_osc_redo">Redo</string>
+    <string name="nous_osc_button_opacity_format">Button opacity · %1$d%%</string>
+
+    <style name="NousOscAction" parent="Widget.Material3.Button.TextButton">
+        <item name="android:layout_height">48dp</item>
+        <item name="android:minWidth">48dp</item>
+        <item name="android:textColor">@color/nous_text</item>
+        <item name="android:layout_marginEnd">3dp</item>
+        <item name="android:paddingStart">9dp</item>
+        <item name="android:paddingEnd">9dp</item>
+    </style>
+    <style name="NousOscSlider" parent="@android:style/Widget.SeekBar">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:progressTint">@color/nous_secondary</item>
+        <item name="android:thumbTint">@color/nous_secondary</item>
+    </style>
 </resources>

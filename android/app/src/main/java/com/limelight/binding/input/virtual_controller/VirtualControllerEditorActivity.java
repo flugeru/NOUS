@@ -1,7 +1,10 @@
 package com.limelight.binding.input.virtual_controller;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
@@ -17,6 +20,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.button.MaterialButton;
@@ -30,6 +36,7 @@ import com.limelight.utils.UiHelper;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.IntConsumer;
@@ -38,6 +45,27 @@ public final class VirtualControllerEditorActivity extends ControllerMenuActivit
     private static final int MIN_SIZE_PERCENT = 25;
     private static final int MAX_SIZE_PERCENT = 250;
 
+    private enum Tool {
+        MOVE(R.id.nous_osc_tool_move),
+        SIZE(R.id.nous_osc_tool_size),
+        OPACITY(R.id.nous_osc_tool_opacity),
+        VISIBLE(R.id.nous_osc_tool_visible),
+        LAYOUT(R.id.nous_osc_tool_layout),
+        TEST(R.id.nous_osc_tool_test);
+
+        final int id;
+
+        Tool(int id) {
+            this.id = id;
+        }
+    }
+
+    private final ArrayList<Bundle> undo = new ArrayList<>();
+    private final ArrayList<Bundle> redo = new ArrayList<>();
+    private Tool tool = Tool.MOVE;
+    private ControllerPreview surface;
+    private SeekBar opacitySlider;
+    private TextView panelTitle;
     private final Map<Integer, Rect> defaultSizes = new HashMap<>();
     private VirtualController controller;
     private VirtualControllerElement selected;
@@ -57,40 +85,56 @@ public final class VirtualControllerEditorActivity extends ControllerMenuActivit
         UiHelper.setLocale(this);
         setContentView(R.layout.activity_configure_virtual_controller);
         UiHelper.applyEdgeToEdgeInsets(this);
+        WindowInsetsControllerCompat insets = WindowCompat.getInsetsController(
+                getWindow(), getWindow().getDecorView());
+        insets.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        insets.hide(WindowInsetsCompat.Type.systemBars());
 
         picker = findViewById(R.id.nous_osc_pick);
         visibility = findViewById(R.id.nous_osc_visible);
         size = findViewById(R.id.nous_osc_size);
         sizeValue = findViewById(R.id.nous_osc_size_value);
         opacityValue = findViewById(R.id.nous_osc_opacity_value);
+        opacitySlider = findViewById(R.id.nous_osc_opacity);
+        panelTitle = findViewById(R.id.nous_osc_panel_title);
         opacity = state == null ? PreferenceConfiguration.readPreferences(this).oscOpacity
                 : state.getInt("opacity");
         dirty = state != null && state.getBoolean("dirty");
+        if (state != null) {
+            tool = Tool.valueOf(state.getString("tool", Tool.MOVE.name()));
+            restoreHistory(state, "undo", undo);
+            restoreHistory(state, "redo", redo);
+        }
 
         size.setMax(MAX_SIZE_PERCENT - MIN_SIZE_PERCENT);
         initPreview(state);
         picker.setOnClickListener(view -> pickControl());
         visibility.setOnClickListener(view -> {
+            recordEdit();
             selected.enabled = visibility.isChecked();
             updatePreviewAppearance(selected);
-            dirty = true;
         });
-
         listenToSlider(size, progress -> resizeSelected(MIN_SIZE_PERCENT + progress));
-
-        SeekBar opacitySlider = findViewById(R.id.nous_osc_opacity);
-        opacitySlider.setProgress(opacity);
-        showOpacity();
         listenToSlider(opacitySlider, progress -> {
-            opacity = progress;
+            if (tool == Tool.LAYOUT) {
+                opacity = progress;
+            } else {
+                selected.opacityPercent = progress;
+            }
             showOpacity();
-            dirty = true;
         });
-
         findViewById(R.id.nous_osc_reset).setOnClickListener(view -> {
+            recordEdit();
             populate(false, null, selected.elementId);
-            dirty = true;
         });
+        findViewById(R.id.nous_osc_undo).setOnClickListener(view -> restoreEdit(undo, redo));
+        findViewById(R.id.nous_osc_redo).setOnClickListener(view -> restoreEdit(redo, undo));
+        for (Tool item : Tool.values()) {
+            findViewById(item.id).setOnClickListener(view -> setTool(tool == item ? Tool.MOVE : item));
+        }
+        setTool(tool);
+        updateHistoryActions();
+
         findViewById(R.id.nous_osc_save).setOnClickListener(view -> {
             if (dirty) {
                 VirtualControllerConfigurationLoader.saveProfile(controller, this);
@@ -136,7 +180,7 @@ public final class VirtualControllerEditorActivity extends ControllerMenuActivit
             findViewById(R.id.nous_osc_inspector).setLayoutParams(new LinearLayout.LayoutParams(dp(256), -1));
         }
 
-        ControllerPreview surface = new ControllerPreview(this);
+        surface = new ControllerPreview(this);
         preview.addView(surface, new FrameLayout.LayoutParams(-1, -1));
         controller = new VirtualController(surface.canvas, this, canvasWidth, canvasHeight);
         Bundle draft = state == null ? null : state.getBundle("layout");
@@ -189,17 +233,29 @@ public final class VirtualControllerEditorActivity extends ControllerMenuActivit
         select(first);
     }
 
-    private static void listenToSlider(SeekBar slider, IntConsumer update) {
+    private void listenToSlider(SeekBar slider, IntConsumer update) {
         slider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            private boolean tracked;
+            private boolean recorded;
             @Override
             public void onProgressChanged(SeekBar bar, int progress, boolean fromUser) {
                 if (fromUser) {
+                    if (!tracked || !recorded) {
+                        recordEdit();
+                        recorded = true;
+                    }
                     update.accept(progress);
                 }
             }
 
-            @Override public void onStartTrackingTouch(SeekBar bar) {}
-            @Override public void onStopTrackingTouch(SeekBar bar) {}
+            @Override public void onStartTrackingTouch(SeekBar bar) {
+                tracked = true;
+                recorded = false;
+            }
+
+            @Override public void onStopTrackingTouch(SeekBar bar) {
+                tracked = false;
+            }
         });
     }
 
@@ -232,7 +288,8 @@ public final class VirtualControllerEditorActivity extends ControllerMenuActivit
             updatePreviewAppearance(previous);
         }
         updatePreviewAppearance(element);
-        picker.setText(getString(R.string.nous_osc_pick, label(element)));
+        if (tool != Tool.LAYOUT) panelTitle.setText(label(element));
+        updateOpacityControls();
         visibility.setChecked(element.enabled);
         FrameLayout.LayoutParams params = params(element);
         Rect base = defaultSizes.get(element.elementId);
@@ -261,16 +318,102 @@ public final class VirtualControllerEditorActivity extends ControllerMenuActivit
     }
 
     private void showOpacity() {
-        opacityValue.setText(getString(R.string.nous_osc_opacity_format, opacity));
+        updateOpacityControls();
         controller.setOpacity(opacity);
         for (VirtualControllerElement element : controller.getElements()) {
             updatePreviewAppearance(element);
         }
     }
 
+    private void updateOpacityControls() {
+        boolean global = tool == Tool.LAYOUT;
+        int value = global ? opacity : selected.opacityPercent;
+        opacitySlider.setProgress(value);
+        opacityValue.setText(getString(global ? R.string.nous_osc_opacity_format
+                : R.string.nous_osc_button_opacity_format, value));
+    }
+
+    private void setTool(Tool next) {
+        tool = next;
+        surface.canvas.setMotionEventSplittingEnabled(tool == Tool.TEST);
+        for (Tool item : Tool.values()) {
+            MaterialButton button = findViewById(item.id);
+            boolean active = tool == item;
+            button.setSelected(active);
+            button.setTextColor(getColor(active ? R.color.nous_secondary : R.color.nous_text_muted));
+            button.setBackgroundTintList(ColorStateList.valueOf(
+                    active ? getColor(R.color.nous_secondary_container) : 0xFF121418));
+        }
+        boolean layout = tool == Tool.LAYOUT;
+        boolean showSize = tool == Tool.SIZE;
+        boolean showOpacity = layout || tool == Tool.OPACITY;
+        findViewById(R.id.nous_osc_inspector).setVisibility(
+                tool == Tool.MOVE || tool == Tool.TEST ? View.GONE : View.VISIBLE);
+        panelTitle.setText(layout ? getString(R.string.nous_osc_tool_layout) : label(selected));
+        picker.setVisibility(layout ? View.VISIBLE : View.GONE);
+        findViewById(R.id.nous_osc_reset).setVisibility(layout ? View.VISIBLE : View.GONE);
+        size.setVisibility(showSize ? View.VISIBLE : View.GONE);
+        sizeValue.setVisibility(showSize ? View.VISIBLE : View.GONE);
+        opacitySlider.setVisibility(showOpacity ? View.VISIBLE : View.GONE);
+        opacityValue.setVisibility(showOpacity ? View.VISIBLE : View.GONE);
+        visibility.setVisibility(tool == Tool.VISIBLE ? View.VISIBLE : View.GONE);
+        showOpacity();
+    }
+
+    private void recordEdit() {
+        if (undo.size() == 20) undo.remove(0);
+        undo.add(snapshot());
+        redo.clear();
+        dirty = true;
+        updateHistoryActions();
+    }
+
+    private Bundle snapshot() {
+        Bundle state = new Bundle();
+        Bundle layout = new Bundle();
+        for (VirtualControllerElement element : controller.getElements()) {
+            try {
+                layout.putString(Integer.toString(element.elementId), element.getConfiguration().toString());
+            } catch (JSONException e) {
+                throw new IllegalStateException("Invalid controller layout", e);
+            }
+        }
+        state.putBundle("layout", layout);
+        state.putInt("opacity", opacity);
+        state.putInt("selected", selected.elementId);
+        return state;
+    }
+
+    private void updateHistoryActions() {
+        View undoButton = findViewById(R.id.nous_osc_undo);
+        View redoButton = findViewById(R.id.nous_osc_redo);
+        undoButton.setEnabled(!undo.isEmpty());
+        redoButton.setEnabled(!redo.isEmpty());
+        undoButton.setAlpha(undo.isEmpty() ? .35f : 1f);
+        redoButton.setAlpha(redo.isEmpty() ? .35f : 1f);
+    }
+
+    private void restoreEdit(ArrayList<Bundle> source, ArrayList<Bundle> destination) {
+        if (source.isEmpty()) return;
+        destination.add(snapshot());
+        Bundle state = source.remove(source.size() - 1);
+        opacity = state.getInt("opacity");
+        populate(false, state.getBundle("layout"), state.getInt("selected"));
+        setTool(tool);
+        updateHistoryActions();
+    }
+
+    @SuppressWarnings("deprecation")
+    private static void restoreHistory(Bundle state, String key, ArrayList<Bundle> history) {
+        ArrayList<Bundle> saved = state.getParcelableArrayList(key);
+        if (saved != null) history.addAll(saved);
+    }
+
     private void updatePreviewAppearance(VirtualControllerElement element) {
+        boolean testing = tool == Tool.TEST;
+        element.setVisibility(testing && !element.enabled ? View.GONE : View.VISIBLE);
         element.setAlpha(element.enabled ? 1f : 0.35f);
-        if (selected == element || !element.enabled || opacity < 20) {
+        if (!testing && (selected == element || !element.enabled || opacity * element.opacityPercent < 2000)) {
             GradientDrawable outline = new GradientDrawable();
             outline.setCornerRadius(canvasHeight * 0.015f);
             outline.setColor(0x00000000);
@@ -280,7 +423,7 @@ public final class VirtualControllerEditorActivity extends ControllerMenuActivit
         } else {
             element.setForeground(null);
         }
-        element.setSelected(selected == element);
+        element.setSelected(!testing && selected == element);
     }
 
     private void place(VirtualControllerElement element, int left, int top) {
@@ -295,6 +438,10 @@ public final class VirtualControllerEditorActivity extends ControllerMenuActivit
     }
 
     private void leaveEditor() {
+        if (tool != Tool.MOVE) {
+            setTool(Tool.MOVE);
+            return;
+        }
         if (dirty) {
             new ControllerDialogBuilder(this)
                     .setTitle(R.string.nous_osc_discard)
@@ -309,18 +456,11 @@ public final class VirtualControllerEditorActivity extends ControllerMenuActivit
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Bundle draft = new Bundle();
-        for (VirtualControllerElement element : controller.getElements()) {
-            try {
-                draft.putString(Integer.toString(element.elementId), element.getConfiguration().toString());
-            } catch (JSONException e) {
-                throw new IllegalStateException("Invalid controller layout", e);
-            }
-        }
-        outState.putBundle("layout", draft);
-        outState.putInt("opacity", opacity);
+        outState.putAll(snapshot());
         outState.putBoolean("dirty", dirty);
-        outState.putInt("selected", selected.elementId);
+        outState.putString("tool", tool.name());
+        outState.putParcelableArrayList("undo", undo);
+        outState.putParcelableArrayList("redo", redo);
     }
 
     private int dp(int value) {
@@ -332,6 +472,9 @@ public final class VirtualControllerEditorActivity extends ControllerMenuActivit
         private float offsetX;
         private float offsetY;
         private int pointerId;
+        private boolean changed;
+        private float pinchSpan;
+        private int pinchSize;
 
         ControlDrag(VirtualControllerElement element) {
             this.element = element;
@@ -339,39 +482,99 @@ public final class VirtualControllerEditorActivity extends ControllerMenuActivit
 
         @Override
         public boolean onTouch(View view, MotionEvent event) {
+            if (tool == Tool.TEST) return false;
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
+                    changed = false;
+                    pinchSpan = 0;
                     pointerId = event.getPointerId(0);
                     offsetX = event.getX();
                     offsetY = event.getY();
                     view.performClick();
                     return true;
+                case MotionEvent.ACTION_POINTER_DOWN:
+                    if (event.getPointerCount() == 2) {
+                        pinchSpan = span(event);
+                        FrameLayout.LayoutParams params = params(element);
+                        Rect base = defaultSizes.get(element.elementId);
+                        pinchSize = Math.round(100f * Math.max(params.width, params.height)
+                                / Math.max(base.width(), base.height()));
+                    }
+                    return true;
                 case MotionEvent.ACTION_MOVE:
+                    if (pinchSpan > 0) {
+                        if (event.getPointerCount() >= 2) {
+                            markChanged();
+                            int percent = Math.round(pinchSize * span(event) / pinchSpan);
+                            resizeSelected(Math.max(MIN_SIZE_PERCENT, Math.min(MAX_SIZE_PERCENT, percent)));
+                            size.setProgress(percent - MIN_SIZE_PERCENT);
+                        }
+                        return true;
+                    }
                     int pointer = event.findPointerIndex(pointerId);
                     if (pointer >= 0) {
                         FrameLayout.LayoutParams params = params(element);
-                        int left = params.leftMargin;
-                        int top = params.topMargin;
-                        place(element, Math.round(element.getLeft() + event.getX(pointer) - offsetX),
-                                Math.round(element.getTop() + event.getY(pointer) - offsetY));
-                        dirty |= left != params.leftMargin || top != params.topMargin;
+                        int left = Math.round(element.getLeft() + event.getX(pointer) - offsetX);
+                        int top = Math.round(element.getTop() + event.getY(pointer) - offsetY);
+                        int guidedX = snap(left + params.width / 2, canvasWidth);
+                        int guidedY = snap(top + params.height / 2, canvasHeight);
+                        surface.showGuides(guidedX, guidedY);
+                        if (guidedX >= 0) left = guidedX - params.width / 2;
+                        if (guidedY >= 0) top = guidedY - params.height / 2;
+                        if (left != params.leftMargin || top != params.topMargin) {
+                            markChanged();
+                            place(element, left, top);
+                        }
                     }
+                    return true;
+                case MotionEvent.ACTION_CANCEL:
+                case MotionEvent.ACTION_UP:
+                    surface.showGuides(-1, -1);
                     return true;
                 default:
                     return true;
             }
+        }
+
+        private void markChanged() {
+            if (!changed) {
+                recordEdit();
+                changed = true;
+            }
+        }
+
+        private float span(MotionEvent event) {
+            return (float) Math.hypot(event.getX(1) - event.getX(0), event.getY(1) - event.getY(0));
+        }
+
+        private int snap(int center, int limit) {
+            int nearest = Math.round(center * 10f / limit) * limit / 10;
+            return Math.abs(center - nearest) <= canvasHeight * .01f ? nearest : -1;
         }
     }
 
     private final class ControllerPreview extends ViewGroup {
         private final FrameLayout canvas;
         private float scale;
+        private final Paint guide = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private int guideX = -1;
+        private int guideY = -1;
 
         ControllerPreview(Context context) {
             super(context);
-            canvas = new FrameLayout(context);
+            canvas = new FrameLayout(context) {
+                @Override
+                protected void onDraw(Canvas localCanvas) {
+                    super.onDraw(localCanvas);
+                    if (guideX >= 0) localCanvas.drawLine(guideX, 0, guideX, canvasHeight, guide);
+                    if (guideY >= 0) localCanvas.drawLine(0, guideY, canvasWidth, guideY, guide);
+                }
+            };
+            canvas.setWillNotDraw(false);
+            guide.setColor(0x6683DBE4);
+            guide.setStrokeWidth(Math.max(1, canvasHeight / 450f));
             GradientDrawable background = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
-                    new int[]{getColor(R.color.nous_secondary_container), getColor(R.color.nous_surface)});
+                    new int[]{0xFF171B21, 0xFF0B0C0F});
             background.setCornerRadius(canvasHeight * 0.035f);
             background.setStroke(Math.max(2, canvasHeight / 180), getColor(R.color.nous_outline));
             canvas.setBackground(background);
@@ -379,6 +582,12 @@ public final class VirtualControllerEditorActivity extends ControllerMenuActivit
             canvas.setPivotX(0);
             canvas.setPivotY(0);
             addView(canvas, new LayoutParams(canvasWidth, canvasHeight));
+        }
+
+        void showGuides(int x, int y) {
+            guideX = x;
+            guideY = y;
+            canvas.invalidate();
         }
 
         @Override

@@ -310,6 +310,7 @@ public class VirtualController {
     }
 
     public void sendControllerInputContext(long vibrationDuration, int vibrationAmplitude) {
+        if (previewWidth != 0) return;
         // Cancel retransmissions of prior gamepad inputs
         handler.removeCallbacks(delayedRetransmitRunnable);
 

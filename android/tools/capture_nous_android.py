@@ -445,7 +445,7 @@ def run(c):
 def capture_virtual_controller_editor(c):
     select("nous_nav_settings")
     select("nous_settings_virtual_controller")
-    wait_for("nous_osc_size_value", labels=("Tamanho · 100%", "Size · 100%"))
+    wait_for("nous_osc_tool_move")
     root, hierarchy = tree()
     dpad_labels = ("Direcional", "D-pad")
     dpad = next(node for node in root.iter("node") if node.get("content-desc") in dpad_labels)
@@ -459,23 +459,41 @@ def capture_virtual_controller_editor(c):
     if bounds(moved_dpad)[0] <= x0:
         raise RuntimeError("Dragging a controller button should update its position")
 
+    select("nous_osc_tool_size")
+    wait_for("nous_osc_size_value", labels=("Tamanho · 100%", "Size · 100%"))
     x0, y0, x1, y1 = bounds(wait_for("nous_osc_size"))
     shell("input", "tap", str(x0 + (x1 - x0) * 3 // 4), str((y0 + y1) // 2))
     size_label = wait_for("nous_osc_size_value").get("text")
     if "100%" in size_label:
         raise RuntimeError("Resizing a controller button should update its displayed size")
+    select("nous_osc_tool_visible")
     select("nous_osc_visible")
+    select("nous_osc_undo")
+    if wait_for("nous_osc_visible").get("checked") != "true":
+        raise RuntimeError("Undo should restore controller button visibility")
+    select("nous_osc_redo")
+    if wait_for("nous_osc_visible").get("checked") != "false":
+        raise RuntimeError("Redo should hide the controller button again")
     rotate(1)
-    wait_for("nous_osc_size_value", labels=(size_label,))
     if wait_for("nous_osc_visible").get("checked") != "false":
         raise RuntimeError("Controller editor draft should survive rotation")
+    select("nous_osc_tool_size")
+    wait_for("nous_osc_size_value", labels=(size_label,))
     c.capture("virtual-controller-editor-landscape")
+    select("nous_osc_tool_test")
+    root, _ = tree()
+    if any(node.get("content-desc") in dpad_labels for node in root.iter("node")):
+        raise RuntimeError("Test mode should exclude hidden controls")
+    c.capture("virtual-controller-preview-test")
     select("nous_osc_save")
 
     select_in_landscape_settings("nous_settings_virtual_controller")
+    select("nous_osc_tool_size")
     wait_for("nous_osc_size_value", labels=(size_label,))
+    select("nous_osc_tool_visible")
     if wait_for("nous_osc_visible").get("checked") != "false":
         raise RuntimeError("Controller button visibility should persist after saving")
+    select("nous_back")
     select("nous_back")
 
 

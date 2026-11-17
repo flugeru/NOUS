@@ -42,15 +42,12 @@ public abstract class VirtualControllerElement extends View {
     protected VirtualController virtualController;
     protected final int elementId;
 
-    private final Paint paint = new Paint();
+    protected final VirtualControllerSkin skin = new VirtualControllerSkin();
+    private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     protected int normalColor = 0xF0888888;
     protected int pressedColor = 0xF07272ED;
-    private int configMoveColor = 0xF0FF0000;
-    private int configResizeColor = 0xF0FF00FF;
-    private int configSelectedColor = 0xF000FF00;
-
-    private int configDisabledColor = 0xF0AAAAAA;
+    private static final int EDIT_OUTLINE = 0xB883DBE4;
     protected int startSize_x;
     protected int startSize_y;
 
@@ -58,6 +55,7 @@ public abstract class VirtualControllerElement extends View {
     float position_pressed_y = 0;
 
     public boolean enabled = true;
+    int opacityPercent = 100;
 
     private enum Mode {
         Normal,
@@ -108,14 +106,15 @@ public abstract class VirtualControllerElement extends View {
     protected void onDraw(Canvas canvas) {
         onElementDraw(canvas);
 
-        if (currentMode != Mode.Normal) {
-            paint.setColor(configSelectedColor);
-            paint.setStrokeWidth(getDefaultStrokeWidth());
+        VirtualController.ControllerMode editorMode = virtualController.getControllerMode();
+        if (currentMode != Mode.Normal || editorMode != VirtualController.ControllerMode.Active) {
+            paint.setColor(enabled ? EDIT_OUTLINE : 0x60F2F2F4);
+            paint.setStrokeWidth(Math.max(1, getCorrectWidth() * 0.012f));
             paint.setStyle(Paint.Style.STROKE);
 
-            canvas.drawRect(paint.getStrokeWidth(), paint.getStrokeWidth(),
-                    getWidth()-paint.getStrokeWidth(), getHeight()-paint.getStrokeWidth(),
-                    paint);
+            float inset = paint.getStrokeWidth();
+            canvas.drawRoundRect(inset, inset, getWidth() - inset, getHeight() - inset,
+                    inset * 4, inset * 4, paint);
         }
 
         super.onDraw(canvas);
@@ -164,16 +163,6 @@ public abstract class VirtualControllerElement extends View {
     protected void actionCancel() {
         currentMode = Mode.Normal;
         invalidate();
-    }
-
-    protected int getDefaultColor() {
-        if (virtualController.getControllerMode() == VirtualController.ControllerMode.MoveButtons)
-            return configMoveColor;
-        else if (virtualController.getControllerMode() == VirtualController.ControllerMode.ResizeButtons)
-            return configResizeColor;
-        else if (virtualController.getControllerMode() == VirtualController.ControllerMode.DisableEnableButtons)
-            return enabled ? configSelectedColor: configDisabledColor;
-        else return normalColor;
     }
 
     protected int getDefaultStrokeWidth() {
@@ -315,7 +304,7 @@ public abstract class VirtualControllerElement extends View {
 
 
     public void setOpacity(int opacity) {
-        int hexOpacity = opacity * 255 / 100;
+        int hexOpacity = opacity * opacityPercent * 255 / 10000;
         this.normalColor = (hexOpacity << 24) | (normalColor & 0x00FFFFFF);
         this.pressedColor = (hexOpacity << 24) | (pressedColor & 0x00FFFFFF);
 
@@ -341,6 +330,7 @@ public abstract class VirtualControllerElement extends View {
         configuration.put("WIDTH", layoutParams.width);
         configuration.put("HEIGHT", layoutParams.height);
         configuration.put("ENABLED", enabled);
+        configuration.put("OPACITY", opacityPercent);
         configuration.put("CANVAS_WIDTH", virtualController.layoutWidth());
         configuration.put("CANVAS_HEIGHT", virtualController.layoutHeight());
         return configuration;
@@ -354,6 +344,7 @@ public abstract class VirtualControllerElement extends View {
         int width = configuration.getInt("WIDTH");
         int height = configuration.getInt("HEIGHT");
         enabled = configuration.getBoolean("ENABLED");
+        opacityPercent = Math.max(0, Math.min(100, configuration.optInt("OPACITY", 100)));
 
         int savedWidth = configuration.optInt("CANVAS_WIDTH");
         int savedHeight = configuration.optInt("CANVAS_HEIGHT");

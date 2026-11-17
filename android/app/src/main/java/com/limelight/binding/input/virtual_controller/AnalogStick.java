@@ -7,7 +7,6 @@ package com.limelight.binding.input.virtual_controller;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.view.MotionEvent;
 
 import java.util.ArrayList;
@@ -121,7 +120,6 @@ public class AnalogStick extends VirtualControllerElement {
     private float position_stick_x = 0;
     private float position_stick_y = 0;
 
-    private final Paint paint = new Paint();
 
     private STICK_STATE stick_state = STICK_STATE.NO_MOVEMENT;
     private CLICK_STATE click_state = CLICK_STATE.SINGLE;
@@ -219,38 +217,13 @@ public class AnalogStick extends VirtualControllerElement {
 
     @Override
     protected void onElementDraw(Canvas canvas) {
-        // set transparent background
-        canvas.drawColor(Color.TRANSPARENT);
-
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(getDefaultStrokeWidth());
-
-        // draw outer circle
-        if (!isPressed() || click_state == CLICK_STATE.SINGLE) {
-            paint.setColor(getDefaultColor());
-        } else {
-            paint.setColor(pressedColor);
-        }
-        canvas.drawCircle(getWidth() / 2, getHeight() / 2, radius_complete, paint);
-
-        paint.setColor(getDefaultColor());
-        // draw dead zone
-        canvas.drawCircle(getWidth() / 2, getHeight() / 2, radius_dead_zone, paint);
-
-        // draw stick depending on state
-        switch (stick_state) {
-            case NO_MOVEMENT: {
-                paint.setColor(getDefaultColor());
-                canvas.drawCircle(getWidth() / 2, getHeight() / 2, radius_analog_stick, paint);
-                break;
-            }
-            case MOVED_IN_DEAD_ZONE:
-            case MOVED_ACTIVE: {
-                paint.setColor(pressedColor);
-                canvas.drawCircle(position_stick_x, position_stick_y, radius_analog_stick, paint);
-                break;
-            }
-        }
+        boolean active = stick_state != STICK_STATE.NO_MOVEMENT;
+        float centerX = getWidth() / 2f;
+        float centerY = getHeight() / 2f;
+        float knobX = active ? position_stick_x : centerX;
+        float knobY = active ? position_stick_y : centerY;
+        skin.drawStick(canvas, centerX, centerY, knobX, knobY, getCorrectWidth() * 0.46f,
+                Color.alpha(normalColor), active);
     }
 
     private void updatePosition(long eventTime) {
