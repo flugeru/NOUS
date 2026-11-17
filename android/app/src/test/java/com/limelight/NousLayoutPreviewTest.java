@@ -81,6 +81,38 @@ public class NousLayoutPreviewTest {
             logo.recycle();
         }
     }
+    @Test public void switchUpdatesOnRowTapWithoutWaitingForRecyclerView() {
+        try (org.robolectric.android.controller.ActivityController<Host> controller =
+                     Robolectric.buildActivity(Host.class).setup()) {
+            Host host = controller.get();
+            View row = host.getLayoutInflater().inflate(R.layout.nous_preference_row, null, false);
+            android.view.ViewGroup widgetFrame = row.findViewById(android.R.id.widget_frame);
+            MaterialSwitch toggle = (MaterialSwitch) host.getLayoutInflater()
+                    .inflate(R.layout.nous_preference_switch, widgetFrame, false);
+            widgetFrame.addView(toggle);
+            com.limelight.preferences.NousSwitchPreference preference =
+                    new com.limelight.preferences.NousSwitchPreference(host);
+            java.util.List<Object> changes = new java.util.ArrayList<>();
+            preference.setOnPreferenceChangeListener((ignored, newValue) -> {
+                changes.add(newValue);
+                return changes.size() < 3;
+            });
+            preference.onBindViewHolder(
+                    androidx.preference.PreferenceViewHolder.createInstanceForTests(row));
+
+            row.performClick();
+            assertTrue(preference.isChecked());
+            assertTrue(toggle.isChecked());
+            row.performClick();
+            assertFalse(preference.isChecked());
+            assertFalse(toggle.isChecked());
+            row.performClick();
+            assertFalse(preference.isChecked());
+            assertFalse(toggle.isChecked());
+            assertEquals(java.util.Arrays.asList(true, false, true), changes);
+        }
+    }
+
     @Test public void settingsHideLibraryHeaderAndRestoreItOnReturn() {
         try (org.robolectric.android.controller.ActivityController<Host> controller =
                      Robolectric.buildActivity(Host.class).setup()) {

@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.app.Activity;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Vibrator;
 
 import androidx.annotation.NonNull;
@@ -44,6 +45,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import androidx.preference.PreferenceGroup;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.shape.MaterialShapeDrawable;
 import com.google.android.material.shape.ShapeAppearanceModel;
@@ -426,6 +428,9 @@ public class StreamSettings extends AppCompatActivity {
             }
             stylePreferences(getPreferenceScreen());
             RecyclerView list = getListView();
+            if (list.getItemAnimator() instanceof SimpleItemAnimator) {
+                ((SimpleItemAnimator) list.getItemAnimator()).setSupportsChangeAnimations(false);
+            }
             int inset = getResources().getDimensionPixelSize(R.dimen.nous_settings_inset);
             int gap = getResources().getDimensionPixelSize(R.dimen.nous_settings_row_gap);
             list.setPaddingRelative(inset, 0, inset, inset);
@@ -730,8 +735,6 @@ public class StreamSettings extends AppCompatActivity {
             findPreference(PreferenceConfiguration.UNLOCK_FPS_STRING).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    // HACK: We need to let the preference change succeed before reinitializing to ensure
-                    // it's reflected in the new layout.
                     reloadSettings();
 
                     // Allow the original preference change to take place
@@ -1087,19 +1090,16 @@ public class StreamSettings extends AppCompatActivity {
         }
 
         protected void reloadSettings() {
-            // HACK: We need to let the preference change succeed before reinitializing to ensure
-            // it's reflected in the new layout.
-            final Handler h = new Handler();
-            h.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    // Ensure the activity is still open when this timeout expires
-                    StreamSettings settingsActivity = (StreamSettings) SettingsFragment.this.getActivity();
-                    if (settingsActivity != null) {
-                        settingsActivity.reloadSettings();
-                    }
+            // Persist the new value and let the switch finish moving before replacing the list.
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                if (isResumed()) {
+                    rebuildSettings();
                 }
             }, 500);
+        }
+
+        protected void rebuildSettings() {
+            ((StreamSettings) requireActivity()).reloadSettings();
         }
 
         int READ_REQUEST_CODE = 1001;

@@ -27,13 +27,7 @@
             android:textColor="@color/nous_text"
             android:textSize="18sp"
             android:textStyle="bold" />
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/profilesButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:contentDescription="@string/profile_manager_choose_profile"
-            app:icon="@drawable/ic_profiles"
-            app:iconSize="22dp" />
+        <include layout="@layout/nous_profile_button" />
     </LinearLayout>
 
     <FrameLayout

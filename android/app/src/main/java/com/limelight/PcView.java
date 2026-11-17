@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.limelight.binding.PlatformBinding;
 import com.limelight.binding.crypto.AndroidCryptoProvider;
 import com.limelight.computers.ComputerManagerListener;
@@ -23,7 +22,6 @@ import com.limelight.preferences.PreferenceConfiguration;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.ArrayList;
 import java.util.List;
-import com.limelight.profiles.ProfilesManager;
 import com.limelight.ui.AdapterFragment;
 import com.limelight.ui.AdapterFragmentCallbacks;
 import com.limelight.utils.Dialog;
@@ -54,7 +52,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.View.OnClickListener;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -215,8 +212,6 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
         pcGridAdapter.updateLayoutWithPreferences(this, PreferenceConfiguration.readPreferences(this));
 
         // Setup the list view
-        ExtendedFloatingActionButton profilesButton = findViewById(R.id.profilesButton);
-
         BottomNavigationView navigation = findViewById(R.id.nous_navigation);
         settingsTab = new NousSettingsTab(this, navigation, R.id.nous_nav_computers);
         navigation.setOnItemSelectedListener(item -> {
@@ -234,16 +229,11 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
         restoredTab = R.id.nous_nav_computers;
         openLibraryShortcut();
 
-        OnClickListener openManualConnection = v ->
-                startActivity(new Intent(this, AddComputerManually.class));
-        findViewById(R.id.nous_add_computer).setOnClickListener(openManualConnection);
-        findViewById(R.id.manuallyAddPc).setOnClickListener(openManualConnection);
-        profilesButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(PcView.this, ProfilesActivity.class));
-            }
-        });
+        findViewById(R.id.manuallyAddPc).setOnClickListener(v ->
+                startActivity(new Intent(this, AddComputerManually.class)));
+        findViewById(R.id.profilesButton).setOnClickListener(v ->
+                startActivity(new Intent(this, ProfilesActivity.class)));
+        refreshProfileButton();
 
         getFragmentManager().beginTransaction()
             .replace(R.id.pcFragmentContainer, new AdapterFragment())
@@ -416,19 +406,7 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
     }
 
     private void refreshProfileButton() {
-        ExtendedFloatingActionButton profilesButton = findViewById(R.id.profilesButton);
-        // User report Samsung and Xiaomi devices have this problem
-        // Why just these two brands have the most problems?
-        if (profilesButton == null) {
-            return;
-        }
-        String activeProfileName = ProfilesManager.getInstance().getActiveName();
-        if (activeProfileName.isEmpty()) {
-            profilesButton.shrink();
-        } else {
-            profilesButton.setText(activeProfileName);
-            profilesButton.extend();
-        }
+        UiHelper.refreshProfileButton(findViewById(R.id.profilesButton));
     }
 
     @Override

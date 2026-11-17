@@ -318,7 +318,7 @@ public class EditProfileActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void reloadSettings() {
+        protected void rebuildSettings() {
             ((EditProfileActivity)requireActivity()).reloadSettings();
         }
 

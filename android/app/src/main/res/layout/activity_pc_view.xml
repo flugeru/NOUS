@@ -42,21 +42,7 @@
                     android:textColor="@color/nous_text"
                     android:textSize="20sp"
                     android:textStyle="bold" />
-                <ImageButton
-                    android:id="@+id/nous_add_computer"
-                    style="@style/Nous.IconButton"
-                    android:contentDescription="@string/title_add_pc"
-                    android:src="@drawable/ic_add_base"
-                    android:tint="@color/nous_text" />
-                <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                    android:id="@+id/profilesButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:contentDescription="@string/profile_manager_choose_profile"
-                    app:backgroundTint="@color/nous_secondary_container"
-                    app:iconTint="@color/nous_secondary"
-                    app:icon="@drawable/ic_profiles"
-                    app:iconSize="22dp" />
+                <include layout="@layout/nous_profile_button" />
             </LinearLayout>
 
             <TextView

@@ -60,10 +60,12 @@ public class ProfilesManagerTest {
         manager.add(p);
         manager.setActive(p.getUuid());
         // Reload from disk to verify persistence
+        ProfilesManager.instance = null;
         ProfilesManager fresh = ProfilesManager.getInstance();
-        fresh.load(context);
+        assertTrue(fresh.load(context));
         assertNotNull(fresh.getActive());
         assertEquals(p.getUuid(), fresh.getActive().getUuid());
+        assertEquals("Active", fresh.getActiveName());
     }
 
     @Test
