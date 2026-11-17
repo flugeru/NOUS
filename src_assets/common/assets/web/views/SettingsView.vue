@@ -1530,6 +1530,11 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload));
       </div>
     </div>
 
+    <details class="settings-disclosure">
+      <summary>{{ t('ui.shell.classic_interface') }}</summary>
+      <a class="button button--secondary" href="/?classic=1">{{ t('ui.shell.classic_interface') }}</a>
+    </details>
+
     <div
       v-if="isDirty"
       class="save-bar"

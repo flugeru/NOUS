@@ -14,7 +14,9 @@ test('default host entry opens unified UI and retains explicit classic fallback'
   const server = readFileSync(new URL('../../../../../src/confighttp.cpp', import.meta.url), 'utf8');
   const shell = readFileSync(new URL('../components/layout/AppShell.vue', import.meta.url), 'utf8');
   assert.match(server, /path_view == "\/"[\s\S]*?query\.find\("classic"\)[\s\S]*?send_redirect\(response, request, "\/v2\/"\)/);
-  assert.match(shell, /href="\/\?classic=1"/);
+  const settings = readFileSync(new URL('../views/SettingsView.vue', import.meta.url), 'utf8');
+  assert.doesNotMatch(shell, /href="\/\?classic=1"/);
+  assert.match(settings, /<details\b[^>]*>[\s\S]*?href="\/\?classic=1"[\s\S]*?<\/details>/);
 });
 
 test('literal UI translation calls reference existing keys', () => {
