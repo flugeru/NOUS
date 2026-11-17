@@ -662,7 +662,9 @@ jobs:
           COMMIT: ${{ inputs.release_commit }}
           REQUIRE_TRUEHDR_RUNTIME: ${{ inputs.require_truehdr_runtime }}
           DAILY_UNSIGNED: ${{ inputs.daily_unsigned }}
+          BUILD_TESTS: ${{ inputs.build_tests && 'ON' || 'OFF' }}
         run: |
+          set -euo pipefail
           echo "Using BUILD_VERSION=${BUILD_VERSION}"
 
           NODEJS_PATH=$(cygpath -u "$NODEJS_PATH")
@@ -712,7 +714,7 @@ jobs:
             -G Ninja \
             -S . \
             -DBUILD_WERROR=ON \
-            -DBUILD_TESTS=${{ inputs.build_tests && 'ON' || 'OFF' }} \
+            -DBUILD_TESTS="${BUILD_TESTS}" \
             -DBUILD_SUNSHINE_VIRTUAL_DISPLAY_DRIVER=OFF \
             -DBUILD_VIRTUALDISPLAY_PROBE=OFF \
             -DBUILD_VIRTUALDISPLAY_TOOLS=OFF \
@@ -738,8 +740,12 @@ jobs:
             "${vhf_gamepad_package_arg[@]}" \
             "${truehdr_runtime_arg[@]}"
           echo "::add-matcher::.github/matchers/gcc.json"
+          trap 'echo "::remove-matcher owner=gcc::"' EXIT
+          if [[ "$BUILD_TESTS" == "ON" ]]; then
+            cmake --build build --target test_component_nvhttp_bitrate_policy --parallel "$CMAKE_BUILD_PARALLEL_LEVEL"
+            ctest --test-dir build --output-on-failure --no-tests=error -R '^test_component_nvhttp_bitrate_policy$'
+          fi
           cmake --build build --target all --parallel "$CMAKE_BUILD_PARALLEL_LEVEL"
-          echo "::remove-matcher owner=gcc::"
 
       - name: Test native AMF lifecycle behavior
         if: inputs.build_tests

@@ -22,7 +22,7 @@ namespace {
   constexpr std::string_view client_a = "11111111-1111-4111-8111-111111111111";
   constexpr std::string_view client_b = "22222222-2222-4222-8222-222222222222";
   constexpr std::string_view denied_status =
-    "Permission denied: this device lacks the \"View stream\" permission. Enable it on the host in the Vibepollo Web UI under Client Management.";
+    "Permission denied: this device lacks the \"View stream\" permission. Enable it on the host in the NOUS Web UI under Client Management.";
   constexpr std::string_view denied_log =
     "Permission SetBitrate denied for client [client-a]: it lacks the \"View stream\" permission (current permission mask 0x1000000). Grant it in the Web UI under Client Management.";
   constexpr std::string_view unknown_status =
