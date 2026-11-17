@@ -99,6 +99,9 @@ public class EditProfileActivity extends ControllerMenuActivity {
 
     private void updateLayoutForOrientation() {
         boolean landscape = UiHelper.placeHeaderActionForOrientation(this, R.id.nous_save_profile);
+        View header = findViewById(R.id.nous_header_actions);
+        int endPadding = landscape ? getResources().getDimensionPixelSize(R.dimen.nous_settings_inset) : 0;
+        header.setPaddingRelative(0, 0, endPadding, 0);
         android.widget.TextView save = findViewById(R.id.nous_save_profile);
         save.setText(landscape ? R.string.save : R.string.nous_save_profile);
         android.widget.EditText name = findViewById(R.id.nous_profile_name);
