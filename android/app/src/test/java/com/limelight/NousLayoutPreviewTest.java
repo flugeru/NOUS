@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.materialswitch.MaterialSwitch;
+import com.google.android.material.textfield.TextInputLayout;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -42,6 +43,17 @@ public class NousLayoutPreviewTest {
         }
         bitmap.recycle();
     }
+    private void renderFocusedField(Host host, int layout, int inputId, String text, String name)
+            throws Exception {
+        host.setContentView(layout);
+        TextView input = host.findViewById(inputId);
+        TextInputLayout field = (TextInputLayout) input.getParent().getParent();
+        assertEquals(TextInputLayout.BOX_BACKGROUND_OUTLINE, field.getBoxBackgroundMode());
+        input.setText(text);
+        assertTrue(input.requestFocus());
+        render(host.findViewById(android.R.id.content), 393, 852, name);
+    }
+
     @Test public void keyLayoutsInflateInPortraitAndLandscape() throws Exception {
         try (org.robolectric.android.controller.ActivityController<Host> controller =
                      Robolectric.buildActivity(Host.class).setup()) {
@@ -56,6 +68,10 @@ public class NousLayoutPreviewTest {
                 render(view, 393, 852, names[i]);
                 render(view, 852, 393, names[i] + "-landscape");
             }
+            renderFocusedField(host, R.layout.activity_add_computer_manually, R.id.hostTextView,
+                    "192.0.2.1", "manual-connection-focused");
+            renderFocusedField(host, R.layout.activity_app_view, R.id.nous_game_search,
+                    "Genshin", "library-search-focused");
             View value = host.getLayoutInflater().inflate(R.layout.nous_preference_value, null, false);
             ((TextView)value.findViewById(android.R.id.title)).setText("Resolução");
             ((TextView)value.findViewById(android.R.id.summary)).setText("2712 × 1220");

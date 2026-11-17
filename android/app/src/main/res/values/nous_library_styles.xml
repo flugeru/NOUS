@@ -1,10 +1,11 @@
 <resources>
-    <style name="Nous.InputField" parent="Widget.Material3.TextInputLayout.FilledBox">
+    <style name="Nous.InputField" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="boxBackgroundColor">@color/nous_surface_high</item>
         <item name="boxCornerRadiusTopStart">14dp</item>
         <item name="boxCornerRadiusTopEnd">14dp</item>
         <item name="boxCornerRadiusBottomStart">14dp</item>
         <item name="boxCornerRadiusBottomEnd">14dp</item>
+        <item name="boxStrokeColor">@color/nous_input_outline</item>
         <item name="boxStrokeWidth">0dp</item>
         <item name="boxStrokeWidthFocused">2dp</item>
         <item name="hintEnabled">false</item>
@@ -12,7 +13,7 @@
         <item name="endIconTint">@color/nous_text_muted</item>
     </style>
 
-    <style name="Nous.InputText" parent="Widget.Material3.TextInputEditText.FilledBox">
+    <style name="Nous.InputText" parent="Widget.Material3.TextInputEditText.OutlinedBox">
         <item name="android:gravity">center_vertical</item>
         <item name="android:minHeight">52dp</item>
         <item name="android:paddingStart">14dp</item>
