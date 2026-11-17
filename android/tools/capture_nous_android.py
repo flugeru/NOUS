@@ -314,6 +314,16 @@ def run(c):
     if match(root, "nous_game_search") is not None:
         raise RuntimeError("Landscape search should start collapsed")
 
+    category_ids = ("nous_offline_desktop", "nous_offline_games", "nous_offline_launchers")
+    select("nous_offline_desktop")
+    root, hierarchy = tree()
+    categories = [bounds(match(root, target)) for target in category_ids]
+    centers = [box[1] + box[3] for box in categories]
+    if max(centers) - min(centers) > 2:
+        raise RuntimeError("Landscape library categories must stay on the same row")
+    c.capture("games-offline-landscape-desktop", hierarchy)
+    select("nous_offline_games")
+
     select("nous_library_search_toggle")
     wait_for("nous_game_search")
     shell("input", "text", "Genshin")

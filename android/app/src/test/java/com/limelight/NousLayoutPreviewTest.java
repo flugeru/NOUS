@@ -132,15 +132,48 @@ public class NousLayoutPreviewTest {
                     .inflate(R.layout.app_grid_view, null, false);
             int height = View.MeasureSpec.makeMeasureSpec(340, View.MeasureSpec.EXACTLY);
             View shell = controller.get().getLayoutInflater().inflate(R.layout.activity_pc_view, null, false);
-            View rail = shell.findViewById(R.id.nous_navigation);
-            assertTrue(rail instanceof com.google.android.material.navigationrail.NavigationRailView);
+            com.google.android.material.navigationrail.NavigationRailView rail = shell.findViewById(R.id.nous_navigation);
+            assertEquals(android.view.Gravity.CENTER, rail.getMenuGravity());
             View tabs = shell.findViewById(R.id.nous_tab_content);
             for (int screenWidth : new int[]{640, 852}) {
                 shell.measure(View.MeasureSpec.makeMeasureSpec(screenWidth, View.MeasureSpec.EXACTLY), height);
                 shell.layout(0, 0, screenWidth, 340);
                 assertTrue(rail.getRight() <= tabs.getLeft());
+                View first = rail.findViewById(R.id.nous_nav_computers);
+                View last = rail.findViewById(R.id.nous_nav_settings);
+                android.graphics.Rect firstBounds = new android.graphics.Rect();
+                android.graphics.Rect lastBounds = new android.graphics.Rect();
+                first.getDrawingRect(firstBounds);
+                last.getDrawingRect(lastBounds);
+                rail.offsetDescendantRectToMyCoords(first, firstBounds);
+                rail.offsetDescendantRectToMyCoords(last, lastBounds);
+                assertTrue(Math.abs(firstBounds.top + lastBounds.bottom - rail.getHeight()) <= 2);
                 grid.measure(View.MeasureSpec.makeMeasureSpec(tabs.getWidth(), View.MeasureSpec.EXACTLY), height);
                 assertEquals(screenWidth == 640 ? 3 : 4, grid.getNumColumns());
+            }
+        }
+    }
+
+    @Test
+    @Config(qualifiers = "+land")
+    public void libraryCategoriesKeepOneBaselineWhenSelectionChanges() {
+        try (org.robolectric.android.controller.ActivityController<Host> controller =
+                     Robolectric.buildActivity(Host.class).setup()) {
+            android.widget.RadioGroup categories = (android.widget.RadioGroup) controller.get().getLayoutInflater()
+                    .inflate(R.layout.nous_offline_categories, null, false);
+            categories.setVisibility(View.VISIBLE);
+            for (int category : new int[]{R.id.nous_offline_desktop, R.id.nous_offline_games, R.id.nous_offline_launchers}) {
+                categories.check(category);
+                categories.measure(View.MeasureSpec.makeMeasureSpec(360, View.MeasureSpec.EXACTLY),
+                        View.MeasureSpec.UNSPECIFIED);
+                categories.layout(0, 0, 360, categories.getMeasuredHeight());
+
+                TextView desktop = categories.findViewById(R.id.nous_offline_desktop);
+                int baseline = desktop.getTop() + desktop.getBaseline();
+                for (int i = 1; i < categories.getChildCount(); i++) {
+                    TextView label = (TextView) categories.getChildAt(i);
+                    assertEquals(baseline, label.getTop() + label.getBaseline());
+                }
             }
         }
     }

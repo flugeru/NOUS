@@ -4,6 +4,8 @@
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/nous_main_content_inset"
     android:layout_marginEnd="@dimen/nous_main_content_inset"
+    android:baselineAligned="false"
+    android:gravity="center_vertical"
     android:checkedButton="@+id/nous_offline_games"
     android:orientation="horizontal"
     android:visibility="gone">

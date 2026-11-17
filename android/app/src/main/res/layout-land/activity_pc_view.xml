@@ -19,11 +19,11 @@
         app:itemSpacing="4dp"
         app:labelVisibilityMode="unlabeled"
         app:menu="@menu/nous_navigation"
-        app:menuGravity="top"
+        app:menuGravity="center"
+        app:contentMarginTop="0dp"
         app:paddingBottomSystemWindowInsets="false"
         app:paddingStartSystemWindowInsets="false"
         app:paddingTopSystemWindowInsets="false"
-        app:scrollingEnabled="true"
         app:shapeAppearanceOverlay="@style/Nous.NavigationRailShape" />
 
     <include

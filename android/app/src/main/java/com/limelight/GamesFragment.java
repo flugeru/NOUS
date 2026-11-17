@@ -351,7 +351,7 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
         }
 
         Configuration config = getResources().getConfiguration();
-        if (config.screenWidthDp < 96 + 360 * config.fontScale) {
+        if (config.screenWidthDp < 160 + 360 * config.fontScale) {
             LinearLayout controls = findViewById(R.id.nous_landscape_library_controls);
             controls.setOrientation(LinearLayout.VERTICAL);
             View categories = findViewById(R.id.nous_offline_categories);
