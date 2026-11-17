@@ -633,6 +633,8 @@ public class PcView extends ControllerMenuActivity implements AdapterFragmentCal
                         }
 
                         if (toastSuccess) {
+                            // The library shares this Activity, so onResume() will not restart polling.
+                            startComputerUpdates();
                             // Open the app list after a successful pairing attempt
                             doAppList(computer, true, false);
                         }
