@@ -1859,7 +1859,10 @@ test('legacy updater orders embedded daily versions and shares dismissal across 
   await page.reload();
   await expect(page.locator('.update-notice')).toContainText(`NOUS ${later.metadata.tag} is available`);
   await expect(page.locator('.update-notice').getByRole('link', { name: 'Read release notes' })).toHaveAttribute('href', later.release.html_url);
-  await page.locator('.sidebar__legacy[href="/"]').click();
+  await page.goto('/v2/settings');
+  const classicLink = page.locator('a[href="/?classic=1"]');
+  await classicLink.locator('..').locator('summary').click();
+  await classicLink.click();
   await expect(notice).toContainText(later.metadata.version);
 });
 
