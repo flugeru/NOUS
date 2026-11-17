@@ -58,8 +58,11 @@ public class NousLayoutPreviewTest {
             ((TextView)value.findViewById(android.R.id.title)).setText("Resolução");
             ((TextView)value.findViewById(android.R.id.summary)).setText("2712 × 1220");
             render(value, 345, 96, "active-value");
-            assertTrue(value.findViewById(android.R.id.summary).getTop()
-                    >= value.findViewById(android.R.id.title).getBottom());
+            View title = value.findViewById(android.R.id.title);
+            View summary = value.findViewById(android.R.id.summary);
+            assertTrue("Active value must not overlap its label", summary.getLeft() >= title.getRight());
+            assertTrue("Active value must stay within the row", summary.getRight() <= value.getWidth());
+            assertTrue("Active value must remain visible", summary.getWidth() > 0 && summary.getHeight() > 0);
             assertNotNull(host.getLayoutInflater().inflate(R.layout.nous_preference_switch, null, false)
                     .findViewById(android.R.id.checkbox));
         }
