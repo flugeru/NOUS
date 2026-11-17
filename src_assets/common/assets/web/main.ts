@@ -18,4 +18,6 @@ router.afterEach((route) => {
   document.title = route.path === '/' ? 'NOUS' : `${title} · NOUS`;
 });
 
-createApp(App).use(createPinia()).use(router).use(i18n).mount('#app');
+const app = createApp(App).use(createPinia()).use(router).use(i18n);
+await router.isReady();
+app.mount('#app');
