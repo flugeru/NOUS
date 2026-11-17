@@ -156,6 +156,9 @@ public class UiHelper {
             rootView.setPadding(horizontalPaddingPixels, verticalPaddingPixels,
                     horizontalPaddingPixels, verticalPaddingPixels);
         }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            applyEdgeToEdgeInsets(activity);
+        }
         else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // Draw under the status bar on Android Q devices
 
@@ -184,6 +187,22 @@ public class UiHelper {
 
             activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         }
+    }
+
+    public static void applyEdgeToEdgeInsets(Activity activity) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            return;
+        }
+        View root = activity.findViewById(android.R.id.content);
+        root.setBackgroundColor(activity.getColor(R.color.nous_background));
+        root.setOnApplyWindowInsetsListener((view, insets) -> {
+            Insets safe = insets.getInsets(WindowInsets.Type.systemBars()
+                    | WindowInsets.Type.displayCutout() | WindowInsets.Type.ime());
+            view.setPadding(safe.left, safe.top, safe.right, safe.bottom);
+            // The root already applies the insets. Keep nested controls from applying them again.
+            return WindowInsets.CONSUMED;
+        });
+        root.requestApplyInsets();
     }
 
     public static void showDecoderCrashDialog(Activity activity) {

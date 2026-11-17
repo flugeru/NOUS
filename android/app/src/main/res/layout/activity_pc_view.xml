@@ -24,7 +24,7 @@
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:paddingStart="20dp"
-                android:paddingEnd="8dp">
+                android:paddingEnd="@dimen/nous_computers_inset">
                 <ImageView
                     android:layout_width="32dp"
                     android:layout_height="32dp"
@@ -48,8 +48,8 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingStart="24dp"
-                android:paddingEnd="24dp"
+                android:paddingStart="@dimen/nous_computers_inset"
+                android:paddingEnd="@dimen/nous_computers_inset"
                 android:paddingTop="6dp"
                 android:paddingBottom="8dp"
                 android:textAppearance="@style/Nous.Title"
@@ -57,8 +57,8 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
+                android:layout_marginStart="@dimen/nous_computers_inset"
+                android:layout_marginEnd="@dimen/nous_computers_inset"
                 android:layout_marginBottom="12dp"
                 android:textAppearance="@style/Nous.Subtitle"
                 android:text="@string/nous_computers_hint" />
@@ -76,7 +76,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:clipToPadding="false"
-                    android:paddingHorizontal="24dp">
+                    android:paddingStart="@dimen/nous_computers_inset"
+                    android:paddingEnd="@dimen/nous_computers_inset">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -118,7 +119,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="56dp"
-                android:layout_marginHorizontal="24dp"
+                android:layout_marginStart="@dimen/nous_computers_inset"
+                android:layout_marginEnd="@dimen/nous_computers_inset"
                 android:layout_marginVertical="8dp"
                 android:text="@string/title_add_pc"
                 app:backgroundTint="@color/nous_primary"

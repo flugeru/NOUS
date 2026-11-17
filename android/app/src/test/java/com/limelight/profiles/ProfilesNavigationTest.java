@@ -2,6 +2,7 @@ package com.limelight.profiles;
 
 import android.content.Intent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.content.Context;
@@ -137,8 +138,11 @@ public class ProfilesNavigationTest {
     }
 
     private void measureProfileButton(ProfileButton button) {
-        int height = button.getLayoutParams().height;
-        button.measure(View.MeasureSpec.UNSPECIFIED,
+        ViewGroup.LayoutParams size = button.getLayoutParams();
+        int height = size.height;
+        int widthSpec = size.width > 0 ? View.MeasureSpec.makeMeasureSpec(size.width, View.MeasureSpec.EXACTLY)
+                : View.MeasureSpec.UNSPECIFIED;
+        button.measure(widthSpec,
                 View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
         button.layout(0, 0, button.getMeasuredWidth(), height);
     }

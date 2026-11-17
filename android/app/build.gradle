@@ -25,8 +25,8 @@ android {
     namespace 'com.limelight'
 
     defaultConfig {
-        minSdk 21
-        targetSdk 34
+        minSdk 24
+        targetSdk 36
         resourceConfigurations += ['en', 'pt-rBR']
 
         versionName "1.0.0"

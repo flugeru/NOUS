@@ -148,7 +148,7 @@ public class StreamSettings extends AppCompatActivity {
             }
         });
 
-//        UiHelper.notifyNewRootView(this);
+        UiHelper.applyEdgeToEdgeInsets(this);
     }
 
     @Override

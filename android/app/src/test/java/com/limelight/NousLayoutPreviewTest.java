@@ -81,6 +81,32 @@ public class NousLayoutPreviewTest {
             logo.recycle();
         }
     }
+    @Test public void computerProfileButtonAlignsWithTheCardAndManualAction() {
+        try (org.robolectric.android.controller.ActivityController<Host> controller =
+                     Robolectric.buildActivity(Host.class).setup()) {
+            android.view.ViewGroup root = (android.view.ViewGroup) controller.get()
+                    .getLayoutInflater().inflate(R.layout.activity_pc_view, null, false);
+            root.measure(View.MeasureSpec.makeMeasureSpec(393, View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(852, View.MeasureSpec.EXACTLY));
+            root.layout(0, 0, 393, 852);
+            android.widget.ScrollView scan = root.findViewById(R.id.no_pc_found_layout);
+            android.graphics.Rect profileBounds = new android.graphics.Rect();
+            android.graphics.Rect cardBounds = new android.graphics.Rect();
+            android.graphics.Rect manualBounds = new android.graphics.Rect();
+            View profile = root.findViewById(R.id.profilesButton);
+            View card = scan.getChildAt(0);
+            View manual = root.findViewById(R.id.manuallyAddPc);
+            profile.getDrawingRect(profileBounds);
+            card.getDrawingRect(cardBounds);
+            manual.getDrawingRect(manualBounds);
+            root.offsetDescendantRectToMyCoords(profile, profileBounds);
+            root.offsetDescendantRectToMyCoords(card, cardBounds);
+            root.offsetDescendantRectToMyCoords(manual, manualBounds);
+            assertEquals(manualBounds.right, profileBounds.right);
+            assertEquals(manualBounds.right, cardBounds.right);
+        }
+    }
+
     @Test public void switchUpdatesOnRowTapWithoutWaitingForRecyclerView() {
         try (org.robolectric.android.controller.ActivityController<Host> controller =
                      Robolectric.buildActivity(Host.class).setup()) {
