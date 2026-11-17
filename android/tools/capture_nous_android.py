@@ -439,7 +439,10 @@ def run(c):
     wait_for("nous_game_search", labels=("Genshin",))
     c.capture("games-offline-search-after-rotation")
 
+    capture_virtual_controller_editor(c)
 
+
+def capture_virtual_controller_editor(c):
     select("nous_nav_settings")
     select("nous_settings_virtual_controller")
     wait_for("nous_osc_size_value", labels=("Tamanho · 100%", "Size · 100%"))
@@ -458,19 +461,19 @@ def run(c):
 
     x0, y0, x1, y1 = bounds(wait_for("nous_osc_size"))
     shell("input", "tap", str(x0 + (x1 - x0) * 3 // 4), str((y0 + y1) // 2))
-    size = wait_for("nous_osc_size_value").get("text")
-    if "100%" in size:
+    size_label = wait_for("nous_osc_size_value").get("text")
+    if "100%" in size_label:
         raise RuntimeError("Resizing a controller button should update its displayed size")
     select("nous_osc_visible")
     rotate(1)
-    wait_for("nous_osc_size_value", labels=(size,))
+    wait_for("nous_osc_size_value", labels=(size_label,))
     if wait_for("nous_osc_visible").get("checked") != "false":
         raise RuntimeError("Controller editor draft should survive rotation")
     c.capture("virtual-controller-editor-landscape")
     select("nous_osc_save")
 
     select_in_landscape_settings("nous_settings_virtual_controller")
-    wait_for("nous_osc_size_value", labels=(size,))
+    wait_for("nous_osc_size_value", labels=(size_label,))
     if wait_for("nous_osc_visible").get("checked") != "false":
         raise RuntimeError("Controller button visibility should persist after saving")
     select("nous_back")

@@ -67,6 +67,7 @@ public final class VirtualControllerEditorActivity extends ControllerMenuActivit
                 : state.getInt("opacity");
         dirty = state != null && state.getBoolean("dirty");
 
+        size.setMax(MAX_SIZE_PERCENT - MIN_SIZE_PERCENT);
         initPreview(state);
         picker.setOnClickListener(view -> pickControl());
         visibility.setOnClickListener(view -> {
@@ -75,7 +76,6 @@ public final class VirtualControllerEditorActivity extends ControllerMenuActivit
             dirty = true;
         });
 
-        size.setMax(MAX_SIZE_PERCENT - MIN_SIZE_PERCENT);
         listenToSlider(size, progress -> resizeSelected(MIN_SIZE_PERCENT + progress));
 
         SeekBar opacitySlider = findViewById(R.id.nous_osc_opacity);
