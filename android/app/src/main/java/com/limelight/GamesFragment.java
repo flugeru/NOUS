@@ -335,14 +335,20 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
         }
     }
 
+    private ImageButton getLandscapeSearchToggle() {
+        return getActivity().findViewById(R.id.nous_library_search_toggle);
+    }
+
     private void setupLandscapeLibrary(Bundle state) {
-        ImageButton toggle = findViewById(R.id.nous_library_search_toggle);
-        if (toggle == null) {
+        View heading = findViewById(R.id.nous_landscape_library_heading);
+        if (heading == null) {
             return;
         }
-        toggle.setOnClickListener(view -> setLibrarySearchExpanded(!librarySearchExpanded, true));
+        ImageButton toggle = getLandscapeSearchToggle();
+        toggle.setImageResource(R.drawable.ic_nous_search);
+        toggle.setContentDescription(getText(R.string.nous_search_library));
+        toggle.setSelected(false);
         if (state != null && state.getBoolean(SEARCH_EXPANDED_STATE)) {
-            View heading = findViewById(R.id.nous_landscape_library_heading);
             OneShotPreDrawListener.add(heading, () -> {
                 if (getView() != null && !librarySearchExpanded) {
                     setLibrarySearchExpanded(true, false);
@@ -368,7 +374,7 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
     private void setLibrarySearchExpanded(boolean expanded, boolean animate) {
         View heading = findViewById(R.id.nous_landscape_library_heading);
         View field = findViewById(R.id.nous_landscape_search_field);
-        ImageButton toggle = findViewById(R.id.nous_library_search_toggle);
+        ImageButton toggle = getLandscapeSearchToggle();
         librarySearchExpanded = expanded;
         toggle.setImageResource(expanded ? R.drawable.ic_close : R.drawable.ic_nous_search);
         toggle.setContentDescription(getText(expanded ? R.string.nous_collapse_search : R.string.nous_search_library));
@@ -419,6 +425,12 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
     private void hideSearchKeyboard() {
         WindowCompat.getInsetsController(getActivity().getWindow(), gameSearch)
                 .hide(WindowInsetsCompat.Type.ime());
+    }
+
+    void toggleLibrarySearch() {
+        if (getView() != null) {
+            setLibrarySearchExpanded(!librarySearchExpanded, true);
+        }
     }
 
     boolean closeLibrarySearch() {
@@ -476,7 +488,7 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
 
             @Override
             public void onTextChanged(CharSequence text, int start, int before, int count) {
-                ImageButton toggle = findViewById(R.id.nous_library_search_toggle);
+                ImageButton toggle = getLandscapeSearchToggle();
                 if (toggle != null) {
                     toggle.setSelected(!librarySearchExpanded && text.length() > 0);
                 }

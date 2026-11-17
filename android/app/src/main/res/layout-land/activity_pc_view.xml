@@ -5,26 +5,44 @@
     android:orientation="horizontal"
     android:background="@color/nous_background">
 
-    <com.google.android.material.navigationrail.NavigationRailView
-        android:id="@id/nous_navigation"
+    <LinearLayout
         android:layout_width="64dp"
         android:layout_height="match_parent"
         android:layout_marginStart="12dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        app:backgroundTint="@color/nous_surface"
-        app:elevation="0dp"
-        app:itemIconTint="@color/nous_navigation_item"
-        app:itemMinHeight="56dp"
-        app:itemSpacing="4dp"
-        app:labelVisibilityMode="unlabeled"
-        app:menu="@menu/nous_navigation"
-        app:menuGravity="center"
-        app:contentMarginTop="0dp"
-        app:paddingBottomSystemWindowInsets="false"
-        app:paddingStartSystemWindowInsets="false"
-        app:paddingTopSystemWindowInsets="false"
-        app:shapeAppearanceOverlay="@style/Nous.NavigationRailShape" />
+        android:background="@drawable/nous_navigation_rail_background"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <com.google.android.material.navigationrail.NavigationRailView
+            android:id="@id/nous_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            app:elevation="0dp"
+            app:itemIconTint="@color/nous_navigation_item"
+            app:itemMinHeight="56dp"
+            app:itemSpacing="4dp"
+            app:labelVisibilityMode="unlabeled"
+            app:menu="@menu/nous_navigation"
+            app:menuGravity="center"
+            app:contentMarginTop="0dp"
+            app:paddingBottomSystemWindowInsets="false"
+            app:paddingStartSystemWindowInsets="false"
+            app:paddingTopSystemWindowInsets="false" />
+
+        <ImageButton
+            android:id="@+id/nous_library_search_toggle"
+            style="@style/Nous.IconButton"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/nous_library_search_button"
+            android:contentDescription="@string/nous_search_library"
+            android:src="@drawable/ic_nous_search"
+            android:visibility="gone"
+            app:tint="@color/nous_text" />
+    </LinearLayout>
 
     <include
         layout="@layout/nous_pc_tabs"

@@ -215,10 +215,26 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
         // Setup the list view
         NavigationBarView navigation = findViewById(R.id.nous_navigation);
         settingsTab = new NousSettingsTab(this, navigation, R.id.nous_nav_computers);
+        View searchToggle = findViewById(R.id.nous_library_search_toggle);
+        if (searchToggle != null) {
+            searchToggle.setOnClickListener(view -> {
+                GamesFragment games = (GamesFragment) getFragmentManager().findFragmentByTag("games");
+                if (games != null) {
+                    games.toggleLibrarySearch();
+                }
+            });
+        }
         navigation.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nous_nav_games) {
                 return openGamesTab();
+            }
+            if (searchToggle != null) {
+                GamesFragment games = (GamesFragment) getFragmentManager().findFragmentByTag("games");
+                if (games != null) {
+                    games.closeLibrarySearch();
+                }
+                searchToggle.setVisibility(View.GONE);
             }
             findViewById(R.id.nous_games_container).setVisibility(View.GONE);
             settingsTab.show(id == R.id.nous_nav_settings);
@@ -854,6 +870,10 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
         if (header != null) header.setVisibility(View.GONE);
         findViewById(R.id.nous_main_tab).setVisibility(View.GONE);
         findViewById(R.id.nous_games_container).setVisibility(View.VISIBLE);
+        View searchToggle = findViewById(R.id.nous_library_search_toggle);
+        if (searchToggle != null) {
+            searchToggle.setVisibility(View.VISIBLE);
+        }
         ((NavigationBarView) findViewById(R.id.nous_navigation)).getMenu().findItem(R.id.nous_nav_games).setChecked(true);
     }
 

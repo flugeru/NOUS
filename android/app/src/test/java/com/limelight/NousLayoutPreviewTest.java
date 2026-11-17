@@ -135,6 +135,9 @@ public class NousLayoutPreviewTest {
             com.google.android.material.navigationrail.NavigationRailView rail = shell.findViewById(R.id.nous_navigation);
             assertEquals(android.view.Gravity.CENTER, rail.getMenuGravity());
             View tabs = shell.findViewById(R.id.nous_tab_content);
+            View searchAction = shell.findViewById(R.id.nous_library_search_toggle);
+            assertEquals(View.GONE, searchAction.getVisibility());
+            searchAction.setVisibility(View.VISIBLE);
             for (int screenWidth : new int[]{640, 852}) {
                 shell.measure(View.MeasureSpec.makeMeasureSpec(screenWidth, View.MeasureSpec.EXACTLY), height);
                 shell.layout(0, 0, screenWidth, 340);
@@ -148,6 +151,8 @@ public class NousLayoutPreviewTest {
                 rail.offsetDescendantRectToMyCoords(first, firstBounds);
                 rail.offsetDescendantRectToMyCoords(last, lastBounds);
                 assertTrue(Math.abs(firstBounds.top + lastBounds.bottom - rail.getHeight()) <= 2);
+                assertTrue(searchAction.getTop() >= rail.getBottom());
+                assertEquals(rail.getWidth(), searchAction.getLeft() + searchAction.getRight());
                 grid.measure(View.MeasureSpec.makeMeasureSpec(tabs.getWidth(), View.MeasureSpec.EXACTLY), height);
                 assertEquals(screenWidth == 640 ? 3 : 4, grid.getNumColumns());
             }

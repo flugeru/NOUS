@@ -308,6 +308,10 @@ def run(c):
     destinations = [wait_for(target) for target in ("nous_nav_computers", "nous_nav_games", "nous_nav_settings")]
     rail_bounds = [bounds(node) for node in destinations]
     title_bounds = bounds(match(root, "appListText"))
+    search_action_bounds = bounds(wait_for("nous_library_search_toggle"))
+    if not (rail_bounds[-1][3] <= search_action_bounds[1]
+            and rail_bounds[-1][0] <= search_action_bounds[0] < search_action_bounds[2] <= rail_bounds[-1][2]):
+        raise RuntimeError("Landscape search action must be inside the navigation rail")
     if not (rail_bounds[0][1] < rail_bounds[1][1] < rail_bounds[2][1]
             and all(box[2] <= title_bounds[0] for box in rail_bounds)):
         raise RuntimeError("Landscape navigation must be vertical and left of the library")
