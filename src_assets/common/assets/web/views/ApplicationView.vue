@@ -1379,6 +1379,16 @@ const appCompatibility = computed({
   },
 });
 
+const libraryCategory = computed({
+  get: () => String(appCompatibility.value?.['library-category'] ?? ''),
+  set: (value: string) => {
+    const extras = { ...appCompatibility.value };
+    if (value) extras['library-category'] = value;
+    else delete extras['library-category'];
+    appCompatibility.value = extras;
+  },
+});
+
 const routeId = computed(() => (typeof route.params.id === 'string' ? route.params.id : ''));
 const isNew = computed(() => route.name === 'application-new' || !routeId.value);
 const isRemoteMonitor = computed(() => isRemoteMonitorApplication(sourceApp.value));
@@ -3209,6 +3219,15 @@ onBeforeUnmount(() => {
           <p>{{ t('ui.application.sections.identity.description') }}</p>
         </div>
         <div class="editor-group editor-grid">
+          <div class="vs-field editor-field">
+            <label class="vs-field__label" for="library-category">{{ t('ui.library.category') }}</label>
+            <select id="library-category" v-model="libraryCategory" class="vs-input">
+              <option value="">{{ t('ui.library.categories.auto') }}</option>
+              <option value="desktop">{{ t('ui.library.categories.desktop') }}</option>
+              <option value="games">{{ t('ui.library.categories.games') }}</option>
+              <option value="launchers">{{ t('ui.library.categories.launchers') }}</option>
+            </select>
+          </div>
           <div class="vs-field editor-field editor-field--wide">
             <label class="vs-field__label" for="app-name">
               {{ t('ui.application.fields.name.label') }}

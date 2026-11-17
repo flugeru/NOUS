@@ -27,6 +27,8 @@ const transientFields = new Set([
   'image-version',
   'playnite-icon-version',
   'remote-session',
+  'effective-library-category',
+  'running',
 ]);
 
 export async function fetchApps(): Promise<AppRecord[]> {

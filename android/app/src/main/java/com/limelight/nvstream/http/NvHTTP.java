@@ -748,6 +748,8 @@ public class NvHTTP {
                     app.setAppName(xpp.getText());
                 } else if (currentTag.peek().equals("UUID")) {
                     app.setAppUUID(xpp.getText());
+                } else if (currentTag.peek().equals("LibraryCategory")) {
+                    app.setLibraryCategory(xpp.getText());
                 } else if (currentTag.peek().equals("IDX")) {
                     app.setAppIndex(Integer.parseInt(xpp.getText()));
                 } else if (currentTag.peek().equals("ID")) {

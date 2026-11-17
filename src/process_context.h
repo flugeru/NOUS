@@ -73,6 +73,7 @@ namespace proc {
     std::string id;
     std::string gamepad;
     std::string art_version;
+    std::string library_category;
     std::vector<std::string> id_aliases;
     // Provider metadata used by the Steam-owned process lifecycle boundary.
     // These remain strings because the catalog/API stores Steam IDs and paths

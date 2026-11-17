@@ -1148,6 +1148,15 @@
       "support": "Ajuda e atualizações"
     },
     "library": {
+      "category": "Categoria",
+      "running": "Em execução",
+      "categories": {
+        "all": "Todos",
+        "auto": "Automática",
+        "desktop": "Desktop",
+        "games": "Jogos",
+        "launchers": "Launchers"
+      },
       "actions": {
         "add": "Adicionar aplicativo",
         "editLabel": "Editar {name}",

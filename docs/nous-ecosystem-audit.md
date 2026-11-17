@@ -33,3 +33,12 @@ Branch criada sobre `c31114155`. Alterações preexistentes de Inno/WiX e `build
 ## Evidência de validação
 
 Registrar comandos, resultados e limitações durante execução. Não tratar inspeção estática, mocks ou build como prova de comportamento real.
+
+### 17/11/2026 — biblioteca e navegação
+
+- Web: `npm run build` passou; `npm run test:unit` passou com 126 testes. Categoria manual prevalece sobre categoria efetiva; valores desconhecidos mantêm fallback compatível.
+- Android: `build-android.ps1` passou após corrigir fixture do teste para não carregar JNI. Suíte com 76 testes, incluindo filtro combinado de categoria, pesquisa e execução em aplicativos reais do adapter, sem usar catálogo demonstrativo.
+- MuMu `127.0.0.1:16384`: APK arm64 atualizado com `adb install -r`, sem limpar dados; pacote `com.flugel.nous` abriu. Ajustes, seção Controles e editor Controle virtual abriram por interação real. Editor expôs Salvar, Desfazer, Refazer, modos de edição e descrições acessíveis dos botões; retorno sem salvar não gerou erro AndroidRuntime. PCs preservados apareciam verificando conexão; transmissão, alça durante sessão e hardware físico ainda não validados.
+- Web real, antes do build: categoria Steam Big Picture salva como Launchers; recarregamento e filtro mostraram exatamente um aplicativo. Host instalado ainda não contém novos metadados; execução e categoria efetiva precisam validação com host recompilado.
+- Host: validação de `library-category` restringe valores a `desktop`, `games`, `launchers`; campos de resposta `running` e `effective-library-category` removidos ao salvar. Build C++ completo continua em execução; não equivale a validação runtime.
+- Instalador final, progresso real, diagnósticos de sessão, sincronização de preferências, capas públicas e auditoria integral continuam pendentes. Nenhuma entrega final declarada.

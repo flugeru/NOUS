@@ -4641,6 +4641,12 @@ namespace proc {
             ctx.output_name_override = parse_env_val(this_env, app_node.value("display-output", ""));
           }
           std::string name = parse_env_val(this_env, app_node.value("name", ""));
+          if (app_node.contains("library-category") && app_node["library-category"].is_string()) {
+            const auto category = app_node["library-category"].get<std::string>();
+            if (category == "desktop" || category == "games" || category == "launchers") {
+              ctx.library_category = category;
+            }
+          }
           if (app_node.contains("cmd")) {
             ctx.cmd = parse_env_val(this_env, app_node.value("cmd", ""));
           }
@@ -4874,6 +4880,10 @@ namespace proc {
         ctx.prep_cmds = std::move(prep_cmds);
         ctx.state_cmds = std::move(state_cmds);
         ctx.detached = std::move(detached);
+        if (ctx.library_category.empty()) {
+          ctx.library_category = ctx.playnite_fullscreen ? "launchers" :
+            (ctx.cmd.empty() && ctx.detached.empty() && ctx.playnite_id.empty() && ctx.steam_id.empty() && ctx.lutris_id.empty()) ? "desktop" : "games";
+        }
 
         apps.emplace_back(std::move(ctx));
         }

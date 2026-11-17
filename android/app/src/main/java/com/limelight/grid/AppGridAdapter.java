@@ -58,10 +58,6 @@ public class AppGridAdapter extends GenericGridAdapter<AppView.AppObject> {
         }
     }
 
-    private boolean hasFilters() {
-        return !query.isEmpty() || runningOnly || demoCategories.size() != 0;
-    }
-
     public void setRunningOnly(boolean runningOnly) {
         this.runningOnly = runningOnly;
         notifyDataSetChanged();
@@ -146,20 +142,23 @@ public class AppGridAdapter extends GenericGridAdapter<AppView.AppObject> {
 
     @Override
     public int getCount() {
-        return hasFilters() ? searchResults.size() : super.getCount();
+        return searchResults.size();
     }
 
     @Override
     public AppView.AppObject getItem(int position) {
-        return hasFilters() ? searchResults.get(position) : super.getItem(position);
+        return searchResults.get(position);
     }
 
     @Override
     public void notifyDataSetChanged() {
         searchResults.clear();
         for (AppView.AppObject app : itemList) {
-            boolean matchesCategory = demoCategories.size() == 0
-                    || demoCategories.get(app.app.getAppId()) == category;
+            LibraryCategory appCategory = demoCategories.get(app.app.getAppId());
+            if (appCategory == null) {
+                appCategory = LibraryCategory.valueOf(app.app.getLibraryCategory().toUpperCase(Locale.ROOT));
+            }
+            boolean matchesCategory = appCategory == category;
             if (matchesCategory && (!runningOnly || app.isRunning)
                     && app.app.getAppName().toLowerCase(Locale.ROOT).contains(query)) {
                 searchResults.add(app);

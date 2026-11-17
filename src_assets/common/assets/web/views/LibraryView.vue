@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
 import { useSystemStore } from '@/stores/system';
+import { libraryCategory, type LibraryCategory } from '@/utils/libraryCategory';
 import { ApiError, apiGet, apiPatch, apiPost } from '@/api/client';
 import {
   AppButton,
@@ -61,6 +62,8 @@ async function restoreSystemApp(id: string): Promise<void> {
 const loading = ref(true);
 const error = ref('');
 const search = ref(queryValue(route.query.q));
+const category = ref<LibraryCategory | ''>('');
+const runningOnly = ref(false);
 const sort = ref<SortMode>(parseSort(route.query.sort));
 const viewMode = ref<ViewMode>(readStoredView());
 const renderLimit = ref(PAGE_SIZE);
@@ -212,6 +215,8 @@ const filteredApps = computed(() => {
   const candidates = apps.value
     .map((app, sourceIndex) => ({ app, sourceIndex }))
     .filter(({ app }) => {
+      if (category.value && libraryCategory(app) !== category.value) return false;
+      if (runningOnly.value && app.running !== true) return false;
       if (!query) return true;
       return `${displayName(app)} ${searchSummary(app)}`
         .toLocaleLowerCase(locale.value)
@@ -527,6 +532,8 @@ function onDocumentPointerDown(event: PointerEvent): void {
   }
 }
 
+watch([category, runningOnly], () => { renderLimit.value = PAGE_SIZE; });
+
 watch([search, sort], () => {
   renderLimit.value = PAGE_SIZE;
   window.clearTimeout(queryTimer);
@@ -652,6 +659,18 @@ function libraryRequest(
     </InlineAlert>
 
     <section class="library-toolbar" :aria-label="t('ui.library.controls.region')">
+      <label class="vs-field">
+        <span>{{ t('ui.library.category') }}</span>
+        <select v-model="category" class="vs-input">
+          <option value="">{{ t('ui.library.categories.all') }}</option>
+          <option value="desktop">{{ t('ui.library.categories.desktop') }}</option>
+          <option value="games">{{ t('ui.library.categories.games') }}</option>
+          <option value="launchers">{{ t('ui.library.categories.launchers') }}</option>
+        </select>
+      </label>
+      <label class="vs-field">
+        <span><input v-model="runningOnly" type="checkbox" /> {{ t('ui.library.running') }}</span>
+      </label>
       <label class="library-search">
         <span class="vs-sr-only">{{ t('ui.library.search.label') }}</span>
         <UiIcon name="search" :size="16" aria-hidden="true" />
@@ -859,6 +878,7 @@ function libraryRequest(
             <span class="library-item__copy">
               <span class="library-item__title-line">
                 <span class="library-item__title">{{ displayName(app) }}</span>
+                <span v-if="app.running === true">{{ t('ui.library.running') }}</span>
               </span>
               <span class="library-item__source">{{ providerLabel(app) }}</span>
             </span>

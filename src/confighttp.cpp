@@ -1930,7 +1930,12 @@ namespace confighttp {
                      (!remote_session::marked_monitor_profile(app) ||
                       (configured.remote_monitor_profile && configured.uuid == app.value("uuid", std::string {})));
             });
-            if (runtime != apps_snapshot.end()) app["id"] = runtime->id;
+            if (runtime != apps_snapshot.end()) {
+              app["id"] = runtime->id;
+              app["effective-library-category"] = runtime->library_category.empty() ? "desktop" : runtime->library_category;
+            }
+            app["running"] = !file_tree["current_app"].get<std::string>().empty() &&
+              app.value("uuid", std::string {}) == file_tree["current_app"].get<std::string>();
           }
         } catch (...) {
         }
@@ -2034,6 +2039,13 @@ namespace confighttp {
 
       // Read the input JSON from the request body.
       nlohmann::json input_tree = nlohmann::json::parse(ss.str());
+      if (input_tree.contains("library-category")) {
+        const auto &category = input_tree["library-category"];
+        if (!category.is_string() || (category != "desktop" && category != "games" && category != "launchers")) {
+          bad_request(response, request, "Invalid library category");
+          return;
+        }
+      }
       int index = input_tree.value("index", -1);
 
       // Read the existing apps file.
@@ -2107,6 +2119,8 @@ namespace confighttp {
 
       const auto remote_control = configurable_remote_session(input_tree.value("uuid", ""));
       input_tree.erase("remote-session");
+      input_tree.erase("effective-library-category");
+      input_tree.erase("running");
       if (remote_control != remote_session::control_e::none) {
         const auto synthetic = remote_session::synthetic(remote_control);
         input_tree["uuid"] = synthetic.uuid;

@@ -6,6 +6,17 @@ public class NvApp {
     public static final String REMOTE_INPUT_UUID = "8CB5C136-DA67-4F99-B4A1-F9CD35005CF4";
     private String appName = "";
     private String appUUID = "";
+    private String libraryCategory = "games";
+
+    public String getLibraryCategory() {
+        return libraryCategory;
+    }
+
+    public void setLibraryCategory(String category) {
+        if ("desktop".equals(category) || "games".equals(category) || "launchers".equals(category)) {
+            libraryCategory = category;
+        }
+    }
     private int appId;
     private int appIndex;
     private boolean initialized;

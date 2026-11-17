@@ -4745,6 +4745,11 @@ namespace nvhttp {
           app_node.put("IsHdrSupported"s, is_hdr_supported ? 1 : 0);
           app_node.put("AppTitle"s, app_name);
           app_node.put("UUID", entry.uuid);
+          if (configured != visible_apps.end() && !(*configured)->library_category.empty()) {
+            app_node.put("LibraryCategory", (*configured)->library_category);
+          } else if (entry.synthetic) {
+            app_node.put("LibraryCategory", remote_session::identify(entry.id, entry.uuid) == remote_session::control_e::running_game ? "games" : "desktop");
+          }
           app_node.put("IDX", entry.synthetic ? std::to_string(entry.id) : (configured == visible_apps.end() ? "" : (*configured)->idx));
           app_node.put("ID", entry.id);
           if (entry.synthetic && remote_session::identify(entry.id, entry.uuid) == remote_session::control_e::running_game && current_app) {

@@ -180,6 +180,12 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
                         return;
                     }
 
+                    RadioGroup categories = findViewById(R.id.nous_offline_categories);
+                    int categoryId = categories.getCheckedRadioButtonId();
+                    appGridAdapter.setCategory(categoryId == R.id.nous_offline_desktop
+                            ? AppGridAdapter.LibraryCategory.DESKTOP
+                            : categoryId == R.id.nous_offline_launchers
+                            ? AppGridAdapter.LibraryCategory.LAUNCHERS : AppGridAdapter.LibraryCategory.GAMES);
                     appGridAdapter.updateHiddenApps(hiddenAppIds, true);
                     appGridAdapter.setQuery(gameSearch.getText());
                     com.google.android.material.chip.ChipGroup filters = findViewById(R.id.nous_game_filters);
@@ -512,21 +518,19 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
             .setOnClickListener(v -> startActivity(new Intent(getActivity(), ProfilesActivity.class)));
 
         this.prefConfig = PreferenceConfiguration.readPreferences(getActivity());
+        RadioGroup libraryCategories = findViewById(R.id.nous_offline_categories);
+        libraryCategories.setVisibility(View.VISIBLE);
+        libraryCategories.setOnCheckedChangeListener((group, checkedId) -> {
+            if (appGridAdapter == null) return;
+            appGridAdapter.setCategory(checkedId == R.id.nous_offline_desktop
+                    ? AppGridAdapter.LibraryCategory.DESKTOP
+                    : checkedId == R.id.nous_offline_launchers
+                    ? AppGridAdapter.LibraryCategory.LAUNCHERS : AppGridAdapter.LibraryCategory.GAMES);
+        });
         if (isOfflineDemo()) {
             TextView label = findViewById(R.id.appListText);
             label.setText(R.string.nous_demo_library);
             appGridAdapter = AppGridAdapter.createOfflineDemo(getActivity(), prefConfig);
-            RadioGroup categories = findViewById(R.id.nous_offline_categories);
-            categories.setVisibility(View.VISIBLE);
-            categories.setOnCheckedChangeListener((group, checkedId) -> {
-                if (checkedId == R.id.nous_offline_desktop) {
-                    appGridAdapter.setCategory(AppGridAdapter.LibraryCategory.DESKTOP);
-                } else if (checkedId == R.id.nous_offline_launchers) {
-                    appGridAdapter.setCategory(AppGridAdapter.LibraryCategory.LAUNCHERS);
-                } else {
-                    appGridAdapter.setCategory(AppGridAdapter.LibraryCategory.GAMES);
-                }
-            });
             appGridAdapter.setQuery(gameSearch.getText());
             appGridAdapter.setRunningOnly(filters.getCheckedChipId() == R.id.nous_filter_running);
             if (getChildFragmentManager().findFragmentById(R.id.appFragmentContainer) == null) {
@@ -875,6 +879,10 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
                     for (AppView.AppObject existingApp : unfilteredApps) {
                         if (existingApp.app.getAppId() == app.getAppId()) {
                             // Found the app; update its properties
+                            if (!existingApp.app.getLibraryCategory().equals(app.getLibraryCategory())) {
+                                existingApp.app.setLibraryCategory(app.getLibraryCategory());
+                                updated = true;
+                            }
                             if (!existingApp.app.getAppName().equals(app.getAppName())) {
                                 existingApp.app.setAppName(app.getAppName());
                                 updated = true;
