@@ -3,7 +3,8 @@
     "display_recovery": {
       "title": "Recuperação da tela",
       "description": "Se a tela do PC ficar preta após a transmissão, encerre a tela virtual e tente recuperar um monitor físico.",
-      "action": "Encerrar tela virtual", "working": "Recuperando telas…",
+      "action": "Encerrar tela virtual",
+      "working": "Recuperando telas…",
       "introduction_title": "Saiba como recuperar a tela do PC",
       "introduction": "Antes da primeira transmissão, conheça este botão. Se uma tela virtual travar ou a disposição salva não puder ser restaurada, abra este painel por outro dispositivo e escolha Encerrar tela virtual. O NOUS removerá suas telas virtuais e tentará ativar um monitor físico conectado.",
       "dismiss": "Entendi",
@@ -18,91 +19,1096 @@
   },
   "ui": {
     "settings": {
-      "all_settings": "Todos os ajustes", "categories_label": "Categorias de ajustes", "game_libraries": "Integrações de bibliotecas de jogos",
-      "description": "Ajuste o PC para transmitir do seu jeito.", "discard": "Descartar", "title": "Ajustes",
+      "all_settings": "Todos os ajustes",
+      "categories_label": "Categorias de ajustes",
+      "game_libraries": "Integrações de bibliotecas de jogos",
+      "description": "Ajuste o PC para transmitir do seu jeito.",
+      "discard": "Descartar",
+      "title": "Ajustes",
       "categories": {
-        "audio": {"description": "Captura de áudio do PC e seleção do dispositivo de áudio virtual.", "label": "Áudio"},
-        "display": {"description": "Telas virtuais, monitor físico, resolução, taxa de atualização e HDR.", "label": "Telas"},
-        "everyday": {"description": "Configure tela, captura, Remote Monitor e automação do NOUS. As outras categorias oferecem ajustes detalhados.", "label": "Ajustes principais"},
-        "files": {"description": "Caminhos normalmente gerenciados pelo instalador ou serviço.", "label": "Arquivos e certificados"},
-        "host": {"description": "Identificação do PC, comportamento local, histórico e métricas ao vivo.", "label": "PC e diagnóstico"},
-        "input": {"description": "Teclado, mouse, controle, caneta, toque e repetição de teclas.", "label": "Controles"},
-        "network": {"description": "Interfaces de rede, acesso remoto, portas, criptografia e origens confiáveis.", "label": "Rede e segurança"},
-        "pacing": {"description": "Método de captura, limite e ritmo de quadros.", "label": "Captura e ritmo de quadros"},
-        "video": {"description": "Codificador, codecs, taxa de bits e recuperação de perdas.", "label": "Vídeo e qualidade"}
+        "audio": {
+          "description": "Captura de áudio do PC e seleção do dispositivo de áudio virtual.",
+          "label": "Áudio"
+        },
+        "display": {
+          "description": "Telas virtuais, monitor físico, resolução, taxa de atualização e HDR.",
+          "label": "Telas"
+        },
+        "everyday": {
+          "description": "Configure tela, captura, Remote Monitor e automação do NOUS. As outras categorias oferecem ajustes detalhados.",
+          "label": "Ajustes principais"
+        },
+        "files": {
+          "description": "Caminhos normalmente gerenciados pelo instalador ou serviço.",
+          "label": "Arquivos e certificados"
+        },
+        "host": {
+          "description": "Identificação do PC, comportamento local, histórico e métricas ao vivo.",
+          "label": "PC e diagnóstico"
+        },
+        "input": {
+          "description": "Teclado, mouse, controle, caneta, toque e repetição de teclas.",
+          "label": "Controles"
+        },
+        "network": {
+          "description": "Interfaces de rede, acesso remoto, portas, criptografia e origens confiáveis.",
+          "label": "Rede e segurança"
+        },
+        "pacing": {
+          "description": "Método de captura, limite e ritmo de quadros.",
+          "label": "Captura e ritmo de quadros"
+        },
+        "video": {
+          "description": "Codificador, codecs, taxa de bits e recuperação de perdas.",
+          "label": "Vídeo e qualidade"
+        }
       },
-      "errors": {"load": "Não foi possível carregar os ajustes.", "reset_display": "Não foi possível redefinir o estado das telas.", "save": "Não foi possível salvar os ajustes.", "title": "Ajustes indisponíveis"},
-      "recommended": "Recomendado", "reload": "Recarregar", "restart": "Reiniciar", "restart_now": "Reiniciar agora", "restart_required": "Reinicialização necessária",
-      "restart_required_description": "Uma ou mais alterações não salvas exigem reiniciar o NOUS.", "save": "Salvar alterações", "save_hint": "As alterações serão aplicadas após salvar.", "save_restart_hint": "Será necessário reiniciar.", "saving": "Salvando...",
-      "search": "Buscar ajustes", "search_description": "Resultados de todas as categorias, com a seção de origem.", "search_results": "Resultados da busca", "selected_category": "Categoria selecionada",
-      "unsaved_many": "{count} alterações não salvas", "unsaved_one": "1 alteração não salva", "unsaved_region": "Ajustes não salvos", "unsaved_short": "{count} não salvos",
-      "leave_warning": "Há alterações não salvas. Sair e descartá-las?", "reset_warning": "Isso restaura a área de trabalho e limpa o estado salvo das telas. Pode interromper a transmissão.", "more_options": "Mais ajustes", "audio_summary": "Use áudio automático ou abra Áudio para escolher um dispositivo.",
-      "everyday_help": {"pyrowave": "Use o codec wavelet por GPU do NOUS com um cliente compatível. Requer GPU compatível e rede cabeada rápida.", "frame_limiter_auto_virtual_framegen": "Automático e Compatibilidade aumentam a taxa de atualização da tela virtual. Desativado acompanha o FPS da transmissão. O FPS transmitido não muda.", "dd_virtual_display_scale": "Altere o tamanho do texto e dos controles na tela virtual.", "wayland_hdr_compatibility": "Use ajustes de compatibilidade para jogos HDR na tela Wayland gerenciada."}
+      "errors": {
+        "load": "Não foi possível carregar os ajustes.",
+        "reset_display": "Não foi possível redefinir o estado das telas.",
+        "save": "Não foi possível salvar os ajustes.",
+        "title": "Ajustes indisponíveis"
+      },
+      "recommended": "Recomendado",
+      "reload": "Recarregar",
+      "restart": "Reiniciar",
+      "restart_now": "Reiniciar agora",
+      "restart_required": "Reinicialização necessária",
+      "restart_required_description": "Uma ou mais alterações não salvas exigem reiniciar o NOUS.",
+      "save": "Salvar alterações",
+      "save_hint": "As alterações serão aplicadas após salvar.",
+      "save_restart_hint": "Será necessário reiniciar.",
+      "saving": "Salvando...",
+      "search": "Buscar ajustes",
+      "search_description": "Resultados de todas as categorias, com a seção de origem.",
+      "search_results": "Resultados da busca",
+      "selected_category": "Categoria selecionada",
+      "unsaved_many": "{count} alterações não salvas",
+      "unsaved_one": "1 alteração não salva",
+      "unsaved_region": "Ajustes não salvos",
+      "unsaved_short": "{count} não salvos",
+      "leave_warning": "Há alterações não salvas. Sair e descartá-las?",
+      "reset_warning": "Isso restaura a área de trabalho e limpa o estado salvo das telas. Pode interromper a transmissão.",
+      "more_options": "Mais ajustes",
+      "audio_summary": "Use áudio automático ou abra Áudio para escolher um dispositivo.",
+      "everyday_help": {
+        "pyrowave": "Use o codec wavelet por GPU do NOUS com um cliente compatível. Requer GPU compatível e rede cabeada rápida.",
+        "frame_limiter_auto_virtual_framegen": "Automático e Compatibilidade aumentam a taxa de atualização da tela virtual. Desativado acompanha o FPS da transmissão. O FPS transmitido não muda.",
+        "dd_virtual_display_scale": "Altere o tamanho do texto e dos controles na tela virtual.",
+        "wayland_hdr_compatibility": "Use ajustes de compatibilidade para jogos HDR na tela Wayland gerenciada."
+      }
     },
-    "app": {"connecting": "Conectando a este PC...", "skip_to_content": "Pular para o conteúdo principal"},
-    "nav": {"api_tokens": "Tokens de API", "browser_stream": "Transmitir no navegador", "devices": "Dispositivos", "integrations": "Integrações", "library": "Biblioteca", "logs": "Logs", "maintenance": "Manutenção", "overview": "Visão geral", "stats": "Estatísticas", "settings": "Ajustes"},
-    "shell": {"appearance": "Aparência", "brand_overview": "Visão geral do NOUS", "change_theme": "Tema: {theme}. Alterar tema", "close_navigation": "Fechar navegação", "collapse_navigation": "Recolher navegação", "expand_navigation": "Expandir navegação", "host_status": "Estado do PC", "open_navigation": "Abrir navegação", "primary_navigation": "Navegação principal", "refresh_host_status": "Atualizar estado do PC", "theme": "Tema: {theme}", "theme_auto": "Sistema", "theme_dark": "Escuro", "theme_light": "Claro", "workspace": "Seu PC", "monitor": "Monitoramento", "manage": "Gerenciar", "host_console": "Painel do PC", "classic_interface": "Interface clássica"},
-    "status": {"needs_attention": "Requer atenção", "ready": "Pronto", "streaming": "Transmitindo"},
-    "system": {"host_status_unavailable": "O estado do PC está temporariamente indisponível.", "unreachable": "Não foi possível conectar ao NOUS neste PC."},
-    "auth": {"credentials_required": "Informe usuário e senha.", "login_description": "Entre para gerenciar o NOUS neste PC.", "security_note": "Esta página é fornecida pelo seu PC. Os dados de acesso são enviados diretamente a ele.", "setup_description": "Crie a conta de administrador para gerenciar transmissões e dispositivos pareados."},
-    "common": {"confirm": "Confirmar", "working": "Processando..."},
-    "not_found": {"title": "Página não encontrada", "description": "Esta página não está disponível.", "action": "Voltar à visão geral"},
+    "app": {
+      "connecting": "Conectando a este PC...",
+      "skip_to_content": "Pular para o conteúdo principal"
+    },
+    "nav": {
+      "api_tokens": "Tokens de API",
+      "browser_stream": "Transmitir no navegador",
+      "devices": "Dispositivos",
+      "integrations": "Integrações",
+      "library": "Biblioteca",
+      "logs": "Logs",
+      "maintenance": "Manutenção",
+      "overview": "Visão geral",
+      "stats": "Estatísticas",
+      "settings": "Ajustes"
+    },
+    "shell": {
+      "appearance": "Aparência",
+      "brand_overview": "Visão geral do NOUS",
+      "change_theme": "Tema: {theme}. Alterar tema",
+      "close_navigation": "Fechar navegação",
+      "collapse_navigation": "Recolher navegação",
+      "expand_navigation": "Expandir navegação",
+      "host_status": "Estado do PC",
+      "open_navigation": "Abrir navegação",
+      "primary_navigation": "Navegação principal",
+      "refresh_host_status": "Atualizar estado do PC",
+      "theme": "Tema: {theme}",
+      "theme_auto": "Sistema",
+      "theme_dark": "Escuro",
+      "theme_light": "Claro",
+      "workspace": "Seu PC",
+      "monitor": "Monitoramento",
+      "manage": "Gerenciar",
+      "host_console": "Painel do PC",
+      "classic_interface": "Interface clássica"
+    },
+    "status": {
+      "needs_attention": "Requer atenção",
+      "ready": "Pronto",
+      "streaming": "Transmitindo"
+    },
+    "system": {
+      "host_status_unavailable": "O estado do PC está temporariamente indisponível.",
+      "unreachable": "Não foi possível conectar ao NOUS neste PC."
+    },
+    "auth": {
+      "credentials_required": "Informe usuário e senha.",
+      "login_description": "Entre para gerenciar o NOUS neste PC.",
+      "security_note": "Esta página é fornecida pelo seu PC. Os dados de acesso são enviados diretamente a ele.",
+      "setup_description": "Crie a conta de administrador para gerenciar transmissões e dispositivos pareados."
+    },
+    "common": {
+      "confirm": "Confirmar",
+      "working": "Processando..."
+    },
+    "not_found": {
+      "title": "Página não encontrada",
+      "description": "Esta página não está disponível.",
+      "action": "Voltar à visão geral"
+    },
     "pair": {
-      "action": {"approve": "Aprovar dispositivo", "approving": "Aprovando", "back_to_devices": "Voltar aos dispositivos", "pair_another": "Parear outro", "view_devices": "Ver dispositivos"},
-      "alert": {"failed": "Falha no pareamento", "paired": "Dispositivo pareado"},
-      "error": {"name_required": "Informe um nome para este dispositivo.", "pin_invalid": "Informe o PIN de um a quatro dígitos exibido no dispositivo.", "pin_rejected": "Nenhum pedido de pareamento aceitou este PIN. Inicie o pareamento no dispositivo e tente novamente.", "submit": "Não foi possível parear este dispositivo."},
-      "form": {"description": "Este nome aparecerá nas listas de dispositivos e sessões.", "name_helper": "Escolha um nome fácil de reconhecer.", "name_placeholder": "TV da sala", "pin_helper": "Informe até quatro dígitos.", "pin_label": "PIN do NOUS", "pin_placeholder": "0000", "pin_submit_as": "Será enviado como {pin}", "title": "Aprovar dispositivo"},
-      "notice": {"connected": "{name} já pode conectar a este PC."},
-      "page": {"description": "No Android, escolha este PC em Computadores. Informe aqui o PIN exibido para autorizar o dispositivo. O pareamento não inicia uma transmissão.", "local_approval": "Aprovação no PC", "title": "Parear dispositivo"},
+      "action": {
+        "approve": "Aprovar dispositivo",
+        "approving": "Aprovando",
+        "back_to_devices": "Voltar aos dispositivos",
+        "pair_another": "Parear outro",
+        "view_devices": "Ver dispositivos"
+      },
+      "alert": {
+        "failed": "Falha no pareamento",
+        "paired": "Dispositivo pareado"
+      },
+      "error": {
+        "name_required": "Informe um nome para este dispositivo.",
+        "pin_invalid": "Informe o PIN de um a quatro dígitos exibido no dispositivo.",
+        "pin_rejected": "Nenhum pedido de pareamento aceitou este PIN. Inicie o pareamento no dispositivo e tente novamente.",
+        "submit": "Não foi possível parear este dispositivo."
+      },
+      "form": {
+        "description": "Este nome aparecerá nas listas de dispositivos e sessões.",
+        "name_helper": "Escolha um nome fácil de reconhecer.",
+        "name_placeholder": "TV da sala",
+        "pin_helper": "Informe até quatro dígitos.",
+        "pin_label": "PIN do NOUS",
+        "pin_placeholder": "0000",
+        "pin_submit_as": "Será enviado como {pin}",
+        "title": "Aprovar dispositivo"
+      },
+      "notice": {
+        "connected": "{name} já pode conectar a este PC."
+      },
+      "page": {
+        "description": "No Android, escolha este PC em Computadores. Informe aqui o PIN exibido para autorizar o dispositivo. O pareamento não inicia uma transmissão.",
+        "local_approval": "Aprovação no PC",
+        "title": "Parear dispositivo"
+      },
       "privacy": "O PIN é enviado apenas ao NOUS deste PC pela conexão autenticada atual.",
-      "steps": {"approve_description": "PINs curtos são enviados com quatro dígitos, incluindo zeros à esquerda.", "approve_title": "Aprove aqui", "number": "{number}", "open_moonlight_description": "No dispositivo que deseja autorizar, abra o NOUS e escolha este PC em Computadores.", "open_moonlight_title": "Abra o NOUS", "start_pairing_description": "Mantenha o NOUS aberto com o PIN visível.", "start_pairing_title": "Inicie o pareamento", "title": "Antes de informar o PIN"}
+      "steps": {
+        "approve_description": "PINs curtos são enviados com quatro dígitos, incluindo zeros à esquerda.",
+        "approve_title": "Aprove aqui",
+        "number": "{number}",
+        "open_moonlight_description": "No dispositivo que deseja autorizar, abra o NOUS e escolha este PC em Computadores.",
+        "open_moonlight_title": "Abra o NOUS",
+        "start_pairing_description": "Mantenha o NOUS aberto com o PIN visível.",
+        "start_pairing_title": "Inicie o pareamento",
+        "title": "Antes de informar o PIN"
+      }
     },
     "overview": {
-      "actions": {"addApplication": "Adicionar aplicativo", "manage": "Gerenciar", "manageDevices": "Gerenciar dispositivos", "checkUpdates": "Verificar atualizações", "openLibrary": "Abrir biblioteca", "openLogs": "Abrir logs", "openStats": "Abrir estatísticas", "pairDevice": "Parear dispositivo", "reportBug": "Relatar problema", "startBrowserStream": "Transmitir no navegador", "useLegacyWebUi": "Usar interface clássica", "viewAll": "Ver todos", "reviewSetup": "Revisar ajustes", "viewDetails": "Ver detalhes"},
-      "activeSessions": {"one": "{count} sessão ativa.", "other": "{count} sessões ativas."},
-      "additionalDataUnavailable": "Dados adicionais indisponíveis", "attention": "Atenção", "currentApplication": "O aplicativo atual", "description": "Seu PC e suas transmissões em um só lugar.",
-      "devices": {"allowed": {"one": "{count} dispositivo autorizado a conectar", "other": "{count} dispositivos autorizados a conectar"}, "connected": {"one": "{count} conectado agora", "other": "{count} conectados agora"}, "emptyDescription": "Pareie um dispositivo com NOUS para começar a transmitir.", "emptyTitle": "Nenhum dispositivo pareado", "title": "Dispositivos pareados"},
-      "errors": {"hostInfo": "Informações do PC indisponíveis.", "hostMetrics": "Métricas ao vivo do PC indisponíveis.", "library": "Biblioteca de aplicativos indisponível.", "pairedDevices": "Dispositivos pareados indisponíveis.", "streamStatus": "Estado da transmissão indisponível."},
+      "actions": {
+        "addApplication": "Adicionar aplicativo",
+        "manage": "Gerenciar",
+        "manageDevices": "Gerenciar dispositivos",
+        "checkUpdates": "Verificar atualizações",
+        "openLibrary": "Abrir biblioteca",
+        "openLogs": "Abrir logs",
+        "openStats": "Abrir estatísticas",
+        "pairDevice": "Parear dispositivo",
+        "reportBug": "Relatar problema",
+        "startBrowserStream": "Transmitir no navegador",
+        "useLegacyWebUi": "Usar interface clássica",
+        "viewAll": "Ver todos",
+        "reviewSetup": "Revisar ajustes",
+        "viewDetails": "Ver detalhes"
+      },
+      "activeSessions": {
+        "one": "{count} sessão ativa.",
+        "other": "{count} sessões ativas."
+      },
+      "additionalDataUnavailable": "Dados adicionais indisponíveis",
+      "attention": "Atenção",
+      "currentApplication": "O aplicativo atual",
+      "description": "Seu PC e suas transmissões em um só lugar.",
+      "devices": {
+        "allowed": {
+          "one": "{count} dispositivo autorizado a conectar",
+          "other": "{count} dispositivos autorizados a conectar"
+        },
+        "connected": {
+          "one": "{count} conectado agora",
+          "other": "{count} conectados agora"
+        },
+        "emptyDescription": "Pareie um dispositivo com NOUS para começar a transmitir.",
+        "emptyTitle": "Nenhum dispositivo pareado",
+        "title": "Dispositivos pareados"
+      },
+      "errors": {
+        "hostInfo": "Informações do PC indisponíveis.",
+        "hostMetrics": "Métricas ao vivo do PC indisponíveis.",
+        "library": "Biblioteca de aplicativos indisponível.",
+        "pairedDevices": "Dispositivos pareados indisponíveis.",
+        "streamStatus": "Estado da transmissão indisponível."
+      },
       "hardwareUnavailable": "Detalhes do hardware indisponíveis",
-      "hostLoad": {"description": "Uso atual dos recursos. Atualizado a cada 10 segundos.", "memoryInUse": "{used} de {total} de memória em uso", "title": "Desempenho do PC", "unavailableDescription": "Atualize para solicitar uma nova medição.", "unavailableTitle": "Métricas do PC indisponíveis", "staleDescription": "Exibindo a última medição disponível. Atualize para tentar novamente."},
-      "library": {"configured": {"one": "{count} aplicativo configurado", "other": "{count} aplicativos configurados"}, "emptyDescription": "Adicione um jogo, aplicativo ou área de trabalho para disponibilizá-lo aos dispositivos.", "emptyTitle": "Biblioteca vazia", "title": "Biblioteca", "unnamedApplication": "Aplicativo sem nome"},
-      "loadingReadiness": "Verificando se o PC está pronto", "memory": "Memória", "notUpdated": "Ainda não atualizado",
-      "reportBug": {"description": "Algo não funcionou? Abra um relato no GitHub e inclua os logs relevantes.", "title": "Relatar problema"},
-      "readiness": {"attention": "Requer atenção", "ready": "Pronto para transmitir", "readyDetail": "No Android, escolha este PC em Computadores e abra um jogo na biblioteca. Você também pode transmitir pelo navegador.", "remoteSessionActive": "Uma sessão remota está ativa.", "streaming": "Transmitindo agora", "hostStatus": "Estado do PC"},
-      "refreshing": "Atualizando", "remoteStream": "Transmissão remota", "sessions": "Sessões", "title": "Visão geral", "unavailable": "Indisponível", "updated": "Atualizado às {time}",
-      "updates": {"installed": "Versão instalada: {version}. Confira a versão mais recente antes de atualizar.", "title": "Atualizações"},
-      "warnings": {"blockedDevices": {"detail": "Autorize pelo menos um dispositivo pareado antes de transmitir.", "title": "Todos os dispositivos pareados estão bloqueados"}, "hostLoad": {"detail": "Uso de CPU ou GPU acima de {threshold}%. A qualidade da transmissão pode ser afetada.", "title": "Uso de recursos muito alto"}, "encoderProbe": {"detail": "A última verificação do codificador falhou. A transmissão pode funcionar com uma tela disponível, mas confira os logs antes de depender dela.", "title": "Falha na verificação do codificador"}, "noDevices": {"detail": "Pareie um dispositivo antes de iniciar uma transmissão remota.", "title": "Nenhum dispositivo pareado"}, "partialData": {"title": "Alguns dados do PC estão indisponíveis"}, "paused": {"detail": "{app} está sem transmissão conectada.", "title": "O aplicativo continua em execução"}},
-      "quickActions": {"title": "Acesso rápido", "library": "Monte sua biblioteca", "libraryDetail": "Escolha os jogos e aplicativos disponíveis nos seus dispositivos.", "devices": "Conecte seus dispositivos", "devicesDetail": "Pareie o NOUS no Android ou outro cliente compatível e gerencie o acesso.", "settings": "Ajuste sua transmissão", "settingsDetail": "Configure tela, áudio e controles no PC."},
-      "hostDetails": "Detalhes do PC", "processor": "Processador", "graphics": "Vídeo", "installedVersion": "Versão instalada", "support": "Ajuda e atualizações"
+      "hostLoad": {
+        "description": "Uso atual dos recursos. Atualizado a cada 10 segundos.",
+        "memoryInUse": "{used} de {total} de memória em uso",
+        "title": "Desempenho do PC",
+        "unavailableDescription": "Atualize para solicitar uma nova medição.",
+        "unavailableTitle": "Métricas do PC indisponíveis",
+        "staleDescription": "Exibindo a última medição disponível. Atualize para tentar novamente."
+      },
+      "library": {
+        "configured": {
+          "one": "{count} aplicativo configurado",
+          "other": "{count} aplicativos configurados"
+        },
+        "emptyDescription": "Adicione um jogo, aplicativo ou área de trabalho para disponibilizá-lo aos dispositivos.",
+        "emptyTitle": "Biblioteca vazia",
+        "title": "Biblioteca",
+        "unnamedApplication": "Aplicativo sem nome"
+      },
+      "loadingReadiness": "Verificando se o PC está pronto",
+      "memory": "Memória",
+      "notUpdated": "Ainda não atualizado",
+      "reportBug": {
+        "description": "Algo não funcionou? Abra um relato no GitHub e inclua os logs relevantes.",
+        "title": "Relatar problema"
+      },
+      "readiness": {
+        "attention": "Requer atenção",
+        "ready": "Pronto para transmitir",
+        "readyDetail": "No Android, escolha este PC em Computadores e abra um jogo na biblioteca. Você também pode transmitir pelo navegador.",
+        "remoteSessionActive": "Uma sessão remota está ativa.",
+        "streaming": "Transmitindo agora",
+        "hostStatus": "Estado do PC"
+      },
+      "refreshing": "Atualizando",
+      "remoteStream": "Transmissão remota",
+      "sessions": "Sessões",
+      "title": "Visão geral",
+      "unavailable": "Indisponível",
+      "updated": "Atualizado às {time}",
+      "updates": {
+        "installed": "Versão instalada: {version}. Confira a versão mais recente antes de atualizar.",
+        "title": "Atualizações"
+      },
+      "warnings": {
+        "blockedDevices": {
+          "detail": "Autorize pelo menos um dispositivo pareado antes de transmitir.",
+          "title": "Todos os dispositivos pareados estão bloqueados"
+        },
+        "hostLoad": {
+          "detail": "Uso de CPU ou GPU acima de {threshold}%. A qualidade da transmissão pode ser afetada.",
+          "title": "Uso de recursos muito alto"
+        },
+        "encoderProbe": {
+          "detail": "A última verificação do codificador falhou. A transmissão pode funcionar com uma tela disponível, mas confira os logs antes de depender dela.",
+          "title": "Falha na verificação do codificador"
+        },
+        "noDevices": {
+          "detail": "Pareie um dispositivo antes de iniciar uma transmissão remota.",
+          "title": "Nenhum dispositivo pareado"
+        },
+        "partialData": {
+          "title": "Alguns dados do PC estão indisponíveis"
+        },
+        "paused": {
+          "detail": "{app} está sem transmissão conectada.",
+          "title": "O aplicativo continua em execução"
+        }
+      },
+      "quickActions": {
+        "title": "Acesso rápido",
+        "library": "Monte sua biblioteca",
+        "libraryDetail": "Escolha os jogos e aplicativos disponíveis nos seus dispositivos.",
+        "devices": "Conecte seus dispositivos",
+        "devicesDetail": "Pareie o NOUS no Android ou outro cliente compatível e gerencie o acesso.",
+        "settings": "Ajuste sua transmissão",
+        "settingsDetail": "Configure tela, áudio e controles no PC."
+      },
+      "hostDetails": "Detalhes do PC",
+      "processor": "Processador",
+      "graphics": "Vídeo",
+      "installedVersion": "Versão instalada",
+      "support": "Ajuda e atualizações"
     },
     "library": {
-      "actions": {"add": "Adicionar aplicativo", "editLabel": "Editar {name}", "menuLabel": "Ações de {name}", "moreLabel": "Mais ações de {name}", "removePlaynite": "Remover entradas do Playnite", "showMore": "Mostrar mais", "tryAgain": "Tentar novamente", "sources": "Gerenciar fontes"},
-      "alerts": {"unavailable": "Biblioteca indisponível"}, "collection": {"label": "Aplicativos"}, "command": {"none": "Nenhum comando de execução configurado"}, "controls": {"region": "Controles da biblioteca"},
-      "cover": {"alt": "Capa de {name}", "unavailable": "Capa indisponível", "unavailableLabel": "Capa de {name} indisponível", "fallbackLabel": "Imagem provisória de {name}", "application": "Aplicativo", "desktop": "Área de trabalho"},
-      "delete": {"busy": "Excluindo", "confirm": "Excluir aplicativo", "description": "Remove o aplicativo da biblioteca de todos os dispositivos. Não exclui o executável do disco.", "errorTitle": "Falha ao excluir", "fallbackName": "aplicativo", "title": "Excluir {name}?"},
-      "empty": {"description": "Adicione um aplicativo para disponibilizá-lo aos seus dispositivos.", "noMatchDescription": "Nenhum resultado para “{search}”. Tente outra busca ou limpe o filtro.", "noMatchTitle": "Nenhum aplicativo encontrado", "title": "Nenhum aplicativo ainda"},
-      "errors": {"delete": "Não foi possível excluir o aplicativo.", "load": "Não foi possível carregar a biblioteca.", "missingUuid": "{name} não tem UUID e não pode ser editado com segurança.", "missingUuidGeneric": "Este aplicativo não tem UUID."},
-      "loading": "Carregando aplicativos", "page": {"description": "Jogos e aplicativos disponíveis na biblioteca do NOUS no Android e em outros clientes compatíveis.", "title": "Biblioteca"},
-      "purgePlaynite": {"busy": "Removendo entradas do Playnite", "confirm": "Remover entradas do Playnite", "descriptionOne": "Há {count} entrada vinculada ao Playnite. A remoção inclui entradas manuais e o iniciador em tela cheia. Steam, Lutris e outros aplicativos são mantidos. Perfis explícitos de Monitor são mantidos; exclua cada perfil separadamente para removê-lo.", "descriptionOther": "Há {count} entradas vinculadas ao Playnite. A remoção inclui entradas manuais e o iniciador em tela cheia. Steam, Lutris e outros aplicativos são mantidos. Perfis explícitos de Monitor são mantidos; exclua cada perfil separadamente para removê-lo.", "errorTitle": "Falha ao remover entradas do Playnite", "failed": "Não foi possível remover uma ou mais entradas do Playnite.", "title": "Remover entradas do Playnite?"},
-      "progress": {"shown": "{visible} de {total} exibidos"}, "providers": {"custom": "Personalizado", "managed": "Gerenciado por {provider}"}, "result": {"many": "{count} aplicativos", "one": "{count} aplicativo"},
-      "search": {"clear": "Limpar busca", "label": "Buscar na biblioteca", "placeholder": "Buscar na biblioteca"}, "selection": {"clear": "Limpar seleção", "count": "{count} selecionados", "escapeHint": "Pressione Esc para limpar a seleção.", "selected": "Selecionado"},
-      "sort": {"configured": "Ordem configurada", "label": "Ordenar aplicativos", "nameAsc": "Nome, A a Z", "nameDesc": "Nome, Z a A", "provider": "Fonte"}, "unnamed": "Aplicativo sem nome", "view": {"grid": "Grade", "label": "Visualização da biblioteca", "list": "Lista"}
+      "actions": {
+        "add": "Adicionar aplicativo",
+        "editLabel": "Editar {name}",
+        "menuLabel": "Ações de {name}",
+        "moreLabel": "Mais ações de {name}",
+        "removePlaynite": "Remover entradas do Playnite",
+        "showMore": "Mostrar mais",
+        "tryAgain": "Tentar novamente",
+        "sources": "Gerenciar fontes"
+      },
+      "alerts": {
+        "unavailable": "Biblioteca indisponível"
+      },
+      "collection": {
+        "label": "Aplicativos"
+      },
+      "command": {
+        "none": "Nenhum comando de execução configurado"
+      },
+      "controls": {
+        "region": "Controles da biblioteca"
+      },
+      "cover": {
+        "alt": "Capa de {name}",
+        "unavailable": "Capa indisponível",
+        "unavailableLabel": "Capa de {name} indisponível",
+        "fallbackLabel": "Imagem provisória de {name}",
+        "application": "Aplicativo",
+        "desktop": "Área de trabalho"
+      },
+      "delete": {
+        "busy": "Excluindo",
+        "confirm": "Excluir aplicativo",
+        "description": "Remove o aplicativo da biblioteca de todos os dispositivos. Não exclui o executável do disco.",
+        "errorTitle": "Falha ao excluir",
+        "fallbackName": "aplicativo",
+        "title": "Excluir {name}?"
+      },
+      "empty": {
+        "description": "Adicione um aplicativo para disponibilizá-lo aos seus dispositivos.",
+        "noMatchDescription": "Nenhum resultado para “{search}”. Tente outra busca ou limpe o filtro.",
+        "noMatchTitle": "Nenhum aplicativo encontrado",
+        "title": "Nenhum aplicativo ainda"
+      },
+      "errors": {
+        "delete": "Não foi possível excluir o aplicativo.",
+        "load": "Não foi possível carregar a biblioteca.",
+        "missingUuid": "{name} não tem UUID e não pode ser editado com segurança.",
+        "missingUuidGeneric": "Este aplicativo não tem UUID."
+      },
+      "loading": "Carregando aplicativos",
+      "page": {
+        "description": "Jogos e aplicativos disponíveis na biblioteca do NOUS no Android e em outros clientes compatíveis.",
+        "title": "Biblioteca"
+      },
+      "purgePlaynite": {
+        "busy": "Removendo entradas do Playnite",
+        "confirm": "Remover entradas do Playnite",
+        "descriptionOne": "Há {count} entrada vinculada ao Playnite. A remoção inclui entradas manuais e o iniciador em tela cheia. Steam, Lutris e outros aplicativos são mantidos. Perfis explícitos de Monitor são mantidos; exclua cada perfil separadamente para removê-lo.",
+        "descriptionOther": "Há {count} entradas vinculadas ao Playnite. A remoção inclui entradas manuais e o iniciador em tela cheia. Steam, Lutris e outros aplicativos são mantidos. Perfis explícitos de Monitor são mantidos; exclua cada perfil separadamente para removê-lo.",
+        "errorTitle": "Falha ao remover entradas do Playnite",
+        "failed": "Não foi possível remover uma ou mais entradas do Playnite.",
+        "title": "Remover entradas do Playnite?"
+      },
+      "progress": {
+        "shown": "{visible} de {total} exibidos"
+      },
+      "providers": {
+        "custom": "Personalizado",
+        "managed": "Gerenciado por {provider}"
+      },
+      "result": {
+        "many": "{count} aplicativos",
+        "one": "{count} aplicativo"
+      },
+      "search": {
+        "clear": "Limpar busca",
+        "label": "Buscar na biblioteca",
+        "placeholder": "Buscar na biblioteca"
+      },
+      "selection": {
+        "clear": "Limpar seleção",
+        "count": "{count} selecionados",
+        "escapeHint": "Pressione Esc para limpar a seleção.",
+        "selected": "Selecionado"
+      },
+      "sort": {
+        "configured": "Ordem configurada",
+        "label": "Ordenar aplicativos",
+        "nameAsc": "Nome, A a Z",
+        "nameDesc": "Nome, Z a A",
+        "provider": "Fonte"
+      },
+      "unnamed": "Aplicativo sem nome",
+      "view": {
+        "grid": "Grade",
+        "label": "Visualização da biblioteca",
+        "list": "Lista"
+      }
     },
     "devices": {
-      "action": {"disconnect_named": "Desconectar {name}", "pair": "Parear dispositivo", "pair_indefinite": "Parear dispositivo", "refreshing": "Atualizando", "save": "Salvar dispositivo", "saving": "Salvando", "unpair": "Desparear", "unpair_named": "Desparear {name}", "working": "Processando"},
-      "alert": {"action_failed": "Falha na ação do dispositivo", "updated": "Lista de dispositivos atualizada"},
-      "confirm": {"disconnect_description": "A transmissão deste dispositivo será interrompida. O dispositivo continuará pareado.", "disconnect_label": "Desconectar transmissão", "disconnect_title": "Desconectar {name}?", "generic_title": "Confirmar ação do dispositivo", "unpair_label": "Desparear dispositivo"},
-      "count": {"blocked": "{count} bloqueados", "offline": "{count} desconectados", "streaming": "{count} transmitindo"},
-      "editor": {"allow_stream": "Permitir transmissões para este dispositivo", "blocking_help": "Bloquear mantém o dispositivo pareado, mas recusa novas transmissões.", "common_display_summary": "Modo de tela virtual do PC: {mode}; disposição: {layout}.", "custom_settings": "Ajustes personalizados", "display_description": "Use os ajustes do PC ou escolha uma tela e uma apresentação específicas para este dispositivo.", "display_mode_invalid": "Use LARGURAxALTURAxFPS, por exemplo 1920x1080x60.", "display_override": "Usar tela específica para este dispositivo", "hdr_description": "Ajuste a calibração HDR e a apresentação da tela virtual deste dispositivo.", "hdr_peak_description": "Defina o brilho máximo da tela virtual e da transmissão HDR ou mantenha automático.", "hdr_profile_description": "O driver de tela virtual Vibeshine mantém os perfis de calibração HDR do Windows automaticamente. Escolha outro perfil apenas para telas físicas ou outros drivers de tela virtual.", "name_helper": "Use um nome que identifique a pessoa ou a tela deste dispositivo.", "no_displays": "Este PC não informou nenhuma tela", "no_hdr_profiles": "Nenhum perfil de cor HDR instalado", "physical_display_description": "Escolha a tela do PC para este dispositivo. Adaptadores fictícios inativos continuam disponíveis.", "permissions_description": "Escolha o que este dispositivo pode fazer no PC. Remover Ver transmissão e Iniciar aplicativos bloqueia transmissões sem desfazer o pareamento.", "permissions_title": "Permissões do dispositivo", "prefer_10bit_description": "Quando este dispositivo solicitar HDR, enviar SDR de 10 bits. Requer HEVC ou AV1 Main10.", "route_target": "Usar neste dispositivo", "sections": {"display": "Seleção de tela", "hdr": "HDR e apresentação", "identity": "Identificação e permissões"}, "title": "Editar dispositivo", "use_common_value": "Usar ajuste do PC: {value}", "allow_sleep": "Permitir que este dispositivo suspenda o PC", "allow_sleep_description": "Permissão separada para clientes compatíveis e Windows com suporte nativo à suspensão. Todos os aplicativos e transmissões do host devem estar encerrados. Desativada por padrão."},
-      "common_settings_title": "Ajustes do PC indisponíveis", "common_settings_unavailable": "Não foi possível carregar os ajustes do PC. As substituições deste dispositivo foram preservadas, mas os valores herdados podem estar incompletos.",
-      "empty": {"description": "No Android, escolha este PC em Computadores e informe aqui o PIN exibido.", "filtered_description": "Tente outro nome ou ID.", "filtered_title": "Nenhum dispositivo encontrado", "title": "Nenhum dispositivo pareado"},
-      "error": {"action": "Não foi possível concluir a ação.", "conflict": "Este dispositivo mudou durante a edição. Atualize o editor, revise os valores e salve novamente.", "list_rejected": "O PC não conseguiu listar os dispositivos pareados.", "load": "Não foi possível carregar os dispositivos pareados.", "name_required": "O nome do dispositivo não pode ficar vazio.", "partial_update": "O PC não salvou todos os ajustes. Atualize e tente novamente.", "unpair_rejected": "O PC não despareou este dispositivo."},
-      "filters": {"aria_label": "Filtros de dispositivos", "result_count": "{shown} de {total} dispositivo | {shown} de {total} dispositivos", "search_label": "Buscar dispositivos", "search_placeholder": "Nome ou ID do dispositivo", "status_all": "Todos os dispositivos"},
-      "last_seen": {"active_now": "Ativo agora", "never": "Nunca conectado"}, "list": {"aria_label": "Dispositivos pareados"}, "loading": {"aria_label": "Carregando dispositivos pareados"},
-      "notice": {"disconnected": "{name} foi desconectado.", "unpaired": "{name} foi despareado.", "updated": "{name} foi atualizado."},
-      "page": {"description": "Pareie seus dispositivos e controle quem pode transmitir deste PC.", "title": "Dispositivos"}, "status": {"blocked": "Bloqueado", "streaming": "Transmitindo"},
-      "unpair_all": {"action": "Desparear todos os dispositivos", "title": "Desparear todos os dispositivos?", "description": "Todos os dispositivos perderão o acesso e o aplicativo em execução será encerrado. Cada dispositivo precisará ser pareado novamente.", "success": "Todos os dispositivos foram despareados."},
-      "layout": {"title": "Organizar telas dos dispositivos", "description": "Escolha a posição das telas em transmissões estendidas e no Remote Monitor."}
+      "action": {
+        "disconnect_named": "Desconectar {name}",
+        "pair": "Parear dispositivo",
+        "pair_indefinite": "Parear dispositivo",
+        "refreshing": "Atualizando",
+        "save": "Salvar dispositivo",
+        "saving": "Salvando",
+        "unpair": "Desparear",
+        "unpair_named": "Desparear {name}",
+        "working": "Processando"
+      },
+      "alert": {
+        "action_failed": "Falha na ação do dispositivo",
+        "updated": "Lista de dispositivos atualizada"
+      },
+      "confirm": {
+        "disconnect_description": "A transmissão deste dispositivo será interrompida. O dispositivo continuará pareado.",
+        "disconnect_label": "Desconectar transmissão",
+        "disconnect_title": "Desconectar {name}?",
+        "generic_title": "Confirmar ação do dispositivo",
+        "unpair_label": "Desparear dispositivo"
+      },
+      "count": {
+        "blocked": "{count} bloqueados",
+        "offline": "{count} desconectados",
+        "streaming": "{count} transmitindo"
+      },
+      "editor": {
+        "allow_stream": "Permitir transmissões para este dispositivo",
+        "blocking_help": "Bloquear mantém o dispositivo pareado, mas recusa novas transmissões.",
+        "common_display_summary": "Modo de tela virtual do PC: {mode}; disposição: {layout}.",
+        "custom_settings": "Ajustes personalizados",
+        "display_description": "Use os ajustes do PC ou escolha uma tela e uma apresentação específicas para este dispositivo.",
+        "display_mode_invalid": "Use LARGURAxALTURAxFPS, por exemplo 1920x1080x60.",
+        "display_override": "Usar tela específica para este dispositivo",
+        "hdr_description": "Ajuste a calibração HDR e a apresentação da tela virtual deste dispositivo.",
+        "hdr_peak_description": "Defina o brilho máximo da tela virtual e da transmissão HDR ou mantenha automático.",
+        "hdr_profile_description": "O driver de tela virtual Vibeshine mantém os perfis de calibração HDR do Windows automaticamente. Escolha outro perfil apenas para telas físicas ou outros drivers de tela virtual.",
+        "name_helper": "Use um nome que identifique a pessoa ou a tela deste dispositivo.",
+        "no_displays": "Este PC não informou nenhuma tela",
+        "no_hdr_profiles": "Nenhum perfil de cor HDR instalado",
+        "physical_display_description": "Escolha a tela do PC para este dispositivo. Adaptadores fictícios inativos continuam disponíveis.",
+        "permissions_description": "Escolha o que este dispositivo pode fazer no PC. Remover Ver transmissão e Iniciar aplicativos bloqueia transmissões sem desfazer o pareamento.",
+        "permissions_title": "Permissões do dispositivo",
+        "prefer_10bit_description": "Quando este dispositivo solicitar HDR, enviar SDR de 10 bits. Requer HEVC ou AV1 Main10.",
+        "route_target": "Usar neste dispositivo",
+        "sections": {
+          "display": "Seleção de tela",
+          "hdr": "HDR e apresentação",
+          "identity": "Identificação e permissões"
+        },
+        "title": "Editar dispositivo",
+        "use_common_value": "Usar ajuste do PC: {value}",
+        "allow_sleep": "Permitir que este dispositivo suspenda o PC",
+        "allow_sleep_description": "Permissão separada para clientes compatíveis e Windows com suporte nativo à suspensão. Todos os aplicativos e transmissões do host devem estar encerrados. Desativada por padrão."
+      },
+      "common_settings_title": "Ajustes do PC indisponíveis",
+      "common_settings_unavailable": "Não foi possível carregar os ajustes do PC. As substituições deste dispositivo foram preservadas, mas os valores herdados podem estar incompletos.",
+      "empty": {
+        "description": "No Android, escolha este PC em Computadores e informe aqui o PIN exibido.",
+        "filtered_description": "Tente outro nome ou ID.",
+        "filtered_title": "Nenhum dispositivo encontrado",
+        "title": "Nenhum dispositivo pareado"
+      },
+      "error": {
+        "action": "Não foi possível concluir a ação.",
+        "conflict": "Este dispositivo mudou durante a edição. Atualize o editor, revise os valores e salve novamente.",
+        "list_rejected": "O PC não conseguiu listar os dispositivos pareados.",
+        "load": "Não foi possível carregar os dispositivos pareados.",
+        "name_required": "O nome do dispositivo não pode ficar vazio.",
+        "partial_update": "O PC não salvou todos os ajustes. Atualize e tente novamente.",
+        "unpair_rejected": "O PC não despareou este dispositivo."
+      },
+      "filters": {
+        "aria_label": "Filtros de dispositivos",
+        "result_count": "{shown} de {total} dispositivo | {shown} de {total} dispositivos",
+        "search_label": "Buscar dispositivos",
+        "search_placeholder": "Nome ou ID do dispositivo",
+        "status_all": "Todos os dispositivos"
+      },
+      "last_seen": {
+        "active_now": "Ativo agora",
+        "never": "Nunca conectado"
+      },
+      "list": {
+        "aria_label": "Dispositivos pareados"
+      },
+      "loading": {
+        "aria_label": "Carregando dispositivos pareados"
+      },
+      "notice": {
+        "disconnected": "{name} foi desconectado.",
+        "unpaired": "{name} foi despareado.",
+        "updated": "{name} foi atualizado."
+      },
+      "page": {
+        "description": "Pareie seus dispositivos e controle quem pode transmitir deste PC.",
+        "title": "Dispositivos"
+      },
+      "status": {
+        "blocked": "Bloqueado",
+        "streaming": "Transmitindo"
+      },
+      "unpair_all": {
+        "action": "Desparear todos os dispositivos",
+        "title": "Desparear todos os dispositivos?",
+        "description": "Todos os dispositivos perderão o acesso e o aplicativo em execução será encerrado. Cada dispositivo precisará ser pareado novamente.",
+        "success": "Todos os dispositivos foram despareados."
+      },
+      "layout": {
+        "title": "Organizar telas dos dispositivos",
+        "description": "Escolha a posição das telas em transmissões estendidas e no Remote Monitor."
+      }
+    },
+    "browser_stream": {
+      "capabilities": {
+        "available": "Disponível",
+        "hdr_ready": "HDR disponível",
+        "sdr_only": "Somente SDR",
+        "title": "Este navegador e o PC",
+        "unavailable": "Indisponível"
+      },
+      "cancel": "Cancelar conexão",
+      "codecs": {
+        "av1": "AV1",
+        "h264": "H.264",
+        "hevc": "HEVC"
+      },
+      "connecting_detail": "Negociando uma transmissão WebRTC direta com este PC.",
+      "controls": {
+        "description": "Selecione a transmissão para usar mouse, teclado e roda do mouse. Controles conectados são enviados enquanto a entrada estiver ativa e esta janela estiver visível e em foco.",
+        "input": "Enviar controles do navegador",
+        "input_help": "Clique na transmissão para usar mouse, teclado e roda do mouse.",
+        "performance_overlay_help": "Mostre detalhes da conexão, do decodificador e do ritmo de quadros durante a transmissão.",
+        "title": "Controles do navegador"
+      },
+      "desktop": "Área de trabalho",
+      "description": "Inicie e controle uma transmissão WebRTC neste navegador.",
+      "disconnect": "Desconectar transmissão",
+      "collapse": "Minimizar transmissão",
+      "expand": "Expandir transmissão",
+      "errors": {
+        "connect": "Não foi possível iniciar a transmissão no navegador",
+        "connection_failed": "Falha na conexão da transmissão no navegador.",
+        "inspect_browser": "Este navegador não conseguiu confirmar seus recursos de decodificação de vídeo.",
+        "load_apps": "Não foi possível carregar a biblioteca de aplicativos.",
+        "playback": "Clique para reproduzir a transmissão",
+        "playback_detail": "A transmissão conectou, mas o navegador exige uma interação antes de reproduzir vídeo ou áudio remoto.",
+        "refresh": "Alguns dados da transmissão no navegador estão indisponíveis",
+        "unavailable": "Esta configuração de transmissão no navegador não está disponível."
+      },
+      "exit_fullscreen": "Sair da tela cheia",
+      "exit_fullscreen_cancel_hint": "Solte Esc para cancelar",
+      "exit_fullscreen_swipe_hint": "Deslize para baixo para sair",
+      "fullscreen": "Tela cheia",
+      "host_not_ready": "A transmissão no navegador ainda não está pronta",
+      "input_paused": "O envio de controles fica pausado enquanto a transmissão está minimizada",
+      "input_ready": "Envio de controles pronto",
+      "input_unavailable": "Envio de controles indisponível",
+      "install": {
+        "action": "Melhorar tela cheia no iPad",
+        "description": "Para remover a barra de endereço do Safari antes da tela cheia, toque em Compartilhar no Safari e escolha Adicionar à Tela de Início. Mantenha Abrir como App da Web ativado e abra o NOUS pelo ícone na Tela de Início. O Safari ainda pode exibir brevemente seu próprio botão para sair da tela cheia.",
+        "done": "Entendi",
+        "title": "Configurar tela cheia no iPad"
+      },
+      "picker": {
+        "cover_alt": "Capa de {name}",
+        "desktop_detail": "Transmitir a área de trabalho do PC"
+      },
+      "ready_to_start": "Pronto para transmitir neste navegador",
+      "ready_to_start_detail": "Escolha um aplicativo e os ajustes de vídeo e inicie a transmissão.",
+      "resume_playback": "Reproduzir transmissão",
+      "reasons": {
+        "browser_codec_unavailable": "Este navegador não pode receber vídeo WebRTC em {codec}.",
+        "browser_hdr_unavailable": "Este navegador não consegue confirmar a decodificação HDR em {codec} e a saída para uma tela HDR.",
+        "hdr_policy_disabled": "O HDR está desativado pela política de tela do PC.",
+        "hdr_required": "A política de tela do PC exige HDR, mas este codec ou navegador não oferece suporte.",
+        "host_codec_unavailable": "A GPU de captura selecionada não suporta {codec}.",
+        "host_disabled": "O suporte a WebRTC está desativado nesta compilação do host.",
+        "host_hdr_unavailable": "A GPU de captura selecionada não suporta HDR em {codec}.",
+        "host_unavailable": "O PC não informou os recursos de transmissão no navegador.",
+        "host_unverified": "A GPU de captura selecionada ainda não concluiu a validação do codificador.",
+        "invalid_bitrate": "A taxa de bits deve ser um inteiro entre {min} e {max} Kbps.",
+        "invalid_dimensions": "Largura e altura devem ser números pares entre {min} e {max}.",
+        "invalid_fps": "A taxa de quadros deve ser um inteiro entre {min} e {max}.",
+        "invalid_frame_age": "A idade máxima dos quadros deve ser um inteiro entre {min} e {max} quadros para esta taxa.",
+        "invalid_pacing_mode": "Escolha um modo válido de ritmo de quadros no navegador.",
+        "invalid_pacing_slack": "A tolerância do ritmo de quadros deve ser um inteiro entre {min} e {max} milissegundos."
+      },
+      "refreshing": "Verificando a transmissão no navegador",
+      "settings": {
+        "application": "Aplicativo",
+        "application_help": "Área de trabalho inicia a entrada de desktop configurada. Escolha um aplicativo para iniciá-lo no lugar dela.",
+        "bitrate": "Taxa de bits (Kbps; 0 = padrão do PC)",
+        "codec": "Codec de vídeo",
+        "description": "Opções indisponíveis ficam desativadas, sem trocar silenciosamente para outro codec ou SDR.",
+        "fps": "Taxa de quadros",
+        "frame_age_help": "Quadros com mais de {milliseconds} ms a {fps} FPS são descartados antes da reprodução.",
+        "hdr": "Usar HDR",
+        "hdr_forced_off": "O HDR está desativado pela política de tela do PC.",
+        "hdr_forced_on": "A política de tela do PC exige HDR. Escolha um codec com suporte HDR confirmado.",
+        "hdr_help": "HDR só fica disponível quando o PC e este navegador confirmam suporte a um codec e uma tela HDR compatíveis.",
+        "height": "Altura",
+        "mute_host_audio": "Silenciar os alto-falantes do PC durante a transmissão",
+        "mute_host_audio_help": "Reproduza o áudio apenas neste navegador, sem tocar nos alto-falantes do PC.",
+        "title": "Ajustes da transmissão",
+        "video": "Vídeo",
+        "width": "Largura"
+      },
+      "stage_description": "A transmissão aparece aqui. Selecione esta área para enviar os controles do navegador.",
+      "start": "Transmitir no navegador",
+      "status": {
+        "connected": "Conectado",
+        "connecting": "Conectando",
+        "disconnected": "Desconectado",
+        "failed": "Falha na conexão",
+        "ready": "Pronto"
+      },
+      "stream_surface": "Área de transmissão do navegador",
+      "title": "Transmitir no navegador",
+      "unnamed_application": "Aplicativo sem nome"
+    },
+    "logs": {
+      "action": {
+        "clear_search": "Limpar busca",
+        "copy_visible": "Copiar linhas visíveis",
+        "download_text": "Baixar texto",
+        "jump_to_latest": "Ir para o fim",
+        "new_lines": "{count} nova linha - ir para o fim | {count} novas linhas - ir para o fim",
+        "next_match": "Próximo resultado",
+        "pause": "Pausar atualizações",
+        "previous_match": "Resultado anterior",
+        "refreshing": "Atualizando…",
+        "resume": "Retomar atualizações"
+      },
+      "alert": {
+        "export_ready": "Exportação pronta",
+        "unavailable_description": "O último texto carregado com sucesso continua visível.",
+        "unavailable_title": "Logs indisponíveis"
+      },
+      "count": {
+        "errors": "Nenhum erro | {count} erro | {count} erros",
+        "total_lines": "Nenhuma linha | {count} linha no total | {count} linhas no total",
+        "warnings": "Nenhum aviso | {count} aviso | {count} avisos"
+      },
+      "empty": {
+        "description": "Esta fonte ainda não gravou nenhuma saída de log legível.",
+        "filtered_description": "Altere o nível ou a busca para ampliar os resultados.",
+        "filtered_title": "Nenhuma linha encontrada",
+        "title": "Nenhuma linha de log disponível"
+      },
+      "error": {
+        "clipboard_unavailable": "O acesso à área de transferência não está disponível neste navegador.",
+        "copy": "Não foi possível copiar os logs visíveis.",
+        "load": "Não foi possível carregar os logs deste PC."
+      },
+      "filters": {
+        "follow_newest": "Acompanhar novas linhas",
+        "matching_count": "Nenhum resultado | {count} resultado | {count} resultados",
+        "search_label": "Buscar nos logs",
+        "search_placeholder": "Mensagem, módulo ou código",
+        "severity": "Nível"
+      },
+      "notice": {
+        "copied": "Nenhuma linha visível copiada. | {count} linha visível copiada. | {count} linhas visíveis copiadas.",
+        "downloaded": "Nenhuma linha visível baixada. | {count} linha visível baixada. | {count} linhas visíveis baixadas."
+      },
+      "page": {
+        "description": "Filtre o diagnóstico do PC, pause as atualizações e exporte o conteúdo visível."
+      },
+      "severity": {
+        "all": "Todos os níveis",
+        "error": "Erro",
+        "errors": "Erros",
+        "other": "Log",
+        "trace": "Rastreamento",
+        "warning": "Aviso",
+        "warnings": "Avisos"
+      },
+      "status": {
+        "following": "Acompanhando log ao vivo",
+        "paused": "Atualizações pausadas"
+      },
+      "summary": {
+        "clear": "Nenhum erro ou aviso encontrado em {count} linha. | Nenhum erro ou aviso encontrado em {count} linhas.",
+        "counts_aria_label": "Contagem por nível de log",
+        "empty": "Nenhuma linha disponível em {source}.",
+        "errors": "{count} linha de erro requer atenção. | {count} linhas de erro requerem atenção.",
+        "title": "Resumo de {source}",
+        "warnings_also": "Nenhum aviso adicional. | {count} linha de aviso adicional. | {count} linhas de aviso adicionais.",
+        "warnings_only": "Nenhum erro encontrado. {count} linha de aviso registrada. | Nenhum erro encontrado. {count} linhas de aviso registradas."
+      },
+      "viewer": {
+        "aria_label": "Linhas de log filtradas",
+        "line_numbers_preserved": "Os números correspondem às linhas do trecho de log carregado.",
+        "match_line": "Resultado na linha {line}",
+        "search_aria_label": "Resultados da busca com contexto",
+        "search_context": "Resultado {current} de {total}, com {count} linhas antes e depois",
+        "loading": "Carregando log de {source}…",
+        "title": "Saída do log",
+        "truncated": "Exibindo os {limit} resultados mais recentes; a exportação inclui todas as linhas filtradas do trecho carregado."
+      }
+    },
+    "sessions": {
+      "action": {
+        "delete_record": "Excluir registro da sessão",
+        "refreshing": "Atualizando",
+        "stop_stream": "Encerrar transmissão",
+        "stop_stream_named": "Encerrar transmissão {protocol} de {client}",
+        "working": "Processando"
+      },
+      "active": {
+        "empty_description": "As sessões aparecem aqui quando um dispositivo NOUS ou navegador se conecta.",
+        "list_aria_label": "Sessões de transmissão ativas",
+        "refresh_description": "Atualizado a cada quatro segundos enquanto esta aba estiver visível.",
+        "title": "Sessões ativas"
+      },
+      "alert": {
+        "action_complete": "Ação da sessão concluída",
+        "app_running_description": "{app} não tem dispositivos RTSP ativos. Pode estar pausado aguardando reconexão.",
+        "app_running_title": "O aplicativo continua em execução",
+        "history_degraded_description": "As transmissões ao vivo não são afetadas, mas novos dados de diagnóstico podem estar incompletos.",
+        "history_degraded_title": "Histórico de sessões com problemas",
+        "partial_failure_description": "As linhas existentes continuam visíveis enquanto o NOUS tenta novamente.",
+        "partial_failure_title": "Alguns dados das sessões estão indisponíveis"
+      },
+      "confirm": {
+        "delete_title": "Excluir este registro de sessão?",
+        "generic_title": "Confirmar ação da sessão",
+        "stop_rtsp_all_description": "Encerrar o aplicativo em execução finaliza todas as transmissões RTSP ativas deste PC.",
+        "stop_rtsp_description": "Encerrar o aplicativo em execução finaliza esta transmissão RTSP.",
+        "stop_rtsp_title": "Encerrar a transmissão RTSP?",
+        "stop_webrtc_description": "A sessão WebRTC selecionada será encerrada imediatamente.",
+        "stop_webrtc_title": "Encerrar esta transmissão no navegador?"
+      },
+      "count": {
+        "active": "{count} sessão ativa | {count} sessões ativas",
+        "rtsp": "{count} sessão RTSP ativa | {count} sessões RTSP ativas",
+        "webrtc": "{count} sessão WebRTC ativa | {count} sessões WebRTC ativas"
+      },
+      "diagnostic": {
+        "ice_candidates": "Candidatos ICE",
+        "session_id": "ID da sessão",
+        "title": "Diagnóstico"
+      },
+      "error": {
+        "action": "Não foi possível concluir a ação da sessão.",
+        "source_detail": "{source}: {detail}",
+        "source_load": "Não foi possível carregar {source}.",
+        "stop_rtsp_rejected": "O PC não encerrou a transmissão RTSP.",
+        "webrtc_not_found": "A transmissão no navegador não foi encontrada."
+      },
+      "history": {
+        "actions": "Ações",
+        "client_and_game": "Dispositivo e jogo",
+        "description": "Consulte as sessões encerradas mantidas neste PC.",
+        "empty_description": "As transmissões encerradas aparecerão aqui quando o histórico estiver disponível.",
+        "empty_title": "Nenhum histórico de sessões",
+        "next_page": "Próxima página",
+        "outcome": "Resultado",
+        "previous_page": "Página anterior",
+        "stream": "Transmissão",
+        "table_caption": "Sessões de transmissão encerradas recentemente"
+      },
+      "metric": {
+        "picture": "Imagem"
+      },
+      "notice": {
+        "history_deleted": "O registro da sessão foi excluído.",
+        "stop_rtsp": "Foi solicitado o encerramento do aplicativo e de sua transmissão RTSP.",
+        "stop_webrtc": "A transmissão no navegador foi encerrada."
+      },
+      "page": {
+        "description": "Veja transmissões NOUS e do navegador, consulte o diagnóstico e revise sessões recentes. Os valores são atualizados sem mover as linhas.",
+        "title": "Sessões"
+      },
+      "protocol": {
+        "rtsp": "RTSP",
+        "webrtc": "WebRTC"
+      },
+      "source": {
+        "host_status": "Estado das sessões do PC",
+        "rtsp": "Sessões RTSP",
+        "webrtc": "Sessões WebRTC"
+      },
+      "status": {
+        "awaiting_offer": "Aguardando oferta",
+        "error": "Erro",
+        "negotiating": "Negociando",
+        "no_active": "Nenhuma transmissão ativa",
+        "paused": "Pausada",
+        "stopped": "Encerrada",
+        "stopping": "Encerrando",
+        "streaming": "Transmitindo"
+      },
+      "value": {
+        "browser_session": "Sessão do navegador {id}",
+        "browser_stream": "Transmissão no navegador",
+        "desktop_stream": "Transmissão da área de trabalho",
+        "fps": "{value} fps",
+        "frame_count": "Nenhum quadro | {count} quadro | {count} quadros",
+        "milliseconds": "{value} ms",
+        "milliseconds_ago": "há {value} ms",
+        "moonlight_client": "Dispositivo NOUS",
+        "negotiating_codec": "Negociando codec",
+        "not_reported": "Não informado",
+        "streamed_application": "O aplicativo transmitido",
+        "unknown_client": "Dispositivo desconhecido",
+        "unknown_codec": "Codec desconhecido",
+        "unknown_time": "Horário desconhecido"
+      }
+    },
+    "maintenance": {
+      "actionCompleted": "Ação de manutenção concluída",
+      "actionFailed": "Falha na ação",
+      "actions": {
+        "acknowledge": "Confirmar leitura",
+        "captureSnapshot": "Salvar cópia",
+        "deleteSnapshot": "Excluir cópia",
+        "replaceSnapshot": "Substituir cópia",
+        "restartService": "Reiniciar serviço",
+        "revokeSession": "Revogar sessão",
+        "terminateVirtualDisplay": "Encerrar tela virtual"
+      },
+      "applying": "Aplicando",
+      "confirm": {
+        "captureSnapshotDescription": "A disposição atual das telas do Windows será salva como referência de recuperação.",
+        "captureSnapshotTitle": "Salvar esta disposição de telas?",
+        "defaultTitle": "Confirmar ação de manutenção",
+        "deleteSnapshotDescription": "A recuperação automática não terá mais esta disposição de referência disponível.",
+        "deleteSnapshotTitle": "Excluir a cópia de recuperação?",
+        "replaceSnapshotTitle": "Substituir a cópia de recuperação?",
+        "restartDescription": "As transmissões ativas serão desconectadas e esta interface ficará indisponível durante a reinicialização do serviço.",
+        "restartTitle": "Reiniciar o NOUS?",
+        "revokeSessionDescription": "Esse navegador precisará entrar novamente para gerenciar este PC.",
+        "revokeSessionTitle": "Revogar {browser}?",
+        "terminateVirtualDisplayDescription": "O NOUS desativará a recuperação automática, tentará restaurar a disposição das telas físicas, removerá todas as telas virtuais gerenciadas e encerrará os monitores de recuperação. Transmissões que usam telas virtuais perderão o vídeo.",
+        "terminateVirtualDisplayLinuxDescription": "O NOUS cancelará a recuperação pendente, tentará restaurar a disposição física e desconectará todas as telas virtuais gerenciadas. Transmissões que usam telas virtuais perderão o vídeo. Um PC sem tela física funcional pode ficar sem imagem. Novas sessões poderão criar telas virtuais novamente.",
+        "terminateVirtualDisplayTitle": "Encerrar todas as telas virtuais?"
+      },
+      "crash": {
+        "acknowledged": "Falha reconhecida",
+        "detected": "Falha recente detectada",
+        "noneFound": "Nenhum arquivo de falha dos últimos sete dias foi encontrado.",
+        "noneRecent": "Nenhuma falha recente",
+        "recentDump": "Arquivo de falha recente"
+      },
+      "credentials": {
+        "currentPassword": "Senha atual",
+        "description": "Atualize a senha usada para administrar este PC.",
+        "title": "Alterar dados de acesso web"
+      },
+      "dataUnavailable": "Alguns dados de manutenção estão indisponíveis",
+      "description": "Versão instalada, arquivos de suporte, recuperação e acesso administrativo.",
+      "errors": {
+        "actionFailed": "A ação de manutenção falhou.",
+        "crashManifest": "Não foi possível carregar a lista de partes do pacote de falha. Nenhum download foi iniciado.",
+        "crashPart": "Não foi possível baixar esta parte do pacote de falha.",
+        "crashPartsFailed": "Falha nas partes {parts} do pacote. Tente baixar essas partes separadamente.",
+        "crashDismiss": "Não foi possível dispensar o aviso de falha.",
+        "crashStatus": "Estado dos arquivos de falha indisponível.",
+        "metadata": "Metadados da versão instalada indisponíveis.",
+        "passwordChange": "Não foi possível alterar a senha da interface web.",
+        "passwordUnchanged": "A senha não foi alterada.",
+        "recoveryStatus": "Estado da recuperação de telas indisponível.",
+        "sessions": "Sessões de navegadores confiáveis indisponíveis.",
+        "snapshotCapture": "Não foi possível salvar a disposição das telas.",
+        "snapshotNotDeleted": "A cópia de recuperação das telas não foi excluída.",
+        "virtualDisplayTermination": "Não foi possível encerrar uma ou mais telas virtuais gerenciadas."
+      },
+      "notices": {
+        "crashAcknowledged": "O aviso de falha foi reconhecido.",
+        "crashBundleStarted": "Downloads do pacote de falha iniciados. Se o navegador bloquear downloads múltiplos, use os botões individuais abaixo.",
+        "credentialsUpdated": "Dados de acesso à interface web atualizados.",
+        "restartRequested": "Reinicialização solicitada. Reconecte quando o serviço NOUS voltar.",
+        "sessionRevoked": "{browser} foi revogado.",
+        "snapshotCaptured": "A disposição atual das telas foi salva como referência de recuperação.",
+        "snapshotDeleted": "A cópia de recuperação das telas foi excluída.",
+        "virtualDisplayTerminated": "Recuperação automática desativada e telas virtuais gerenciadas encerradas.",
+        "virtualDisplayTerminatedLinux": "Telas virtuais gerenciadas desconectadas.",
+        "virtualDisplayTerminatedLinuxWithoutRestore": "Telas virtuais gerenciadas desconectadas, mas a disposição física não pôde ser restaurada."
+      },
+      "recovery": {
+        "available": "Disponível",
+        "availableDetail": "Há uma disposição de telas de referência disponível para recuperação.",
+        "lastFailure": "Última falha",
+        "linuxTitle": "Recuperação de telas virtuais",
+        "linuxDescription": "Encerre telas virtuais gerenciadas para corrigir um problema de imagem. O NOUS tentará restaurar primeiro a disposição física.",
+        "noneRecorded": "Nenhuma registrada",
+        "notCaptured": "Não salva",
+        "notCapturedDetail": "Nenhuma disposição de referência foi salva.",
+        "refreshRecommended": "Atualização recomendada",
+        "refreshRecommendedDetail": "A disposição salva está desatualizada ou apresentou falhas repetidas de restauração.",
+        "snapshotSchema": "Formato da cópia",
+        "statusUpdated": "Estado atualizado",
+        "title": "Disposição de referência para recuperação",
+        "unavailable": "Não foi possível carregar o estado da cópia de recuperação.",
+        "unresolvedRestores": "Restaurações pendentes",
+        "windowsOnly": "A disposição de referência para recuperação está disponível em PCs com Windows."
+      },
+      "refreshing": "Atualizando",
+      "restart": {
+        "description": "Desconecte todas as transmissões ativas e reinicie o serviço do PC."
+      },
+      "saving": "Salvando",
+      "sessions": {
+        "activeCount": "{count} ativas",
+        "browser": "Navegador",
+        "current": "Atual",
+        "description": "Veja quais navegadores podem gerenciar este PC.",
+        "emptyDescription": "Entre novamente se a lista de sessões foi limpa recentemente.",
+        "emptyTitle": "Nenhuma sessão confiável encontrada",
+        "expires": "Expira em",
+        "lastSeen": "Último acesso",
+        "now": "agora",
+        "rememberedDevice": "Dispositivo lembrado",
+        "thisBrowser": "Este navegador",
+        "title": "Sessões de navegadores confiáveis",
+        "trustedBrowser": "Navegador confiável"
+      },
+      "status": {
+        "unavailable": "Indisponível",
+        "windowsOnly": "Somente Windows"
+      },
+      "support": {
+        "crashDownloadFailed": "Falha ao baixar pacote de falha",
+        "crashPart": "Parte {index}",
+        "crashPartsDescription": "Cada parte é baixada separadamente para evitar manter pacotes grandes inteiros na memória do navegador.",
+        "crashPartsTitle": "Partes do pacote de falha",
+        "description": "Baixe o diagnóstico local antes de alterar a recuperação ou as integrações.",
+        "downloadAgain": "Baixar novamente",
+        "downloadCrash": "Baixar pacote de falha",
+        "downloadPart": "Baixar parte",
+        "downloadingBundle": "Baixando pacote",
+        "downloadingPart": "Baixando",
+        "directPartLink": "Link direto",
+        "downloadLogs": "Baixar pacote de logs",
+        "legacyHost": "Host antigo",
+        "multipleDownloadHint": "Navegadores podem bloquear downloads múltiplos automáticos. Autorize para este PC ou baixe cada parte abaixo.",
+        "partStarted": "Download iniciado",
+        "preparingCrash": "Preparando pacote",
+        "retryPart": "Tentar parte novamente",
+        "title": "Pacotes de suporte",
+        "windowsUnavailable": "Os recursos de pacote de suporte do Windows não estão disponíveis nesta plataforma."
+      },
+      "title": "Manutenção",
+      "updating": "Atualizando",
+      "validation": {
+        "currentPassword": "Informe a senha atual.",
+        "newPassword": "Informe uma nova senha.",
+        "passwordMismatch": "As novas senhas não coincidem.",
+        "username": "Informe o usuário atual da interface web."
+      },
+      "version": {
+        "branch": "Branch",
+        "commit": "Commit",
+        "description": "A compilação exata que está fornecendo esta interface.",
+        "metadataIncomplete": "Metadados incompletos",
+        "platform": "Plataforma",
+        "releaseDate": "Data de lançamento",
+        "title": "Versão instalada",
+        "unknown": "Versão desconhecida",
+        "version": "Versão"
+      },
+      "linux": {
+        "title": "Configuração de transmissão no Linux",
+        "description": "Confira a tela virtual gerenciada, a sessão de desktop ativa e o codificador antes de investigar uma transmissão.",
+        "logs": "Abrir e baixar logs",
+        "display": "Ajustes de tela"
+      },
+      "releases": {
+        "title": "Atualizações e notas da versão",
+        "check": "Verificar atualizações",
+        "available": "Versão mais recente",
+        "current": "Versão instalada",
+        "unavailable": "Informações da versão indisponíveis. Tente novamente mais tarde.",
+        "open": "Ler notas da versão",
+        "empty": "Nenhuma nota de versão disponível.",
+        "loading": "Verificando versões…"
+      }
+    },
+    "api_tokens": {
+      "active": {
+        "active": "Ativo",
+        "created": "Criado em {date}",
+        "description": "Revise os tokens autorizados a acessar a API deste PC.",
+        "empty_description": "Crie um token acima quando precisar de uma integração ou automação com acesso limitado.",
+        "empty_title": "Nenhum token de API ativo",
+        "eyebrow": "Inventário de acesso",
+        "filtered_empty_description": "Tente outro hash de token ou rota.",
+        "filtered_empty_title": "Nenhum token encontrado",
+        "result_count": "Exibindo {shown} de {total} tokens",
+        "search_label": "Buscar token",
+        "search_placeholder": "Buscar por hash ou rota",
+        "title": "Tokens ativos",
+        "token_label": "Token {hash}"
+      },
+      "active_count": "{count} tokens ativos",
+      "actions": {
+        "add_scope": "Adicionar permissão",
+        "copied": "Copiado",
+        "copy": "Copiar token",
+        "generate": "Gerar token de API",
+        "generating": "Gerando",
+        "refresh_tokens": "Atualizar tokens",
+        "refreshing": "Atualizando",
+        "remove_scope": "Remover permissão",
+        "remove_scope_named": "Remover permissão de {path}",
+        "revoke": "Revogar",
+        "revoke_named": "Revogar token {hash}",
+        "revoking": "Revogando"
+      },
+      "alert": {
+        "action_failed": "Falha na ação do token",
+        "create_failed": "Falha ao criar token",
+        "no_routes_description": "Este PC não retornou rotas de API que aceitem tokens.",
+        "no_routes_title": "Catálogo de rotas indisponível",
+        "routes_unavailable": "Não foi possível carregar as rotas",
+        "success_title": "Acesso por token atualizado",
+        "tokens_unavailable": "Não foi possível carregar os tokens ativos"
+      },
+      "builder": {
+        "description": "Crie um token que permita apenas o necessário para sua integração.",
+        "empty_description": "Escolha uma rota e um método acima para adicionar a primeira permissão.",
+        "empty_title": "Nenhuma permissão adicionada",
+        "eyebrow": "Criar acesso",
+        "generate_hint": "O token completo aparece uma única vez. Guarde-o em local seguro antes de fechar esta janela.",
+        "least_privilege": "Privilégio mínimo",
+        "methods_available": "{count} disponíveis",
+        "methods_description": "Selecione apenas os métodos HTTP necessários para esta integração.",
+        "methods_label": "Métodos permitidos",
+        "no_methods": "Esta rota não tem métodos que aceitem tokens.",
+        "route_count": "{count} rotas encontradas",
+        "route_description": "Encontre uma rota de API e escolha os métodos permitidos.",
+        "route_label": "Rota de API",
+        "route_placeholder": "Selecione uma rota",
+        "route_title": "Escolha uma rota",
+        "search_label": "Filtrar rotas",
+        "search_placeholder": "Buscar /api/...",
+        "summary_description": "Confira exatamente o que este token poderá fazer.",
+        "summary_methods": "métodos permitidos",
+        "summary_routes": "rotas autorizadas",
+        "summary_title": "Revisar acesso",
+        "title": "Criar token com acesso limitado"
+      },
+      "description": "Gere credenciais de API com permissões restritas para scripts, integrações e ferramentas confiáveis.",
+      "errors": {
+        "create": "Não foi possível gerar este token",
+        "revoke": "Não foi possível revogar este token",
+        "routes_load": "Não foi possível carregar o catálogo de rotas de API",
+        "scope_required": "Adicione pelo menos uma rota e um método antes de gerar um token.",
+        "token_missing": "Este PC não retornou um token.",
+        "tokens_load": "Não foi possível carregar os tokens de API ativos"
+      },
+      "notices": {
+        "created": "Token criado. Copie agora; não será possível consultá-lo novamente.",
+        "revoked": "Token de API revogado."
+      },
+      "reveal": {
+        "description": "Esta credencial aparece apenas após a criação.",
+        "title": "Seu token de API está pronto",
+        "warning": "Copie este token agora. O NOUS guarda apenas um hash e não pode exibir o token completo novamente.",
+        "warning_title": "Guarde em local seguro"
+      },
+      "revoke": {
+        "description": "Revogar o token {hash}? Todas as integrações que usam esse token deixarão de funcionar imediatamente.",
+        "title": "Revogar token de API?"
+      },
+      "scope_count": "{count} permissões selecionadas",
+      "title": "Tokens de API",
+      "unknown_date": "Data de criação indisponível"
     }
   }
 }
