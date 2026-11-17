@@ -105,7 +105,7 @@ public class HelpActivity extends AppCompatActivity {
         int space = Math.round(24 * getResources().getDisplayMetrics().density);
         body.setPadding(space, space, space, space);
         android.widget.ImageView logo = new android.widget.ImageView(this);
-        logo.setImageResource(R.mipmap.ic_launcher);
+        logo.setImageResource(R.mipmap.ic_launcher_foreground);
         body.addView(logo, new android.widget.LinearLayout.LayoutParams(space * 3, space * 3));
         android.widget.TextView brand = new android.widget.TextView(this);
         brand.setText("NOUS\nAndroid · " + BuildConfig.VERSION_NAME);

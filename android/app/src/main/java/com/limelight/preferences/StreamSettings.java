@@ -356,7 +356,7 @@ public class StreamSettings extends AppCompatActivity {
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View view = super.onCreateView(inflater, container, savedInstanceState);
-            UiHelper.applyStatusBarPadding(view);
+            // The activity already places this fragment below its inset-aware toolbar.
             return view;
         }
 
@@ -428,7 +428,7 @@ public class StreamSettings extends AppCompatActivity {
             stylePreferences(getPreferenceScreen());
             RecyclerView list = getListView();
             int inset = Math.round(24 * getResources().getDisplayMetrics().density);
-            list.setPadding(inset, inset / 2, inset, inset);
+            list.setPadding(inset, 0, inset, inset);
             list.setClipToPadding(false);
             setDivider(null);
             list.addItemDecoration(new RecyclerView.ItemDecoration() {
