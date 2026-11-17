@@ -1,0 +1,16 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/appFragmentContainer"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1">
+
+    <TextView
+        android:id="@+id/nous_library_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/nous_main_content_inset"
+        android:text="@string/searchpreference_no_results"
+        android:textAppearance="@style/Nous.Subtitle"
+        android:visibility="gone" />
+</FrameLayout>

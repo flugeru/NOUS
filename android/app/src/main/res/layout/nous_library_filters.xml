@@ -1,0 +1,25 @@
+<com.google.android.material.chip.ChipGroup
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nous_game_filters"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/nous_main_content_inset"
+    android:layout_marginEnd="@dimen/nous_main_content_inset"
+    android:layout_marginBottom="2dp"
+    app:chipSpacingHorizontal="8dp"
+    app:chipSpacingVertical="0dp"
+    app:selectionRequired="true"
+    app:singleSelection="true">
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/nous_filter_all"
+        style="@style/Nous.LibraryFilter"
+        android:checked="true"
+        android:text="@string/nous_all_games" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/nous_filter_running"
+        style="@style/Nous.LibraryFilter"
+        android:text="@string/nous_running_games" />
+</com.google.android.material.chip.ChipGroup>
