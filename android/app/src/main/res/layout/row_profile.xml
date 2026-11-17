@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="12dp"
+    android:padding="14dp"
     android:layout_marginBottom="8dp"
     android:background="@drawable/nous_card_ripple"
     android:gravity="center_vertical">
@@ -21,7 +21,7 @@
             android:textColor="@color/nous_text"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:singleLine="true"
+            android:maxLines="2"
             android:ellipsize="end" />
 
         <TextView

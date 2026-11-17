@@ -32,13 +32,23 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/profilesDescription"
+        android:id="@+id/nous_profiles_title"
         android:layout_below="@id/nous_profiles_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="6dp"
+        android:textAppearance="@style/Nous.Title"
+        android:text="@string/nous_profiles" />
+
+    <TextView
+        android:id="@+id/profilesDescription"
+        android:layout_below="@id/nous_profiles_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
         android:layout_marginBottom="8dp"
         android:text="@string/profile_manager_profiles_description"
         android:textColor="@color/nous_text_muted"
@@ -53,8 +63,8 @@
         android:paddingBottom="76dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp" />
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp" />
 
     <LinearLayout
         android:id="@+id/emptyState"
