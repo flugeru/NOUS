@@ -1,0 +1,7 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.limelight.preferences.NousSwitchPreference
+        android:key="nous_offline_game_library"
+        android:defaultValue="false"
+        android:title="@string/nous_development_offline_library"
+        android:summary="@string/nous_development_offline_library_summary" />
+</PreferenceScreen>

@@ -226,7 +226,9 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
         });
         navigation.setSelectedItemId(showSettings ? R.id.nous_nav_settings : R.id.nous_nav_computers);
         if (restoredTab == R.id.nous_nav_settings) navigation.setSelectedItemId(R.id.nous_nav_settings);
-        else if (restoredTab == R.id.nous_nav_games && getFragmentManager().findFragmentByTag("games") != null) showGamesContent();
+        else if (restoredTab == R.id.nous_nav_games && getFragmentManager().findFragmentByTag("games") != null) {
+            navigation.setSelectedItemId(R.id.nous_nav_games);
+        }
         restoredTab = R.id.nous_nav_computers;
         openLibraryShortcut();
 
@@ -789,6 +791,11 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
             }
         }
         if (hosts.isEmpty()) {
+            if (!PreferenceManager.getDefaultSharedPreferences(this)
+                    .getBoolean(PreferenceConfiguration.OFFLINE_LIBRARY_PREF_STRING, false)) {
+                Toast.makeText(this, R.string.nous_games_need_pc, Toast.LENGTH_SHORT).show();
+                return false;
+            }
             if (hasLibrary) {
                 showGamesContent();
             } else {

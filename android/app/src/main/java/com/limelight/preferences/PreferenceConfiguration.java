@@ -33,6 +33,7 @@ public class PreferenceConfiguration {
     public static final String CUSTOM_BITRATE_PREF_STRING = "edit_diy_bitrate";
     public static final String CUSTOM_REFRESH_RATE_PREF_STRING = "custom_refresh_rate";
     public static final String CUSTOM_RESOLUTION_PREF_STRING = "edit_diy_w_h";
+    public static final String OFFLINE_LIBRARY_PREF_STRING = "nous_offline_game_library";
 
     private static final String LEGACY_RES_FPS_PREF_STRING = "list_resolution_fps";
     private static final String LEGACY_ENABLE_51_SURROUND_PREF_STRING = "checkbox_51_surround";

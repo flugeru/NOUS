@@ -45,6 +45,7 @@
                         android:layout_height="wrap_content" android:text="@string/nous_running_games" />
                 </com.google.android.material.chip.ChipGroup>
             </LinearLayout>
+            <include layout="@layout/nous_offline_categories" />
             <FrameLayout android:id="@+id/appFragmentContainer"
                 android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
         </LinearLayout>

@@ -82,6 +82,7 @@ public class StreamSettings extends AppCompatActivity {
         VIDEO_AUDIO(R.string.nous_video_audio, "category_video_settings", "category_audio_settings", "category_host_settings"),
         CONTROLS(R.string.nous_controls, "category_gamepad_settings", "category_input_settings",
                 "category_onscreen_controls", "category_special_key_layout", "category_virtual_trackpad_settings"),
+        DEVELOPMENT(R.string.nous_development),
         ADVANCED(R.string.nous_advanced, "category_general_settings", "category_ui_settings",
                 "category_perf_monitor_settings", "category_advanced_settings", "category_settings_misc");
         final int title;
@@ -368,6 +369,11 @@ public class StreamSettings extends AppCompatActivity {
 
         @Override
         public void onCreatePreferences(Bundle bundle, String s) {
+            if (requireActivity() instanceof StreamSettings
+                    && ((StreamSettings) requireActivity()).section == Section.DEVELOPMENT) {
+                setPreferencesFromResource(R.xml.nous_development_preferences, s);
+                return;
+            }
             initializePreferences();
             Preference codec = findPreference("video_format");
             PreferenceGroup advanced = findPreference("category_advanced_settings");

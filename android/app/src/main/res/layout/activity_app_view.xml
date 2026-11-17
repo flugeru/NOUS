@@ -81,6 +81,7 @@
                     style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:text="@string/nous_running_games" />
             </com.google.android.material.chip.ChipGroup>
+            <include layout="@layout/nous_offline_categories" />
             <FrameLayout
                 android:id="@+id/appFragmentContainer"
                 android:layout_width="match_parent"

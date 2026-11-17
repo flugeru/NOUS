@@ -44,6 +44,7 @@ final class NousSettingsTab {
             bindSection(R.id.nous_settings_video, StreamSettings.Section.VIDEO_AUDIO);
             bindSection(R.id.nous_settings_controls, StreamSettings.Section.CONTROLS);
             bindSection(R.id.nous_settings_advanced, StreamSettings.Section.ADVANCED);
+            bindSection(R.id.nous_settings_development, StreamSettings.Section.DEVELOPMENT);
             settings.findViewById(R.id.nous_settings_profiles).setOnClickListener(v ->
                     activity.startActivity(new Intent(activity, ProfilesActivity.class)));
             settings.findViewById(R.id.nous_settings_diagnostics).setOnClickListener(v ->

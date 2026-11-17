@@ -372,6 +372,11 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
             TextView label = findViewById(R.id.appListText);
             label.setText(R.string.nous_demo_library);
             appGridAdapter = AppGridAdapter.createOfflineDemo(getActivity(), prefConfig);
+            com.google.android.material.chip.ChipGroup categories = findViewById(R.id.nous_offline_categories);
+            categories.setVisibility(View.VISIBLE);
+            categories.setOnCheckedStateChangeListener((group, checkedIds) ->
+                    appGridAdapter.setLaunchersOnly(checkedIds.contains(R.id.nous_offline_launchers)));
+            appGridAdapter.setLaunchersOnly(categories.getCheckedChipId() == R.id.nous_offline_launchers);
             appGridAdapter.setQuery(gameSearch.getText());
             appGridAdapter.setRunningOnly(filters.getCheckedChipId() == R.id.nous_filter_running);
             if (getChildFragmentManager().findFragmentById(R.id.appFragmentContainer) == null) {

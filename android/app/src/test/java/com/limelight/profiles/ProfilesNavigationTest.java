@@ -101,6 +101,11 @@ public class ProfilesNavigationTest {
             PcView activity = controller.get();
             BottomNavigationView navigation = activity.findViewById(R.id.nous_navigation);
             navigation.setSelectedItemId(R.id.nous_nav_games);
+            assertEquals(R.id.nous_nav_computers, navigation.getSelectedItemId());
+            var settings = androidx.preference.PreferenceManager.getDefaultSharedPreferences(activity);
+            String demoKey = com.limelight.preferences.PreferenceConfiguration.OFFLINE_LIBRARY_PREF_STRING;
+            settings.edit().putBoolean(demoKey, true).commit();
+            navigation.setSelectedItemId(R.id.nous_nav_games);
             activity.getFragmentManager().executePendingTransactions();
             android.app.Fragment games = activity.getFragmentManager().findFragmentByTag("games");
             assertNotNull(games);
@@ -111,17 +116,27 @@ public class ProfilesNavigationTest {
             assertEquals(4, grid.getAdapter().getCount());
 
             android.widget.EditText search = library.findViewById(R.id.nous_game_search);
-            search.setText("Orbital");
+            search.setText("Genshin");
             assertEquals(1, grid.getAdapter().getCount());
-            assertEquals(activity.getString(R.string.nous_demo_orbit), grid.getAdapter().getItem(0).toString());
+            assertEquals(activity.getString(R.string.nous_demo_genshin), grid.getAdapter().getItem(0).toString());
             search.setText("");
 
             com.google.android.material.chip.ChipGroup filters = library.findViewById(R.id.nous_game_filters);
             filters.check(R.id.nous_filter_running);
             assertEquals(1, grid.getAdapter().getCount());
-            assertEquals(activity.getString(R.string.nous_demo_orbit), grid.getAdapter().getItem(0).toString());
+            assertEquals(activity.getString(R.string.nous_demo_cyberpunk), grid.getAdapter().getItem(0).toString());
+            filters.check(R.id.nous_filter_all);
+            com.google.android.material.chip.ChipGroup categories = library.findViewById(R.id.nous_offline_categories);
+            categories.check(R.id.nous_offline_launchers);
+            assertEquals(1, grid.getAdapter().getCount());
+            assertEquals(activity.getString(R.string.nous_demo_steam), grid.getAdapter().getItem(0).toString());
             grid.performItemClick(new View(activity), 0, grid.getAdapter().getItemId(0));
             assertNull("Demo apps cannot open a streaming activity", Shadows.shadowOf(activity).getNextStartedActivity());
+
+            navigation.setSelectedItemId(R.id.nous_nav_computers);
+            settings.edit().putBoolean(demoKey, false).commit();
+            navigation.setSelectedItemId(R.id.nous_nav_games);
+            assertEquals(R.id.nous_nav_computers, navigation.getSelectedItemId());
         }
     }
 

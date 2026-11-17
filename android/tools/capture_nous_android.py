@@ -253,15 +253,25 @@ def run(c):
     wait_for("profilesButton", labels=("NOUS emulator",))
     c.capture("computers-active-profile-after-restart")
 
+    select("nous_nav_settings")
+    select("nous_settings_development")
+    tap(wait_for(labels=("Biblioteca de jogos offline", "Offline games library")))
+    c.capture("settings-development")
+    back()
+
     select("nous_nav_games")
     wait_for("appListText", labels=("Biblioteca offline", "Offline library"))
-    wait_for(labels=("Circuito Noturno", "Night Circuit"))
+    wait_for(labels=("Genshin Impact",))
     c.capture("games-offline-library")
 
     select("nous_filter_running")
-    wait_for(labels=("Estação Orbital", "Orbital Station"))
+    wait_for(labels=("Cyberpunk 2077",))
     c.capture("games-offline-running")
     select("nous_filter_all")
+    select("nous_offline_launchers")
+    wait_for(labels=("Steam Big Picture",))
+    c.capture("games-offline-launchers")
+    select("nous_offline_games")
 
     select("nous_nav_settings")
     select("nous_settings_diagnostics")
@@ -284,7 +294,7 @@ def run(c):
     select("nous_nav_computers")
     c.capture("computers-landscape")
     select("nous_nav_games")
-    wait_for(labels=("Circuito Noturno", "Night Circuit"))
+    wait_for(labels=("Genshin Impact",))
     c.capture("games-offline-landscape")
 
 

@@ -45,6 +45,19 @@ public class AppGridAdapter extends GenericGridAdapter<AppView.AppObject> {
     private final List<AppView.AppObject> searchResults = new ArrayList<>();
     private String query = "";
     private boolean runningOnly;
+    private int demoLauncherId;
+    private boolean launchersOnly;
+
+    public void setLaunchersOnly(boolean launchersOnly) {
+        if (this.launchersOnly != launchersOnly) {
+            this.launchersOnly = launchersOnly;
+            notifyDataSetChanged();
+        }
+    }
+
+    private boolean hasFilters() {
+        return !query.isEmpty() || runningOnly || demoLauncherId != 0;
+    }
 
     public void setRunningOnly(boolean runningOnly) {
         this.runningOnly = runningOnly;
@@ -63,15 +76,17 @@ public class AppGridAdapter extends GenericGridAdapter<AppView.AppObject> {
 
     public static AppGridAdapter createOfflineDemo(Context context, PreferenceConfiguration prefs) {
         AppGridAdapter adapter = new AppGridAdapter(context, prefs, null, null, false);
-        adapter.addDemoGame(context, R.string.nous_demo_racing, R.drawable.nous_demo_racing, false);
-        adapter.addDemoGame(context, R.string.nous_demo_orbit, R.drawable.nous_demo_orbit, true);
-        adapter.addDemoGame(context, R.string.nous_demo_mountains, R.drawable.nous_demo_mountains, false);
-        adapter.addDemoGame(context, R.string.nous_demo_forest, R.drawable.nous_demo_forest, false);
+        adapter.addDemoGame(context, R.string.nous_demo_genshin, R.drawable.nous_demo_genshin, false);
+        adapter.addDemoGame(context, R.string.nous_demo_zenless, R.drawable.nous_demo_zenless, false);
+        adapter.addDemoGame(context, R.string.nous_demo_cyberpunk, R.drawable.nous_demo_cyberpunk, true);
+        adapter.addDemoGame(context, R.string.nous_demo_honkai, R.drawable.nous_demo_honkai, false);
+        adapter.demoLauncherId = adapter.addDemoGame(
+                context, R.string.nous_demo_steam, R.drawable.nous_demo_steam, false);
         adapter.notifyDataSetChanged();
         return adapter;
     }
 
-    private void addDemoGame(Context context, int title, int artwork, boolean running) {
+    private int addDemoGame(Context context, int title, int artwork, boolean running) {
         int id = bundledArtwork.size() + 1;
         bundledArtwork.put(id, artwork);
         NvApp game = new NvApp(context.getString(title), "", id, false);
@@ -79,6 +94,7 @@ public class AppGridAdapter extends GenericGridAdapter<AppView.AppObject> {
         AppView.AppObject item = new AppView.AppObject(game);
         item.isRunning = running;
         addApp(item);
+        return id;
     }
 
     public void updateHiddenApps(Set<Integer> newHiddenAppIds, boolean hideImmediately) {
@@ -120,19 +136,21 @@ public class AppGridAdapter extends GenericGridAdapter<AppView.AppObject> {
 
     @Override
     public int getCount() {
-        return query.isEmpty() && !runningOnly ? super.getCount() : searchResults.size();
+        return hasFilters() ? searchResults.size() : super.getCount();
     }
 
     @Override
     public AppView.AppObject getItem(int position) {
-        return query.isEmpty() && !runningOnly ? super.getItem(position) : searchResults.get(position);
+        return hasFilters() ? searchResults.get(position) : super.getItem(position);
     }
 
     @Override
     public void notifyDataSetChanged() {
         searchResults.clear();
         for (AppView.AppObject app : itemList) {
-            if ((!runningOnly || app.isRunning)
+            boolean matchesCategory = demoLauncherId == 0
+                    || (app.app.getAppId() == demoLauncherId) == launchersOnly;
+            if (matchesCategory && (!runningOnly || app.isRunning)
                     && app.app.getAppName().toLowerCase(Locale.ROOT).contains(query)) {
                 searchResults.add(app);
             }
