@@ -11,8 +11,8 @@
   width: var(--vs-navigation-width-expanded);
   height: 100dvh;
   flex-direction: column;
-  border-right: 1px solid var(--vs-color-border-subtle);
-  background: var(--vs-color-bg-surface);
+  padding: var(--vs-space-8);
+  background: var(--vs-color-bg-canvas);
 }
 .sidebar__header {
   display: flex;
@@ -64,8 +64,7 @@
   color: var(--vs-color-text-muted);
   font-size: 11px;
   font-weight: var(--vs-type-weight-medium);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 .nav-list {
   display: grid;
@@ -82,7 +81,7 @@
   gap: var(--vs-space-12);
   padding: var(--vs-space-8) var(--vs-space-12);
   border: 1px solid transparent;
-  border-radius: var(--vs-radius-control);
+  border-radius: var(--vs-radius-pill);
   color: var(--vs-color-text-secondary);
   font-size: var(--vs-type-size-control);
   font-weight: var(--vs-type-weight-medium);
@@ -98,8 +97,7 @@
 .nav-link--current,
 .nav-link--current:hover {
   color: var(--vs-color-accent-default);
-  background: color-mix(in srgb, var(--vs-color-accent-default) 10%, transparent);
-  border-color: color-mix(in srgb, var(--vs-color-accent-default) 14%, transparent);
+  background: color-mix(in srgb, var(--vs-color-accent-default) 16%, var(--vs-color-bg-surface));
 }
 .sidebar__footer {
   padding: var(--vs-space-12);
@@ -304,6 +302,8 @@
   }
   .sidebar {
     width: min(88vw, 320px);
+    border-radius: 0 var(--vs-radius-dialog) var(--vs-radius-dialog) 0;
+    background: var(--vs-color-bg-surface);
     transform: translateX(-100%);
     visibility: hidden;
   }
