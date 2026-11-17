@@ -1,14 +1,15 @@
 package com.limelight;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 
 import com.limelight.ui.ControllerMenuActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.limelight.profiles.ProfilesAdapter;
 import com.limelight.profiles.ProfilesManager;
 import com.limelight.utils.UiHelper;
@@ -26,7 +27,10 @@ public class ProfilesActivity extends ControllerMenuActivity implements Profiles
 
         // Setup RecyclerView
         recyclerView = findViewById(R.id.profilesRecyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        Configuration config = getResources().getConfiguration();
+        boolean grid = config.orientation == Configuration.ORIENTATION_LANDSCAPE
+                && config.screenWidthDp >= 640 * config.fontScale;
+        recyclerView.setLayoutManager(grid ? new GridLayoutManager(this, 2) : new LinearLayoutManager(this));
 
         adapter = new ProfilesAdapter(this);
         recyclerView.setAdapter(adapter);
@@ -35,7 +39,7 @@ public class ProfilesActivity extends ControllerMenuActivity implements Profiles
         emptyState = findViewById(R.id.emptyState);
 
         // Setup FloatingActionButton
-        FloatingActionButton fab = findViewById(R.id.addProfileFab);
+        View fab = findViewById(R.id.addProfileFab);
         fab.setOnClickListener(v -> {
             Intent intent = new Intent(this, EditProfileActivity.class);
             startActivity(intent);

@@ -1,0 +1,4 @@
+<resources>
+    <integer name="nous_settings_hub_columns">2</integer>
+    <dimen name="nous_settings_hub_column_gap">3dp</dimen>
+</resources>

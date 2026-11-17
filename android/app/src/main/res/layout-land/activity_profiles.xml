@@ -1,0 +1,86 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/nous_background"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@id/nous_profiles_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/nous_page_header_height"
+        android:gravity="center_vertical"
+        android:paddingEnd="@dimen/nous_settings_inset">
+
+        <ImageButton
+            android:id="@id/nous_back"
+            style="@style/Nous.IconButton"
+            android:contentDescription="@string/nous_back"
+            android:src="@drawable/ic_nous_back" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/nous_profiles"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+            android:textColor="@color/nous_text" />
+
+        <ImageButton
+            android:id="@id/addProfileFab"
+            style="@style/Nous.IconButton"
+            android:background="@drawable/nous_library_search_button"
+            android:contentDescription="@string/profile_manager_new_profile"
+            android:tooltipText="@string/profile_manager_new_profile"
+            android:src="@drawable/ic_add_base"
+            app:tint="@color/nous_secondary" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@id/profilesDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/nous_settings_inset"
+        android:layout_marginBottom="4dp"
+        android:text="@string/nous_profiles_short"
+        android:textAppearance="@style/Nous.Subtitle" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@id/profilesRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingHorizontal="@dimen/nous_settings_inset"
+            android:paddingBottom="8dp" />
+
+        <LinearLayout
+            android:id="@id/emptyState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/nous_settings_inset"
+            android:orientation="vertical"
+            android:paddingVertical="8dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/profile_manager_no_profiles_yet"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="@color/nous_text" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/profile_manager_tap_create_profile"
+                android:textAppearance="@style/Nous.Subtitle" />
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>

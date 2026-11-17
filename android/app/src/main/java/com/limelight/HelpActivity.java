@@ -2,6 +2,7 @@ package com.limelight;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.webkit.WebView;
@@ -103,15 +104,24 @@ public class HelpActivity extends ControllerMenuActivity {
         android.widget.LinearLayout body = new android.widget.LinearLayout(this);
         body.setOrientation(android.widget.LinearLayout.VERTICAL);
         int space = getResources().getDimensionPixelSize(R.dimen.nous_settings_inset);
-        int logoSize = Math.round(56 * getResources().getDisplayMetrics().density);
+        boolean landscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+        int logoSize = Math.round((landscape ? 36 : 56) * getResources().getDisplayMetrics().density);
         body.setPadding(space, space, space, space);
         android.widget.ImageView logo = new android.widget.ImageView(this);
         logo.setImageResource(R.drawable.nous_brand);
-        body.addView(logo, new android.widget.LinearLayout.LayoutParams(logoSize, logoSize));
+        android.widget.LinearLayout branding = body;
+        if (landscape) {
+            branding = new android.widget.LinearLayout(this);
+            branding.setGravity(android.view.Gravity.CENTER_VERTICAL);
+            body.addView(branding);
+        }
+        android.widget.LinearLayout.LayoutParams logoParams = new android.widget.LinearLayout.LayoutParams(logoSize, logoSize);
+        if (landscape) logoParams.setMarginEnd(space / 2);
+        branding.addView(logo, logoParams);
         android.widget.TextView brand = new android.widget.TextView(this);
         brand.setText("NOUS\nAndroid · " + BuildConfig.VERSION_NAME);
-        brand.setTextAppearance(R.style.Nous_Title);
-        body.addView(brand);
+        brand.setTextAppearance(landscape ? com.google.android.material.R.style.TextAppearance_Material3_TitleMedium : R.style.Nous_Title);
+        branding.addView(brand);
         addHelpCard(body, R.string.nous_help_pair, R.drawable.ic_pairing, () -> com.limelight.utils.HelpLauncher.launchUrl(this,
                 "https://github.com/moonlight-stream/moonlight-docs/wiki/Setup-Guide"));
         addHelpCard(body, R.string.nous_help_connection, R.drawable.ic_connection_help, () -> com.limelight.utils.HelpLauncher.launchTroubleshooting(this));
@@ -139,9 +149,17 @@ public class HelpActivity extends ControllerMenuActivity {
         card.setCornerRadius(Math.round(14 * getResources().getDisplayMetrics().density));
         android.widget.LinearLayout.LayoutParams params = new android.widget.LinearLayout.LayoutParams(-1, -2);
         params.topMargin = getResources().getDimensionPixelSize(R.dimen.nous_settings_row_gap);
-        card.setMinHeight(Math.round(56 * getResources().getDisplayMetrics().density));
+        card.setMinHeight(getResources().getDimensionPixelSize(R.dimen.nous_settings_hub_row_height));
         body.addView(card, params);
         card.setOnClickListener(v -> action.run());
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration configuration) {
+        super.onConfigurationChanged(configuration);
+        if (getIntent().getData() == null) {
+            showHelpHome();
+        }
     }
 
     private void refreshBackDispatchState() {

@@ -6,7 +6,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="56dp"
+        android:minHeight="@dimen/nous_page_header_height"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="8dp"
@@ -37,26 +37,43 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="@dimen/nous_settings_inset">
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/bt_vibrator"
+            <GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="onClick"
-                android:text="@string/debug_info_test_device_vibration" />
+                android:columnCount="@integer/nous_settings_hub_columns"
+                android:orientation="horizontal">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/bt_update_gamepad"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="onClick"
-                android:text="@string/debug_info_refresh_gamepad_list" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/bt_vibrator"
+                    android:layout_width="0dp"
+                    android:layout_columnWeight="1"
+                    android:layout_gravity="fill_horizontal"
+                    android:layout_marginHorizontal="@dimen/nous_settings_hub_column_gap"
+                    android:layout_height="wrap_content"
+                    android:onClick="onClick"
+                    android:text="@string/debug_info_test_device_vibration" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/bt_vibrator_gamepad"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="onClick"
-                android:text="@string/debug_info_test_gamepad_rumble" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/bt_update_gamepad"
+                    android:layout_width="0dp"
+                    android:layout_columnWeight="1"
+                    android:layout_gravity="fill_horizontal"
+                    android:layout_marginHorizontal="@dimen/nous_settings_hub_column_gap"
+                    android:layout_height="wrap_content"
+                    android:onClick="onClick"
+                    android:text="@string/debug_info_refresh_gamepad_list" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/bt_vibrator_gamepad"
+                    android:layout_width="0dp"
+                    android:layout_columnWeight="1"
+                    android:layout_gravity="fill_horizontal"
+                    android:layout_marginHorizontal="@dimen/nous_settings_hub_column_gap"
+                    android:layout_height="wrap_content"
+                    android:onClick="onClick"
+                    android:text="@string/debug_info_test_gamepad_rumble" />
+
+            </GridLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

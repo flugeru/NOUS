@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:numColumns="@integer/nous_pc_columns"
     android:stretchMode="columnWidth"
-    android:paddingHorizontal="24dp"
+    android:paddingHorizontal="@dimen/nous_main_content_inset"
     android:paddingVertical="8dp"
     android:horizontalSpacing="12dp"
     android:verticalSpacing="10dp"

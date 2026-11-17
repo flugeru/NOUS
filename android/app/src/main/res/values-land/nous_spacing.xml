@@ -1,0 +1,12 @@
+<resources>
+    <dimen name="nous_main_content_inset">16dp</dimen>
+    <dimen name="nous_settings_inset">14dp</dimen>
+    <dimen name="nous_settings_row_gap">4dp</dimen>
+    <dimen name="nous_page_header_height">48dp</dimen>
+    <dimen name="nous_settings_hub_row_height">48dp</dimen>
+    <dimen name="nous_settings_hub_row_padding">5dp</dimen>
+    <dimen name="nous_game_title_vertical_padding">5dp</dimen>
+    <dimen name="nous_game_grid_top_padding">2dp</dimen>
+    <dimen name="nous_pc_card_height">66dp</dimen>
+    <dimen name="nous_pc_card_padding">8dp</dimen>
+</resources>

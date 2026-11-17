@@ -27,6 +27,7 @@ import com.limelight.ui.ControllerDialogBuilder;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
@@ -329,7 +330,7 @@ public class AddComputerManually extends ControllerMenuActivity {
         UiHelper.notifyNewRootView(this);
 
         this.hostText = findViewById(R.id.hostTextView);
-        hostText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        updateLayoutForOrientation();
         hostText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
@@ -392,6 +393,34 @@ public class AddComputerManually extends ControllerMenuActivity {
             AlertDialog dialog = builder.create();
             dialog.show();
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration configuration) {
+        super.onConfigurationChanged(configuration);
+        if (hostText != null) {
+            updateLayoutForOrientation();
+        }
+    }
+
+    private void updateLayoutForOrientation() {
+        boolean landscape = UiHelper.placeHeaderActionForOrientation(this, R.id.addPcButton);
+        TextView header = findViewById(R.id.nous_manual_header_title);
+        header.setText(landscape ? R.string.nous_manual_connection : R.string.title_add_pc);
+        findViewById(R.id.manuallyAddPcText).setVisibility(landscape ? View.GONE : View.VISIBLE);
+        View address = findViewById(R.id.nous_manual_address_field);
+        View help = findViewById(R.id.nous_manual_help);
+        float density = getResources().getDisplayMetrics().density;
+        android.widget.LinearLayout.LayoutParams addressParams =
+                (android.widget.LinearLayout.LayoutParams) address.getLayoutParams();
+        addressParams.topMargin = Math.round((landscape ? 8 : 20) * density);
+        address.setLayoutParams(addressParams);
+        android.widget.LinearLayout.LayoutParams helpParams =
+                (android.widget.LinearLayout.LayoutParams) help.getLayoutParams();
+        helpParams.topMargin = Math.round((landscape ? 8 : 24) * density);
+        help.setLayoutParams(helpParams);
+        hostText.setImeOptions(EditorInfo.IME_ACTION_DONE
+                | (landscape ? EditorInfo.IME_FLAG_NO_EXTRACT_UI | EditorInfo.IME_FLAG_NO_FULLSCREEN : 0));
     }
 
     // Returns true if the event should be eaten

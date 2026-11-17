@@ -1,6 +1,7 @@
 package com.limelight;
 
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -78,6 +79,7 @@ public class EditProfileActivity extends ControllerMenuActivity {
         android.widget.EditText name = findViewById(R.id.nous_profile_name);
         name.setText(currentProfile != null ? currentProfile.getName() : "");
         findViewById(R.id.nous_save_profile).setOnClickListener(v -> saveProfile());
+        updateLayoutForOrientation();
         prefsFragment = new ProfilePreferenceFragment(this, inMemoryPrefs);
 
         // Load preference fragment
@@ -87,6 +89,23 @@ public class EditProfileActivity extends ControllerMenuActivity {
             .commit();
 
         UiHelper.notifyNewRootView(this);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration configuration) {
+        super.onConfigurationChanged(configuration);
+        updateLayoutForOrientation();
+    }
+
+    private void updateLayoutForOrientation() {
+        boolean landscape = UiHelper.placeHeaderActionForOrientation(this, R.id.nous_save_profile);
+        android.widget.TextView save = findViewById(R.id.nous_save_profile);
+        save.setText(landscape ? R.string.save : R.string.nous_save_profile);
+        android.widget.EditText name = findViewById(R.id.nous_profile_name);
+        name.setImeOptions(landscape
+                ? android.view.inputmethod.EditorInfo.IME_FLAG_NO_EXTRACT_UI
+                        | android.view.inputmethod.EditorInfo.IME_FLAG_NO_FULLSCREEN
+                : 0);
     }
 
     @Override

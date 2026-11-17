@@ -18,8 +18,10 @@ import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -127,6 +129,26 @@ public class UiHelper {
             });
             view.requestApplyInsets();
         }
+    }
+
+    public static boolean placeHeaderActionForOrientation(Activity activity, int actionId) {
+        boolean landscape = activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+        LinearLayout header = activity.findViewById(R.id.nous_header_actions);
+        View action = activity.findViewById(actionId);
+        ViewGroup parent = (ViewGroup) action.getParent();
+        if (landscape && parent != header) {
+            action.setTag(R.id.nous_portrait_action_layout, action.getLayoutParams());
+            parent.removeView(action);
+            LinearLayout.LayoutParams compact = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            compact.setMarginStart(Math.round(8 * activity.getResources().getDisplayMetrics().density));
+            header.addView(action, compact);
+        } else if (!landscape && parent == header) {
+            header.removeView(action);
+            ((ViewGroup) header.getParent()).addView(action,
+                    (ViewGroup.LayoutParams) action.getTag(R.id.nous_portrait_action_layout));
+        }
+        return landscape;
     }
 
     public static void notifyNewRootView(final Activity activity)
