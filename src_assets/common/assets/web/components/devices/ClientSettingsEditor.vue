@@ -703,8 +703,8 @@ function applyDisplaySelection(selection: ClientDisplaySelection): void {
             catalogInitiallyRequested ||
             draft.requestedResolutionOnly)
         "
-        label="Advertise only this client's resolution"
-        description="Limits this private virtual display's advertised resolutions while retaining matching refresh rates. Requires bundled driver control 3.8 or later and a new session. Shared displays are unsupported."
+        :label="t('ui.devices.editor.resolution_only')"
+        :description="t('ui.devices.editor.resolution_only_description')"
         :control-id="`${controlIdPrefix}-requested-resolution-only`"
       >
         <input
@@ -716,8 +716,7 @@ function applyDisplaySelection(selection: ClientDisplaySelection): void {
           "
         />
         <p v-if="!requestedResolutionCatalogSupported" class="client-settings-helper">
-          The opened driver cannot confirm support. Disable this setting or install a qualified
-          compatible driver before streaming.
+          {{ t('ui.devices.editor.resolution_only_unavailable') }}
         </p>
       </SettingRow>
     </section>

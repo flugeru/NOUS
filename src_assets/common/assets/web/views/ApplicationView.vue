@@ -4207,7 +4207,7 @@ onBeforeUnmount(() => {
 
           <p class="rtx-hdr__live-note">
             <UiIcon name="activity" :size="16" aria-hidden="true" />
-            {{ t('ui.application.rtxHdr.liveHint') }}
+            {{ t('ui.application.rtxHdr.live.hint') }}
           </p>
         </div>
       </section>

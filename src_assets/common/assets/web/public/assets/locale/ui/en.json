@@ -26,14 +26,14 @@
         "unavailable": "Application unavailable"
       },
       "compatibility": {
-      "title": "Compatibility and state commands",
-      "description": "Override launch behavior and commands for this application.",
-      "default": "Use host default",
-      "addState": "Add state command",
-      "resume": "Resume command",
-      "pause": "Pause command"
-    },
-    "cover": {
+        "title": "Compatibility and state commands",
+        "description": "Override launch behavior and commands for this application.",
+        "default": "Use host default",
+        "addState": "Add state command",
+        "resume": "Resume command",
+        "pause": "Pause command"
+      },
+      "cover": {
         "alt": "{name} cover",
         "unavailable": "Configured cover unavailable",
         "unavailableLabel": "{name} cover unavailable"
@@ -450,12 +450,19 @@
         "sections": {
           "display": "Display routing",
           "hdr": "HDR and presentation",
-          "identity": "Identity and permissions"
+          "identity": "Identity and permissions",
+          "commands": "Device commands"
         },
         "title": "Edit device",
         "use_common_value": "Use common setting: {value}",
         "allow_sleep": "Allow this device to put the PC to sleep",
-        "allow_sleep_description": "Separate permission for compatible clients and Windows hosts with native sleep support. Sleep requires every host application and stream to be closed. Disabled by default."
+        "allow_sleep_description": "Separate permission for compatible clients and Windows hosts with native sleep support. Sleep requires every host application and stream to be closed. Disabled by default.",
+        "resolution_only": "Advertise only this client's resolution",
+        "resolution_only_description": "Limits this private virtual display's advertised resolutions while retaining matching refresh rates. Requires bundled driver control 3.8 or later and a new session. Shared displays are unsupported.",
+        "resolution_only_unavailable": "The opened driver cannot confirm support. Disable this setting or install a qualified compatible driver before streaming.",
+        "commands_description": "Commands to run when this device connects or disconnects.",
+        "remove_command": "Remove command {number}",
+        "commands_empty": "No commands configured."
       },
       "common_settings_title": "Common host settings unavailable",
       "common_settings_unavailable": "The common host settings could not be loaded. Existing client overrides are preserved, but inherited values may be incomplete.",
@@ -615,7 +622,7 @@
         "vigemCompleted": "The ViGEmBus installer completed.",
         "vulkanRefreshed": "The Vulkan HDR layer registration was refreshed."
       },
-  "playnite": {
+      "playnite": {
         "description": "Synchronizes installed games and metadata through the NOUS extension.",
         "shortDescription": "Library synchronization and launch integration.",
         "policies_title": "Library and launch policies"
@@ -785,7 +792,9 @@
         "removePlaynite": "Remove Playnite entries",
         "showMore": "Show more",
         "tryAgain": "Try again",
-        "sources": "Manage sources"
+        "sources": "Manage sources",
+        "manager": "Library manager settings",
+        "setup": "Setup Game Library Integration"
       },
       "alerts": {
         "unavailable": "Library unavailable"
@@ -875,7 +884,10 @@
         "grid": "Grid",
         "label": "Library view",
         "list": "List"
-      }
+      },
+      "restore_system": "Restore system apps",
+      "restore_named": "Restore {name}",
+      "restore_failed": "Could not restore the system app."
     },
     "logs": {
       "action": {
@@ -1128,7 +1140,8 @@
       }
     },
     "updates": {
-      "available": "NOUS {version} is available"
+      "available": "NOUS {version} is available",
+      "dismiss": "Dismiss this update"
     },
     "nav": {
       "api_tokens": "API tokens",
@@ -1550,7 +1563,8 @@
       "host_vram": "VRAM",
       "maximum": "Max {value}",
       "minimum": "Min {value}",
-      "sample_count": "{count} sample | {count} samples"
+      "sample_count": "{count} sample | {count} samples",
+      "compute_legend": "Compute history legend"
     },
     "settings": {
       "all_settings": "All settings",
@@ -2563,6 +2577,48 @@
     "system": {
       "host_status_unavailable": "Host status is temporarily unavailable.",
       "unreachable": "Unable to reach Vibepollo."
+    },
+    "topology": {
+      "title": "Client display arrangement",
+      "description": "Saved directions apply to extended application streams and Remote Monitor on their next activation. Verify only preserves the current Windows arrangement; choose an automatic display preparation option to apply a saved direction.",
+      "capacity": "{used} of {max} client identities",
+      "client_display": "Client display",
+      "choose_client": "Choose a paired client",
+      "canvas": "Display topology. Select a display rectangle to edit its placement.",
+      "physical": "Physical",
+      "client": "Client",
+      "primary": "Primary",
+      "inactive_preview": "Inactive preview",
+      "arrangement": "Arrangement",
+      "modes": {
+        "automatic": "Use application layout / automatic",
+        "preserve": "Preserve / manual (Windows layout)",
+        "left": "Left of",
+        "right": "Right of",
+        "above": "Above",
+        "below": "Below"
+      },
+      "preserve_hint": "Application streams keep their Windows positions unless their layout requests isolation. Explicit Preserve / manual also overrides isolation. Remote Monitor uses automatic placement when no direction is saved.",
+      "use_primary": "Use as primary while active",
+      "display": "Display",
+      "anchor": "Anchor",
+      "align": "Align",
+      "alignment": {
+        "start": "Start",
+        "center": "Center",
+        "end": "End"
+      },
+      "gap": "Gap (px)",
+      "revert": "Revert",
+      "save": "Save layout",
+      "errors": {
+        "primary": "Only one client display may be primary.",
+        "anchor": "Choose a different known anchor for every placement.",
+        "gap": "Gap must be a nonnegative whole number.",
+        "cycle": "Client anchors cannot form a cycle.",
+        "load": "Unable to load the display layout.",
+        "save": "The layout was not saved. No active topology was changed."
+      }
     }
   },
   "sessions": {

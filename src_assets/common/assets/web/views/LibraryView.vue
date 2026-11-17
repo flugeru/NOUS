@@ -53,7 +53,7 @@ async function restoreSystemApp(id: string): Promise<void> {
     await apiPost(`/api/apps/system/${encodeURIComponent(id)}/restore`, {});
     await load();
   } catch (cause) {
-    error.value = cause instanceof Error ? cause.message : 'Could not restore the system app.';
+    error.value = cause instanceof Error ? cause.message : t('ui.library.restore_failed');
   } finally {
     restoringSystemApp.value = '';
   }
@@ -600,7 +600,7 @@ function libraryRequest(
       <template #actions>
         <AppButton
           icon="integrations"
-          :label="libraryConfigured ? 'Library manager settings' : 'Setup Game Library Integration'"
+          :label="t(libraryConfigured ? 'ui.library.actions.manager' : 'ui.library.actions.setup')"
           @click="librarySetupOpen = true"
         />
         <RouterLink class="button button--secondary" to="/integrations"
@@ -622,10 +622,10 @@ function libraryRequest(
       </template>
     </PageHeader>
 
-    <section v-if="restorableSystemApps.length" aria-label="Restore system apps" class="system-app-restore">
-      <span>Restore system apps:</span>
+    <section v-if="restorableSystemApps.length" :aria-label="t('ui.library.restore_system')" class="system-app-restore">
+      <span>{{ t('ui.library.restore_system') }}:</span>
       <AppButton v-for="app in restorableSystemApps" :key="app.id" size="compact"
-        :label="`Restore ${app.name}`" :disabled="Boolean(restoringSystemApp)"
+        :label="t('ui.library.restore_named', { name: app.name })" :disabled="Boolean(restoringSystemApp)"
         @click="restoreSystemApp(app.id)" />
     </section>
 

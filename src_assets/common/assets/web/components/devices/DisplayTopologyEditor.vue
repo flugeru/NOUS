@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, toRaw } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { apiGet, apiRequest, type ApiPayload } from '@/api/client';
 import { AppButton, InlineAlert, StatusBadge } from '@/components/ui';
@@ -9,6 +10,7 @@ interface Node { id: string; label: string; kind: AnchorKind; active: boolean; p
 interface Response { layout: { version: number; placements: Record<string, Placement> }; nodes: Node[]; clients: Array<{ uuid: string; name: string; display_mode?: string }>; runtime?: Record<string, { lifecycle: string; ready: boolean; retryable: boolean; warning?: string; plaintext_rtsp_warning?: string }>; capacity?: { max: number; used: number }; warnings?: string[] }
 
 const props = withDefaults(defineProps<{ clientUuid?: string; compact?: boolean }>(), { clientUuid: '', compact: false });
+const { t } = useI18n();
 const data = ref<Response | null>(null);
 const draft = ref<Record<string, Placement>>({});
 const selected = ref('');
@@ -80,21 +82,21 @@ const selectedArrangement = computed<Edge | 'preserve' | 'automatic'>({
 });
 function validation(): string {
   const all = Object.entries(draft.value);
-  if (all.filter(([, placement]) => placement.primary && (!placement.preserve || placement.automatic_fallback)).length > 1) return 'Only one client display may be primary.';
+  if (all.filter(([, placement]) => placement.primary && (!placement.preserve || placement.automatic_fallback)).length > 1) return t('ui.topology.errors.primary');
   for (const [client, placement] of all) {
     if (placement.preserve) continue;
     if (placement.automatic_fallback) continue;
-    if (!placement.anchor_id || placement.anchor_id === client) return 'Choose a different known anchor for every placement.';
-    if (!Number.isInteger(placement.gap_px) || placement.gap_px < 0 || placement.gap_px > 100000) return 'Gap must be a nonnegative whole number.';
+    if (!placement.anchor_id || placement.anchor_id === client) return t('ui.topology.errors.anchor');
+    if (!Number.isInteger(placement.gap_px) || placement.gap_px < 0 || placement.gap_px > 100000) return t('ui.topology.errors.gap');
     const seen = new Set<string>(); let current = client;
-    while (draft.value[current]?.anchor_kind === 'client' && !draft.value[current]?.preserve) { if (seen.has(current)) return 'Client anchors cannot form a cycle.'; seen.add(current); current = draft.value[current].anchor_id; }
+    while (draft.value[current]?.anchor_kind === 'client' && !draft.value[current]?.preserve) { if (seen.has(current)) return t('ui.topology.errors.cycle'); seen.add(current); current = draft.value[current].anchor_id; }
   }
   return '';
 }
 const validationError = computed(validation);
 function rebuildDraft(response: Response) { data.value = response; draft.value = structuredClone(response.layout?.placements ?? {}); if (props.clientUuid) choose(props.clientUuid); }
-async function load() { error.value = ''; try { rebuildDraft(await apiGet<Response>('/api/clients/display-layout')); } catch { error.value = 'Unable to load the display layout.'; } }
-async function save() { if (validationError.value) return; saving.value = true; error.value = ''; try { const response = await apiRequest<Response>('/api/clients/display-layout', { method: 'PUT', json: { version: 1, placements: draft.value } as ApiPayload }); rebuildDraft(response); } catch { error.value = 'The layout was not saved. No active topology was changed.'; } finally { saving.value = false; } }
+async function load() { error.value = ''; try { rebuildDraft(await apiGet<Response>('/api/clients/display-layout')); } catch { error.value = t('ui.topology.errors.load'); } }
+async function save() { if (validationError.value) return; saving.value = true; error.value = ''; try { const response = await apiRequest<Response>('/api/clients/display-layout', { method: 'PUT', json: { version: 1, placements: draft.value } as ApiPayload }); rebuildDraft(response); } catch { error.value = t('ui.topology.errors.save'); } finally { saving.value = false; } }
 function revert() { if (data.value) draft.value = structuredClone(toRaw(data.value.layout.placements ?? {})); }
 function scaled(node: Node) { const width = Math.max(80, Math.round(node.mode.width / 18)); const height = Math.max(50, Math.round(node.mode.height / 18)); return { width: `${width}px`, height: `${height}px`, transform: `translate(${18 + Math.round((node.desired_position.x - previewOrigin.value.x) / 18)}px, ${18 + Math.round((node.desired_position.y - previewOrigin.value.y) / 18)}px)` }; }
 interface DragGesture { pointerId: number; clientId: string; startX: number; startY: number; moved: boolean; element: HTMLElement }
@@ -158,31 +160,31 @@ onMounted(load);
 <template>
   <section class="topology-editor vs-surface" :class="{ 'topology-editor--compact': compact }" :aria-labelledby="headingId">
     <div class="topology-editor__heading">
-      <div><h3 :id="headingId">Client display arrangement</h3><p>Saved directions apply to extended application streams and Remote Monitor on their next activation. Verify only preserves the current Windows arrangement; choose an automatic display preparation option to apply a saved direction.</p></div>
-      <StatusBadge v-if="data?.capacity" :label="`${data.capacity.used} of ${data.capacity.max} client identities`" tone="neutral" compact />
+      <div><h3 :id="headingId">{{ t('ui.topology.title') }}</h3><p>{{ t('ui.topology.description') }}</p></div>
+      <StatusBadge v-if="data?.capacity" :label="t('ui.topology.capacity', { used: data.capacity.used, max: data.capacity.max })" tone="neutral" compact />
     </div>
     <InlineAlert v-if="error || validationError" tone="danger">{{ error || validationError }}</InlineAlert>
     <InlineAlert v-for="warning in data?.warnings ?? []" :key="warning" tone="warning">{{ warning }}</InlineAlert>
-    <label v-if="focusClients.length" class="topology-client-picker">Client display<select v-model="selected" @change="choose(selected)"><option disabled value="">Choose a paired client</option><option v-for="client in focusClients" :key="client.uuid" :value="client.uuid">{{ client.name || client.uuid }}</option></select></label>
-    <div class="topology-canvas" role="group" aria-label="Display topology. Select a display rectangle to edit its placement.">
+    <label v-if="focusClients.length" class="topology-client-picker">{{ t('ui.topology.client_display') }}<select v-model="selected" @change="choose(selected)"><option disabled value="">{{ t('ui.topology.choose_client') }}</option><option v-for="client in focusClients" :key="client.uuid" :value="client.uuid">{{ client.name || client.uuid }}</option></select></label>
+    <div class="topology-canvas" role="group" :aria-label="t('ui.topology.canvas')">
       <button v-for="node in previewNodes" :key="node.id" type="button" class="topology-node" :class="[`topology-node--${node.kind}`, { 'is-selected': selected === node.id, 'is-inactive': !node.active }]" :style="scaled(node)" :aria-pressed="selected === node.id" @click="node.kind === 'client' && choose(node.id)" @pointerdown="startDrag($event, node)" @pointermove="moveDrag($event, node)" @pointerup="finishDrag($event, node)" @pointercancel="cancelDrag($event, node)" @lostpointercapture="cancelDrag($event, node)" @keydown.left.prevent="keyboardPlace('left', node)" @keydown.right.prevent="keyboardPlace('right', node)" @keydown.up.prevent="keyboardPlace('above', node)" @keydown.down.prevent="keyboardPlace('below', node)">
-        <strong>{{ node.kind === 'physical' ? 'Physical' : 'Client' }} · {{ node.label || node.id }}</strong><span>{{ node.mode.width }} × {{ node.mode.height }} @ {{ node.mode.refresh_hz }} Hz</span><span v-if="node.primary">Primary</span><span v-else-if="node.kind === 'client' && !node.active">Inactive preview</span>
+        <strong>{{ t(`ui.topology.${node.kind}`) }} · {{ node.label || node.id }}</strong><span>{{ node.mode.width }} × {{ node.mode.height }} @ {{ node.mode.refresh_hz }} Hz</span><span v-if="node.primary">{{ t('ui.topology.primary') }}</span><span v-else-if="node.kind === 'client' && !node.active">{{ t('ui.topology.inactive_preview') }}</span>
       </button>
     </div>
-    <label v-if="selected" class="topology-client-picker">Arrangement<select v-model="selectedArrangement"><option value="automatic">Use application layout / automatic</option><option value="preserve">Preserve / manual (Windows layout)</option><option value="left">Left of</option><option value="right">Right of</option><option value="above">Above</option><option value="below">Below</option></select></label>
-    <p v-if="selected && (selectedArrangement === 'preserve' || selectedArrangement === 'automatic')">Application streams keep their Windows positions unless their layout requests isolation. Explicit Preserve / manual also overrides isolation. Remote Monitor uses automatic placement when no direction is saved.</p>
+    <label v-if="selected" class="topology-client-picker">{{ t('ui.topology.arrangement') }}<select v-model="selectedArrangement"><option v-for="mode in ['automatic', 'preserve', 'left', 'right', 'above', 'below']" :key="mode" :value="mode">{{ t(`ui.topology.modes.${mode}`) }}</option></select></label>
+    <p v-if="selected && (selectedArrangement === 'preserve' || selectedArrangement === 'automatic')">{{ t('ui.topology.preserve_hint') }}</p>
     <div v-if="selectedPlacement?.automatic_fallback" class="topology-controls">
-      <label class="topology-primary"><input v-model="selectedPlacement.primary" type="checkbox" /> Use as primary while active</label>
+      <label class="topology-primary"><input v-model="selectedPlacement.primary" type="checkbox" /> {{ t('ui.topology.use_primary') }}</label>
     </div>
     <div v-else-if="selectedPlacement && !selectedPlacement.preserve" class="topology-controls">
-      <label>Display<select v-model="selected"><option v-for="client in focusClients" :key="client.uuid" :value="client.uuid">{{ client.name || client.uuid }}</option></select></label>
-      <label>Anchor<select v-model="selectedPlacement.anchor_id" @change="selectedPlacement.anchor_kind = (anchors.find((anchor) => anchor.id === selectedPlacement?.anchor_id)?.kind ?? 'physical')"><option v-for="anchor in anchors" :key="anchor.id" :value="anchor.id">{{ anchor.kind === 'physical' ? 'Physical: ' : 'Client: ' }}{{ anchor.label || anchor.id }}</option></select></label>
-      <label>Align<select v-model="selectedPlacement.alignment"><option value="start">Start</option><option value="center">Center</option><option value="end">End</option></select></label>
-      <label>Gap (px)<input v-model.number="selectedPlacement.gap_px" min="0" max="100000" step="1" type="number" /></label>
-      <label class="topology-primary"><input v-model="selectedPlacement.primary" type="checkbox" /> Use as primary while active</label>
+      <label>{{ t('ui.topology.display') }}<select v-model="selected"><option v-for="client in focusClients" :key="client.uuid" :value="client.uuid">{{ client.name || client.uuid }}</option></select></label>
+      <label>{{ t('ui.topology.anchor') }}<select v-model="selectedPlacement.anchor_id" @change="selectedPlacement.anchor_kind = (anchors.find((anchor) => anchor.id === selectedPlacement?.anchor_id)?.kind ?? 'physical')"><option v-for="anchor in anchors" :key="anchor.id" :value="anchor.id">{{ t(`ui.topology.${anchor.kind}`) }}: {{ anchor.label || anchor.id }}</option></select></label>
+      <label>{{ t('ui.topology.align') }}<select v-model="selectedPlacement.alignment"><option v-for="alignment in ['start', 'center', 'end']" :key="alignment" :value="alignment">{{ t(`ui.topology.alignment.${alignment}`) }}</option></select></label>
+      <label>{{ t('ui.topology.gap') }}<input v-model.number="selectedPlacement.gap_px" min="0" max="100000" step="1" type="number" /></label>
+      <label class="topology-primary"><input v-model="selectedPlacement.primary" type="checkbox" /> {{ t('ui.topology.use_primary') }}</label>
     </div>
     <div class="topology-status" v-for="client in focusClients" :key="`status-${client.uuid}`"><strong>{{ client.name || client.uuid }}</strong><StatusBadge :label="data?.runtime?.[client.uuid]?.lifecycle ?? 'inactive'" :tone="data?.runtime?.[client.uuid]?.retryable ? 'warning' : 'neutral'" compact /><span v-if="data?.runtime?.[client.uuid]?.warning">{{ data?.runtime?.[client.uuid]?.warning }}</span><span v-if="data?.runtime?.[client.uuid]?.plaintext_rtsp_warning">{{ data?.runtime?.[client.uuid]?.plaintext_rtsp_warning }}</span></div>
-    <div class="topology-actions"><AppButton variant="tertiary" label="Revert" :disabled="saving" @click="revert" /><AppButton variant="primary" label="Save layout" :disabled="Boolean(validationError)" :busy="saving" @click="save" /></div>
+    <div class="topology-actions"><AppButton variant="tertiary" :label="t('ui.topology.revert')" :disabled="saving" @click="revert" /><AppButton variant="primary" :label="t('ui.topology.save')" :disabled="Boolean(validationError)" :busy="saving" @click="save" /></div>
   </section>
 </template>
 

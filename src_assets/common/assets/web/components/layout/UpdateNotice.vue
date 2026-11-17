@@ -99,7 +99,7 @@ function dismiss(): void {
         rel="noopener noreferrer"
         >{{ t('ui.maintenance.releases.open') }}</a
       >
-      <AppButton label="Dismiss this update" variant="secondary" @click="dismiss" />
+      <AppButton :label="t('ui.updates.dismiss')" variant="secondary" @click="dismiss" />
     </InlineAlert>
     <InlineAlert v-if="failed" tone="warning" :title="t('ui.maintenance.releases.unavailable')">
       <AppButton

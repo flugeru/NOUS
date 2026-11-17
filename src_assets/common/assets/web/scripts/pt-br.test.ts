@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import test from 'node:test';
 
-const catalog = (name: string) => JSON.parse(readFileSync(new URL(`../public/assets/locale/ui/${name}.json`, import.meta.url), 'utf8'));
+const catalog = (name: string) => JSON.parse(readFileSync(new URL(`../public/assets/locale/${name}.json`, import.meta.url), 'utf8'));
 function flatten(value: Record<string, unknown>, prefix = ''): Record<string, string> {
   return Object.fromEntries(Object.entries(value).flatMap(([key, entry]) =>
     typeof entry === 'object' && entry !== null
@@ -10,15 +10,44 @@ function flatten(value: Record<string, unknown>, prefix = ''): Record<string, st
       : [[`${prefix}${key}`, String(entry)]]));
 }
 
-test('PT-BR core screens cover English keys and preserve interpolation parameters', () => {
-  const english = catalog('en');
-  const portuguese = catalog('pt_BR');
-  for (const section of ['app', 'auth', 'common', 'nav', 'shell', 'status', 'system', 'pair', 'overview', 'library', 'devices', 'browser_stream', 'logs', 'sessions', 'maintenance', 'api_tokens', 'integrations']) {
-    const expected = flatten(english.ui[section]);
-    const actual = flatten(portuguese.ui[section]);
-    assert.deepEqual(Object.keys(actual).sort(), Object.keys(expected).sort(), section);
-    for (const [key, text] of Object.entries(expected)) {
-      assert.deepEqual(actual[key].match(/\{\w+\}/g)?.sort() ?? [], text.match(/\{\w+\}/g)?.sort() ?? [], `${section}.${key}`);
+test('default host entry opens unified UI and retains explicit classic fallback', () => {
+  const server = readFileSync(new URL('../../../../../src/confighttp.cpp', import.meta.url), 'utf8');
+  const shell = readFileSync(new URL('../components/layout/AppShell.vue', import.meta.url), 'utf8');
+  assert.match(server, /path_view == "\/"[\s\S]*?query\.find\("classic"\)[\s\S]*?send_redirect\(response, request, "\/v2\/"\)/);
+  assert.match(shell, /href="\/\?classic=1"/);
+});
+
+test('literal UI translation calls reference existing keys', () => {
+  const root = new URL('../', import.meta.url);
+  const english = { ...flatten(catalog('en')), ...flatten(catalog('ui/en')) };
+  const missing: string[] = [];
+  for (const file of readdirSync(root, { recursive: true }) as string[]) {
+    if (!/^(components|views|composables|stores|configs)[\\/].*\.(vue|ts)$/.test(file)) continue;
+    const source = readFileSync(new URL(file.replaceAll('\\', '/'), root), 'utf8');
+    for (const match of source.matchAll(/\bt\(\s*['"](ui\.[\w.]+)['"]/g)) {
+      if (!Object.hasOwn(english, match[1])) missing.push(`${file}: ${match[1]}`);
     }
   }
+  assert.deepEqual(missing, []);
 });
+
+for (const prefix of ['', 'ui/']) {
+  test(`PT-BR ${prefix || 'base'} covers every English key and preserves parameters and references`, () => {
+    const english = flatten(catalog(`${prefix}en`));
+    const portuguese = flatten(catalog(`${prefix}pt_BR`));
+    const merged = { ...flatten(catalog('pt_BR')), ...flatten(catalog('ui/pt_BR')) };
+    for (const [key, text] of Object.entries(english)) {
+      assert.ok(Object.hasOwn(portuguese, key), key);
+      assert.ok(portuguese[key].trim(), `${key}: empty translation`);
+      // Plural forms may repeat parameters a different number of times.
+      const parameters = (value: string) => [...new Set(value.match(/\{\w+\}/g) ?? [])].sort();
+      assert.deepEqual(parameters(portuguese[key]), parameters(text), `${key}: parameters`);
+      const references = (value: string) => value.match(/@:[\w.]+/g) ?? [];
+      assert.deepEqual(references(portuguese[key]), references(text), `${key}: references`);
+      for (const reference of references(portuguese[key])) {
+        assert.ok(Object.hasOwn(merged, reference.slice(2)), `${key}: missing ${reference}`);
+      }
+      assert.equal(portuguese[key].split('|').length, text.split('|').length, `${key}: plural forms`);
+    }
+  });
+}

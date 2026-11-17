@@ -118,7 +118,7 @@ function value(value: number | null | undefined): string {
   <article class="host-compute-chart">
     <header class="host-compute-chart__header">
       <h4>{{ title }}</h4>
-      <div class="host-compute-chart__legend" aria-label="Compute history legend">
+      <div class="host-compute-chart__legend" :aria-label="t('ui.stats.compute_legend')">
         <span v-for="entry in series" :key="entry.key" class="host-compute-chart__legend-item">
           <i :style="{ background: entry.color }" aria-hidden="true" />{{ entry.label }}
         </span>

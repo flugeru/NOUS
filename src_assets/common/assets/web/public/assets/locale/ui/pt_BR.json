@@ -96,7 +96,818 @@
         "frame_limiter_auto_virtual_framegen": "Automático e Compatibilidade aumentam a taxa de atualização da tela virtual. Desativado acompanha o FPS da transmissão. O FPS transmitido não muda.",
         "dd_virtual_display_scale": "Altere o tamanho do texto e dos controles na tela virtual.",
         "wayland_hdr_compatibility": "Use ajustes de compatibilidade para jogos HDR na tela Wayland gerenciada."
-      }
+      },
+      "dependency_inactive": "Inativo no momento porque “{setting}” está desativado ou usa outro modo.",
+      "command_editor": {
+        "empty": "Nenhum comando configurado. Use Adicionar para criar um.",
+        "remove": "Remover comando {number}"
+      },
+      "display_recovery": {
+        "action": "Limpar estado das telas",
+        "description": "Limpe o estado persistido das telas se a restauração automática selecionar repetidamente a tela errada.",
+        "title": "Recuperação de telas"
+      },
+      "expert": {
+        "description": "Opções já presentes na configuração deste PC sem controle guiado.",
+        "direct_title": "Configuração direta",
+        "empty": "Nenhum valor avançado corresponde à busca.",
+        "label": "Avançado",
+        "title": "Configuração avançada",
+        "warning": "Estes valores são enviados diretamente ao NOUS. Preserve o formato esperado.",
+        "warning_title": "Ajustes avançados"
+      },
+      "fields": {
+        "audio_sink": {
+          "description": "Deixe vazio para selecionar automaticamente a saída de áudio do PC."
+        },
+        "bind_address": {
+          "description": "Deixe vazio para escutar em todas as interfaces disponíveis."
+        },
+        "csrf_allowed_origins": {
+          "description": "Adicione apenas origens HTTPS confiáveis, separadas por vírgulas."
+        },
+        "dd_configuration_option": {
+          "description": "Escolha como o NOUS prepara a tela selecionada antes da transmissão."
+        },
+        "dd_config_revert_on_disconnect": {
+          "description": "Restaure a área de trabalho física imediatamente em vez de manter o jogo e a tela virtual disponíveis para reconexão.",
+          "label": "Restaurar assim que o dispositivo desconectar"
+        },
+        "dd_hdr_option": {
+          "description": "Siga a solicitação HDR do dispositivo quando a tela selecionada oferecer suporte."
+        },
+        "dd_hdr_request_override": {
+          "description": "Siga o dispositivo por padrão ou substitua o HDR para dispositivos e jogos que o informam incorretamente.",
+          "label": "HDR solicitado pelo dispositivo"
+        },
+        "dd_manual_refresh_rate": {
+          "description": "Informe uma frequência inteira ou decimal em hertz. Ao iniciar um novo aplicativo sem aplicativo ou transmissão em execução, os valores correspondentes têm prioridade nesta ordem: Dispositivo, Aplicativo, Global. Entrar em uma sessão compartilhada ativa ou reconectar a um aplicativo existente, inclusive pausado, pode manter os ajustes atuais do PC. A substituição de modo de tela do dispositivo tem prioridade sobre a frequência manual."
+        },
+        "dd_config_revert_delay": {
+          "description": "Aguarde este número de milissegundos após o fim do último aplicativo ou transmissão antes de restaurar a disposição anterior das telas.",
+          "label": "Atraso para restaurar telas"
+        },
+        "dd_manual_resolution": {
+          "description": "Use LARGURAxALTURA, por exemplo 2560x1440. Ao iniciar um novo aplicativo sem aplicativo ou transmissão em execução, os valores correspondentes têm prioridade nesta ordem: Dispositivo, Aplicativo, Global. Entrar em uma sessão compartilhada ativa ou reconectar a um aplicativo existente, inclusive pausado, pode manter os ajustes atuais do PC. A substituição de modo de tela do dispositivo e o redimensionamento da resolução ao iniciar têm prioridade sobre a resolução manual."
+        },
+        "dd_mode_remapping": {
+          "description": "Use outra resolução na tela de transmissão quando o dispositivo solicitar um tamanho específico.",
+          "label": "Substituições de resolução"
+        },
+        "dd_paused_virtual_display_timeout_secs": {
+          "description": "Quando uma transmissão desconectada deixar seu jogo em execução, mantenha a tela virtual disponível por este tempo antes de removê-la.",
+          "label": "Manter tela virtual desconectada por",
+          "warning": "Quando este tempo terminar, o NOUS removerá a tela virtual mesmo se o jogo ainda estiver em execução. Alguns jogos antigos podem falhar quando sua tela desaparece. Feche o jogo primeiro ou escolha Até o jogo fechar."
+        },
+        "dd_refresh_rate_option": {
+          "label": "Frequência da tela",
+          "description": "Siga o FPS solicitado pela transmissão usando a política de tela do NOUS, preserve a frequência do PC ou defina manualmente."
+        },
+        "dd_resolution_option": {
+          "label": "Resolução da tela",
+          "description": "Siga a resolução solicitada pelo dispositivo, preserve a tela do PC ou use uma resolução manual."
+        },
+        "dd_virtual_display_permanent_count": {
+          "description": "Mantenha até quatro monitores virtuais fora das transmissões. 0 cria monitores apenas quando necessário.",
+          "label": "Telas virtuais sempre disponíveis"
+        },
+        "dd_virtual_display_scale": {
+          "description": "@:config.virtual_display_scale_desc",
+          "label": "@:config.virtual_display_scale_label"
+        },
+        "virtual_display_outputs": {
+          "description": "Nomes opcionais de conectores DRM separados por vírgulas, reservados para transmissões privadas. Deixe vazio para usar o conjunto gerenciado (oito saídas em conjuntos novos; quatro mantidas nas atualizações). No Linux 6.16+, o módulo vibeshine_drm incluído fornece HDR10 e saída de 10 bits vinculados à GPU; HDR usa captura KMS direta, KWin é recomendado para SDR, e a criação de telas gerenciadas falha se o driver personalizado estiver indisponível.",
+          "label": "Conectores de telas privadas no Linux"
+        },
+        "virtual_display_max_clients": {
+          "label": "Limite de dispositivos com tela virtual",
+          "description": "Permita que 1 a 8 dispositivos pareados possuam telas virtuais (padrão 4). Transmissões normais e Remote Monitor compartilham este limite. O Linux também é limitado pelas saídas privadas provisionadas. Reduzir o limite mantém as telas existentes até seus proprietários liberá-las."
+        },
+        "remote_monitor_mute_audio": {
+          "description": "Envie imagem e entrada sem enviar áudio do jogo ou da área de trabalho ao dispositivo Remote Monitor.",
+          "label": "Silenciar áudio no Remote Monitor"
+        },
+        "remote_monitor_disconnect_on_stream_end": {
+          "description": "Remova o monitor extra do dispositivo quando sua transmissão terminar. Deixe desativado para manter o monitor pronto para Retomar.",
+          "label": "Remover ao terminar a transmissão Remote Monitor"
+        },
+        "remote_monitor_disconnect_on_client_disconnect": {
+          "description": "Remova o monitor extra assim que a conexão do dispositivo cair ou você usar Desconectar, mesmo se o monitor estiver aguardando Retomar.",
+          "label": "Remover quando o dispositivo desconectar"
+        },
+        "remote_monitor_terminate_on_first_request": {
+          "description": "O Moonlight precisa que o NOUS anuncie o PC como disponível para dispositivos adicionais para mostrar o jogo em execução e o controle Encerrar. Deixe desativado para exigir duas solicitações de Encerrar; o dispositivo original do jogo não é afetado.",
+          "label": "Encerrar na primeira solicitação"
+        },
+        "remote_monitor_confirm_app_replacement": {
+          "description": "Rejeite a primeira solicitação de substituição de um aplicativo em execução e anuncie-o como retomável por 60 segundos para o Moonlight mostrar seu aviso de fechamento. Remote Input e Remote Monitor ainda se conectam sem esse aviso. Desative para substituir aplicativos imediatamente.",
+          "label": "Confirmar antes de substituir aplicativo em execução"
+        },
+        "capture": {
+          "description": "Automático usa KMS em telas virtuais gerenciadas no Linux para máxima compatibilidade e baixa latência. Escolhas explícitas de captura são respeitadas em telas físicas e virtuais; outros métodos não são recomendados para telas virtuais.",
+          "label": "Método de captura"
+        },
+        "encoder": {
+          "description": "Automático segue o adaptador de vídeo configurado ou a GPU dedicada com mais memória de vídeo e verifica o codificador antes de transmitir.",
+          "label": "Codificador de vídeo"
+        },
+        "fec_percentage": {
+          "description": "Adicione pacotes de recuperação a cada quadro de vídeo. O padrão de 20% atende perdas normais de pacotes; valores maiores usam mais largura de banda.",
+          "label": "Recuperação de rede (FEC)"
+        },
+        "dd_use_sunshine_virtual_display_driver": {
+          "description": "Recomendado. Usa o driver incluído no NOUS para telas virtuais individuais e compartilhadas. Desative apenas para recorrer ao SudoVDA.",
+          "label": "Usar NOUS Display Driver"
+        },
+        "frame_limiter_disable_vsync": {
+          "description": "Controla o limitador manual. A suavidade automática de jogos em tela virtual desativa o VSYNC temporariamente enquanto sua política de ritmo está ativa."
+        },
+        "frame_limiter_enable": {
+          "description": "Aplique o limitador configurado a cada transmissão. Telas virtuais já usam um limitador correspondente automaticamente enquanto a suavidade automática de jogos está ativada.",
+          "label": "Sempre limitar quadros renderizados"
+        },
+        "frame_limiter_auto_virtual_framegen": {
+          "description": "O Windows só entrega um novo quadro ao NOUS quando redesenha a tela virtual. Se a tela redesenhar apenas na frequência da transmissão, um quadro do jogo concluído logo após o redesenho espera até um ciclo inteiro antes da captura; os quadros chegam de forma irregular e o movimento engasga mesmo com FPS estável. Uma tela virtual mais rápida captura cada quadro quase assim que o jogo o desenha: a 120 FPS, um quadro pode esperar até 8,3 ms com Desativado, 4,2 ms com Compatibilidade (2×), 2,1 ms a 4× e 1 ms a 1000 Hz. O FPS da transmissão e a largura de banda não mudam, e os jogos continuam limitados à taxa da transmissão. Automático usa 1000 Hz quando o dispositivo solicita VRR (por exemplo, Moonlight com ritmo VRR) e 4× nos demais casos; VRR sempre usa 1000 Hz.",
+          "description_linux": "Automático mantém a tela virtual em 4× a taxa solicitada e limita os jogos iniciados a essa taxa com o limitador Linux selecionado. Compatibilidade usa uma frequência fixa de 2× na tela virtual.",
+          "label": "Tempo de captura (frequência da tela virtual)"
+        },
+        "frame_limiter_provider": {
+          "description": "Usado pela limitação manual e pela suavidade automática de jogos em tela virtual. No Linux, Automático usa o limitador do Proton compatível com geração de quadros e exibe o MangoHUD; no Windows, prefere RTSS, seguido do Painel de Controle NVIDIA."
+        },
+        "frame_limiter_fps_limit": {
+          "description": "0 segue a taxa da transmissão. Um valor diferente de zero também substitui o limite calculado automaticamente para telas virtuais."
+        },
+        "lossless_scaling_legacy_auto_detect": {
+          "description": "Use a detecção antiga por temporizador apenas se o método normal por atalho do Lossless Scaling estiver indisponível.",
+          "label": "Usar detecção antiga do Lossless Scaling"
+        },
+        "lossless_scaling_path": {
+          "description": "Deixe vazio para detectar LosslessScaling.exe automaticamente. Escolha uma instalação detectada ou informe o caminho completo do executável para fixar uma.",
+          "label": "Executável do Lossless Scaling"
+        },
+        "output_name": {
+          "description": "Deixe vazio para o NOUS escolher a tela. Caso contrário, use o nome exato do dispositivo."
+        },
+        "port": {
+          "description": "Escolha a porta TCP e UDP base do Moonlight e da interface web. Acesso WAN expõe a interface web à internet."
+        },
+        "rtss_frame_limit_type": {
+          "description": "Este modo se aplica a transmissões de telas físicas. Telas virtuais usam NVIDIA Reflex, salvo se a substituição opcional para telas virtuais estiver ativada.",
+          "label": "Modo RTSS SyncLimiter"
+        },
+        "rtss_allow_virtual_display_override": {
+          "description": "Telas virtuais normalmente exigem NVIDIA Reflex porque DLSS Frame Generation pode adicionar muita latência. Ative apenas para aplicar o modo RTSS selecionado às telas virtuais; marque um jogo DLSS/FSR como Geração de quadros > Fornecida pelo jogo para forçar Reflex nesse aplicativo.",
+          "label": "Permitir modos RTSS sem Reflex em telas virtuais",
+          "warning": "Aviso: Async, Front-edge Sync, Back-edge Sync ou qualquer modo além de NVIDIA Reflex pode causar latência muito alta quando um jogo usa DLSS Frame Generation. Ao ativar, você aceita esse comprometimento nas transmissões de telas virtuais."
+        },
+        "rtss_install_path": {
+          "description": "Escolha uma instalação do RTSS em Program Files ou deixe vazio para detectar automaticamente. Outros locais recorrem ao padrão por segurança do serviço. O RTSS fica pronto quando seus componentes de interceptação assinados são confiáveis.",
+          "label": "Pasta de instalação do RTSS"
+        },
+        "virtual_display_layout": {
+          "description": "Escolha se as telas físicas permanecem na área de trabalho do PC durante a transmissão.",
+          "label": "Como se integra à área de trabalho"
+        },
+        "wayland_hdr_compatibility": {
+          "description": "Ative variáveis de ambiente adicionais para jogos iniciados durante uma transmissão HDR confirmada no KDE Plasma Wayland. Isso pode ajudar jogos Proton, DXVK e Vulkan a detectar HDR sem opções de inicialização do Steam. Nunca força HDR: SDR de 10 bits, Forçar HDR desativado e outros resultados SDR continuam tendo prioridade.",
+          "label": "Ativar compatibilidade HDR do KDE Wayland"
+        },
+        "virtual_display_mode": {
+          "description": "Escolha se o NOUS captura um monitor físico ou cria uma tela com o tamanho solicitado pelo dispositivo.",
+          "label": "Tela de transmissão"
+        },
+        "wgc_direct_encoder_input": {
+          "description": "Codifique cada quadro capturado no Windows diretamente, sem copiá-lo antes. Isso reduz a latência de codificação. Desative para usar o método anterior com cópia.",
+          "label": "Entrada direta da captura do Windows"
+        },
+        "wgc_pacing_smoothing": {
+          "description": "Reduza mudanças perceptíveis no ritmo dos quadros com Windows Graphics Capture ativo.",
+          "label": "Suavizar ritmo de captura do Windows"
+        }
+      },
+      "integrations": {
+        "automatic_path_hint": "Este caminho foi detectado no PC. Só será salvo ao escolher “Salvar caminho detectado”; mantê-lo assim preserva a detecção automática.",
+        "browse_computer": "Este PC",
+        "browse_description": "Escolha um executável no sistema de arquivos do PC. Use a seleção para atualizar este rascunho e salve os ajustes para aplicar.",
+        "browse_empty": "Esta pasta não contém executáveis nem pastas.",
+        "browse_entries": "Entradas do sistema de arquivos do PC",
+        "browse_executable": "Executável",
+        "browse_failed": "Não foi possível ler a pasta do PC.",
+        "browse_folder": "Pasta",
+        "browse_host": "Procurar no PC",
+        "browse_host_hint": "Escolha LosslessScaling.exe no PC. Arquivos locais do navegador não são usados.",
+        "browse_loading": "Lendo pasta do PC…",
+        "browse_parent": "Pasta superior",
+        "browse_path": "Pasta do PC",
+        "browse_selected": "Executável selecionado: {path}",
+        "browse_title": "Escolher executável do Lossless Scaling",
+        "browse_detected": "Ver caminhos detectados",
+        "checking": "Verificando…",
+        "checking_description": "Verificando se há uma instalação utilizável no PC.",
+        "choose_detected": "Escolher instalação detectada",
+        "detected_installations": "Instalações detectadas",
+        "explicit_path_hint": "Este caminho está salvo como substituição explícita da instalação. Limpe para voltar à detecção automática.",
+        "hide_detected": "Ocultar caminhos detectados",
+        "needs_attention": "Precisa de atenção",
+        "not_detected": "Não detectado",
+        "not_found": "Caminho não encontrado",
+        "ready": "Pronto para usar",
+        "rescan": "Buscar novamente",
+        "status_unavailable": "Estado indisponível",
+        "status_unavailable_description": "O PC não informou o estado da instalação. Você ainda pode informar um caminho manualmente.",
+        "use_detected": "Salvar caminho detectado",
+        "use_selected": "Usar caminho selecionado",
+        "playnite": {
+          "directory_label": "Diretório do Playnite",
+          "directory_hint": "Se a detecção automática falhar, escolha a pasta do PC que contém Playnite.DesktopApp.exe. Salve os ajustes antes de instalar a extensão. Limpe o caminho para restaurar a detecção automática.",
+          "browse_title": "Escolher diretório do Playnite",
+          "browse_selected": "Pasta selecionada: {path}",
+          "browse_empty": "Esta pasta não contém subpastas. Você pode selecionar a pasta atual."
+        },
+        "lossless": {
+          "not_detected": "Lossless Scaling não encontrado. Instale pelo Steam ou informe o caminho completo de LosslessScaling.exe.",
+          "path_is_directory": "O caminho selecionado é uma pasta. Escolha o próprio LosslessScaling.exe.",
+          "path_missing": "O executável configurado do Lossless Scaling não foi encontrado. Escolha outra instalação detectada ou limpe o caminho para retomar a detecção automática.",
+          "ready": "Lossless Scaling encontrado e pronto para gerar quadros no processo."
+        },
+        "rtss": {
+          "active": "RTSS ativo na transmissão atual.",
+          "auto": "RTSS instalado e pronto. A seleção automática dará preferência a ele para controlar o ritmo dos quadros.",
+          "disabled": "RTSS instalado e pronto, mas a limitação de quadros está desativada.",
+          "hooks_missing": "RTSS encontrado, mas sua DLL de interceptação está ausente. Reinstale o RTSS para ativar o controle de ritmo dos quadros.",
+          "not_detected": "RTSS não encontrado. Instale ou informe sua pasta de instalação; a seleção automática usará outro limitador quando disponível.",
+          "path_missing": "A pasta configurada do RTSS não foi encontrada. Escolha outra pasta ou limpe o caminho para retomar a detecção automática.",
+          "ready": "RTSS e seus componentes de interceptação estão instalados. Controle de ritmo dos quadros pronto.",
+          "selected": "RTSS selecionado e pronto para a próxima transmissão.",
+          "saved_status_hint": "O estado do RTSS verifica a instalação salva. Salve alterações de caminho antes de buscar novamente; transmissões ativas podem adiar sua aplicação."
+        },
+        "saved_ready": "Instalação salva pronta"
+      },
+      "groups": {
+        "app_focus": {
+          "title": "Foco de aplicativos gerenciados",
+          "description": "Traga automaticamente os jogos de bibliotecas gerenciadas ao primeiro plano após iniciar."
+        },
+        "audio_routing": {
+          "title": "Roteamento de áudio"
+        },
+        "display_driver": {
+          "description": "Mantenha as escolhas recomendadas, salvo ao diagnosticar problemas ao iniciar telas.",
+          "title": "Driver de tela virtual"
+        },
+        "display_recovery": {
+          "title": "Comportamento de restauração"
+        },
+        "display_target": {
+          "title": "Seleção e automação de telas"
+        },
+        "display_virtual": {
+          "description": "Principais escolhas de tela de transmissão, com controles específicos abaixo.",
+          "title": "Tela virtual"
+        },
+        "display_remote_monitor": {
+          "description": "Use um dispositivo pareado como tela adicional. Escolha se recebe áudio e quando a tela é removida.",
+          "title": "Remote Monitor"
+        },
+        "everyday_access": {
+          "title": "Onde gerenciar e conectar"
+        },
+        "everyday_automation": {
+          "description": "Scripts e automação opcionais do PC para usuários avançados. A maioria das configurações não precisa alterar estes controles.",
+          "title": "Automação e scripts"
+        },
+        "everyday_capture": {
+          "title": "Captura, codificação, som e controles"
+        },
+        "everyday_display": {
+          "title": "Sua tela de transmissão",
+          "description": "Escolha uma tela virtual ou monitor físico e corresponda à resolução, frequência e HDR do dispositivo."
+        },
+        "everyday_integrations": {
+          "title": "Integrações de transmissão",
+          "description": "Conecte limitação de quadros e Lossless Scaling à transmissão.",
+          "description_linux": "Configure a limitação de quadros do Proton ou MangoHUD e a sobreposição de desempenho.",
+          "description_windows": "Configure limitação de quadros, RTSS e Lossless Scaling."
+        },
+        "everyday_pyrowave": {
+          "title": "PyroWave",
+          "description": "Alternativa do NOUS a H.264, HEVC e AV1."
+        },
+        "everyday_encoding": {
+          "description": "Use automaticamente a GPU dedicada preferida e ajuste apenas a predefinição correspondente e os dados extras de recuperação da transmissão.",
+          "title": "Codificação e recuperação da transmissão"
+        },
+        "everyday_host": {
+          "description": "Defina como este PC aparece, informa atividade e notifica sobre atualizações.",
+          "title": "Identidade e diagnóstico do PC"
+        },
+        "everyday_pacing": {
+          "description": "Ajuste os jogos à taxa solicitada pela transmissão para reduzir movimento irregular e trabalho desnecessário da GPU.",
+          "title": "Suavidade e ritmo dos quadros"
+        },
+        "everyday_resolution": {
+          "description": "Use outra resolução de transmissão para tamanhos comuns de dispositivos sem substituir a correspondência automática.",
+          "title": "Substituições de resolução"
+        },
+        "everyday_recovery": {
+          "description": "Escolha o que acontece após desconectar e mantenha uma disposição de área de trabalho confiável pronta para restaurar.",
+          "title": "Ciclo de vida e recuperação de telas"
+        },
+        "everyday_remote_monitor": {
+          "description": "Use um dispositivo pareado como tela adicional. Escolha se recebe áudio e quando a tela é removida.",
+          "title": "Remote Monitor"
+        },
+        "everyday_smoothness": {
+          "description": "Escolha captura mais rápida da tela virtual e ritmo automático dos jogos ou desative esses recursos.",
+          "description_linux": "Escolha ritmo automático da tela virtual ou modo de compatibilidade. Configure Proton e MangoHUD em Integrações de transmissão abaixo.",
+          "title": "Captura de jogos mais suave"
+        },
+        "everyday_virtual_display": {
+          "description": "Personalize disposição, escala e remoção de telas virtuais.",
+          "title": "Opções avançadas de tela virtual"
+        },
+        "file_paths": {
+          "title": "Caminhos de dados"
+        },
+        "host_history": {
+          "title": "Histórico e diagnóstico em tempo real"
+        },
+        "host_identity": {
+          "title": "Identidade e comportamento local"
+        },
+        "input_devices": {
+          "title": "Entrada dos dispositivos"
+        },
+        "input_repeat": {
+          "title": "Repetição do teclado"
+        },
+        "network_access": {
+          "title": "Acesso e conectividade"
+        },
+        "network_security": {
+          "title": "Segurança da transmissão e do navegador"
+        },
+        "pacing_capture": {
+          "title": "Método de captura"
+        },
+        "pacing_integrations": {
+          "description": "Caminhos e comportamento do RTSS e Lossless Scaling.",
+          "title": "Integrações de ritmo dos quadros"
+        },
+        "pacing_limiter": {
+          "title": "Limitador de quadros"
+        },
+        "video_codecs": {
+          "title": "Suporte a codecs"
+        },
+        "video_encoder": {
+          "title": "Seleção de codificador"
+        },
+        "video_quality": {
+          "title": "Qualidade e limite de transporte"
+        },
+        "everyday_appearance": {
+          "title": "Resolução e aparência",
+          "description": "Siga a resolução e o FPS solicitados pelo dispositivo ou substitua a tela do PC. A escala altera o tamanho do texto e dos controles."
+        },
+        "everyday_audio": {
+          "title": "Áudio",
+          "description": "Envie o som do PC ao dispositivo de transmissão."
+        },
+        "everyday_input": {
+          "title": "Entrada",
+          "description": "Escolha quais controles os dispositivos de transmissão podem usar."
+        },
+        "video_rtx_hdr": {
+          "title": "RTX HDR",
+          "description": "Ajustes de conversão HDR da NVIDIA no Windows."
+        },
+        "encoder_nvenc": {
+          "title": "NVIDIA NVENC",
+          "description": "Ajustes avançados deste codificador. O PC verifica a seleção automática ao iniciar a transmissão."
+        },
+        "encoder_qsv": {
+          "title": "Intel QuickSync",
+          "description": "Ajustes avançados deste codificador. O PC verifica a seleção automática ao iniciar a transmissão."
+        },
+        "encoder_amd": {
+          "title": "AMD AMF",
+          "description": "Ajustes avançados deste codificador. O PC verifica a seleção automática ao iniciar a transmissão."
+        },
+        "encoder_vt": {
+          "title": "Apple VideoToolbox",
+          "description": "Ajustes avançados deste codificador. O PC verifica a seleção automática ao iniciar a transmissão."
+        },
+        "encoder_vaapi": {
+          "title": "VA-API",
+          "description": "Ajustes avançados deste codificador. O PC verifica a seleção automática ao iniciar a transmissão."
+        },
+        "encoder_vk": {
+          "title": "Vulkan",
+          "description": "Ajustes avançados deste codificador. O PC verifica a seleção automática ao iniciar a transmissão."
+        },
+        "encoder_sw": {
+          "title": "Codificação por software",
+          "description": "Ajustes avançados deste codificador. O PC verifica a seleção automática ao iniciar a transmissão."
+        },
+        "everyday_compatibility": {
+          "title": "Compatibilidade de tela",
+          "description": "Substitua solicitações HDR ou o método de captura ao resolver problemas."
+        }
+      },
+      "loading": "Carregando ajustes",
+      "metadata_unavailable": {
+        "description": "Ajustes específicos do PC podem ficar ocultos até o NOUS informar a plataforma e o hardware deste sistema.",
+        "title": "Alguns detalhes do PC estão indisponíveis"
+      },
+      "no_results": "Nenhum ajuste corresponde a “{query}”.",
+      "network": {
+        "listener_hint": "A porta base determina as portas TCP e UDP abaixo. Mantenha todo o intervalo disponível no firewall.",
+        "table_caption": "Portas de rede do NOUS"
+      },
+      "notices": {
+        "display_state_cleared": "Estado salvo dos dispositivos de tela limpo.",
+        "restarting": "O NOUS está reiniciando. Esta página reconectará quando o PC estiver pronto.",
+        "saved": "Configuração salva e aplicada.",
+        "saved_deferred": "Salvo. As alterações serão aplicadas após o fim da transmissão ativa.",
+        "saved_restart": "Salvo. Reinicie o NOUS para aplicar estas alterações.",
+        "title": "Configuração atualizada"
+      },
+      "options": {
+        "address_family": {
+          "both": "IPv4 e IPv6",
+          "ipv4": "Somente IPv4"
+        },
+        "capture": {
+          "auto_ddx": "Automático · Desktop Duplication",
+          "auto_wgc": "Automático · Windows Graphics Capture · Variável",
+          "ddx": "Desktop Duplication · Compatibilidade",
+          "kms": "DRM/KMS",
+          "kwin": "Transmissão de tela KDE/KWin",
+          "gamescope": "SteamOS / Gamescope",
+          "nvfbc": "NVIDIA NvFBC",
+          "portal": "XDG Desktop Portal",
+          "wgc": "Windows Graphics Capture · Variável",
+          "wgcc": "Windows Graphics Capture · Constante",
+          "wlr": "Cópia de tela wlroots",
+          "x11": "X11 (XCB)"
+        },
+        "codec": {
+          "eight_bit": "8 bits",
+          "hdr_ten_bit": "8 bits e HDR de 10 bits"
+        },
+        "current": "{value} · Configurado atualmente",
+        "display_engine": {
+          "current": "Mecanismo atual",
+          "legacy": "Mecanismo antigo"
+        },
+        "display_preparation": {
+          "ensure_active": "Ativar",
+          "ensure_only": "Usar somente esta tela",
+          "ensure_primary": "Ativar e tornar principal",
+          "verify_only": "Verificar se está ativa"
+        },
+        "encoder": {
+          "amdvce_ffmpeg": "AMD AMF (FFmpeg antigo)",
+          "amdvce_experimental": "AMD AMF (Nativo)",
+          "auto": "Automático · Recomendado",
+          "auto_selected": "Automático · {encoder}",
+          "mediafoundation": "Windows Media Foundation",
+          "nvenc": "NVIDIA NVENC (Nativo)",
+          "nvenc_ffmpeg": "NVIDIA NVENC (FFmpeg antigo)",
+          "nvenc_experimental": "NVIDIA NVENC (Nativo)",
+          "nvenc_legacy": "NVIDIA NVENC (FFmpeg antigo)",
+          "quicksync": "Intel Quick Sync",
+          "software": "Software",
+          "vaapi": "VA-API",
+          "videotoolbox": "Apple VideoToolbox",
+          "vulkan": "Vulkan Video"
+        },
+        "encryption": {
+          "optional": "Usar quando compatível",
+          "required": "Obrigatória"
+        },
+        "frame_generation": {
+          "automatic": "Automático — 1000 Hz para dispositivos VRR; caso contrário, 4× a taxa da transmissão (recomendado)",
+          "automatic_linux": "Automático — tela virtual em 4×; jogos limitados à taxa da transmissão (recomendado)",
+          "compatibility": "Compatibilidade — 2× a taxa da transmissão",
+          "compatibility_linux": "Compatibilidade — tela virtual em 2×; jogos limitados à taxa da transmissão",
+          "off": "Desativado — taxa da transmissão, sem limite automático dos jogos",
+          "off_linux": "Desativado — sem frequência automática da tela virtual nem limite dos jogos",
+          "vrr": "VRR — sempre 1000 Hz, quadros capturados em até 1 ms"
+        },
+        "frame_limiter_provider": {
+          "autoLinux": "Automático — limitador do Proton + sobreposição do MangoHUD",
+          "mangohud": "MangoHUD",
+          "mangohudProton": "MangoHUD + Proton",
+          "proton": "Proton DXVK/VKD3D",
+          "none": "Nenhum",
+          "nvidia": "Painel de Controle NVIDIA",
+          "rtss": "RivaTuner Statistics Server"
+        },
+        "gpu": {
+          "auto": "Automático · Recomendado",
+          "current": "{name} · Configurada atualmente"
+        },
+        "hdr": {
+          "auto": "Corresponder ao dispositivo",
+          "preserve": "Não alterar HDR"
+        },
+        "hdr_request": {
+          "auto": "Seguir o dispositivo",
+          "force_off": "Sempre desativar HDR",
+          "force_on": "Sempre ativar HDR"
+        },
+        "log_level": {
+          "debug": "Depuração",
+          "error": "Erro",
+          "fatal": "Somente fatal",
+          "info": "Informação",
+          "none": "Nenhum",
+          "verbose": "Detalhado",
+          "warning": "Aviso"
+        },
+        "nvenc_preset": {
+          "p1": "P1 (mais rápido, padrão)",
+          "p2": "P2",
+          "p3": "P3",
+          "p4": "P4 (qualidade equilibrada)",
+          "p5": "P5",
+          "p6": "P6",
+          "p7": "P7 (mais lento)"
+        },
+        "qsv_preset": {
+          "fast": "Rápido (menor qualidade)",
+          "faster": "Mais rápido",
+          "medium": "Médio (padrão)",
+          "slow": "Lento (boa qualidade)",
+          "slower": "Mais lento (melhor qualidade)",
+          "veryfast": "Muito rápido (qualidade mínima)",
+          "veryslow": "Muito lento (qualidade máxima)"
+        },
+        "amd_quality": {
+          "auto": "Automático · Padrão do driver",
+          "balanced": "Equilibrado (padrão)",
+          "quality": "Qualidade",
+          "speed": "Velocidade"
+        },
+        "origin": {
+          "lan": "Rede local",
+          "pc": "Somente este PC",
+          "wan": "Qualquer rede"
+        },
+        "paused_display_timeout": {
+          "four_hours": "4 horas",
+          "one_hour": "1 hora",
+          "thirty_minutes": "30 minutos",
+          "two_hours": "2 horas · Recomendado",
+          "until_game_closes": "Até o jogo fechar"
+        },
+        "refresh": {
+          "auto": "Corresponder ao dispositivo",
+          "highest": "Preferir a maior disponível",
+          "manual": "Usar frequência manual",
+          "preserve": "Manter frequência atual"
+        },
+        "resolution": {
+          "auto": "Corresponder ao dispositivo",
+          "manual": "Usar resolução manual",
+          "preserve": "Manter resolução atual"
+        },
+        "rtss_type": {
+          "async": "Async",
+          "back_edge": "Back-edge sync",
+          "front_edge": "Front-edge sync",
+          "reflex": "NVIDIA Reflex"
+        },
+        "virtual_display_layout": {
+          "exclusive": "Somente tela virtual",
+          "extended": "Estender área de trabalho",
+          "extended_isolated": "Estender e isolar tela virtual",
+          "extended_primary": "Estender e tornar virtual principal",
+          "extended_primary_isolated": "Principal e isolada"
+        },
+        "virtual_display_mode": {
+          "disabled": "Tela física",
+          "physical": "Tela física",
+          "per_client": "Tela virtual por dispositivo",
+          "shared": "Uma tela virtual compartilhada"
+        },
+        "virtual_scale": {
+          "percent": "{value}%",
+          "preserve": "@:config.virtual_display_scale_auto",
+          "recommended": "@:config.virtual_display_scale_recommended"
+        },
+        "unsupported_saved": "Valor salvo não compatível ({value})"
+      },
+      "placeholders": {
+        "follow_client": "0 · Seguir o dispositivo",
+        "host_name": "Usar nome deste PC",
+        "refresh_rate": "120",
+        "resolution": "2560x1440"
+      },
+      "overrides": {
+        "add": "Adicionar substituição de resolução",
+        "empty_description": "Por exemplo, use 3840x2160 na tela de transmissão quando o dispositivo solicitar 2560x1440.",
+        "empty_title": "Nenhuma substituição de resolução",
+        "final_refresh": "Usar esta frequência no PC",
+        "final_required": "Escolha a resolução ou frequência a usar no PC.",
+        "final_resolution": "Usar isto na tela de transmissão",
+        "hint": "Quando um dispositivo solicitar uma resolução, use outra na tela de transmissão. Resoluções comuns aparecem durante a digitação; as regras são verificadas de cima para baixo.",
+        "inactive_description": "Substituições de resolução não são aplicadas quando resolução e frequência estão ambas fixas ou preservadas.",
+        "inactive_title": "Substituições inativas no momento",
+        "invalid_saved_description": "O valor salvo não está no formato compatível de três listas. Ele foi preservado sem alterações para impedir que estes controles o substituam silenciosamente. Corrija no arquivo de configuração antes de editar substituições aqui.",
+        "invalid_saved_title": "Não foi possível ler as substituições de resolução salvas",
+        "manual_description": "Resolução ou frequência fixa tem prioridade sobre regras de remapeamento daquele valor. Ao iniciar um novo aplicativo sem aplicativo ou transmissão em execução, os valores correspondentes têm prioridade nesta ordem: Dispositivo, Aplicativo, Global. Entrar em uma sessão compartilhada ativa ou reconectar a um aplicativo existente, inclusive pausado, pode manter os ajustes atuais do PC. A substituição de modo de tela do dispositivo tem prioridade sobre valores manuais. O redimensionamento da resolução ao iniciar também tem prioridade sobre a resolução manual. As regras continuam ativas para cada valor definido como Corresponder ao dispositivo, salvo se a substituição de modo de tela do dispositivo estiver ativa; ela ignora todo o remapeamento.",
+        "manual_title": "Modo de tela fixo ativo",
+        "policy_conflict_description": "As listas de regras de frequência automática e fixa contêm comportamentos diferentes para a mesma resolução. Preserve essas regras específicas em Ajustes avançados de tela ou faça com que concordem antes de usar o editor simplificado.",
+        "policy_conflict_title": "Regras de resolução específicas por política precisam de atenção",
+        "policy_unsynced_action": "Usar estas substituições com todas as políticas de frequência",
+        "policy_unsynced_description": "As regras existentes diferem entre frequência automática e fixa. Você pode continuar gerenciando-as separadamente em Ajustes avançados de tela ou fazer explicitamente as substituições simples valerem para ambas.",
+        "policy_unsynced_title": "Substituições existentes são específicas por política",
+        "refresh_error": "Informe uma frequência maior que 0 e no máximo 1000.",
+        "requested_fps_error": "Informe uma taxa de quadros solicitada inteira de 1 a 1000.",
+        "refresh_optional": "Também corresponder ou alterar a taxa de quadros",
+        "remove": "Remover substituição",
+        "remove_rule": "Remover substituição de resolução {number}",
+        "requested_fps": "Quando o dispositivo solicitar esta taxa de quadros",
+        "requested_required": "Escolha a resolução do dispositivo à qual esta substituição deve corresponder.",
+        "requested_resolution": "Quando o dispositivo solicitar",
+        "resolution_error": "Use LARGURAxALTURA, por exemplo 1920x1080.",
+        "rule": "Substituição {number}",
+        "shadowed_description": "Uma regra avançada anterior pode corresponder antes de uma destas substituições. Revise a ordem em Ajustes avançados de tela se a substituição exibida não funcionar.",
+        "shadowed_title": "Uma regra avançada pode ter prioridade",
+        "simple_hint": "Quando o dispositivo solicitar uma resolução, forneça outra. Estas substituições continuam funcionando com frequência automática ou fixa."
+      },
+      "recovery": {
+        "checking": "Verificando",
+        "checking_detail": "Verificando a referência salva para recuperação de telas.",
+        "clear_hotkey": "Limpar atalho",
+        "create_confirm": "Salvar a disposição atual das telas do Windows como cópia de recuperação de referência?",
+        "create_snapshot": "Criar cópia",
+        "golden_title": "Cópia de recuperação de referência",
+        "hotkey_configured": "Configurado",
+        "hotkey_detail": "Quando o NOUS roda na sua sessão de área de trabalho do Windows, use este atalho para restaurar a referência da sessão, recorrer à disposição de referência quando necessário, remover telas virtuais e parar a recuperação. Instalações em modo de serviço podem não receber atalhos da área de trabalho.",
+        "hotkey_invalid": "Use F1–F24, uma letra ou um número como tecla principal.",
+        "hotkey_modifier_required": "Inclua Ctrl, Alt, Shift ou Win para impedir que a digitação normal acione a recuperação de telas.",
+        "hotkey_listening": "Aguardando — pressione o atalho desejado.",
+        "hotkey_not_configured": "Não configurado",
+        "hotkey_placeholder": "Clique e pressione um atalho",
+        "hotkey_title": "Atalho de emergência para telas virtuais",
+        "hotkey_unsafe": "Precisa de tecla modificadora",
+        "hotkey_unsafe_detail": "Este atalho salvo pode ser acionado durante a digitação normal. Adicione Ctrl, Alt, Shift ou Win ou substitua pelo atalho recomendado.",
+        "not_created": "Não criada",
+        "not_created_detail": "Salve a disposição física que o NOUS deve recuperar quando a restauração normal da sessão estiver indisponível.",
+        "prefer_golden_detail": "Use esta disposição confiável primeiro sempre que o NOUS restaurar a área de trabalho. Se não for possível restaurar, o NOUS recorre à cópia da sessão.",
+        "prefer_golden_title": "Restaurar esta área de trabalho por padrão",
+        "prefer_golden_unavailable": "Crie uma cópia de recuperação para tornar uma disposição confiável o padrão. A restauração pela sessão continua disponível como alternativa.",
+        "ready": "Pronta",
+        "ready_detail": "Uma disposição física confiável está disponível como último recurso de recuperação.",
+        "refresh_recommended": "Atualização recomendada",
+        "refresh_recommended_detail": "A disposição salva é antiga ou acumulou falhas repetidas de restauração. Atualize enquanto a área de trabalho física estiver organizada corretamente.",
+        "replace_confirm": "Substituir a cópia de recuperação de referência pela disposição atual das telas do Windows?",
+        "retry_status": "Verificar estado novamente",
+        "saving_snapshot": "Solicitando cópia",
+        "snapshot_error": "Não foi possível salvar a cópia de recuperação de referência.",
+        "snapshot_requested": "Captura da cópia solicitada. O estado será atualizado após o auxiliar de telas terminar.",
+        "status_error": "Não foi possível carregar o estado da cópia de recuperação de referência.",
+        "unavailable": "Indisponível",
+        "unavailable_detail": "O NOUS não conseguiu ler o estado da cópia de recuperação de referência.",
+        "update_snapshot": "Atualizar cópia",
+        "use_recommended_hotkey": "Usar Ctrl + Alt + Shift + F12"
+      },
+      "summary": {
+        "display": "Tela de transmissão",
+        "automatic_pacing": "Automático · 1000 Hz para dispositivos VRR; caso contrário, 4× a taxa da transmissão / limite do jogo segue a transmissão",
+        "automatic_pacing_linux": "Automático · tela virtual em 4× / limite do jogo segue a transmissão",
+        "automatic_pacing_limiter_off": "Automático · 1000 Hz para dispositivos VRR; caso contrário, 4× a taxa da transmissão · limitador desativado",
+        "automatic_pacing_limiter_off_linux": "Automático · tela virtual em 4× · limitador desativado",
+        "compatibility_pacing": "Compatibilidade · tela e captura fixas em 2×",
+        "compatibility_pacing_linux": "Compatibilidade · tela virtual em 2× / limite do jogo segue a transmissão",
+        "compatibility_pacing_limiter_off": "Compatibilidade · tela e captura fixas em 2× · limitador desativado",
+        "compatibility_pacing_limiter_off_linux": "Compatibilidade · tela virtual em 2× · limitador desativado",
+        "capture": "Captura",
+        "fixed_resolution": "Fixa em {resolution}",
+        "game_smoothness": "Suavidade dos jogos",
+        "host_default": "Padrão do PC",
+        "manual_refresh_pacing": "Frequência manual · troca automática desativada",
+        "matches_client": "Corresponde ao dispositivo",
+        "overrides_need_attention": "Substituições precisam de atenção",
+        "pacing_off": "Ritmo automático desativado",
+        "physical_pacing": "Comportamento da tela física",
+        "preserves_host_resolution": "Preserva resolução do PC",
+        "resolution": "Resolução",
+        "substitutions": "{count} substituição | {count} substituições",
+        "label": "Configuração atual de uso diário"
+      },
+      "virtual_display_unavailable": {
+        "description": "Escolha uma tela física ou conclua a instalação do módulo de tela virtual do Linux antes de transmitir.",
+        "title": "Telas virtuais não estão prontas neste PC"
+      },
+      "windows_display": {
+        "title": "Estado do driver de tela virtual",
+        "description": "Informa o driver observado pelo PC após a verificação mais recente em tempo de execução.",
+        "error_title": "Estado de tela indisponível",
+        "error_body": "O PC não conseguiu atualizar o estado das telas virtuais. A última observação continua visível.",
+        "drivers": {
+          "unknown": "Driver desconhecido"
+        },
+        "states": {
+          "failed": "Indisponível",
+          "uninitialized": "Sem resultado do driver"
+        },
+        "messages": {
+          "ready": {
+            "title": "Driver respondeu",
+            "description": "{driver} respondeu à última verificação em tempo de execução e está pronto para telas virtuais."
+          },
+          "failed": {
+            "title": "Driver indisponível",
+            "description": "{driver} não respondeu à última verificação em tempo de execução. Repare ou reinstale o driver selecionado antes de usar uma tela virtual."
+          },
+          "uninitialized": {
+            "title": "Nenhum resultado do driver disponível",
+            "description": "O NOUS abre a conexão com a tela virtual quando necessário. Não há resultado atual do driver. Este estado, sozinho, não indica falha."
+          },
+          "version_incompatible": {
+            "title": "Versão do driver incompatível",
+            "description": "{driver} informou uma versão de protocolo incompatível. Repare ou reinstale o driver para corresponder a esta compilação do NOUS."
+          },
+          "watchdog_failed": {
+            "title": "Falha no monitor de integridade do driver",
+            "description": "{driver} parou de responder ao monitor de integridade. Repare ou reinstale o driver antes de iniciar outra transmissão com tela virtual."
+          },
+          "unknown": {
+            "title": "Estado do driver desconhecido",
+            "description": "O PC não informou uma observação válida do driver de tela virtual. Verifique o serviço do PC e tente novamente."
+          }
+        },
+        "configured": "Seleção configurada: {driver}",
+        "observed": "Observado pelo PC: {driver}",
+        "observed_unknown": "Observado pelo PC: ainda sem resultado do driver",
+        "configured_mismatch": "Os ajustes selecionam {configured}, mas a última observação em execução foi {observed}. Salve a seleção e reinicie o NOUS antes de confiar no estado.",
+        "status_code": "Código de estado em execução: {code}",
+        "refresh": "Atualizar estado",
+        "refreshing": "Atualizando estado",
+        "dummy_plug_title": "A substituição Desativar VSYNC é obrigatória para a solução HDR com adaptador de monitor simulado",
+        "dummy_plug_description": "Enquanto esta solução estiver ativada, o NOUS força e bloqueia a opção Desativar VSYNC. Desativar a solução mantém sua escolha salva de VSYNC sem alterações.",
+        "vsync_forced": "Obrigatório pela solução HDR ativa com adaptador físico de monitor simulado. A opção Desativar VSYNC aparece ativada e não pode ser alterada até desativar a solução.",
+        "next_step": "Selecione um driver em Ajustes de tela, salve e inicie uma transmissão para executar uma nova verificação."
+      },
+      "linux": {
+        "title": "Prontidão das telas",
+        "recommendation": "Telas virtuais correspondem automaticamente à resolução e frequência do dispositivo.",
+        "explanation": "A captura KMS em telas virtuais gerenciadas fornece entrega suave de quadros e baixa latência de captura. Outros métodos são permitidos, mas podem não funcionar corretamente e não usam este método de baixa latência. A correspondência automática de resolução e frequência mantém a tela sincronizada com o dispositivo.",
+        "per_client": "Tela virtual por dispositivo",
+        "shared": "Uma tela virtual compartilhada",
+        "states": {
+          "active": "Captura verificada ativa",
+          "configured": "Configurado para captura direta",
+          "unavailable": "Configuração precisa de atenção",
+          "physical": "Tela física selecionada",
+          "unknown": "Ainda não verificado"
+        },
+        "reasons": {
+          "driver_or_outputs_unavailable": "O driver de tela virtual ou suas saídas gerenciadas estão indisponíveis. Confira a instalação Linux antes de selecionar uma tela virtual.",
+          "session_or_output_unavailable": "A sessão de área de trabalho ou saída virtual não está pronta. Confira a sessão e a configuração de telas.",
+          "unknown": "O PC não conseguiu verificar suas telas virtuais. Confira a configuração Linux e tente novamente."
+        },
+        "greeter": "A transmissão antes do login usa uma tela virtual compartilhada. Entrar encerra esta transmissão; reconecte para transmitir sua área de trabalho. As preferências da área de trabalho valem após o login.",
+        "repair": "Abrir configuração e diagnóstico do Linux",
+        "audio": "O Linux usa automaticamente a saída virtual de áudio gerenciada. Altere o roteamento apenas quando precisar de um dispositivo específico.",
+        "unverified": "O PC está acessível, mas a prontidão para transmissão ainda não foi verificada.",
+        "check_setup": "Confira a prontidão da tela e do codificador em Ajustes ou abra Logs para consultar a falha informada.",
+        "fields": {
+          "virtual_display_mode": "Telas virtuais são recomendadas para menor latência de captura e entrega mais suave de quadros. Use uma tela por dispositivo, compartilhe uma tela ou selecione um monitor físico.",
+          "virtual_display_layout": "Escolha o que acontece com os monitores locais durante a transmissão. Usar somente a tela virtual desliga as demais até restaurar a área de trabalho.",
+          "capture": "O host Linux compatível usa KMS para captura direta da tela virtual. Outros mecanismos são alternativas de compatibilidade e podem não suportar transmissão sem intervenção local.",
+          "adapter_name": "Deixe vazio para selecionar a GPU automaticamente. Para selecionar um dispositivo de renderização, informe seu caminho Linux, como /dev/dri/renderD128.",
+          "dd_virtual_display_scale": "@:config.virtual_display_scale_desc",
+          "virtual_display_outputs": "Deixe vazio para usar o conjunto gerenciado de telas virtuais. Nomes explícitos de conectores DRM são uma substituição avançada."
+        }
+      },
+      "validation": {
+        "number": "Informe um número no intervalo permitido.",
+        "port_required": "Informe uma porta base.",
+        "port_integer": "Informe um número inteiro para a porta base.",
+        "port_dependent_low": "Esta porta base colocaria a porta TCP em base − 5 abaixo de 1024. Escolha uma porta base de pelo menos 1029.",
+        "port_dependent_high": "Esta porta base colocaria a porta TCP em base + 21 acima de 65535. Escolha uma porta base de no máximo 65514.",
+        "port_range": "Escolha uma porta base de 1029 a 65514 para manter válidas todas as portas dependentes.",
+        "resolution": "Informe uma resolução como 2560x1440.",
+        "array": "Informe uma lista JSON; deixe vazio para usar o padrão."
+      },
+      "links": {
+        "displays": "Todos os ajustes de tela →",
+        "pacing": "Ajustes de captura e ritmo dos quadros →",
+        "pyrowave": "Ajustes do codec PyroWave →",
+        "integrations": "Gerenciar integrações →",
+        "remote_monitor": "Todos os ajustes de Remote Monitor →",
+        "video": "Todos os ajustes de vídeo →",
+        "recovery": "Todos os ajustes de recuperação de telas →",
+        "automation": "Ajustes de automação do PC →"
+      },
+      "game_library_links": "Bibliotecas de jogos",
+      "legacy_fec_zero": "O zero salvo é ignorado pelo PC. Escolha 1–255% para definir o FEC padrão."
     },
     "app": {
       "connecting": "Conectando a este PC...",
@@ -345,7 +1156,9 @@
         "removePlaynite": "Remover entradas do Playnite",
         "showMore": "Mostrar mais",
         "tryAgain": "Tentar novamente",
-        "sources": "Gerenciar fontes"
+        "sources": "Gerenciar fontes",
+        "manager": "Ajustes do gerenciador de biblioteca",
+        "setup": "Configurar integração de bibliotecas de jogos"
       },
       "alerts": {
         "unavailable": "Biblioteca indisponível"
@@ -435,7 +1248,10 @@
         "grid": "Grade",
         "label": "Visualização da biblioteca",
         "list": "Lista"
-      }
+      },
+      "restore_system": "Restaurar aplicativos do sistema",
+      "restore_named": "Restaurar {name}",
+      "restore_failed": "Não foi possível restaurar o aplicativo do sistema."
     },
     "devices": {
       "action": {
@@ -487,12 +1303,19 @@
         "sections": {
           "display": "Seleção de tela",
           "hdr": "HDR e apresentação",
-          "identity": "Identificação e permissões"
+          "identity": "Identificação e permissões",
+          "commands": "Comandos do dispositivo"
         },
         "title": "Editar dispositivo",
         "use_common_value": "Usar ajuste do PC: {value}",
         "allow_sleep": "Permitir que este dispositivo suspenda o PC",
-        "allow_sleep_description": "Permissão separada para clientes compatíveis e Windows com suporte nativo à suspensão. Todos os aplicativos e transmissões do host devem estar encerrados. Desativada por padrão."
+        "allow_sleep_description": "Permissão separada para clientes compatíveis e Windows com suporte nativo à suspensão. Todos os aplicativos e transmissões do host devem estar encerrados. Desativada por padrão.",
+        "resolution_only": "Anunciar somente a resolução deste dispositivo",
+        "resolution_only_description": "Limita as resoluções anunciadas desta tela virtual privada, mantendo as frequências correspondentes. Requer controle do driver incluído 3.8 ou posterior e uma nova sessão. Telas compartilhadas não são compatíveis.",
+        "resolution_only_unavailable": "O driver aberto não confirma suporte. Desative este ajuste ou instale um driver compatível validado antes de transmitir.",
+        "commands_description": "Comandos executados quando este dispositivo conecta ou desconecta.",
+        "remove_command": "Remover comando {number}",
+        "commands_empty": "Nenhum comando configurado."
       },
       "common_settings_title": "Ajustes do PC indisponíveis",
       "common_settings_unavailable": "Não foi possível carregar os ajustes do PC. As substituições deste dispositivo foram preservadas, mas os valores herdados podem estar incompletos.",
@@ -1370,6 +2193,453 @@
         "registrationMissing": "Registro ausente",
         "shortDescription": "Suporte HDR para captura de tela virtual."
       }
+    },
+    "application": {
+      "actions": {
+        "addPrep": "Adicionar comando de preparação",
+        "back": "Voltar à biblioteca",
+        "returnToLibrary": "Voltar à biblioteca",
+        "save": "Salvar aplicativo",
+        "saving": "Salvando",
+        "tryAgain": "Tentar novamente"
+      },
+      "advanced": {
+        "description": "Controles opcionais de inicialização, tela, automação e compatibilidade. Valores existentes são mantidos até você alterá-los.",
+        "summary": "Personalizar inicialização, tela e compatibilidade"
+      },
+      "alerts": {
+        "correctFields": "Corrija os campos destacados",
+        "expertDescription": "Remover uma propriedade aqui também a remove do aplicativo salvo. Os campos guiados acima sempre têm prioridade sobre chaves duplicadas.",
+        "expertTitle": "Configuração avançada",
+        "prepAttention": "Comando de preparação precisa de atenção",
+        "saveFailed": "Falha ao salvar",
+        "unavailable": "Aplicativo indisponível"
+      },
+      "compatibility": {
+        "title": "Compatibilidade e comandos de estado",
+        "description": "Substitua o comportamento de inicialização e os comandos deste aplicativo.",
+        "default": "Usar padrão do PC",
+        "addState": "Adicionar comando de estado",
+        "resume": "Comando ao retomar",
+        "pause": "Comando ao pausar"
+      },
+      "cover": {
+        "alt": "Capa de {name}",
+        "unavailable": "Capa configurada indisponível",
+        "unavailableLabel": "Capa de {name} indisponível"
+      },
+      "coverPicker": {
+        "action": "Buscar capa",
+        "description": "Escolha uma imagem nos resultados correspondentes do IGDB.",
+        "empty": "Nenhuma capa correspondente encontrada. Tente ajustar o nome do aplicativo.",
+        "errorTitle": "Seleção de capa indisponível",
+        "playniteTitle": "Isto altera os metadados do Playnite",
+        "playniteUpdateError": "O NOUS baixou a capa, mas não conseguiu substituir os metadados de capa deste jogo no Playnite.",
+        "playniteWarning": "Escolher uma capa aqui substitui os metadados de capa deste jogo no Playnite.",
+        "pathDisclosure": "Avançado: caminho da imagem de capa",
+        "providerHelp": "Escolha uma imagem substituta sem expor caminhos de arquivos gerenciados pelo provedor.",
+        "searchAction": "Buscar",
+        "searchError": "O NOUS não conseguiu buscar imagens de capa.",
+        "searchLabel": "Buscar imagem de capa",
+        "searchPlaceholder": "Buscar capa de jogo",
+        "select": "Usar capa de {name}",
+        "title": "Escolher imagem de capa",
+        "uploadError": "O NOUS não conseguiu baixar e preparar essa capa."
+      },
+      "delete": {
+        "action": "Excluir aplicativo",
+        "busy": "Excluindo",
+        "dialogDescription": "Isto remove o aplicativo de todos os dispositivos de transmissão. Não exclui arquivos do PC.",
+        "dialogTitle": "Excluir {name}?",
+        "errorTitle": "Falha ao excluir",
+        "fallbackName": "aplicativo",
+        "sectionDescription": "Remova esta entrada da biblioteca de transmissão. O executável e as imagens permanecem no disco.",
+        "sectionTitle": "Excluir aplicativo"
+      },
+      "errors": {
+        "delete": "Não foi possível excluir este aplicativo.",
+        "load": "Não foi possível carregar este aplicativo.",
+        "missingUuid": "Este aplicativo não tem UUID.",
+        "notFound": "O aplicativo solicitado não existe mais.",
+        "save": "Não foi possível salvar este aplicativo."
+      },
+      "fields": {
+        "advanced": {
+          "help": "Valores desconhecidos do servidor são preservados exatamente, salvo se editados aqui.",
+          "label": "Campos adicionais do servidor"
+        },
+        "autoDetach": {
+          "description": "Não mantenha o comando principal vinculado à sessão de transmissão.",
+          "label": "Desvincular automaticamente"
+        },
+        "command": {
+          "arrayHelp": "Um argumento ou comando por linha, preservando o formato de lista do servidor.",
+          "help": "Executável e argumentos opcionais.",
+          "placeholder": "C:/Games/Example/game.exe"
+        },
+        "configOverrides": {
+          "help": "Use JSON válido com um objeto no nível superior.",
+          "label": "Objeto JSON de substituições"
+        },
+        "detached": {
+          "help": "Cada linha não vazia é iniciada independentemente do comando principal.",
+          "placeholder": "Um comando por linha"
+        },
+        "displayAction": {
+          "description": "Controle com que rigor o NOUS aplica a disposição solicitada.",
+          "label": "Ação de configuração de tela"
+        },
+        "displayLayout": {
+          "description": "Selecione como a tela virtual se junta à área de trabalho física.",
+          "label": "Disposição da área de trabalho"
+        },
+        "displayMode": {
+          "description": "Escolha se cada dispositivo recebe uma tela ou se os dispositivos compartilham uma.",
+          "label": "Modo de tela virtual"
+        },
+        "displayOutput": {
+          "label": "Substituir saída de tela"
+        },
+        "elevated": {
+          "description": "Inicie o aplicativo com privilégios de administrador.",
+          "label": "Executar como administrador"
+        },
+        "excludePrep": {
+          "description": "Execute apenas os comandos de preparação deste aplicativo.",
+          "label": "Excluir comandos globais de preparação"
+        },
+        "exitTimeout": {
+          "description": "Segundos de espera para encerramento normal antes de continuar a finalização."
+        },
+        "frameMode": {
+          "label": "Modo de geração de quadros"
+        },
+        "frameProvider": {
+          "label": "Provedor de geração de quadros"
+        },
+        "gen1Fix": {
+          "description": "Ative a solução de captura para geração de quadros de primeira geração.",
+          "label": "Correção de captura de geração 1"
+        },
+        "gen2Fix": {
+          "description": "Ative a solução de captura para geração de quadros de segunda geração.",
+          "label": "Correção de captura de geração 2"
+        },
+        "iconPath": {
+          "label": "Caminho do ícone do dispositivo"
+        },
+        "imagePath": {
+          "help": "Capas personalizadas do Moonlight precisam de um arquivo PNG legível de até 16 MiB. O Moonlight pode mostrar a imagem padrão quando a capa configurada estiver indisponível. Renomear outro formato para .png não o converte. Salve o aplicativo para atualizar a prévia da capa.",
+          "label": "Caminho da imagem de capa",
+          "placeholder": "C:/path/to/cover.png"
+        },
+        "limiterFix": {
+          "description": "Aplique a correção de limitador específica deste aplicativo.",
+          "label": "Correção de limitador de geração de quadros"
+        },
+        "losslessDelay": {
+          "help": "Segundos antes de aplicar o Lossless Scaling.",
+          "label": "Atraso ao iniciar"
+        },
+        "losslessEnabled": {
+          "description": "Inicie e gerencie o Lossless Scaling para este aplicativo.",
+          "label": "Ativar Lossless Scaling"
+        },
+        "losslessFramegen": {
+          "description": "Ative a geração de quadros pelo Lossless Scaling.",
+          "label": "Geração de quadros do Lossless Scaling"
+        },
+        "losslessRtss": {
+          "label": "Limite de quadros do RTSS"
+        },
+        "losslessTarget": {
+          "label": "Taxa de quadros desejada"
+        },
+        "name": {
+          "help": "Digite um nome personalizado ou procure jogos de um provedor de biblioteca disponível.",
+          "label": "Aplicativo ou jogo integrado"
+        },
+        "output": {
+          "label": "Identificador de saída"
+        },
+        "uuid": {
+          "help": "Identidade estável no servidor. Não pode ser alterada aqui.",
+          "label": "UUID"
+        },
+        "virtualScreen": {
+          "description": "Solicite uma tela virtual para este aplicativo.",
+          "label": "Usar tela virtual"
+        },
+        "waitAll": {
+          "description": "Mantenha a sessão ativa até que todos os processos iniciados terminem.",
+          "label": "Aguardar todos os processos"
+        }
+      },
+      "framegenHealth": {
+        "appOutputNotFound": "A saída de tela configurada não foi encontrada; esta verificação não examinará outra tela.",
+        "captureAutoUnknown": "A captura é automática, mas este formulário não consegue determinar o método selecionado para a tela.",
+        "captureConfigured": "{capture} está selecionado. Verifique a transmissão ativa se este aplicativo precisar de um método específico de captura.",
+        "configured": "Configurado",
+        "displayTargetLabel": "Tela de destino",
+        "displayTargetUnknown": "Os ajustes salvos do PC não identificam uma tela de destino. Confira o modo de tela virtual do PC antes de transmitir.",
+        "gameProvidedVirtualCapture": "A geração de quadros pelo jogo em tela virtual força o Windows Graphics Capture ao iniciar a transmissão.",
+        "physicalCaptureDdx": "Desktop Duplication está selecionado para uma tela física. A transmissão ativa determina o ritmo exato da geração de quadros.",
+        "physicalCaptureDefault": "A geração de quadros em tela física usa Desktop Duplication quando nenhum método de captura está selecionado.",
+        "physicalDisplayConfigured": "Esta tela informa suporte a até {hz} Hz. A frequência necessária para geração de quadros é negociada a partir do FPS do dispositivo durante a transmissão.",
+        "physicalDisplayCapabilitiesOnly": "O EDID desta tela informa as frequências listadas. O destino negociado da transmissão ainda depende do FPS do dispositivo.",
+        "physicalDisplayLabel": "Configuração de tela física",
+        "refreshCapabilitiesTitle": "Frequências informadas",
+        "refreshCapability": "{hz} Hz: {status}",
+        "rtssOptional": "RTSS é opcional neste modo de geração de quadros; não é necessário para geração pelo jogo ou pela NVIDIA.",
+        "virtualCaptureDdx": "Desktop Duplication está selecionado explicitamente. Uma tela virtual precisa de Windows Graphics Capture neste modo de geração de quadros.",
+        "virtualDisplayConfigured": "Este aplicativo está configurado para solicitar uma tela virtual. O driver e a frequência da transmissão são definidos ao iniciar, portanto este editor ainda não pode verificá-los.",
+        "virtualDisplayLabel": "Configuração de tela virtual"
+      },
+      "loading": "Carregando aplicativo",
+      "options": {
+        "currentValue": "Valor atual: {value}",
+        "displayAction": {
+          "disabled": "Não gerenciar telas",
+          "ensureActive": "Garantir que a tela de destino esteja ativa",
+          "ensureOnly": "Garantir que a tela de destino seja a única",
+          "ensurePrimary": "Garantir que a tela de destino seja a principal",
+          "verify": "Apenas verificar configuração"
+        },
+        "displayLayout": {
+          "exclusive": "Somente tela virtual",
+          "extended": "Estender área de trabalho",
+          "extendedIsolated": "Estender com isolamento por dispositivo",
+          "extendedPrimary": "Estender e tornar a tela virtual principal",
+          "extendedPrimaryIsolated": "Tela virtual principal com isolamento"
+        },
+        "displayMode": {
+          "perClient": "Uma tela por dispositivo",
+          "shared": "Tela compartilhada"
+        },
+        "frameMode": {
+          "game": "Fornecida pelo jogo",
+          "lossless": "Lossless Scaling",
+          "nvidia": "NVIDIA Smooth Motion",
+          "off": "Desativado"
+        },
+        "frameProvider": {
+          "game": "Geração de quadros fornecida pelo jogo",
+          "lossless": "Lossless Scaling",
+          "nvidia": "NVIDIA Smooth Motion"
+        },
+        "hostDefault": "Usar padrão do PC",
+        "profile": {
+          "custom": "Perfil personalizado",
+          "recommended": "Perfil recomendado"
+        }
+      },
+      "page": {
+        "addDescription": "Adicione um aplicativo para transmissão.",
+        "addTitle": "Adicionar aplicativo",
+        "editDescription": "Edite como este aplicativo inicia e transmite.",
+        "fallbackTitle": "Aplicativo"
+      },
+      "rtxHdr": {
+        "calibration": {
+          "description": "Ajuste a saída HDR deste aplicativo em vez de herdar o perfil da NVIDIA ou os padrões do PC.",
+          "overrideDescription": "Use os controles abaixo para este aplicativo. Deixe desativado para herdar o perfil NVIDIA detectado ou os padrões do PC.",
+          "overrideLabel": "Usar calibração específica do aplicativo",
+          "reset": "Redefinir calibração",
+          "title": "Calibração direta"
+        },
+        "description": "Escolha como este aplicativo participa do RTX HDR e ajuste seu mapeamento de tons sem alterar outros aplicativos.",
+        "live": {
+          "applied": "Aplicado à transmissão ativa",
+          "applying": "Aplicando em tempo real",
+          "error": "Falha na atualização em tempo real",
+          "failureTitle": "Falha ao atualizar calibração em tempo real",
+          "hint": "Durante a transmissão deste aplicativo, alterações de calibração são aplicadas em tempo real após uma breve pausa. Salve para mantê-las nas próximas sessões.",
+          "queued": "Aguardando aplicação"
+        },
+        "modeLabel": "Comportamento do RTX HDR neste aplicativo",
+        "modes": {
+          "disabled": {
+            "description": "Mantenha o RTX HDR desativado neste aplicativo, mesmo quando o PC ou dispositivo o ativar.",
+            "label": "Desativar neste aplicativo"
+          },
+          "enabled": {
+            "description": "Converta a saída SDR deste aplicativo em HDR e mantenha a tela de origem em SDR.",
+            "label": "Ativar neste aplicativo"
+          },
+          "inherit": {
+            "description": "Siga a política do PC e do dispositivo em tempo de execução para este aplicativo.",
+            "label": "Usar padrão do PC"
+          }
+        },
+        "title": "Calibração RTX HDR"
+      },
+      "playnite": {
+        "browse": "Procurar jogos do Playnite",
+        "empty": "Nenhum jogo instalado do Playnite corresponde a este nome.",
+        "linkedHelp": "Esta entrada iniciará pelo jogo vinculado do Playnite.",
+        "loadFailed": "Não foi possível carregar os jogos do Playnite. Confira se a integração está instalada e ativa.",
+        "loading": "Carregando jogos do Playnite...",
+        "resultsLabel": "Jogos correspondentes do Playnite",
+        "unavailable": "A busca de jogos do Playnite está indisponível porque a integração não está instalada ou ativa.",
+        "useCustom": "Usar aplicativo personalizado"
+      },
+      "gamePicker": {
+        "browse": "Procurar jogos",
+        "resultsLabel": "Jogos das suas bibliotecas",
+        "loading": "Carregando bibliotecas de jogos...",
+        "empty": "Nenhum jogo correspondente nas suas bibliotecas.",
+        "library": "Iniciar com"
+      },
+      "providers": {
+        "managed": "Gerenciado por {provider}"
+      },
+      "steam": {
+        "browse": "Procurar jogos do Steam",
+        "editNotice": "O NOUS gerencia os dados principais de inicialização deste jogo a partir dos metadados do Steam. Comandos opcionais de preparação e independentes continuam disponíveis em Controles avançados de inicialização.",
+        "empty": "Nenhum jogo instalado do Steam corresponde a este nome.",
+        "loadFailed": "Não foi possível carregar os jogos do Steam. Confira se o Steam está instalado e suas bibliotecas estão legíveis.",
+        "loading": "Carregando jogos do Steam...",
+        "linkedHelp": "Esta entrada está vinculada a um jogo do Steam.",
+        "resultsLabel": "Jogos correspondentes do Steam",
+        "unavailable": "A busca de jogos do Steam está indisponível porque o Steam não foi detectado ou suas bibliotecas não puderam ser lidas.",
+        "useCustom": "Usar aplicativo personalizado"
+      },
+      "lutris": {
+        "browse": "Procurar jogos do Lutris",
+        "editNotice": "O NOUS gerencia o comando de inicialização deste jogo a partir dos metadados do Lutris. Esses dados gerados ficam ocultos aqui; entradas automáticas do Lutris os atualizam durante a sincronização.",
+        "empty": "Nenhum jogo importado do Lutris corresponde a este nome.",
+        "loadFailed": "Não foi possível carregar os jogos do Lutris. Confira se o Lutris está instalado e sua biblioteca está legível.",
+        "loading": "Carregando jogos do Lutris...",
+        "linkedHelp": "Esta entrada está vinculada a um jogo do Lutris.",
+        "resultsLabel": "Jogos correspondentes do Lutris",
+        "unavailable": "A busca de jogos do Lutris está indisponível porque o Lutris não foi detectado ou sua biblioteca não pôde ser lida.",
+        "useCustom": "Usar aplicativo personalizado"
+      },
+      "prep": {
+        "after": "Executar após sair",
+        "before": "Executar antes de iniciar",
+        "elevated": "Executar este par como administrador",
+        "empty": "Nenhum comando de preparação específico do aplicativo.",
+        "legend": "Comando de preparação {number}",
+        "remove": "Remover comando {number}"
+      },
+      "saveBar": {
+        "addHint": "Salve para adicionar este aplicativo à biblioteca.",
+        "current": "Aplicativo atualizado",
+        "editHint": "As alterações entram em vigor após salvar.",
+        "region": "Controles para salvar aplicativo",
+        "unsaved": "Alterações do aplicativo não salvas"
+      },
+      "sections": {
+        "advanced": {
+          "description": "Campos sem controle guiado são preservados aqui.",
+          "title": "Campos avançados"
+        },
+        "commands": {
+          "advancedDescription": "Comandos opcionais de preparação e de segundo plano para este jogo integrado.",
+          "advancedTitle": "Controles avançados de inicialização",
+          "description": "Comandos de preparação são executados antes de iniciar e podem ser desfeitos após a sessão.",
+          "title": "Comandos de preparação e independentes"
+        },
+        "display": {
+          "description": "Substitua a política de tela do PC apenas para este aplicativo.",
+          "title": "Tela virtual e disposição"
+        },
+        "execution": {
+          "description": "Os caminhos são interpretados pelo PC que executa o NOUS.",
+          "title": "Executável, saída e imagens"
+        },
+        "frameGeneration": {
+          "description": "Correções de captura e política de inicialização do Lossless Scaling específicas do aplicativo.",
+          "title": "Geração de quadros e Lossless Scaling"
+        },
+        "identity": {
+          "description": "Nome visto pelos dispositivos e identificador estável usado para editar e excluir com segurança.",
+          "title": "Identidade"
+        },
+        "launch": {
+          "description": "Controle privilégios de processos, ciclo de vida, preparação e encerramento.",
+          "title": "Comportamento de inicialização"
+        },
+        "overrides": {
+          "description": "Ajustes estruturados do PC aplicados apenas durante a transmissão deste aplicativo.",
+          "title": "Substituições de configuração"
+        }
+      },
+      "status": {
+        "saved": "Salvo",
+        "unsaved": "Alterações não salvas"
+      },
+      "validation": {
+        "integerMinimum": "{label} deve ser um número inteiro de pelo menos {minimum}.",
+        "invalidJson": "{label} contém JSON inválido.",
+        "invalidJsonDetail": "{label} contém JSON inválido: {detail}",
+        "jsonObject": "{label} deve ser um objeto JSON.",
+        "nameRequired": "Informe um nome para este aplicativo.",
+        "prepMissingCommand": "O comando de preparação {number} tem campos preservados, mas nenhum comando. Adicione um comando ou remova a linha.",
+        "uuidInvalid": "UUID do aplicativo ausente ou inválido."
+      }
+    },
+    "updates": {
+      "available": "NOUS {version} está disponível",
+      "dismiss": "Dispensar esta atualização"
+    },
+    "stats": {
+      "close_detail": "Fechar detalhes da sessão",
+      "host_cpu": "CPU",
+      "host_gpu": "GPU",
+      "host_ram": "RAM",
+      "host_vitals_title": "Estado do hardware do PC",
+      "host_vram": "VRAM",
+      "maximum": "Máx. {value}",
+      "minimum": "Mín. {value}",
+      "sample_count": "{count} amostra | {count} amostras",
+      "compute_legend": "Legenda do histórico de uso do hardware"
+    },
+    "topology": {
+      "title": "Organizar telas dos dispositivos",
+      "description": "As direções salvas valem para transmissões estendidas de aplicativos e Remote Monitor na próxima ativação. Apenas verificar preserva a disposição atual do Windows; escolha uma opção automática de preparação de tela para aplicar uma direção salva.",
+      "capacity": "{used} de {max} identidades de dispositivos",
+      "client_display": "Tela do dispositivo",
+      "choose_client": "Escolha um dispositivo pareado",
+      "canvas": "Disposição das telas. Selecione o retângulo de uma tela para editar sua posição.",
+      "physical": "Física",
+      "client": "Dispositivo",
+      "primary": "Principal",
+      "inactive_preview": "Prévia inativa",
+      "arrangement": "Disposição",
+      "modes": {
+        "automatic": "Usar disposição do aplicativo / automático",
+        "preserve": "Preservar / manual (disposição do Windows)",
+        "left": "À esquerda de",
+        "right": "À direita de",
+        "above": "Acima de",
+        "below": "Abaixo de"
+      },
+      "preserve_hint": "Transmissões de aplicativos mantêm suas posições no Windows, salvo quando a disposição solicita isolamento. Preservar / manual explícito também substitui o isolamento. Remote Monitor usa posicionamento automático quando nenhuma direção está salva.",
+      "use_primary": "Usar como principal enquanto ativa",
+      "display": "Tela",
+      "anchor": "Referência",
+      "align": "Alinhamento",
+      "alignment": {
+        "start": "Início",
+        "center": "Centro",
+        "end": "Fim"
+      },
+      "gap": "Espaçamento (px)",
+      "revert": "Reverter",
+      "save": "Salvar disposição",
+      "errors": {
+        "primary": "Apenas uma tela de dispositivo pode ser principal.",
+        "anchor": "Escolha uma referência conhecida diferente para cada posição.",
+        "gap": "O espaçamento deve ser um número inteiro não negativo.",
+        "cycle": "Referências entre dispositivos não podem formar um ciclo.",
+        "load": "Não foi possível carregar a disposição das telas.",
+        "save": "A disposição não foi salva. Nenhuma disposição ativa foi alterada."
+      }
     }
+  },
+  "sessions": {
+    "history_performance_title": "Desempenho da sessão"
   }
 }

@@ -1612,6 +1612,14 @@ namespace confighttp {
 
     const std::string &path = request->path;
     const std::string_view path_view {path};
+    if (path_view == "/") {
+      const auto query = request->parse_query_string();
+      const auto classic = query.find("classic");
+      if (classic == query.end() || classic->second != "1") {
+        send_redirect(response, request, "/v2/");
+        return;
+      }
+    }
     static constexpr std::array reserved_prefixes {"/api"sv, "/assets"sv, "/covers"sv, "/images"sv};
     if (std::ranges::any_of(reserved_prefixes, [&path](std::string_view prefix) {
           return std::string_view {path}.starts_with(prefix);
