@@ -8,4 +8,6 @@
     <dimen name="nous_game_grid_top_padding">4dp</dimen>
     <dimen name="nous_pc_card_height">84dp</dimen>
     <dimen name="nous_pc_card_padding">14dp</dimen>
+    <dimen name="nous_settings_hub_title_size">30sp</dimen>
+    <integer name="nous_settings_hub_hint_visibility">0</integer>
 </resources>

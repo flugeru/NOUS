@@ -94,12 +94,30 @@ def size():
     return tuple(map(int, re.findall(r"(\d+)x(\d+)", shell("wm", "size"))[-1]))
 
 
+def viewport_size():
+    screenshot = adb("exec-out", "screencap", "-p", binary=True)
+    return struct.unpack_from(">II", screenshot, offset=16)
+
+
+def select_in_landscape_settings(identifier):
+    for _ in range(4):
+        root, _ = tree()
+        node = match(root, identifier)
+        if node is not None:
+            tap(node)
+            return
+        width, height = viewport_size()
+        x = str(width * 2 // 3)
+        shell("input", "swipe", x, str(height * 4 // 5), x, str(height * 2 // 5), "400")
+        pause()
+    raise RuntimeError(f"Missing landscape setting {identifier}")
+
+
 def rotate(rotation):
     shell("wm", "user-rotation", "lock", str(rotation))
     landscape = rotation in (1, 3)
     for _ in range(20):
-        screenshot = adb("exec-out", "screencap", "-p", binary=True)
-        width, height = struct.unpack_from(">II", screenshot, offset=16)
+        width, height = viewport_size()
         if (width > height) == landscape:
             pause(1)
             return
@@ -349,17 +367,21 @@ def run(c):
     wait_for("addProfileFab")
     select("nous_back")
 
-    select("nous_settings_diagnostics")
+    select_in_landscape_settings("nous_settings_diagnostics")
     wait_for("bt_update_gamepad")
     c.capture("device-diagnostics-landscape")
     select("nous_back")
-    select("nous_settings_help")
+    select_in_landscape_settings("nous_settings_help")
     wait_for("nous_help_content")
     c.capture("help-landscape")
     select("nous_back")
 
     select("nous_nav_computers")
     c.capture("computers-landscape")
+    rotate(0)
+    wait_for("manuallyAddPc")
+    rotate(1)
+    wait_for("manuallyAddPc")
     select("manuallyAddPc")
     wait_for("hostTextView")
     address_action = bounds(wait_for("addPcButton"))
