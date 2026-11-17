@@ -372,6 +372,36 @@ TEST(SessionHistoryStorage, EndingWithoutSamplesLeavesVerdictUnknown) {
   EXPECT_EQ(detail->summary.verdict, "unknown");
 }
 
+TEST(SessionHistoryStorage, SustainedLowFpsWithoutLossesIsDegraded) {
+  auto db = open_history();
+  ASSERT_TRUE(db);
+  ASSERT_TRUE(session_history::storage::process_begin_at(db.get(), metadata("slow"), 10.0));
+  for (int i = 0; i < 6; ++i) {
+    auto value = sample("slow", 16.0 + i * 2, 100 + i * 40);
+    value.actual_fps = 20;
+    ASSERT_TRUE(session_history::storage::process_sample(db.get(), value, 10));
+  }
+  ASSERT_TRUE(session_history::storage::process_end_at(db.get(), "slow", 30.0));
+  const auto detail = session_history::storage::read_session_detail(db.get(), "slow", true, 10, 10);
+  ASSERT_TRUE(detail);
+  EXPECT_EQ(detail->summary.verdict, "degraded");
+}
+
+TEST(SessionHistoryStorage, StartupLowFpsDoesNotDegradeVerdict) {
+  auto db = open_history();
+  ASSERT_TRUE(db);
+  ASSERT_TRUE(session_history::storage::process_begin_at(db.get(), metadata("startup"), 10.0));
+  auto value = sample("startup", 12.0, 10);
+  value.actual_fps = 0;
+  ASSERT_TRUE(session_history::storage::process_sample(db.get(), value, 10));
+  value = sample("startup", 16.0, 250);
+  ASSERT_TRUE(session_history::storage::process_sample(db.get(), value, 10));
+  ASSERT_TRUE(session_history::storage::process_end_at(db.get(), "startup", 20.0));
+  const auto detail = session_history::storage::read_session_detail(db.get(), "startup", true, 10, 10);
+  ASSERT_TRUE(detail);
+  EXPECT_EQ(detail->summary.verdict, "healthy");
+}
+
 TEST(SessionHistoryStorage, HealthySamplesProduceHealthyVerdict) {
   auto db = open_history();
   ASSERT_TRUE(db);

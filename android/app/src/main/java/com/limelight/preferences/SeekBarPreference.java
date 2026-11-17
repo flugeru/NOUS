@@ -200,7 +200,7 @@ public class SeekBarPreference extends Preference
         }
     }
     public int getProgress() {
-        return currentValue + minValue;
+        return currentValue;
     }
 
     public void showDialog() {

@@ -981,7 +981,7 @@ public class StreamSettings extends ControllerMenuActivity {
             EditTextPreference bitrateEditPref = findPreference(PreferenceConfiguration.CUSTOM_BITRATE_PREF_STRING);
             if (bitrateEditPref != null) {
                 bitrateEditPref.setOnBindEditTextListener((EditText editText) -> {
-                    editText.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                    editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                     editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(5)});
                 });
 
@@ -991,8 +991,18 @@ public class StreamSettings extends ControllerMenuActivity {
                         Toast.makeText(getActivity(), getString(R.string.pref_enter_value_0_9999), Toast.LENGTH_SHORT).show();
                         return false;
                     }
-                    float bitrateValue = Float.parseFloat(value) * 1000;
-                    int bitrate = (int) bitrateValue;
+                    final int bitrate;
+                    try {
+                        float bitrateValue = Float.parseFloat(value.replace(',', '.')) * 1000;
+                        if (Float.isNaN(bitrateValue) || Float.isInfinite(bitrateValue)
+                                || bitrateValue < 500 || bitrateValue > 300000) {
+                            throw new NumberFormatException();
+                        }
+                        bitrate = Math.round(bitrateValue);
+                    } catch (NumberFormatException e) {
+                        Toast.makeText(getActivity(), getString(R.string.pref_error_occurred), Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
                     SharedPreferences prefs = getPrefs();
                     prefs.edit().putInt(PreferenceConfiguration.BITRATE_PREF_STRING, bitrate).apply();
                     Toast.makeText(getActivity(), getString(R.string.pref_set_success), Toast.LENGTH_SHORT).show();

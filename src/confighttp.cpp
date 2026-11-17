@@ -871,6 +871,10 @@ namespace confighttp {
     output["host_cpu_model"] = summary.host_cpu_model;
     output["host_gpu_model"] = summary.host_gpu_model;
     output["stream_gpu_model"] = summary.stream_gpu_model;
+    output["telemetry_scope"] = "host_only";
+    output["frame_interval_jitter_definition"] = "cumulative_stddev_of_2s_mean_send_intervals_ms_not_per_frame";
+    output["client_decode_present_metrics_available"] = false;
+    output["drop_counters_available"] = summary.protocol != "rtsp";
     return output;
   }
 

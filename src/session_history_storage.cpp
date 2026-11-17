@@ -826,7 +826,10 @@ namespace session_history::storage {
         "SELECT COUNT(*), "
         "SUM(CASE WHEN encode_latency_ms > 16 THEN 1 ELSE 0 END), "
         "MAX(client_reported_losses), "
-        "MAX(frames_sent) "
+        "MAX(frames_sent), "
+        "SUM(CASE WHEN timestamp_unix >= (SELECT start_time_unix + 5 FROM sessions WHERE uuid = samples.session_uuid) "
+        "AND actual_fps < (SELECT target_fps * 0.9 FROM sessions WHERE uuid = samples.session_uuid) THEN 1 ELSE 0 END), "
+        "SUM(CASE WHEN timestamp_unix >= (SELECT start_time_unix + 5 FROM sessions WHERE uuid = samples.session_uuid) THEN 1 ELSE 0 END) "
         "FROM samples WHERE session_uuid = ?");
       if (stmt) {
         sqlite3_bind_text(stmt.get(), 1, uuid.c_str(), -1, SQLITE_TRANSIENT);
@@ -835,13 +838,17 @@ namespace session_history::storage {
           int high_latency_count = sqlite3_column_int(stmt.get(), 1);
           std::int64_t max_reported_losses = sqlite3_column_int64(stmt.get(), 2);
           std::int64_t max_frames_sent = sqlite3_column_int64(stmt.get(), 3);
+          const int low_fps_count = sqlite3_column_int(stmt.get(), 4);
+          const int steady_sample_count = sqlite3_column_int(stmt.get(), 5);
+          // Ignore startup; flag sustained slow delivery, not one shutdown sample.
+          const bool slow_delivery = low_fps_count >= 2 && low_fps_count > steady_sample_count * 0.05;
 
           if (sample_count > 0) {
             double loss_ratio = max_frames_sent > 0 ? static_cast<double>(max_reported_losses) / static_cast<double>(max_frames_sent) : 0;
 
             if (loss_ratio > 0.05) {
               verdict = "failed";
-            } else if (high_latency_count > 0 || max_reported_losses > 0) {
+            } else if (high_latency_count > 0 || max_reported_losses > 0 || slow_delivery) {
               verdict = "degraded";
             } else {
               verdict = "healthy";
