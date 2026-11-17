@@ -20,9 +20,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.button.MaterialButton;
@@ -85,10 +82,6 @@ public final class VirtualControllerEditorActivity extends ControllerMenuActivit
         UiHelper.setLocale(this);
         setContentView(R.layout.activity_configure_virtual_controller);
         UiHelper.applyEdgeToEdgeInsets(this);
-        WindowInsetsControllerCompat insets = WindowCompat.getInsetsController(
-                getWindow(), getWindow().getDecorView());
-        insets.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
-        insets.hide(WindowInsetsCompat.Type.systemBars());
 
         picker = findViewById(R.id.nous_osc_pick);
         visibility = findViewById(R.id.nous_osc_visible);

@@ -449,17 +449,7 @@ def run(c):
 def capture_virtual_controller_editor(c):
     select("nous_nav_settings")
     select("nous_settings_virtual_controller")
-    try:
-        wait_for("nous_osc_tool_move")
-    except RuntimeError:
-        root, _ = tree()
-        confirmation = next((node for node in root.iter("node")
-                             if node.get("package") == "com.android.systemui"
-                             and node.get("text") == "Got it"), None)
-        if confirmation is None:
-            raise
-        tap(confirmation)
-        wait_for("nous_osc_tool_move")
+    wait_for("nous_osc_tool_move")
     root, hierarchy = tree()
     dpad_labels = ("Direcional", "D-pad")
     dpad = next(node for node in root.iter("node") if node.get("content-desc") in dpad_labels)
