@@ -175,7 +175,7 @@ def run(c):
             root, _ = tree()
             launcher_anr = match(root, labels=("Pixel Launcher isn't responding",))
             close = match(root, labels=("Close app",))
-            if not launcher_anr or close is None:
+            if launcher_anr is None or close is None:
                 raise
             tap(close)
             if attempt == 1:
