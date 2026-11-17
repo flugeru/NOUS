@@ -391,23 +391,22 @@ public class StreamSettings extends AppCompatActivity {
             preference.setSingleLineTitle(false);
             preference.setIconSpaceReserved(false);
             if (preference instanceof PreferenceGroup) {
+                if (preference instanceof PreferenceCategory) {
+                    preference.setLayoutResource(R.layout.nous_preference_category);
+                }
                 PreferenceGroup group = (PreferenceGroup) preference;
                 group.setInitialExpandedChildrenCount(Integer.MAX_VALUE);
                 for (int i = 0; i < group.getPreferenceCount(); i++) {
                     stylePreferences(group.getPreference(i));
                 }
-            } else if (preference.getClass() == ListPreference.class
-                    || preference.getClass() == CheckBoxPreference.class
-                    || preference.getClass() == EditTextPreference.class
-                    || preference.getClass() == SeekBarPreference.class
-                    || preference.getClass() == Preference.class) {
+            } else {
                 preference.setLayoutResource(preference instanceof ListPreference
                         || preference instanceof SeekBarPreference
                         ? R.layout.nous_preference_value : R.layout.nous_preference_row);
                 if (preference instanceof CheckBoxPreference) {
                     preference.setWidgetLayoutResource(R.layout.nous_preference_switch);
                 }
-                if (preference instanceof ListPreference) {
+                if (preference instanceof ListPreference && preference.getSummaryProvider() == null) {
                     ((ListPreference) preference).setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
                 } else if (preference instanceof SeekBarPreference) {
                     preference.setSummaryProvider(p -> ((SeekBarPreference) p).getFormattedValue());
@@ -427,8 +426,10 @@ public class StreamSettings extends AppCompatActivity {
             }
             stylePreferences(getPreferenceScreen());
             RecyclerView list = getListView();
-            int inset = Math.round(24 * getResources().getDisplayMetrics().density);
-            list.setPadding(inset, 0, inset, inset);
+            int inset = getResources().getDimensionPixelSize(R.dimen.nous_settings_inset);
+            int gap = getResources().getDimensionPixelSize(R.dimen.nous_settings_row_gap);
+            list.setPaddingRelative(inset, 0, inset, inset);
+            list.setVerticalScrollBarEnabled(false);
             list.setClipToPadding(false);
             setDivider(null);
             list.addItemDecoration(new RecyclerView.ItemDecoration() {
@@ -436,7 +437,7 @@ public class StreamSettings extends AppCompatActivity {
                 public void getItemOffsets(@NonNull android.graphics.Rect outRect,
                         @NonNull View child, @NonNull RecyclerView parent,
                         @NonNull RecyclerView.State state) {
-                    outRect.bottom = Math.round(8 * getResources().getDisplayMetrics().density);
+                    outRect.bottom = gap;
                 }
             });
         }

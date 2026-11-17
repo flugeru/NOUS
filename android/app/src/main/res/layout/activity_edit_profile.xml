@@ -15,7 +15,8 @@
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp" android:layout_marginVertical="12dp"
+        android:layout_marginStart="@dimen/nous_settings_inset"
+        android:layout_marginEnd="@dimen/nous_settings_inset" android:layout_marginTop="8dp" android:layout_marginBottom="6dp"
         android:hint="@string/nous_profile_name">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/nous_profile_name" android:layout_width="match_parent"
@@ -31,6 +32,7 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/nous_save_profile" android:layout_width="match_parent"
         android:layout_height="wrap_content" android:minHeight="48dp"
-        android:layout_marginHorizontal="24dp" android:layout_marginBottom="12dp"
+        android:layout_marginStart="@dimen/nous_settings_inset"
+        android:layout_marginEnd="@dimen/nous_settings_inset" android:layout_marginBottom="12dp"
         android:text="@string/nous_save_profile" />
 </LinearLayout>

@@ -36,7 +36,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="@dimen/nous_settings_inset">
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/bt_vibrator"
                 android:layout_width="match_parent"
@@ -84,7 +84,7 @@
                 android:layout_marginTop="12dp"
                 android:background="@drawable/nous_card"
                 android:textAppearance="@style/Nous.Subtitle"
-                android:padding="16dp"
+                android:padding="@dimen/nous_settings_row_inset"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/debug_info_refresh_gamepad_info" />
@@ -95,7 +95,7 @@
                 android:background="@drawable/nous_card"
                 android:fontFamily="monospace"
                 android:textColor="@color/nous_secondary"
-                android:padding="16dp"
+                android:padding="@dimen/nous_settings_row_inset"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
             <com.google.android.material.button.MaterialButton

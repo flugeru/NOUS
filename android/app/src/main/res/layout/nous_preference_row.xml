@@ -1,16 +1,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:minHeight="64dp" android:orientation="horizontal"
-    android:gravity="center_vertical" android:paddingStart="16dp" android:paddingEnd="16dp"
-    android:paddingTop="12dp" android:paddingBottom="12dp"
+    android:minHeight="48dp" android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingStart="@dimen/nous_settings_row_inset" android:paddingEnd="@dimen/nous_settings_row_inset"
+    android:paddingTop="8dp" android:paddingBottom="8dp"
     android:background="@drawable/nous_preference_ripple">
     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
         android:layout_weight="1" android:orientation="vertical">
         <TextView android:id="@android:id/title" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:textColor="@color/nous_text"
+            android:includeFontPadding="false"
             android:textSize="14sp" android:fontFamily="sans-serif-medium" />
         <TextView android:id="@android:id/summary" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:layout_marginTop="4dp"
+            android:layout_height="wrap_content" android:layout_marginTop="3dp"
+            android:includeFontPadding="false" android:textSize="13sp"
             android:textAppearance="@style/Nous.Subtitle" />
     </LinearLayout>
     <LinearLayout android:id="@android:id/widget_frame" android:layout_width="wrap_content"

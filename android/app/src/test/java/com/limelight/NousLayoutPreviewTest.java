@@ -1,11 +1,13 @@
 package com.limelight;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import com.google.android.material.materialswitch.MaterialSwitch;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -63,8 +65,20 @@ public class NousLayoutPreviewTest {
             assertTrue("Active value must not overlap its label", summary.getLeft() >= title.getRight());
             assertTrue("Active value must stay within the row", summary.getRight() <= value.getWidth());
             assertTrue("Active value must remain visible", summary.getWidth() > 0 && summary.getHeight() > 0);
-            assertNotNull(host.getLayoutInflater().inflate(R.layout.nous_preference_switch, null, false)
-                    .findViewById(android.R.id.checkbox));
+            MaterialSwitch toggle = (MaterialSwitch) host.getLayoutInflater()
+                    .inflate(R.layout.nous_preference_switch, null, false);
+            assertEquals(android.R.id.checkbox, toggle.getId());
+            assertNotNull(toggle.getTrackDrawable());
+            assertNotNull(toggle.getThumbDrawable());
+            int[] checked = {android.R.attr.state_enabled, android.R.attr.state_checked};
+            assertEquals(host.getColor(R.color.nous_secondary),
+                    toggle.getTrackTintList().getColorForState(checked, 0));
+            assertEquals(host.getColor(R.color.nous_on_secondary),
+                    toggle.getThumbTintList().getColorForState(checked, 0));
+            Bitmap logo = BitmapFactory.decodeResource(host.getResources(), R.drawable.nous_brand);
+            assertNotNull(logo);
+            assertEquals(0, android.graphics.Color.alpha(logo.getPixel(0, 0)));
+            logo.recycle();
         }
     }
     @Test public void settingsHideLibraryHeaderAndRestoreItOnReturn() {

@@ -102,11 +102,12 @@ public class HelpActivity extends AppCompatActivity {
         android.widget.ScrollView scroll = new android.widget.ScrollView(this);
         android.widget.LinearLayout body = new android.widget.LinearLayout(this);
         body.setOrientation(android.widget.LinearLayout.VERTICAL);
-        int space = Math.round(24 * getResources().getDisplayMetrics().density);
+        int space = getResources().getDimensionPixelSize(R.dimen.nous_settings_inset);
+        int logoSize = Math.round(56 * getResources().getDisplayMetrics().density);
         body.setPadding(space, space, space, space);
         android.widget.ImageView logo = new android.widget.ImageView(this);
-        logo.setImageResource(R.mipmap.ic_launcher_foreground);
-        body.addView(logo, new android.widget.LinearLayout.LayoutParams(space * 3, space * 3));
+        logo.setImageResource(R.drawable.nous_brand);
+        body.addView(logo, new android.widget.LinearLayout.LayoutParams(logoSize, logoSize));
         android.widget.TextView brand = new android.widget.TextView(this);
         brand.setText("NOUS\nAndroid · " + BuildConfig.VERSION_NAME);
         brand.setTextAppearance(R.style.Nous_Title);
@@ -135,8 +136,8 @@ public class HelpActivity extends AppCompatActivity {
         card.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.nous_text));
         card.setCornerRadius(Math.round(14 * getResources().getDisplayMetrics().density));
         android.widget.LinearLayout.LayoutParams params = new android.widget.LinearLayout.LayoutParams(-1, -2);
-        params.topMargin = Math.round(12 * getResources().getDisplayMetrics().density);
-        card.setMinHeight(Math.round(64 * getResources().getDisplayMetrics().density));
+        params.topMargin = getResources().getDimensionPixelSize(R.dimen.nous_settings_row_gap);
+        card.setMinHeight(Math.round(56 * getResources().getDisplayMetrics().density));
         body.addView(card, params);
         card.setOnClickListener(v -> action.run());
     }
