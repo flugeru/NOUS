@@ -95,6 +95,37 @@ public class ProfilesNavigationTest {
     }
 
     @Test
+    public void gamesTabShowsSearchableDemoAppsWithoutAPairedComputer() {
+        prepareEnvironment();
+        try (ActivityController<PcView> controller = Robolectric.buildActivity(PcView.class).setup()) {
+            PcView activity = controller.get();
+            BottomNavigationView navigation = activity.findViewById(R.id.nous_navigation);
+            navigation.setSelectedItemId(R.id.nous_nav_games);
+            activity.getFragmentManager().executePendingTransactions();
+            android.app.Fragment games = activity.getFragmentManager().findFragmentByTag("games");
+            assertNotNull(games);
+            games.getChildFragmentManager().executePendingTransactions();
+            View library = games.getView();
+            assertNotNull(library);
+            android.widget.AbsListView grid = library.findViewById(R.id.fragmentView);
+            assertEquals(4, grid.getAdapter().getCount());
+
+            android.widget.EditText search = library.findViewById(R.id.nous_game_search);
+            search.setText("Orbital");
+            assertEquals(1, grid.getAdapter().getCount());
+            assertEquals(activity.getString(R.string.nous_demo_orbit), grid.getAdapter().getItem(0).toString());
+            search.setText("");
+
+            com.google.android.material.chip.ChipGroup filters = library.findViewById(R.id.nous_game_filters);
+            filters.check(R.id.nous_filter_running);
+            assertEquals(1, grid.getAdapter().getCount());
+            assertEquals(activity.getString(R.string.nous_demo_orbit), grid.getAdapter().getItem(0).toString());
+            grid.performItemClick(new View(activity), 0, grid.getAdapter().getItemId(0));
+            assertNull("Demo apps cannot open a streaming activity", Shadows.shadowOf(activity).getNextStartedActivity());
+        }
+    }
+
+    @Test
     public void addComputerButtonOpensManualConnection() {
         prepareEnvironment();
         try (ActivityController<PcView> controller = Robolectric.buildActivity(PcView.class).setup()) {

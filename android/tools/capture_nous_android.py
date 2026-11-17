@@ -253,6 +253,16 @@ def run(c):
     wait_for("profilesButton", labels=("NOUS emulator",))
     c.capture("computers-active-profile-after-restart")
 
+    select("nous_nav_games")
+    wait_for("appListText", labels=("Biblioteca offline", "Offline library"))
+    wait_for(labels=("Circuito Noturno", "Night Circuit"))
+    c.capture("games-offline-library")
+
+    select("nous_filter_running")
+    wait_for(labels=("Estação Orbital", "Orbital Station"))
+    c.capture("games-offline-running")
+    select("nous_filter_all")
+
     select("nous_nav_settings")
     select("nous_settings_diagnostics")
     wait_for("nous_copy_diagnostics")
@@ -273,6 +283,9 @@ def run(c):
     c.capture("settings-landscape")
     select("nous_nav_computers")
     c.capture("computers-landscape")
+    select("nous_nav_games")
+    wait_for(labels=("Circuito Noturno", "Night Circuit"))
+    c.capture("games-offline-landscape")
 
 
 def main():

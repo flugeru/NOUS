@@ -60,6 +60,19 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import org.xmlpull.v1.XmlPullParserException;
 
 public class GamesFragment extends android.app.Fragment implements AdapterFragmentCallbacks {
+    private static final String OFFLINE_DEMO_ARG = "nous.offline_demo";
+
+    static Bundle offlineDemoArguments() {
+        Bundle arguments = new Bundle();
+        arguments.putBoolean(OFFLINE_DEMO_ARG, true);
+        return arguments;
+    }
+
+    boolean isOfflineDemo() {
+        Bundle arguments = getArguments();
+        return arguments != null && arguments.getBoolean(OFFLINE_DEMO_ARG);
+    }
+
     @Override
     public View onCreateView(android.view.LayoutInflater inflater, android.view.ViewGroup container, Bundle state) {
         View view = inflater.inflate(R.layout.activity_app_view, container, false);
@@ -295,6 +308,9 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
     }
 
     private void stopComputerUpdates() {
+        if (isOfflineDemo()) {
+            return;
+        }
         if (poller != null) {
             poller.stop();
         }
@@ -351,6 +367,21 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
         findViewById(R.id.profilesButton)
             .setOnClickListener(v -> startActivity(new Intent(getActivity(), ProfilesActivity.class)));
 
+        this.prefConfig = PreferenceConfiguration.readPreferences(getActivity());
+        if (isOfflineDemo()) {
+            TextView label = findViewById(R.id.appListText);
+            label.setText(R.string.nous_demo_library);
+            appGridAdapter = AppGridAdapter.createOfflineDemo(getActivity(), prefConfig);
+            appGridAdapter.setQuery(gameSearch.getText());
+            appGridAdapter.setRunningOnly(filters.getCheckedChipId() == R.id.nous_filter_running);
+            if (getChildFragmentManager().findFragmentById(R.id.appFragmentContainer) == null) {
+                getChildFragmentManager().beginTransaction()
+                        .replace(R.id.appFragmentContainer, new AdapterFragment())
+                        .commit();
+            }
+            return;
+        }
+
         showHiddenApps = getArguments().getBoolean(SHOW_HIDDEN_APPS_EXTRA, false);
         uuidString = getArguments().getString(UUID_EXTRA);
 
@@ -364,8 +395,6 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
         TextView label = findViewById(R.id.appListText);
 
         label.setText(computerName);
-
-        this.prefConfig = PreferenceConfiguration.readPreferences(getActivity());
 
         // Bind to the computer manager service
         serviceBound = getActivity().bindService(new Intent(getActivity(), ComputerManagerService.class), serviceConnection,
@@ -767,6 +796,11 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
     @Override
     public void receiveAbsListView(AbsListView listView) {
         listView.setAdapter(appGridAdapter);
+        if (isOfflineDemo()) {
+            listView.setOnItemClickListener((parent, view, position, id) ->
+                    Toast.makeText(parent.getContext(), R.string.nous_demo_item, Toast.LENGTH_SHORT).show());
+            return;
+        }
         listView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int pos,

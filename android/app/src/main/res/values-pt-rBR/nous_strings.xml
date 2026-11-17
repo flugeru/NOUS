@@ -1,5 +1,11 @@
 <resources>
     <string name="nous_computers">Computadores</string>
+    <string name="nous_demo_library">Biblioteca offline</string>
+    <string name="nous_demo_item">Este aplicativo é de demonstração. Conecte um PC pareado para jogar.</string>
+    <string name="nous_demo_racing">Circuito Noturno</string>
+    <string name="nous_demo_orbit">Estação Orbital</string>
+    <string name="nous_demo_mountains">Pico Norte</string>
+    <string name="nous_demo_forest">Lua Carmesim</string>
     <string name="nous_library">Biblioteca</string>
     <string name="nous_settings">Ajustes</string>
     <string name="nous_back">Voltar</string>

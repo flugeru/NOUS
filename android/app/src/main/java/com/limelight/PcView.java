@@ -775,8 +775,9 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
     }
 
     private boolean openGamesTab() {
-        android.app.Fragment existing = getFragmentManager().findFragmentByTag("games");
-        if (existing != null && !existing.isRemoving()) {
+        GamesFragment existing = (GamesFragment) getFragmentManager().findFragmentByTag("games");
+        boolean hasLibrary = existing != null && !existing.isRemoving();
+        if (hasLibrary && !existing.isOfflineDemo()) {
             showGamesContent();
             return true;
         }
@@ -788,7 +789,12 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
             }
         }
         if (hosts.isEmpty()) {
-            Toast.makeText(this, R.string.nous_games_need_pc, Toast.LENGTH_SHORT).show();
+            if (hasLibrary) {
+                showGamesContent();
+            } else {
+                showGamesLibrary(GamesFragment.offlineDemoArguments());
+            }
+            return true;
         } else if (hosts.size() == 1) {
             doAppList(hosts.get(0), false, false);
         } else {
@@ -819,6 +825,10 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
         arguments.putString(AppView.UUID_EXTRA, computer.uuid);
         arguments.putBoolean(AppView.NEW_PAIR_EXTRA, newlyPaired);
         arguments.putBoolean(AppView.SHOW_HIDDEN_APPS_EXTRA, showHiddenGames);
+        showGamesLibrary(arguments);
+    }
+
+    private void showGamesLibrary(Bundle arguments) {
         GamesFragment games = new GamesFragment();
         games.setArguments(arguments);
         getFragmentManager().beginTransaction().replace(R.id.nous_games_container, games, "games").commitAllowingStateLoss();

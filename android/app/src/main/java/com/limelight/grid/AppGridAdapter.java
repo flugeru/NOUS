@@ -2,6 +2,7 @@ package com.limelight.grid;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.util.SparseIntArray;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -16,6 +17,7 @@ import com.limelight.grid.assets.DiskAssetLoader;
 import com.limelight.grid.assets.MemoryAssetLoader;
 import com.limelight.grid.assets.NetworkAssetLoader;
 import com.limelight.nvstream.http.ComputerDetails;
+import com.limelight.nvstream.http.NvApp;
 import com.limelight.preferences.PreferenceConfiguration;
 
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ public class AppGridAdapter extends GenericGridAdapter<AppView.AppObject> {
     private final String uniqueId;
     private final boolean showHiddenApps;
 
+    private final SparseIntArray bundledArtwork = new SparseIntArray();
     private CachedAppAssetLoader loader;
     private Set<Integer> hiddenAppIds = new HashSet<>();
     private final List<AppView.AppObject> allApps = new ArrayList<>();
@@ -56,6 +59,26 @@ public class AppGridAdapter extends GenericGridAdapter<AppView.AppObject> {
         this.showHiddenApps = showHiddenApps;
 
         updateLayoutWithPreferences(context, prefs);
+    }
+
+    public static AppGridAdapter createOfflineDemo(Context context, PreferenceConfiguration prefs) {
+        AppGridAdapter adapter = new AppGridAdapter(context, prefs, null, null, false);
+        adapter.addDemoGame(context, R.string.nous_demo_racing, R.drawable.nous_demo_racing, false);
+        adapter.addDemoGame(context, R.string.nous_demo_orbit, R.drawable.nous_demo_orbit, true);
+        adapter.addDemoGame(context, R.string.nous_demo_mountains, R.drawable.nous_demo_mountains, false);
+        adapter.addDemoGame(context, R.string.nous_demo_forest, R.drawable.nous_demo_forest, false);
+        adapter.notifyDataSetChanged();
+        return adapter;
+    }
+
+    private void addDemoGame(Context context, int title, int artwork, boolean running) {
+        int id = bundledArtwork.size() + 1;
+        bundledArtwork.put(id, artwork);
+        NvApp game = new NvApp(context.getString(title), "", id, false);
+        game.setAppIndex(id);
+        AppView.AppObject item = new AppView.AppObject(game);
+        item.isRunning = running;
+        addApp(item);
     }
 
     public void updateHiddenApps(Set<Integer> newHiddenAppIds, boolean hideImmediately) {
@@ -127,6 +150,10 @@ public class AppGridAdapter extends GenericGridAdapter<AppView.AppObject> {
     }
 
     public void updateLayoutWithPreferences(Context context, PreferenceConfiguration prefs) {
+        if (computer == null) {
+            setLayoutId(getLayoutIdForPreferences(prefs));
+            return;
+        }
         int dpi = context.getResources().getDisplayMetrics().densityDpi;
         int dp;
 
@@ -160,6 +187,9 @@ public class AppGridAdapter extends GenericGridAdapter<AppView.AppObject> {
     }
 
     public void cancelQueuedOperations() {
+        if (loader == null) {
+            return;
+        }
         loader.cancelForegroundLoads();
         loader.cancelBackgroundLoads();
         loader.freeCacheMemory();
@@ -191,7 +221,9 @@ public class AppGridAdapter extends GenericGridAdapter<AppView.AppObject> {
         // Add the app to the adapter data if it's not hidden
         if (showHiddenApps || !app.isHidden) {
             // Queue a request to fetch this bitmap into cache
-            loader.queueCacheLoad(app.app);
+            if (loader != null) {
+                loader.queueCacheLoad(app.app);
+            }
 
             // Add the app to our sorted list
             itemList.add(app);
@@ -213,8 +245,15 @@ public class AppGridAdapter extends GenericGridAdapter<AppView.AppObject> {
 
     @Override
     public void populateView(View parentView, ImageView imgView, RelativeLayout gridMask, ProgressBar prgView, TextView txtView, ImageView overlayView, AppView.AppObject obj) {
-        // Let the cached asset loader handle it
-        loader.populateImageView(obj.app, imgView, txtView);
+        if (loader == null) {
+            imgView.setImageResource(bundledArtwork.get(obj.app.getAppId()));
+            imgView.setVisibility(View.VISIBLE);
+            if (prgView != null) prgView.setVisibility(View.GONE);
+            txtView.setText(obj.app.getAppName());
+            txtView.setVisibility(View.VISIBLE);
+        } else {
+            loader.populateImageView(obj.app, imgView, txtView);
+        }
 
         if (obj.isRunning) {
             // Show the play button overlay
