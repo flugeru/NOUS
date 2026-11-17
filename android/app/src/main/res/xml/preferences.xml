@@ -657,8 +657,13 @@
     <PreferenceCategory
         android:key="category_onscreen_controls"
         android:title="@string/category_on_screen_controls_settings"
-        app:initialExpandedChildrenCount="1"
+        app:initialExpandedChildrenCount="2"
         app:iconSpaceReserved="false">
+        <Preference
+            android:key="nous_virtual_controller_editor"
+            android:title="@string/nous_osc_editor_title"
+            android:summary="@string/nous_osc_editor_summary"
+            app:iconSpaceReserved="false" />
         <com.limelight.preferences.NousSwitchPreference
             android:defaultValue="false"
             android:key="checkbox_show_onscreen_controls"

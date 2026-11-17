@@ -41,7 +41,6 @@ const navigationGroups = [
     items: [
       { labelKey: 'ui.nav.settings', icon: 'settings', to: '/settings' },
       { labelKey: 'ui.nav.integrations', icon: 'integrations', to: '/integrations' },
-      { labelKey: 'ui.nav.api_tokens', icon: 'key', to: '/api-tokens' },
       { labelKey: 'ui.nav.maintenance', icon: 'help', to: '/maintenance' },
     ],
   },

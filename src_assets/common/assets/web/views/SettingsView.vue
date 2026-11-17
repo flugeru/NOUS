@@ -1531,6 +1531,11 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload));
     </div>
 
     <details class="settings-disclosure">
+      <summary>{{ t('ui.nav.api_tokens') }}</summary>
+      <RouterLink class="button button--secondary" to="/api-tokens">{{ t('ui.nav.api_tokens') }}</RouterLink>
+    </details>
+
+    <details class="settings-disclosure">
       <summary>{{ t('ui.shell.classic_interface') }}</summary>
       <a class="button button--secondary" href="/?classic=1">{{ t('ui.shell.classic_interface') }}</a>
     </details>

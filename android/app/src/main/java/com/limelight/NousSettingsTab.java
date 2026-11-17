@@ -10,7 +10,6 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.navigation.NavigationBarView;
-import com.limelight.binding.input.virtual_controller.VirtualControllerEditorActivity;
 import com.limelight.preferences.StreamSettings;
 import com.limelight.utils.HelpLauncher;
 
@@ -44,8 +43,6 @@ final class NousSettingsTab {
             container.addView(settings);
             bindSection(R.id.nous_settings_video, StreamSettings.Section.VIDEO_AUDIO);
             bindSection(R.id.nous_settings_controls, StreamSettings.Section.CONTROLS);
-            settings.findViewById(R.id.nous_settings_virtual_controller).setOnClickListener(v ->
-                    activity.startActivity(new Intent(activity, VirtualControllerEditorActivity.class)));
             bindSection(R.id.nous_settings_advanced, StreamSettings.Section.ADVANCED);
             bindSection(R.id.nous_settings_development, StreamSettings.Section.DEVELOPMENT);
             settings.findViewById(R.id.nous_settings_profiles).setOnClickListener(v ->

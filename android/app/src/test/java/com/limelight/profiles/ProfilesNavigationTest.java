@@ -95,6 +95,27 @@ public class ProfilesNavigationTest {
     }
 
     @Test
+    public void controlsContainVirtualControllerEditor() {
+        prepareEnvironment();
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), StreamSettings.class)
+                .putExtra(StreamSettings.SECTION, StreamSettings.Section.CONTROLS.name());
+        try (ActivityController<StreamSettings> controller =
+                     Robolectric.buildActivity(StreamSettings.class, intent).setup()) {
+            StreamSettings activity = controller.get();
+            activity.getSupportFragmentManager().executePendingTransactions();
+            androidx.preference.PreferenceFragmentCompat fragment =
+                    (androidx.preference.PreferenceFragmentCompat) activity.getSupportFragmentManager()
+                            .getFragments().get(0);
+            androidx.preference.Preference editor = fragment.findPreference("nous_virtual_controller_editor");
+            assertNotNull(editor);
+            assertTrue(editor.isShown());
+            assertTrue(editor.getOnPreferenceClickListener().onPreferenceClick(editor));
+            assertEquals(com.limelight.binding.input.virtual_controller.VirtualControllerEditorActivity.class.getName(),
+                    Shadows.shadowOf(activity).getNextStartedActivity().getComponent().getClassName());
+        }
+    }
+
+    @Test
     public void gamesTabShowsSearchableDemoAppsWithoutAPairedComputer() {
         prepareEnvironment();
         try (ActivityController<PcView> controller = Robolectric.buildActivity(PcView.class).setup()) {

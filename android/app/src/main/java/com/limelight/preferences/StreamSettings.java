@@ -376,6 +376,14 @@ public class StreamSettings extends ControllerMenuActivity {
                 return;
             }
             initializePreferences();
+            Preference editor = findPreference("nous_virtual_controller_editor");
+            if (editor != null) {
+                editor.setOnPreferenceClickListener(preference -> {
+                    startActivity(new Intent(requireContext(),
+                            com.limelight.binding.input.virtual_controller.VirtualControllerEditorActivity.class));
+                    return true;
+                });
+            }
             Preference codec = findPreference("video_format");
             PreferenceGroup advanced = findPreference("category_advanced_settings");
             PreferenceGroup video = findPreference("category_video_settings");
