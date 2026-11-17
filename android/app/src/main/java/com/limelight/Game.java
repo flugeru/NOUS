@@ -298,6 +298,14 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
     public boolean allowChangeMouseMode = true;
     private boolean onExternelDisplay = false;
     private ImageButton floatingMenuButton;
+    private final Runnable retractMenuHandle = () -> {
+        if (floatingMenuButton == null || !floatingMenuButton.isShown()
+                || floatingMenuButton.isAccessibilityFocused() || floatingMenuButton.hasFocus()) return;
+        View parent = (View) floatingMenuButton.getParent();
+        boolean left = floatingMenuButton.getX() + floatingMenuButton.getWidth() / 2f < parent.getWidth() / 2f;
+        floatingMenuButton.animate().x(left ? -floatingMenuButton.getWidth() / 2f
+                : parent.getWidth() - floatingMenuButton.getWidth() / 2f).alpha(0.45f).setDuration(200);
+    };
     private ImageButton overlayToggleButton;
     private float floatingButtonDX, floatingButtonDY;
     private boolean isButtonMoving = false;
@@ -1038,9 +1046,14 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
     private void initFloatingButton() {
         // Touch listener for drag and click
         if (floatingMenuButton != null) {
+            floatingMenuButton.setOnClickListener(v -> showGameMenu(null));
+            floatingMenuButton.postDelayed(retractMenuHandle, 4000);
             floatingMenuButton.setOnTouchListener((view, event) -> {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+                        view.removeCallbacks(retractMenuHandle);
+                        view.animate().cancel();
+                        view.setAlpha(1f);
                         floatingButtonStartX = event.getRawX();
                         floatingButtonStartY = event.getRawY();
                         floatingButtonDX = view.getX() - event.getRawX();
@@ -1075,10 +1088,15 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                         view.setY(newY);
                         return true;
                     case MotionEvent.ACTION_UP:
-                        if (!isButtonMoving) {
-                            // It's a click event, show menu
-                            showGameMenu(null);
-                        }
+                        if (!isButtonMoving) view.performClick();
+                        View parent = (View) view.getParent();
+                        view.setX(view.getX() + view.getWidth() / 2f < parent.getWidth() / 2f
+                                ? 0 : Math.max(0, parent.getWidth() - view.getWidth()));
+                        view.postDelayed(retractMenuHandle, 4000);
+                        isButtonMoving = false;
+                        return true;
+                    case MotionEvent.ACTION_CANCEL:
+                        view.postDelayed(retractMenuHandle, 4000);
                         isButtonMoving = false;
                         return true;
                     default:
@@ -1704,6 +1722,10 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         super.onDestroy();
 
         instance = null;
+        if (floatingMenuButton != null) {
+            floatingMenuButton.removeCallbacks(retractMenuHandle);
+            floatingMenuButton.animate().cancel();
+        }
         timerHandler.removeCallbacksAndMessages(null);
 
         if (prefConfig.enableFullExDisplay) handleDisplayRemoved();

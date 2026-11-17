@@ -97,11 +97,11 @@
     <!-- Floating Menu Button -->
     <ImageButton
         android:id="@+id/floatingMenuButton"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_gravity="top|start"
-        android:layout_marginTop="24dp"
-        android:background="@drawable/floating_menu_button"
+        android:layout_width="48dp"
+        android:layout_height="64dp"
+        android:layout_gravity="center_vertical|start"
+        android:background="@drawable/nous_stream_handle"
+        android:tint="@color/nous_secondary"
         android:contentDescription="@string/menu_button"
         android:src="@drawable/ic_menu"
         android:padding="6dp"

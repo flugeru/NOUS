@@ -109,6 +109,10 @@ public class GameMenu implements Game.GameMenuCallbacks {
     }
 
     private void showMenuDialog(String title, MenuOption[] options) {
+        showMenuDialog(title, options, false);
+    }
+
+    private void showMenuDialog(String title, MenuOption[] options, boolean sessionMenu) {
         int themeResId = game.getApplicationInfo().theme;
 
         Context themedContext = new ContextThemeWrapper(dialogScreenContext, themeResId);
@@ -117,7 +121,6 @@ public class GameMenu implements Game.GameMenuCallbacks {
 
         final ArrayAdapter<String> actions = new ArrayAdapter<>(themedContext, android.R.layout.simple_list_item_1);
 
-        boolean sessionMenu = title.equals(getString(R.string.quick_menu_title));
         if (sessionMenu) {
             android.widget.ScrollView scroll = new android.widget.ScrollView(themedContext);
             android.widget.LinearLayout panel = new android.widget.LinearLayout(themedContext);
@@ -151,13 +154,7 @@ public class GameMenu implements Game.GameMenuCallbacks {
             }
             builder.setView(scroll);
         } else builder.setAdapter(actions, (dialog, which) -> {
-            String label = actions.getItem(which);
-            for (MenuOption option : options) {
-                if (label != null && label.equals(option.label)) {
-                    run(option);
-                    break;
-                }
-            }
+            if (which >= 0 && which < options.length) run(options[which]);
         });
 
         builder.setOnCancelListener(dialog -> hideMenu());
@@ -170,7 +167,7 @@ public class GameMenu implements Game.GameMenuCallbacks {
         Window window = currentDialog.getWindow();
 
         if (window != null) {
-            if (title.equals(getString(R.string.quick_menu_title))
+            if (sessionMenu
                     && themedContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 android.util.DisplayMetrics metrics = themedContext.getResources().getDisplayMetrics();
                 window.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
@@ -376,7 +373,7 @@ public class GameMenu implements Game.GameMenuCallbacks {
 
         options.add(new MenuOption(getString(R.string.game_menu_cancel), null));
 
-        showMenuDialog(getString(R.string.quick_menu_title), options.toArray(new MenuOption[options.size()]));
+        showMenuDialog(getString(R.string.quick_menu_title), options.toArray(new MenuOption[options.size()]), true);
     }
 
     @Override
