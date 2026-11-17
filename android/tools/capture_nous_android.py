@@ -65,8 +65,12 @@ def wait_for(identifier=None, labels=()):
     raise RuntimeError(f"Missing UI target {identifier or labels}; visible labels: {visible}")
 
 
+def bounds(node):
+    return tuple(map(int, re.findall(r"\d+", node.get("bounds", ""))))
+
+
 def tap(node):
-    x0, y0, x1, y1 = map(int, re.findall(r"\d+", node.get("bounds", "")))
+    x0, y0, x1, y1 = bounds(node)
     shell("input", "tap", str((x0 + x1) // 2), str((y0 + y1) // 2))
     pause()
 
@@ -299,6 +303,32 @@ def run(c):
     select("nous_nav_games")
     wait_for(labels=("Genshin Impact",))
     c.capture("games-offline-landscape")
+
+    root, _ = tree()
+    destinations = [wait_for(target) for target in ("nous_nav_computers", "nous_nav_games", "nous_nav_settings")]
+    rail_bounds = [bounds(node) for node in destinations]
+    title_bounds = bounds(match(root, "appListText"))
+    if not (rail_bounds[0][1] < rail_bounds[1][1] < rail_bounds[2][1]
+            and all(box[2] <= title_bounds[0] for box in rail_bounds)):
+        raise RuntimeError("Landscape navigation must be vertical and left of the library")
+    if match(root, "nous_game_search") is not None:
+        raise RuntimeError("Landscape search should start collapsed")
+
+    select("nous_library_search_toggle")
+    wait_for("nous_game_search")
+    shell("input", "text", "Genshin")
+    wait_for("nous_game_search", labels=("Genshin",))
+    c.capture("games-offline-landscape-search")
+    select("nous_library_search_toggle")
+    root, _ = tree()
+    if match(root, "nous_game_search") is not None or match(root, labels=("Cyberpunk 2077",)) is not None:
+        raise RuntimeError("Closing landscape search should retain its filter")
+    wait_for(labels=("Genshin Impact",))
+
+    shell("settings", "put", "system", "user_rotation", "0")
+    pause(2)
+    wait_for("nous_game_search", labels=("Genshin",))
+    c.capture("games-offline-search-after-rotation")
 
 
 def main():

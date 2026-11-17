@@ -23,10 +23,10 @@ import com.limelight.utils.SpinnerDialog;
 import com.limelight.utils.UiHelper;
 import com.limelight.profiles.ProfileButton;
 
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.Service;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -40,16 +40,18 @@ import android.os.IBinder;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -59,11 +61,14 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import androidx.core.view.OneShotPreDrawListener;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.xmlpull.v1.XmlPullParserException;
 
 public class GamesFragment extends android.app.Fragment implements AdapterFragmentCallbacks {
+    private static final String SEARCH_EXPANDED_STATE = "nous.search_expanded";
     private static final String OFFLINE_DEMO_ARG = "nous.offline_demo";
 
     static Bundle offlineDemoArguments() {
@@ -95,6 +100,8 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
 
     private AppGridAdapter appGridAdapter;
     private EditText gameSearch;
+    private ValueAnimator librarySearchAnimation;
+    private boolean librarySearchExpanded;
     private String uuidString;
     private ShortcutHelper shortcutHelper;
 
@@ -328,6 +335,116 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
         }
     }
 
+    private void setupLandscapeLibrary(Bundle state) {
+        ImageButton toggle = findViewById(R.id.nous_library_search_toggle);
+        if (toggle == null) {
+            return;
+        }
+        toggle.setOnClickListener(view -> setLibrarySearchExpanded(!librarySearchExpanded, true));
+        if (state != null && state.getBoolean(SEARCH_EXPANDED_STATE)) {
+            View heading = findViewById(R.id.nous_landscape_library_heading);
+            OneShotPreDrawListener.add(heading, () -> {
+                if (getView() != null && !librarySearchExpanded) {
+                    setLibrarySearchExpanded(true, false);
+                }
+            });
+        }
+
+        Configuration config = getResources().getConfiguration();
+        if (config.screenWidthDp < 96 + 360 * config.fontScale) {
+            LinearLayout controls = findViewById(R.id.nous_landscape_library_controls);
+            controls.setOrientation(LinearLayout.VERTICAL);
+            View categories = findViewById(R.id.nous_offline_categories);
+            categories.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            View filters = findViewById(R.id.nous_game_filters);
+            LinearLayout.LayoutParams filterParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            filterParams.gravity = Gravity.END;
+            filters.setLayoutParams(filterParams);
+        }
+    }
+
+    private void setLibrarySearchExpanded(boolean expanded, boolean animate) {
+        View heading = findViewById(R.id.nous_landscape_library_heading);
+        View field = findViewById(R.id.nous_landscape_search_field);
+        ImageButton toggle = findViewById(R.id.nous_library_search_toggle);
+        librarySearchExpanded = expanded;
+        toggle.setImageResource(expanded ? R.drawable.ic_close : R.drawable.ic_nous_search);
+        toggle.setContentDescription(getText(expanded ? R.string.nous_collapse_search : R.string.nous_search_library));
+        toggle.setSelected(!expanded && gameSearch.length() > 0);
+
+        if (librarySearchAnimation != null) {
+            librarySearchAnimation.cancel();
+        }
+        if (!expanded) {
+            hideSearchKeyboard();
+            toggle.requestFocus();
+        }
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) field.getLayoutParams();
+        int availableWidth = Math.max(0, heading.getWidth() - heading.getPaddingStart() - heading.getPaddingEnd());
+        int expandedWidth = Math.min(Math.round(320 * getResources().getDisplayMetrics().density),
+                Math.round(availableWidth * 0.55f));
+        int targetWidth = expanded ? expandedWidth : 0;
+        if (!animate) {
+            params.width = targetWidth;
+            field.setLayoutParams(params);
+            field.setAlpha(1f);
+            field.setVisibility(expanded ? View.VISIBLE : View.GONE);
+            return;
+        }
+
+        field.setVisibility(View.VISIBLE);
+        ValueAnimator animator = ValueAnimator.ofInt(params.width, targetWidth);
+        librarySearchAnimation = animator;
+        animator.setDuration(180);
+        animator.addUpdateListener(animation -> {
+            params.width = (int) animation.getAnimatedValue();
+            field.setLayoutParams(params);
+            field.setAlpha(Math.min(1f, (float) params.width / Math.max(expandedWidth, 1)));
+            if (animation.getAnimatedFraction() >= 1f) {
+                librarySearchAnimation = null;
+                if (expanded) {
+                    gameSearch.requestFocus();
+                    WindowCompat.getInsetsController(getActivity().getWindow(), gameSearch)
+                            .show(WindowInsetsCompat.Type.ime());
+                } else {
+                    field.setVisibility(View.GONE);
+                }
+            }
+        });
+        animator.start();
+    }
+
+    private void hideSearchKeyboard() {
+        WindowCompat.getInsetsController(getActivity().getWindow(), gameSearch)
+                .hide(WindowInsetsCompat.Type.ime());
+    }
+
+    boolean closeLibrarySearch() {
+        if (!librarySearchExpanded || getView() == null) {
+            return false;
+        }
+        setLibrarySearchExpanded(false, true);
+        return true;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle state) {
+        super.onSaveInstanceState(state);
+        state.putBoolean(SEARCH_EXPANDED_STATE, librarySearchExpanded);
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (librarySearchAnimation != null) {
+            librarySearchAnimation.cancel();
+            librarySearchAnimation = null;
+        }
+        librarySearchExpanded = false;
+        super.onDestroyView();
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -349,17 +466,20 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
             if (actionId != EditorInfo.IME_ACTION_SEARCH) {
                 return false;
             }
-            InputMethodManager keyboard = (InputMethodManager) view.getContext()
-                    .getSystemService(Context.INPUT_METHOD_SERVICE);
-            keyboard.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            hideSearchKeyboard();
             return true;
         });
+        setupLandscapeLibrary(savedInstanceState);
         gameSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence text, int start, int count, int after) { }
 
             @Override
             public void onTextChanged(CharSequence text, int start, int before, int count) {
+                ImageButton toggle = findViewById(R.id.nous_library_search_toggle);
+                if (toggle != null) {
+                    toggle.setSelected(!librarySearchExpanded && text.length() > 0);
+                }
                 if (appGridAdapter != null) {
                     appGridAdapter.setQuery(text);
                 }

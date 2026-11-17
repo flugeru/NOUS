@@ -1,4 +1,13 @@
 <resources>
+    <integer name="nous_game_title_lines">2</integer>
+    <dimen name="nous_game_grid_column_width">160dp</dimen>
+    <dimen name="nous_game_grid_small_column_width">128dp</dimen>
+
+    <style name="Nous.NavigationRailShape" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">18dp</item>
+    </style>
+
     <style name="Nous.InputField" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="boxBackgroundColor">@color/nous_surface_high</item>
         <item name="boxCornerRadiusTopStart">14dp</item>

@@ -4,7 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:numColumns="@integer/nous_game_grid_columns"
-    android:columnWidth="128dp"
+    android:columnWidth="@dimen/nous_game_grid_small_column_width"
     android:stretchMode="columnWidth"
     android:paddingStart="@dimen/nous_main_content_inset"
     android:paddingEnd="@dimen/nous_main_content_inset"

@@ -131,10 +131,17 @@ public class NousLayoutPreviewTest {
             android.widget.GridView grid = (android.widget.GridView) controller.get().getLayoutInflater()
                     .inflate(R.layout.app_grid_view, null, false);
             int height = View.MeasureSpec.makeMeasureSpec(340, View.MeasureSpec.EXACTLY);
-            grid.measure(View.MeasureSpec.makeMeasureSpec(640, View.MeasureSpec.EXACTLY), height);
-            assertEquals(3, grid.getNumColumns());
-            grid.measure(View.MeasureSpec.makeMeasureSpec(852, View.MeasureSpec.EXACTLY), height);
-            assertEquals(4, grid.getNumColumns());
+            View shell = controller.get().getLayoutInflater().inflate(R.layout.activity_pc_view, null, false);
+            View rail = shell.findViewById(R.id.nous_navigation);
+            assertTrue(rail instanceof com.google.android.material.navigationrail.NavigationRailView);
+            View tabs = shell.findViewById(R.id.nous_tab_content);
+            for (int screenWidth : new int[]{640, 852}) {
+                shell.measure(View.MeasureSpec.makeMeasureSpec(screenWidth, View.MeasureSpec.EXACTLY), height);
+                shell.layout(0, 0, screenWidth, 340);
+                assertTrue(rail.getRight() <= tabs.getLeft());
+                grid.measure(View.MeasureSpec.makeMeasureSpec(tabs.getWidth(), View.MeasureSpec.EXACTLY), height);
+                assertEquals(screenWidth == 640 ? 3 : 4, grid.getNumColumns());
+            }
         }
     }
 

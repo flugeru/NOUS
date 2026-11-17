@@ -20,7 +20,7 @@ import com.limelight.preferences.AddComputerManually;
 import com.limelight.profiles.ProfileButton;
 import com.limelight.preferences.GlPreferences;
 import com.limelight.preferences.PreferenceConfiguration;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 import java.util.ArrayList;
 import java.util.List;
 import com.limelight.ui.AdapterFragment;
@@ -165,7 +165,7 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
 
     @Override
     protected void onSaveInstanceState(Bundle state) {
-        BottomNavigationView navigation = findViewById(R.id.nous_navigation);
+        NavigationBarView navigation = findViewById(R.id.nous_navigation);
         state.putInt("nous.tab", navigation == null ? restoredTab : navigation.getSelectedItemId());
         super.onSaveInstanceState(state);
     }
@@ -213,7 +213,7 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
         pcGridAdapter.updateLayoutWithPreferences(this, PreferenceConfiguration.readPreferences(this));
 
         // Setup the list view
-        BottomNavigationView navigation = findViewById(R.id.nous_navigation);
+        NavigationBarView navigation = findViewById(R.id.nous_navigation);
         settingsTab = new NousSettingsTab(this, navigation, R.id.nous_nav_computers);
         navigation.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -335,7 +335,13 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
         initializeViews();
         getOnBackPressedDispatcher().addCallback(this, new androidx.activity.OnBackPressedCallback(true) {
             @Override public void handleOnBackPressed() {
-                BottomNavigationView navigation = findViewById(R.id.nous_navigation);
+                NavigationBarView navigation = findViewById(R.id.nous_navigation);
+                if (navigation.getSelectedItemId() == R.id.nous_nav_games) {
+                    GamesFragment games = (GamesFragment) getFragmentManager().findFragmentByTag("games");
+                    if (games != null && games.closeLibrarySearch()) {
+                        return;
+                    }
+                }
                 if (navigation.getSelectedItemId() != R.id.nous_nav_computers) showComputers();
                 else {
                     setEnabled(false);
@@ -773,7 +779,7 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
     }
 
     void showComputers() {
-        ((BottomNavigationView) findViewById(R.id.nous_navigation)).setSelectedItemId(R.id.nous_nav_computers);
+        ((NavigationBarView) findViewById(R.id.nous_navigation)).setSelectedItemId(R.id.nous_nav_computers);
     }
 
     private boolean openGamesTab() {
@@ -848,7 +854,7 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
         if (header != null) header.setVisibility(View.GONE);
         findViewById(R.id.nous_main_tab).setVisibility(View.GONE);
         findViewById(R.id.nous_games_container).setVisibility(View.VISIBLE);
-        ((BottomNavigationView) findViewById(R.id.nous_navigation)).getMenu().findItem(R.id.nous_nav_games).setChecked(true);
+        ((NavigationBarView) findViewById(R.id.nous_navigation)).getMenu().findItem(R.id.nous_nav_games).setChecked(true);
     }
 
     @Override

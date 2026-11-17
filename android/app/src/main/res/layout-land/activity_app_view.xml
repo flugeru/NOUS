@@ -18,46 +18,66 @@
         <LinearLayout android:id="@+id/nous_main_tab"
             android:layout_width="match_parent" android:layout_height="match_parent"
             android:orientation="vertical">
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:gravity="center_vertical" android:paddingStart="@dimen/nous_main_content_inset"
+            <LinearLayout
+                android:id="@+id/nous_landscape_library_heading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="60dp"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/nous_main_content_inset"
                 android:paddingEnd="@dimen/nous_main_content_inset">
                 <TextView android:id="@+id/appListText"
                     android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
-                    android:layout_marginEnd="12dp" android:textAppearance="@style/Nous.Subtitle"
+                    android:layout_marginEnd="8dp"
+                    android:textAppearance="@style/Nous.Title"
+                    android:textSize="24sp"
                     android:ellipsize="end" android:maxLines="1" />
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/nous_landscape_search_field"
                     style="@style/Nous.InputField"
-                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="2">
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:visibility="gone">
                     <com.google.android.material.textfield.TextInputEditText
                         style="@style/Nous.InputText"
                         app:drawableStartCompat="@drawable/ic_nous_search"
                         android:id="@+id/nous_game_search" android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/nous_search_library"
-                        android:imeOptions="actionSearch"
+                        android:imeOptions="actionSearch|flagNoExtractUi|flagNoFullscreen"
                         android:inputType="textFilter"
                         android:singleLine="true" />
                 </com.google.android.material.textfield.TextInputLayout>
+
+                <ImageButton
+                    android:id="@+id/nous_library_search_toggle"
+                    style="@style/Nous.IconButton"
+                    android:background="@drawable/nous_library_search_button"
+                    android:contentDescription="@string/nous_search_library"
+                    android:src="@drawable/ic_nous_search"
+                    app:tint="@color/nous_text" />
             </LinearLayout>
             <LinearLayout
+                android:id="@+id/nous_landscape_library_controls"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:gravity="end|center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/nous_main_content_inset"
+                android:paddingEnd="@dimen/nous_main_content_inset">
 
                 <include
                     layout="@layout/nous_offline_categories"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="@dimen/nous_main_content_inset" />
+                    android:layout_weight="1" />
 
                 <include
                     layout="@layout/nous_library_filters"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/nous_main_content_inset"
-                    android:layout_marginEnd="@dimen/nous_main_content_inset" />
+                    android:layout_marginStart="12dp" />
             </LinearLayout>
             <include layout="@layout/nous_library_grid" />
         </LinearLayout>

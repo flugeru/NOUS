@@ -26,6 +26,7 @@
     <string name="nous_profiles">Perfis</string>
     <string name="nous_diagnostics">Diagnóstico do dispositivo</string>
     <string name="nous_help">Ajuda</string>
+    <string name="nous_collapse_search">Recolher pesquisa</string>
     <string name="nous_search_library">Buscar na biblioteca</string>
     <string name="nous_games">Jogos</string>
     <string name="nous_computers_hint">Escolha um PC para abrir a biblioteca de jogos.</string>

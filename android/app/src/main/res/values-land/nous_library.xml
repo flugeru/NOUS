@@ -1,4 +1,7 @@
 <resources>
     <!-- GridView.AUTO_FIT, using each grid's preferred column width. -->
     <integer name="nous_game_grid_columns">-1</integer>
+    <integer name="nous_game_title_lines">1</integer>
+    <dimen name="nous_game_grid_column_width">152dp</dimen>
+    <dimen name="nous_game_grid_small_column_width">124dp</dimen>
 </resources>

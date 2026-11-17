@@ -9,20 +9,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 import com.limelight.preferences.StreamSettings;
 import com.limelight.utils.HelpLauncher;
 
 /** Keeps the existing host/library view and its adapter attached while Settings is visible. */
 final class NousSettingsTab {
     private final AppCompatActivity activity;
-    private final BottomNavigationView navigation;
+    private final NavigationBarView navigation;
     private final View mainTab;
     private final int mainItem;
     private final OnBackPressedCallback back;
     private View settings;
 
-    NousSettingsTab(AppCompatActivity activity, BottomNavigationView navigation, int mainItem) {
+    NousSettingsTab(AppCompatActivity activity, NavigationBarView navigation, int mainItem) {
         this.activity = activity;
         this.navigation = navigation;
         this.mainItem = mainItem;

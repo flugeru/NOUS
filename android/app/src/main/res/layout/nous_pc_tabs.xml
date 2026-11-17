@@ -1,0 +1,126 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nous_tab_content"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1">
+    <FrameLayout android:id="@+id/nous_games_container"
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        android:visibility="gone" />
+    <LinearLayout
+        android:id="@+id/nous_main_tab"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+      <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="@dimen/nous_main_content_inset">
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/nous_brand" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:letterSpacing="0.09"
+                android:text="@string/app_label"
+                android:textColor="@color/nous_text"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+            <include layout="@layout/nous_profile_button" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/nous_main_content_inset"
+            android:paddingEnd="@dimen/nous_main_content_inset"
+            android:paddingTop="6dp"
+            android:paddingBottom="8dp"
+            android:textAppearance="@style/Nous.Title"
+            android:text="@string/nous_computers" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/nous_main_content_inset"
+            android:layout_marginEnd="@dimen/nous_main_content_inset"
+            android:layout_marginBottom="12dp"
+            android:textAppearance="@style/Nous.Subtitle"
+            android:text="@string/nous_computers_hint" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+            <FrameLayout
+                android:id="@+id/pcFragmentContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+            <ScrollView
+                android:id="@+id/no_pc_found_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingStart="@dimen/nous_main_content_inset"
+                android:paddingEnd="@dimen/nous_main_content_inset">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/nous_card"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="18dp">
+                <ProgressBar
+                    android:id="@+id/pcs_loading"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:indeterminateTint="@color/nous_secondary" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                    android:textColor="@color/nous_text"
+                    android:id="@+id/nous_scan_status"
+                    android:text="@string/nous_scan_title" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
+                    android:textAppearance="@style/Nous.Subtitle"
+                    android:text="@string/nous_scan_hint" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/nous_scan_retry" style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp" android:text="@string/nous_scan_retry"
+                    android:textColor="@color/nous_secondary" android:visibility="gone" />
+            </LinearLayout>
+            </ScrollView>
+        </FrameLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/manuallyAddPc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:layout_marginStart="@dimen/nous_main_content_inset"
+            android:layout_marginEnd="@dimen/nous_main_content_inset"
+            android:layout_marginVertical="8dp"
+            android:text="@string/title_add_pc"
+            app:backgroundTint="@color/nous_primary"
+            app:icon="@drawable/ic_add_base"
+            app:iconGravity="textStart" />
+    </LinearLayout>
+</FrameLayout>
