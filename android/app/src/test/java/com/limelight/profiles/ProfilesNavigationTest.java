@@ -94,6 +94,23 @@ public class ProfilesNavigationTest {
     }
 
     @Test
+    public void bothAddComputerButtonsOpenManualConnection() {
+        prepareEnvironment();
+        try (ActivityController<PcView> controller = Robolectric.buildActivity(PcView.class).setup()) {
+            PcView activity = controller.get();
+            for (int id : new int[]{R.id.nous_add_computer, R.id.manuallyAddPc}) {
+                View button = activity.findViewById(id);
+                assertNotNull(button);
+                assertTrue(button.performClick());
+                Intent next = Shadows.shadowOf(activity).getNextStartedActivity();
+                assertNotNull(next);
+                assertEquals(com.limelight.preferences.AddComputerManually.class.getName(),
+                        next.getComponent().getClassName());
+            }
+        }
+    }
+
+    @Test
     public void clickingProfileButton_launchesProfilesActivity() {
         prepareEnvironment();
         ActivityController<PcView> controller = Robolectric.buildActivity(PcView.class).setup();
