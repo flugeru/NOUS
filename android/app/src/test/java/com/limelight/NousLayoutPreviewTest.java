@@ -99,8 +99,9 @@ public class NousLayoutPreviewTest {
                 row.measure(View.MeasureSpec.makeMeasureSpec(168, View.MeasureSpec.EXACTLY),
                         View.MeasureSpec.UNSPECIFIED);
                 android.widget.ImageView cover = row.findViewById(R.id.grid_image);
-                assertEquals(168, cover.getMeasuredWidth());
-                assertEquals(95, cover.getMeasuredHeight());
+                assertTrue(row.getBackground() instanceof android.graphics.drawable.RippleDrawable);
+                assertEquals(164, cover.getMeasuredWidth());
+                assertEquals(92, cover.getMeasuredHeight());
                 assertEquals(android.widget.ImageView.ScaleType.CENTER_CROP, cover.getScaleType());
             }
         }

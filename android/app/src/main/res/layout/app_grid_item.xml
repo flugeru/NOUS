@@ -2,7 +2,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="?attr/selectableItemBackground">
+    android:background="@drawable/nous_card_ripple"
+    android:padding="2dp">
     <include layout="@layout/nous_game_cover" />
     <TextView
         android:id="@+id/grid_text"
@@ -11,8 +12,10 @@
         android:minLines="2"
         android:maxLines="2"
         android:ellipsize="end"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
         android:paddingTop="8dp"
-        android:paddingBottom="2dp"
+        android:paddingBottom="8dp"
         android:textColor="@color/nous_text"
         android:textSize="14sp"
         android:textStyle="bold" />
