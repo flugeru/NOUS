@@ -21,6 +21,7 @@ import com.limelight.utils.ServerHelper;
 import com.limelight.utils.ShortcutHelper;
 import com.limelight.utils.SpinnerDialog;
 import com.limelight.utils.UiHelper;
+import com.limelight.profiles.ProfileButton;
 
 import android.app.Activity;
 import android.app.Service;
@@ -433,7 +434,10 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
         inForeground = true;
         startComputerUpdates();
 
-        UiHelper.refreshProfileButton(findViewById(R.id.profilesButton));
+        ProfileButton profileButton = findViewById(R.id.profilesButton);
+        if (profileButton != null) {
+            profileButton.refresh();
+        }
     }
 
     @Override

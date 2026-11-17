@@ -1,23 +1,38 @@
-<com.google.android.material.button.MaterialButton
+<com.limelight.profiles.ProfileButton
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/profilesButton"
     android:layout_width="wrap_content"
     android:layout_height="48dp"
     android:minWidth="48dp"
-    android:maxWidth="176dp"
     android:paddingStart="13dp"
     android:paddingEnd="13dp"
-    android:insetTop="0dp"
-    android:insetBottom="0dp"
-    android:maxLines="1"
-    android:ellipsize="end"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="@drawable/nous_profile_button_background"
     android:contentDescription="@string/profile_manager_choose_profile"
-    android:textColor="@color/nous_secondary"
-    app:backgroundTint="@color/nous_secondary_container"
-    app:cornerRadius="24dp"
-    app:icon="@drawable/ic_profiles"
-    app:iconGravity="textStart"
-    app:iconPadding="0dp"
-    app:iconSize="22dp"
-    app:iconTint="@color/nous_secondary" />
+    android:baselineAligned="false">
+
+    <ImageView
+        android:id="@+id/nous_profile_button_icon"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_profiles"
+        android:tint="@color/nous_secondary" />
+
+    <TextView
+        android:id="@+id/nous_profile_button_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:maxWidth="120dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:includeFontPadding="false"
+        android:importantForAccessibility="no"
+        android:textAppearance="?attr/textAppearanceLabelLarge"
+        android:textColor="@color/nous_secondary"
+        android:visibility="gone" />
+</com.limelight.profiles.ProfileButton>

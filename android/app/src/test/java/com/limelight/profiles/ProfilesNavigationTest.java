@@ -109,6 +109,41 @@ public class ProfilesNavigationTest {
     }
 
     @Test
+    public void profileButtonUsesACircleAndCentersTheSelectedProfile() {
+        prepareEnvironment();
+        try (ActivityController<PcView> controller = Robolectric.buildActivity(PcView.class).setup()) {
+            ProfileButton button = controller.get().findViewById(R.id.profilesButton);
+            View icon = button.findViewById(R.id.nous_profile_button_icon);
+            android.widget.TextView label = button.findViewById(R.id.nous_profile_button_label);
+            ProfilesManager manager = ProfilesManager.getInstance();
+            manager.setActive(null);
+            button.refresh();
+            measureProfileButton(button);
+            assertEquals(button.getHeight(), button.getWidth());
+            assertEquals(View.GONE, label.getVisibility());
+            assertEquals(button.getWidth(), icon.getLeft() + icon.getRight(), 1);
+
+            java.util.UUID id = java.util.UUID.randomUUID();
+            manager.add(new SettingsProfile(id, "Teste", 0, 0, java.util.Collections.emptyMap()));
+            manager.setActive(id);
+            button.refresh();
+            measureProfileButton(button);
+            assertEquals("Teste", label.getText().toString());
+            assertTrue(button.getWidth() > button.getHeight());
+            assertEquals(button.getWidth(), icon.getLeft() + label.getRight(), 1);
+            assertEquals(button.getHeight(), icon.getTop() + icon.getBottom(), 1);
+            assertEquals(button.getHeight(), label.getTop() + label.getBottom(), 1);
+        }
+    }
+
+    private void measureProfileButton(ProfileButton button) {
+        int height = button.getLayoutParams().height;
+        button.measure(View.MeasureSpec.UNSPECIFIED,
+                View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
+        button.layout(0, 0, button.getMeasuredWidth(), height);
+    }
+
+    @Test
     public void clickingProfileButton_launchesProfilesActivity() {
         prepareEnvironment();
         ActivityController<PcView> controller = Robolectric.buildActivity(PcView.class).setup();

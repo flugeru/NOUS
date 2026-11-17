@@ -45,13 +45,12 @@ def normalized(text):
 
 def match(root, identifier=None, labels=()):
     for node in root.iter("node"):
-        if identifier:
-            if node.get("resource-id") == f"{PACKAGE}:id/{identifier}":
-                return node
-        else:
-            text = normalized(node.get("text", ""))
-            if any(text == normalized(label) for label in labels):
-                return node
+        if identifier and node.get("resource-id") != f"{PACKAGE}:id/{identifier}":
+            continue
+        text = normalized(node.get("text", ""))
+        description = normalized(node.get("content-desc", "")) if identifier else ""
+        if not labels or any(normalized(label) in (text, description) for label in labels):
+            return node
     return None
 
 
@@ -247,11 +246,11 @@ def run(c):
     back()
 
     select("nous_nav_computers")
-    wait_for(labels=("NOUS emulator",))
+    wait_for("profilesButton", labels=("NOUS emulator",))
     shell("am", "force-stop", PACKAGE)
     shell("am", "start", "-W", "-n", PACKAGE + "/com.limelight.PcView")
     wait_for("nous_nav_computers")
-    wait_for(labels=("NOUS emulator",))
+    wait_for("profilesButton", labels=("NOUS emulator",))
     c.capture("computers-active-profile-after-restart")
 
     select("nous_nav_settings")

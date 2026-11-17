@@ -17,6 +17,7 @@ import com.limelight.nvstream.http.PairingManager;
 import com.limelight.nvstream.http.PairingManager.PairState;
 import com.limelight.nvstream.wol.WakeOnLanSender;
 import com.limelight.preferences.AddComputerManually;
+import com.limelight.profiles.ProfileButton;
 import com.limelight.preferences.GlPreferences;
 import com.limelight.preferences.PreferenceConfiguration;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -406,7 +407,10 @@ public class PcView extends AppCompatActivity implements AdapterFragmentCallback
     }
 
     private void refreshProfileButton() {
-        UiHelper.refreshProfileButton(findViewById(R.id.profilesButton));
+        ProfileButton profileButton = findViewById(R.id.profilesButton);
+        if (profileButton != null) {
+            profileButton.refresh();
+        }
     }
 
     @Override

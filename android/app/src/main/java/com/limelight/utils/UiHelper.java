@@ -3,7 +3,6 @@ package com.limelight.utils;
 import android.app.Activity;
 import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.button.MaterialButton;
 import android.app.GameManager;
 import android.app.GameState;
 import android.app.LocaleManager;
@@ -30,7 +29,6 @@ import com.limelight.LimeLog;
 import com.limelight.R;
 import com.limelight.nvstream.http.ComputerDetails;
 import com.limelight.preferences.PreferenceConfiguration;
-import com.limelight.profiles.ProfilesManager;
 
 import java.util.Locale;
 
@@ -75,18 +73,6 @@ public class UiHelper {
 
     public static void notifyStreamEnded(Context context) {
         setGameModeStatus(context, false, false);
-    }
-
-    public static void refreshProfileButton(MaterialButton button) {
-        if (button == null) {
-            return;
-        }
-        String profileName = ProfilesManager.getInstance().getActiveName();
-        button.setText(profileName);
-        button.setIconPadding(profileName.isEmpty() ? 0
-                : button.getResources().getDimensionPixelSize(R.dimen.nous_profile_icon_gap));
-        button.setContentDescription(profileName.isEmpty()
-                ? button.getContext().getString(R.string.profile_manager_choose_profile) : null);
     }
 
     public static void setLocale(Activity activity)
