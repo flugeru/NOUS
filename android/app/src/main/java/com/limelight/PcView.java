@@ -189,6 +189,22 @@ public class PcView extends ControllerMenuActivity implements AdapterFragmentCal
         else Toast.makeText(this, R.string.nous_games_need_pc, Toast.LENGTH_SHORT).show();
     }
 
+    void openPairedAccountHost(NousAccountHosts.Host entry) {
+        ComputerDetails host = managerBinder == null ? null : managerBinder.getComputer(entry.uuid);
+        int message = R.string.nous_account_host_not_paired;
+        if (host != null && entry.uuid.equals(host.uuid) && host.serverCert != null) {
+            try {
+                if (!entry.matchesSavedCertificate(host.serverCert.getEncoded())) message = R.string.nous_account_host_pin_conflict;
+                else if (host.state != ComputerDetails.State.ONLINE) message = R.string.error_pc_offline;
+                else if (host.pairState == PairState.PAIRED) {
+                    doAppList(host, false, false);
+                    return;
+                }
+            } catch (java.security.GeneralSecurityException invalidCertificate) { message = R.string.nous_account_host_pin_conflict; }
+        }
+        new ControllerDialogBuilder(this).setTitle(entry.name).setMessage(message).setPositiveButton(android.R.string.ok, null).show();
+    }
+
     void setGamesListener(ComputerManagerListener listener) {
         gamesListener = listener;
     }

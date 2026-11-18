@@ -42,6 +42,8 @@
     <string name="nous_account">NOUS account</string>
     <string name="nous_account_optional">Sign-in is optional. Local pairing and streaming still work without an account.</string>
     <string name="nous_account_hosts">Account PCs</string>
+    <string name="nous_account_host_not_paired">This installation is not paired with this PC. Local pairing is available under Computers.</string>
+    <string name="nous_account_host_pin_conflict">The saved host certificate differs from the account listing. No connection was made.</string>
     <string name="nous_account_hosts_empty">No PCs listed for this Google account.</string>
     <string name="nous_account_hosts_error">Account PC list unavailable. Local pairing still works.</string>
     <string name="nous_account_google">Sign in with Google</string>

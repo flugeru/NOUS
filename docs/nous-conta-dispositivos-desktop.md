@@ -37,6 +37,8 @@ Firestore `(default)` criado no projeto `nous-game-stream`, região `southameric
 
 Cliente OAuth nativo `NOUS Desktop` registrado no mesmo projeto. Teste no MuMu com APK 63 e sessão preservada: **Ajustes → Conta NOUS → PCs da conta** retornou lista vazia, não erro. Consulta anônima ao diretório retornou HTTP 403. Teste de configuração do endpoint de token, sem credenciais de usuário: Google exigiu `client_secret` pelo cliente Desktop mesmo com `code_verifier`. Não colocar segredo de servidor no aplicativo. Estes testes não concedem acesso ao PC nem demonstram conexão sem PIN.
 
+APK debug 64: entradas do diretório conferem caminho da conta, UUID e SHA-256 do certificado. Em **PCs da conta**, selecionar uma entrada só abre a biblioteca quando o PC já está online e pareado localmente com o mesmo certificado. Não cria concessão nem substitui certificado salvo. 85 testes Android passaram; atualização no MuMu via `adb install -r` preservou o horário da primeira instalação. Ainda sem setup de acesso por conta.
+
 ## Etapas e aceitação
 
 1. Prévia da janela e teste local: HTTPS loopback, origem restrita, popups bloqueados, nada elevado e nenhuma mudança de serviço/driver. Validar render da interface existente, fechamento e mensagens de indisponibilidade. Prévia pode receber certificado público do host por argumento explícito; não adicionar confiança global.
