@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
+import { fileURLToPath } from 'node:url';
 import { localRoute, test, expect, type Page } from './fixtures';
 
 const screenshotDirectory = process.env.VIBEPOLLO_TEST_OUTPUT || process.env.VIBESHINE_TEST_OUTPUT || join(tmpdir(), 'vibepollo-ui-results');
@@ -895,6 +896,66 @@ test('library placeholders preserve search, keyboard selection, and list prefere
   await page.reload();
   await expect(page.locator('.library-collection')).toHaveClass(/library-collection--list/);
   await expect(page.getByRole('searchbox', { name: 'Search applications' })).toHaveValue('dolphin');
+});
+
+test('library aligns built-in wide covers with custom artwork in grid and list', async ({
+  page,
+}, testInfo) => {
+  await host(page);
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await localRoute(page, '**/api/apps', (route) =>
+    route.fulfill({
+      json: {
+        apps: [
+          { uuid: 'desktop', name: 'Desktop', 'image-path': 'desktop.png' },
+          { uuid: 'input', name: 'Remote Input', 'image-path': 'remote-session/remote-input.png' },
+          { uuid: 'monitor', name: 'Remote Monitor', 'image-path': 'remote-session/remote-monitor.png' },
+          { uuid: 'steam', name: 'Steam Big Picture', 'image-path': 'steam.png', 'library-category': 'launchers' },
+          { uuid: 'custom', name: 'Custom cover', 'image-path': 'covers/desktop.png', 'library-category': 'games' },
+        ],
+      },
+    }),
+  );
+  await localRoute(page, '**/api/apps/custom/cover', (route) =>
+    route.fulfill({
+      contentType: 'image/png',
+      body: Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQI12P4z8DwHwAFAAH/iZk9HQAAAABJRU5ErkJggg==',
+        'base64',
+      ),
+    }),
+  );
+  const fixtures = [
+    ['desktop', 'desktop.png'],
+    ['input', 'remote-session/remote-input.png'],
+    ['monitor', 'remote-session/remote-monitor.png'],
+    ['steam', 'steam.png'],
+  ];
+  for (const [id, file] of fixtures) {
+    await localRoute(page, `**/api/apps/${id}/cover`, (route) =>
+      route.fulfill({
+        contentType: 'image/png',
+        path: fileURLToPath(new URL(`../../${file}`, import.meta.url)),
+      }),
+    );
+  }
+  await page.goto('/v2/library');
+  const artwork = page.locator('.library-item__artwork');
+  const builtIns = artwork.locator('img:not([src="/api/apps/custom/cover"])');
+  await expect(builtIns).toHaveCount(4);
+  for (const img of await builtIns.all()) {
+    await expect(img).toHaveJSProperty('naturalWidth', 640);
+    await expect(img).toHaveJSProperty('naturalHeight', 360);
+  }
+  await expect(artwork.locator('img[src="/api/apps/custom/cover"]')).toHaveJSProperty('naturalWidth', 1);
+  for (const view of ['Grid', 'List']) {
+    await page.getByRole('button', { name: view, exact: true }).click();
+    for (const cover of await artwork.all()) {
+      const box = (await cover.boundingBox())!;
+      expect(box.width / box.height).toBeCloseTo(16 / 9, 2);
+    }
+    await page.screenshot({ path: testInfo.outputPath(`${view.toLowerCase()}.png`), fullPage: true });
+  }
 });
 
 for (const width of [320, 390, 768, 1100, 1440]) {

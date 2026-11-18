@@ -726,17 +726,18 @@ function libraryRequest(
     </InlineAlert>
 
     <section class="library-toolbar" :aria-label="t('ui.library.controls.region')">
-      <label class="vs-field">
-        <span>{{ t('ui.library.category') }}</span>
-        <select v-model="category" class="vs-input">
+      <label class="library-category">
+        <span class="vs-sr-only">{{ t('ui.library.category') }}</span>
+        <select v-model="category" class="vs-select">
           <option value="">{{ t('ui.library.categories.all') }}</option>
           <option value="desktop">{{ t('ui.library.categories.desktop') }}</option>
           <option value="games">{{ t('ui.library.categories.games') }}</option>
           <option value="launchers">{{ t('ui.library.categories.launchers') }}</option>
         </select>
       </label>
-      <label class="vs-field">
-        <span><input v-model="runningOnly" type="checkbox" /> {{ t('ui.library.running') }}</span>
+      <label class="vs-checkbox library-running-filter">
+        <input v-model="runningOnly" type="checkbox" />
+        <span>{{ t('ui.library.running') }}</span>
       </label>
       <label class="library-search">
         <span class="vs-sr-only">{{ t('ui.library.search.label') }}</span>
@@ -806,7 +807,7 @@ function libraryRequest(
       </span>
       <div class="library-grid" aria-hidden="true">
         <div v-for="index in 12" :key="index" class="library-skeleton">
-          <LoadingSkeleton variant="block" height="100%" />
+          <LoadingSkeleton variant="block" />
           <LoadingSkeleton width="76%" />
         </div>
       </div>
@@ -875,10 +876,7 @@ function libraryRequest(
             @click="openApp(app)"
             @keydown="onItemKeydown($event, app)"
           >
-            <span
-              class="library-item__artwork"
-              :class="{ 'library-item__artwork--wide': libraryCategory(app) === 'games' }"
-            >
+            <span class="library-item__artwork">
               <img
                 v-if="!hasCoverFailed(app)"
                 :src="appCoverUrl(app)"
@@ -1131,9 +1129,20 @@ function libraryRequest(
   background: var(--vs-color-bg-surface);
 }
 
+.library-category {
+  flex: 0 1 10rem;
+  min-inline-size: 0;
+}
+
+.library-running-filter {
+  padding-inline: var(--vs-space-8);
+  font-size: var(--vs-type-size-control);
+}
+
 .library-search {
   position: relative;
   flex: 1 1 20rem;
+  min-inline-size: 0;
 }
 
 .library-search > svg {
@@ -1187,13 +1196,12 @@ function libraryRequest(
 
 .library-skeleton {
   display: grid;
-  aspect-ratio: 2 / 3.45;
   gap: var(--vs-space-8);
 }
 
-.library-skeleton :deep(.vs-loading-skeleton:first-child) {
-  min-block-size: 0;
-  aspect-ratio: 2 / 3;
+.library-skeleton :deep(.vs-loading-skeleton--block) {
+  aspect-ratio: 16 / 9;
+  --vs-skeleton-height: 100%;
 }
 
 .library-collection--list {
@@ -1246,25 +1254,20 @@ function libraryRequest(
 
 .library-item__artwork {
   position: relative;
-  display: grid;
-  aspect-ratio: 2 / 3;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
-  place-items: stretch;
   background: var(--vs-color-bg-subtle);
 }
 
-/*
- * Games use horizontal artwork. SteamGridDB grids are 920x430 and GameDB
- * covers are portrait, so `object-fit: cover` crops the source into this
- * 16:9 frame; it never stretches the image or claims a native 16:9 file.
- */
-.library-item__artwork--wide {
-  aspect-ratio: 16 / 9;
+.library-item__artwork img,
+.library-item__artwork-fallback {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
 }
 
 .library-item__artwork img {
-  inline-size: 100%;
-  block-size: 100%;
   object-fit: cover;
 }
 
@@ -1408,20 +1411,10 @@ function libraryRequest(
 
 .library-collection--list .library-item__open {
   min-block-size: var(--vs-size-row-settings);
-  grid-template-columns: 4.5rem minmax(0, 1fr);
+  grid-template-columns: 6rem minmax(0, 1fr);
   align-items: center;
   border: 0;
   border-radius: 0;
-}
-
-.library-collection--list .library-item__artwork {
-  inline-size: 4.5rem;
-  block-size: 6.75rem;
-}
-
-.library-collection--list .library-item__artwork--wide {
-  inline-size: 8rem;
-  block-size: 4.5rem;
 }
 
 .library-collection--list .library-item__copy {

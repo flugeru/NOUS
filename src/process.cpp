@@ -4881,7 +4881,10 @@ namespace proc {
         ctx.state_cmds = std::move(state_cmds);
         ctx.detached = std::move(detached);
         if (ctx.library_category.empty()) {
-          ctx.library_category = ctx.playnite_fullscreen ? "launchers" :
+          const bool opens_steam_big_picture = std::any_of(ctx.detached.begin(), ctx.detached.end(), [](const auto &command) {
+            return command == "steam://open/bigpicture" || command == "setsid steam steam://open/bigpicture" || command == "open steam://open/bigpicture";
+          });
+          ctx.library_category = (ctx.playnite_fullscreen || opens_steam_big_picture) ? "launchers" :
             (ctx.cmd.empty() && ctx.detached.empty() && ctx.playnite_id.empty() && ctx.steam_id.empty() && ctx.lutris_id.empty()) ? "desktop" : "games";
         }
 

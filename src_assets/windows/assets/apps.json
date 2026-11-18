@@ -8,6 +8,7 @@
     },
     {
       "name": "Steam Big Picture",
+      "library-category": "launchers",
       "prep-cmd": [
         {
           "do": "",
