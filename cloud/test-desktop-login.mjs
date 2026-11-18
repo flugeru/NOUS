@@ -15,7 +15,10 @@ const app=serve(undefined,undefined);
 try {
   await new Promise((ok,no)=>{app.once('listening',ok);app.once('error',no);});
   const root='http://127.0.0.1:48173';
-  assert.match(await (await fetch(root)).text(),/Entrar com Google/);
+  const form = await fetch(root);
+  assert.equal(form.headers.get('referrer-policy'),'strict-origin'); // Chromium must send Origin on the local form POST.
+  assert.match(await form.text(),/Entrar com Google/);
+  assert.equal((await fetch(root+'/login',{method:'POST',headers:{Origin:'null'}})).status,403);
   assert.equal((await fetch(root+'/login',{method:'POST',headers:{Origin:'https://example.org'}})).status,403);
   assert.equal((await fetch(root+'/login',{method:'POST',headers:{Origin:root}})).status,503);
   assert.equal((await fetch(root+'/google/callback?state=wrong&code=fixture')).status,400);

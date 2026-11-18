@@ -40,7 +40,7 @@ function page(message, action, label) {
 export function serve(configFile, firebaseKey) {
   const pending = new Map(), sessions = new Map();
   const server = http.createServer(async (req,res) => {
-    res.setHeader('Cache-Control','no-store'); res.setHeader('Referrer-Policy','no-referrer');
+    res.setHeader('Cache-Control','no-store'); res.setHeader('Referrer-Policy','strict-origin');
     res.setHeader('X-Content-Type-Options','nosniff'); res.setHeader('Content-Security-Policy',"default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'; form-action 'self' https://accounts.google.com; base-uri 'none'");
     const send = (code,html) => {res.writeHead(code,{'Content-Type':'text/html; charset=utf-8'});res.end(html);};
     const go = location => {res.writeHead(303,{Location:location});res.end();};
