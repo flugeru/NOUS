@@ -6,6 +6,8 @@ import { useRoute, useRouter } from 'vue-router';
 
 import { useSystemStore } from '@/stores/system';
 import { libraryCategory, type LibraryCategory } from '@/utils/libraryCategory';
+import { rankFrequentApps, type FrequentAppSuggestion } from '@/utils/frequentApps';
+import type { SessionSummary } from '@/types/sessions';
 import { ApiError, apiGet, apiPatch, apiPost } from '@/api/client';
 import {
   AppButton,
@@ -47,6 +49,8 @@ const { locale, t } = useI18n();
 const system = useSystemStore();
 const apps = ref<AppRecord[]>([]);
 const restorableSystemApps = ref<{ id: string; name: string }[]>([]);
+const frequentSessionApps = ref<FrequentAppSuggestion[]>([]);
+let suggestionsLoaded = false;
 const restoringSystemApp = ref('');
 async function restoreSystemApp(id: string): Promise<void> {
   restoringSystemApp.value = id;
@@ -210,6 +214,44 @@ function serviceError(cause: unknown, fallbackKey: string): string {
   return cause instanceof Error ? cause.message : t(fallbackKey);
 }
 
+function normalizedAppName(value: string): string {
+  return value.normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase();
+}
+
+const frequentSuggestions = computed(() => {
+  const libraryNames = new Set(apps.value.map((app) => normalizedAppName(displayName(app))));
+  return frequentSessionApps.value.filter((suggestion) =>
+    libraryNames.has(normalizedAppName(suggestion.name)),
+  );
+});
+
+function applySuggestion(name: string): void {
+  category.value = '';
+  runningOnly.value = false;
+  search.value = name;
+  void nextTick(() => {
+    document.querySelector<HTMLElement>('.library-search input')?.focus();
+  });
+}
+
+async function loadSuggestions(): Promise<void> {
+  if (suggestionsLoaded) return;
+  suggestionsLoaded = true;
+  try {
+    const payload = await apiGet<{ sessions?: SessionSummary[] }>(
+      '/api/history/sessions?limit=100',
+    );
+    frequentSessionApps.value = rankFrequentApps(
+      Array.isArray(payload.sessions) ? payload.sessions : [],
+      { limit: 6, days: 30 },
+    );
+  } catch {
+    // Suggestions are optional. A host without session history must not
+    // surface an error or invent usage data.
+    frequentSessionApps.value = [];
+  }
+}
+
 const filteredApps = computed(() => {
   const query = search.value.trim().toLocaleLowerCase(locale.value);
   const candidates = apps.value
@@ -281,6 +323,7 @@ async function load(silent = false): Promise<void> {
     ]);
     apps.value = loadedApps;
     restorableSystemApps.value = systemApps['restorable-system-apps'] ?? [];
+    void loadSuggestions();
     failedCovers.value = new Set();
     const liveIds = new Set(apps.value.map(appUuid).filter(Boolean));
     selectedUuids.value = new Set([...selectedUuids.value].filter((uuid) => liveIds.has(uuid)));
@@ -636,6 +679,30 @@ function libraryRequest(
         @click="restoreSystemApp(app.id)" />
     </section>
 
+    <section
+      v-if="frequentSuggestions.length"
+      class="library-suggestions vs-surface"
+      aria-labelledby="library-suggestions-title"
+    >
+      <div class="library-suggestions__heading">
+        <h2 id="library-suggestions-title">{{ t('ui.library.suggestions.title') }}</h2>
+        <p>{{ t('ui.library.suggestions.description') }}</p>
+      </div>
+      <ul class="library-suggestions__list">
+        <li v-for="suggestion in frequentSuggestions" :key="normalizedAppName(suggestion.name)">
+          <button
+            type="button"
+            class="library-suggestion"
+            :aria-label="t('ui.library.suggestions.action', { name: suggestion.name })"
+            @click="applySuggestion(suggestion.name)"
+          >
+            <strong>{{ suggestion.name }}</strong>
+            <span>{{ t('ui.library.suggestions.count', { count: suggestion.sessions }) }}</span>
+          </button>
+        </li>
+      </ul>
+    </section>
+
     <InlineAlert
       v-if="purgePlayniteRemoved !== null"
       tone="success"
@@ -808,7 +875,10 @@ function libraryRequest(
             @click="openApp(app)"
             @keydown="onItemKeydown($event, app)"
           >
-            <span class="library-item__artwork">
+            <span
+              class="library-item__artwork"
+              :class="{ 'library-item__artwork--wide': libraryCategory(app) === 'games' }"
+            >
               <img
                 v-if="!hasCoverFailed(app)"
                 :src="appCoverUrl(app)"
@@ -1183,6 +1253,15 @@ function libraryRequest(
   background: var(--vs-color-bg-subtle);
 }
 
+/*
+ * Games use horizontal artwork. SteamGridDB grids are 920x430 and GameDB
+ * covers are portrait, so `object-fit: cover` crops the source into this
+ * 16:9 frame; it never stretches the image or claims a native 16:9 file.
+ */
+.library-item__artwork--wide {
+  aspect-ratio: 16 / 9;
+}
+
 .library-item__artwork img {
   inline-size: 100%;
   block-size: 100%;
@@ -1340,6 +1419,11 @@ function libraryRequest(
   block-size: 6.75rem;
 }
 
+.library-collection--list .library-item__artwork--wide {
+  inline-size: 8rem;
+  block-size: 4.5rem;
+}
+
 .library-collection--list .library-item__copy {
   padding-inline-end: 6rem;
 }
@@ -1361,6 +1445,58 @@ function libraryRequest(
   gap: var(--vs-space-8);
   padding: var(--vs-space-24);
   color: var(--vs-color-text-secondary);
+  font-size: var(--vs-type-size-metadata);
+}
+
+.library-suggestions {
+  display: grid;
+  gap: var(--vs-space-12);
+  padding: var(--vs-space-16);
+}
+
+.library-suggestions__heading h2 {
+  font-size: var(--vs-type-size-control);
+}
+
+.library-suggestions__heading p {
+  margin-block-start: var(--vs-space-4);
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-type-size-metadata);
+}
+
+.library-suggestions__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vs-space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.library-suggestion {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--vs-space-8);
+  min-block-size: var(--vs-size-control-compact);
+  padding: var(--vs-space-8) var(--vs-space-12);
+  border: var(--vs-border-width) solid var(--vs-color-border-subtle);
+  border-radius: var(--vs-radius-pill);
+  background: var(--vs-color-bg-surface);
+  color: var(--vs-color-text-primary);
+  cursor: pointer;
+}
+
+.library-suggestion:hover {
+  border-color: var(--vs-color-accent-default);
+}
+
+.library-suggestion:focus-visible {
+  outline: 2px solid var(--vs-focus-ring);
+  outline-offset: 2px;
+}
+
+.library-suggestion span {
+  color: var(--vs-color-text-muted);
   font-size: var(--vs-type-size-metadata);
 }
 

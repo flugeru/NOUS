@@ -446,6 +446,17 @@
         "permissions_description": "Choose exactly what this paired NOUS client may do on the host. Removing both View stream and Launch applications blocks streaming while keeping the device paired.",
         "permissions_title": "Client permissions",
         "prefer_10bit_description": "When this client requests HDR, send a 10-bit SDR stream instead. HEVC or AV1 Main10 is required.",
+        "preference_modes": {
+          "description": "Choose how this device combines host settings with its own. These overrides stay local to this paired device and are not copied to other clients.",
+          "device": "This device only",
+          "device_description": "Pin the current values for every supported option on this device. Later host changes do not replace them.",
+          "mixed": "Mixed",
+          "mixed_description": "Keep local values only for the options you edit below; everything else follows the host.",
+          "scope_note": "Streaming, display, and controller options are scoped to this client. App metadata and host-wide settings remain on the host.",
+          "synced": "Host settings",
+          "synced_description": "Follow the host. No local override is kept for this device.",
+          "title": "Device preference mode"
+        },
         "route_target": "Route this client to",
         "sections": {
           "display": "Display routing",
@@ -887,6 +898,12 @@
         "nameAsc": "Name, A to Z",
         "nameDesc": "Name, Z to A",
         "provider": "Provider"
+      },
+      "suggestions": {
+        "action": "Filter {name}",
+        "count": "{count} session(s)",
+        "description": "Based on completed sessions on this host in the last 30 days. Nothing is added automatically.",
+        "title": "Frequent in your sessions"
       },
       "unnamed": "Unnamed application",
       "view": {
@@ -1506,14 +1523,24 @@
       "history": {
         "actions": "Actions",
         "client_and_game": "Client and game",
+        "degraded_description": "Some history entries could not be read. The sessions shown are complete records.",
+        "degraded_title": "Session history is degraded",
         "description": "Browse completed sessions retained by this host.",
         "empty_description": "Completed streams will appear here when session history is available.",
         "empty_title": "No session history",
+        "export": "Export diagnostics",
+        "export_busy": "Exporting diagnostics",
+        "export_failed": "The host could not export the session history.",
+        "export_failed_title": "Diagnostics export failed",
+        "export_ready": "Diagnostics exported with {count} session(s).",
+        "export_truncated": "Diagnostics exported with the first {count} session(s); the local export cap was reached.",
         "next_page": "Next page",
         "outcome": "Outcome",
         "previous_page": "Previous page",
         "stream": "Stream",
-        "table_caption": "Recent completed streaming sessions"
+        "table_caption": "Recent completed streaming sessions",
+        "unavailable_description": "The host reports that session history storage is unavailable. No data is shown or invented; check the host logs and storage.",
+        "unavailable_title": "Session history unavailable"
       },
       "metric": {
         "picture": "Picture"

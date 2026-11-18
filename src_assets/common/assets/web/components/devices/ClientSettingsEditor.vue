@@ -6,6 +6,7 @@ import ClientCommands from '@/components/devices/ClientCommands.vue';
 import SettingsOverrideEditor from '@/components/settings/SettingsOverrideEditor.vue';
 import DisplayTopologyEditor from '@/components/devices/DisplayTopologyEditor.vue';
 import { AppButton, SettingRow, StatusBadge, UiIcon } from '@/components/ui';
+import { clientOverrideableKeys, settingsDefaults } from '@/configs/settingsSchema';
 
 export type ClientVirtualDisplayMode = 'global' | 'per_client' | 'shared' | 'disabled' | null;
 export type ClientDisplaySelection = 'physical' | 'virtual';
@@ -315,6 +316,75 @@ const hiddenOverrideKeys = computed(() =>
     ? ['dd_configuration_option']
     : [],
 );
+
+type PreferenceMode = 'synced' | 'mixed' | 'device';
+
+const preferenceOverrideKeys = computed(() =>
+  Object.keys(draft.configOverrides).filter(
+    (key) =>
+      clientOverrideableKeys.has(key) &&
+      !hiddenOverrideKeys.value.includes(key) &&
+      draft.configOverrides[key] !== undefined &&
+      draft.configOverrides[key] !== null,
+  ),
+);
+
+const availablePreferenceKeys = computed(() =>
+  [...clientOverrideableKeys].filter(
+    (key) =>
+      !hiddenOverrideKeys.value.includes(key) &&
+      (key in settingsDefaults || key in props.commonSettings),
+  ),
+);
+
+const preferenceMode = computed<PreferenceMode>(() => {
+  const count = preferenceOverrideKeys.value.length;
+  if (!count) return 'synced';
+  const available = availablePreferenceKeys.value;
+  return available.length > 0 && available.every((key) => preferenceOverrideKeys.value.includes(key))
+    ? 'device'
+    : 'mixed';
+});
+
+const preferenceModeOptions = computed(() => [
+  {
+    value: 'synced' as const,
+    label: t('ui.devices.editor.preference_modes.synced'),
+    description: t('ui.devices.editor.preference_modes.synced_description'),
+  },
+  {
+    value: 'mixed' as const,
+    label: t('ui.devices.editor.preference_modes.mixed'),
+    description: t('ui.devices.editor.preference_modes.mixed_description'),
+  },
+  {
+    value: 'device' as const,
+    label: t('ui.devices.editor.preference_modes.device'),
+    description: t('ui.devices.editor.preference_modes.device_description'),
+  },
+]);
+
+const currentPreferenceMode = computed(
+  () => preferenceModeOptions.value.find((option) => option.value === preferenceMode.value) ?? null,
+);
+const preferenceModeDescription = computed(() => currentPreferenceMode.value?.description ?? '');
+
+function setPreferenceMode(mode: PreferenceMode): void {
+  if (mode === 'synced') {
+    draft.configOverrides = {};
+    return;
+  }
+  if (mode === 'mixed') return;
+
+  const source = { ...settingsDefaults, ...props.commonSettings };
+  const next: Record<string, unknown> = { ...draft.configOverrides };
+  for (const key of availablePreferenceKeys.value) {
+    const value = source[key];
+    if (value === undefined || value === null) continue;
+    next[key] = typeof value === 'object' ? structuredClone(toRaw(value)) : value;
+  }
+  draft.configOverrides = next;
+}
 
 const sharedVirtualDisplay = computed(() => {
   if (!draft.displayOverrideEnabled || draft.displaySelection !== 'virtual') {
@@ -835,6 +905,49 @@ function applyDisplaySelection(selection: ClientDisplaySelection): void {
       </div>
     </section>
 
+    <section
+      class="client-settings-section client-preference-mode"
+      :aria-labelledby="`${controlIdPrefix}-preference-mode`"
+    >
+      <div class="client-settings-section__heading">
+        <div>
+          <h3 :id="`${controlIdPrefix}-preference-mode`">
+            {{ t('ui.devices.editor.preference_modes.title') }}
+          </h3>
+          <p>{{ t('ui.devices.editor.preference_modes.description') }}</p>
+        </div>
+        <StatusBadge
+          :label="currentPreferenceMode?.label ?? ''"
+          tone="neutral"
+          compact
+        />
+      </div>
+      <div class="client-preference-mode__options" role="radiogroup">
+        <label
+          v-for="option in preferenceModeOptions"
+          :key="option.value"
+          class="client-preference-mode__option"
+        >
+          <input
+            type="radio"
+            :name="`${controlIdPrefix}-preference-mode`"
+            :value="option.value"
+            :checked="preferenceMode === option.value"
+            :disabled="busy"
+            @change="setPreferenceMode(option.value)"
+          />
+          <span>
+            <strong>{{ option.label }}</strong>
+            <span>{{ option.description }}</span>
+          </span>
+        </label>
+      </div>
+      <p class="client-settings-helper">{{ preferenceModeDescription }}</p>
+      <p class="client-settings-helper">
+        {{ t('ui.devices.editor.preference_modes.scope_note') }}
+      </p>
+    </section>
+
     <SettingsOverrideEditor
       v-model="draft.configOverrides"
       :base-values="commonSettings"
@@ -1126,6 +1239,46 @@ function applyDisplaySelection(selection: ClientDisplaySelection): void {
   .client-settings-editor__actions > :deep(.vs-button) {
     inline-size: 100%;
   }
+}
+
+.client-preference-mode__options {
+  display: grid;
+  gap: var(--vs-space-8);
+}
+
+.client-preference-mode__option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--vs-space-8);
+  padding: var(--vs-space-12);
+  border: var(--vs-border-width) solid var(--vs-color-border-subtle);
+  border-radius: var(--vs-radius-card);
+  background: var(--vs-color-bg-surface);
+  cursor: pointer;
+}
+
+.client-preference-mode__option:has(input:checked) {
+  border-color: var(--vs-color-accent-default);
+}
+
+.client-preference-mode__option input {
+  margin-block-start: 0.2rem;
+}
+
+.client-preference-mode__option > span {
+  display: grid;
+  gap: var(--vs-space-4);
+}
+
+.client-preference-mode__option strong {
+  color: var(--vs-color-text-primary);
+  font-size: var(--vs-type-size-control);
+}
+
+.client-preference-mode__option span span {
+  color: var(--vs-color-text-secondary);
+  font-size: var(--vs-type-size-metadata);
+  line-height: var(--vs-type-line-height-metadata);
 }
 
 @media (max-width: 47.999rem) {

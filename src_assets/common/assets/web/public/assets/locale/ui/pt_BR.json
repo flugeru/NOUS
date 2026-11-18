@@ -1252,6 +1252,12 @@
         "nameDesc": "Nome, Z a A",
         "provider": "Fonte"
       },
+      "suggestions": {
+        "action": "Filtrar {name}",
+        "count": "{count} sessão(ões)",
+        "description": "Com base nas sessões concluídas neste PC nos últimos 30 dias. Nada é adicionado automaticamente.",
+        "title": "Frequentes nas suas sessões"
+      },
       "unnamed": "Aplicativo sem nome",
       "view": {
         "grid": "Grade",
@@ -1308,6 +1314,17 @@
         "permissions_description": "Escolha o que este dispositivo pode fazer no PC. Remover Ver transmissão e Iniciar aplicativos bloqueia transmissões sem desfazer o pareamento.",
         "permissions_title": "Permissões do dispositivo",
         "prefer_10bit_description": "Quando este dispositivo solicitar HDR, enviar SDR de 10 bits. Requer HEVC ou AV1 Main10.",
+        "preference_modes": {
+          "description": "Escolha como este dispositivo combina os ajustes do PC com os próprios. Estes ajustes ficam locais neste dispositivo pareado e não são copiados para outros clientes.",
+          "device": "Somente este dispositivo",
+          "device_description": "Fixar os valores atuais de todas as opções compatíveis neste dispositivo. Mudanças posteriores no PC não os substituem.",
+          "mixed": "Misto",
+          "mixed_description": "Manter valores locais apenas nas opções editadas abaixo; o restante segue o PC.",
+          "scope_note": "Transmissão, tela e controles pertencem a este cliente. Metadados de aplicativos e ajustes globais do PC permanecem no PC.",
+          "synced": "Ajustes do PC",
+          "synced_description": "Seguir o PC. Nenhum ajuste local é mantido para este dispositivo.",
+          "title": "Modo de preferências do dispositivo"
+        },
         "route_target": "Usar neste dispositivo",
         "sections": {
           "display": "Seleção de tela",
@@ -1625,14 +1642,24 @@
       "history": {
         "actions": "Ações",
         "client_and_game": "Dispositivo e jogo",
+        "degraded_description": "Alguns registros não puderam ser lidos. As sessões exibidas são registros completos.",
+        "degraded_title": "Histórico de sessões degradado",
         "description": "Consulte as sessões encerradas mantidas neste PC.",
         "empty_description": "As transmissões encerradas aparecerão aqui quando o histórico estiver disponível.",
         "empty_title": "Nenhum histórico de sessões",
+        "export": "Exportar diagnósticos",
+        "export_busy": "Exportando diagnósticos",
+        "export_failed": "O host não conseguiu exportar o histórico de sessões.",
+        "export_failed_title": "Falha ao exportar diagnósticos",
+        "export_ready": "Diagnósticos exportados com {count} sessão(ões).",
+        "export_truncated": "Diagnósticos exportados com as primeiras {count} sessão(ões); o limite local de exportação foi atingido.",
         "next_page": "Próxima página",
         "outcome": "Resultado",
         "previous_page": "Página anterior",
         "stream": "Transmissão",
-        "table_caption": "Sessões de transmissão encerradas recentemente"
+        "table_caption": "Sessões de transmissão encerradas recentemente",
+        "unavailable_description": "O host informa que o armazenamento do histórico está indisponível. Nenhum dado é exibido ou inventado; verifique os logs e o armazenamento do host.",
+        "unavailable_title": "Histórico de sessões indisponível"
       },
       "metric": {
         "picture": "Imagem"

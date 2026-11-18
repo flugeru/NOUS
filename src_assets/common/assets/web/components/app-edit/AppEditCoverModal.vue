@@ -166,7 +166,10 @@ onBeforeUnmount(() => hideDialog(false));
             :aria-label="t('ui.application.coverPicker.select', { name: cover.name })"
             @click="emit('pick', cover)"
           >
-            <span class="cover-picker__artwork">
+            <span
+              class="cover-picker__artwork"
+              :class="{ 'cover-picker__artwork--wide': cover.aspect === 'wide' }"
+            >
               <img :src="cover.url" :alt="t('ui.application.cover.alt', { name: cover.name })" />
               <span v-if="busy" class="cover-picker__busy" aria-hidden="true" />
             </span>
@@ -261,6 +264,11 @@ onBeforeUnmount(() => hideDialog(false));
   overflow: hidden;
   border-radius: var(--vs-radius-subtle);
   background: var(--vs-color-bg-subtle);
+}
+
+/* SteamGridDB grids are 920x430; the 16:9 frame crops rather than resizes. */
+.cover-picker__artwork--wide {
+  aspect-ratio: 16 / 9;
 }
 
 .cover-picker__artwork img {

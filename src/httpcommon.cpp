@@ -45,6 +45,23 @@
 #endif
 
 namespace {
+  struct text_sink_t {
+    std::string body;
+    std::size_t max_bytes {0};
+    bool overflow {false};
+  };
+
+  std::size_t text_write_cb(char *ptr, std::size_t size, std::size_t nmemb, void *userdata) {
+    auto *sink = static_cast<text_sink_t *>(userdata);
+    const std::size_t total = size * nmemb;
+    if (total > sink->max_bytes || sink->body.size() > sink->max_bytes - total) {
+      sink->overflow = true;
+      return 0;
+    }
+    sink->body.append(ptr, total);
+    return total;
+  }
+
   std::once_flag curl_global_once;
 
   void ensure_curl_global_init() {
@@ -469,6 +486,72 @@ namespace http {
     curl_easy_cleanup(curl);
     fclose(fp);
     return result == CURLE_OK;
+  }
+
+  std::optional<text_response_t> fetch_text(
+    const std::string &url,
+    const std::string &method,
+    const std::string &body,
+    const std::string &content_type,
+    std::size_t max_bytes,
+    long timeout_seconds
+  ) {
+    if (url.rfind("https://", 0) != 0 || max_bytes == 0) {
+      return std::nullopt;
+    }
+
+    ensure_curl_global_init();
+    CURL *curl = curl_easy_init();  // NOSONAR
+    if (!curl) {
+      BOOST_LOG(error) << "Couldn't create CURL instance";
+      return std::nullopt;
+    }
+
+    text_sink_t sink;
+    sink.max_bytes = max_bytes;
+
+    curl_slist *headers = nullptr;
+    headers = curl_slist_append(headers, "Accept: application/json");
+    if (!content_type.empty()) {
+      headers = curl_slist_append(headers, ("Content-Type: " + content_type).c_str());
+    }
+
+    configure_curl_tls(curl);
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+    curl_easy_setopt(curl, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+    curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 2L);
+    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5L);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout_seconds);
+    curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
+    curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, "NOUS/1.0");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, text_write_cb);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &sink);
+    curl_easy_setopt(curl, CURLOPT_MAXFILESIZE_LARGE, static_cast<curl_off_t>(max_bytes));
+
+    if (method == "POST") {
+      curl_easy_setopt(curl, CURLOPT_POST, 1L);
+      curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
+      curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, static_cast<long>(body.size()));
+    }
+
+    const CURLcode result = curl_easy_perform(curl);
+    long status = 0;
+    if (result == CURLE_OK) {
+      curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &status);
+    } else {
+      BOOST_LOG(warning) << "Couldn't fetch ["sv << url << ", code:" << result << ']';
+    }
+
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+    if (result != CURLE_OK || sink.overflow) {
+      return std::nullopt;
+    }
+    return text_response_t {status, std::move(sink.body)};
   }
 
   bool configure_curl_tls(CURL *curl) {

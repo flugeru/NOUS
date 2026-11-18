@@ -18,6 +18,7 @@
 #include <format>
 #include <fstream>
 #include <future>
+#include <limits>
 #include <mutex>
 #include <numeric>
 #include <optional>
@@ -1552,7 +1553,7 @@ namespace confighttp {
       headers.emplace("Cache-Control", cache_immutable ? "public, max-age=31536000, immutable" : "no-cache");
       headers.emplace("Content-Security-Policy",
                       "default-src 'self'; base-uri 'self'; connect-src 'self' https://api.github.com https://raw.githubusercontent.com wss:; font-src 'self'; "
-                      "form-action 'self'; frame-ancestors 'none'; img-src 'self' https://images.igdb.com data: blob:; media-src 'self' blob:; "
+                      "form-action 'self'; frame-ancestors 'none'; img-src 'self' https://images.igdb.com https://cdn2.steamgriddb.com data: blob:; media-src 'self' blob:; "
                       "object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:");
       headers.emplace("Referrer-Policy", "no-referrer");
       headers.emplace("X-Content-Type-Options", "nosniff");
@@ -4703,8 +4704,13 @@ namespace confighttp {
 
       std::string src_tmp;
       if (!url.empty()) {
-        if (http::url_get_host(url) != "images.igdb.com") {
-          bad_request(response, request, "Only images.igdb.com is allowed");
+        const std::string cover_host = http::url_get_host(url);
+        if (cover_host != "images.igdb.com" && cover_host != "cdn2.steamgriddb.com") {
+          bad_request(response, request, "Only images.igdb.com and cdn2.steamgriddb.com are allowed");
+          return;
+        }
+        if (!url.starts_with("https://")) {
+          bad_request(response, request, "Cover URL must use HTTPS");
           return;
         }
         const std::string ext = ext_from_url(url);
@@ -4770,6 +4776,374 @@ namespace confighttp {
       BOOST_LOG(warning) << "UploadCover: "sv << e.what();
       bad_request(response, request, e.what());
     }
+  }
+
+  namespace {
+    // SteamGridDB's public artwork endpoints do not send CORS headers, so the
+    // browser cannot query them directly. This bounded proxy keeps the public,
+    // keyless workflow while caching results and refusing to forward anything
+    // beyond the artwork metadata the UI needs.
+    constexpr std::size_t STEAMGRIDDB_CACHE_LIMIT = 128;
+    constexpr std::size_t STEAMGRIDDB_MAX_TERM = 100;
+    constexpr std::size_t STEAMGRIDDB_MAX_ASSETS = 30;
+    constexpr auto STEAMGRIDDB_CACHE_TTL = std::chrono::minutes(15);
+
+    struct steamgriddb_cache_entry_t {
+      std::chrono::steady_clock::time_point expires;
+      nlohmann::json payload;
+    };
+
+    std::mutex steamgriddb_cache_mutex;
+    std::unordered_map<std::string, steamgriddb_cache_entry_t> steamgriddb_cache;
+
+    std::optional<nlohmann::json> steamgriddb_cache_get(const std::string &key) {
+      std::lock_guard lock {steamgriddb_cache_mutex};
+      const auto it = steamgriddb_cache.find(key);
+      if (it == steamgriddb_cache.end()) {
+        return std::nullopt;
+      }
+      if (it->second.expires <= std::chrono::steady_clock::now()) {
+        steamgriddb_cache.erase(it);
+        return std::nullopt;
+      }
+      return it->second.payload;
+    }
+
+    void steamgriddb_cache_put(std::string key, nlohmann::json payload) {
+      std::lock_guard lock {steamgriddb_cache_mutex};
+      if (steamgriddb_cache.size() >= STEAMGRIDDB_CACHE_LIMIT && !steamgriddb_cache.contains(key)) {
+        steamgriddb_cache.erase(steamgriddb_cache.begin());
+      }
+      steamgriddb_cache[std::move(key)] = {
+        std::chrono::steady_clock::now() + STEAMGRIDDB_CACHE_TTL,
+        std::move(payload),
+      };
+    }
+
+    void steamgriddb_error(resp_https_t response, const std::string &message) {
+      SimpleWeb::CaseInsensitiveMultimap headers;
+      headers.emplace("Content-Type", "application/json; charset=utf-8");
+      headers.emplace("X-Frame-Options", "DENY");
+      headers.emplace("Content-Security-Policy", "frame-ancestors 'none';");
+      add_cors_headers(headers);
+      nlohmann::json error = {{"success", false}, {"error", message}};
+      response->write(SimpleWeb::StatusCode::server_error_bad_gateway, error.dump(), headers);
+    }
+
+    bool steamgriddb_string(const nlohmann::json &object, const char *key, std::string &out) {
+      const auto it = object.find(key);
+      if (it == object.end() || !it->is_string()) {
+        return false;
+      }
+      out = it->get<std::string>();
+      return true;
+    }
+
+    bool steamgriddb_cdn_url(const std::string &value, std::string &out) {
+      if (!value.starts_with("https://cdn2.steamgriddb.com/") || value.size() > 2048) {
+        return false;
+      }
+      out = value;
+      return true;
+    }
+
+    bool steamgriddb_int64(const nlohmann::json &object, const char *key, std::int64_t &out) {
+      const auto it = object.find(key);
+      if (it == object.end()) {
+        return false;
+      }
+      if (it->is_number_unsigned()) {
+        const auto value = it->get<std::uint64_t>();
+        if (value > static_cast<std::uint64_t>(std::numeric_limits<std::int64_t>::max())) {
+          return false;
+        }
+        out = static_cast<std::int64_t>(value);
+        return true;
+      }
+      if (it->is_number_integer()) {
+        out = it->get<std::int64_t>();
+        return true;
+      }
+      return false;
+    }
+
+    std::optional<nlohmann::json> steamgriddb_asset_to_json(const nlohmann::json &asset) {
+      if (!asset.is_object()) {
+        return std::nullopt;
+      }
+
+      std::string url;
+      if (!steamgriddb_string(asset, "url", url) || !steamgriddb_cdn_url(url, url)) {
+        return std::nullopt;
+      }
+
+      nlohmann::json output = {{"url", url}};
+      std::string value;
+      for (const char *key : {"style", "language", "mime"}) {
+        if (steamgriddb_string(asset, key, value)) {
+          output[key] = value;
+        }
+      }
+      std::string thumb;
+      if (steamgriddb_string(asset, "thumb", thumb) && steamgriddb_cdn_url(thumb, thumb)) {
+        output["thumb"] = thumb;
+      }
+      for (const char *key : {"id", "width", "height", "upvotes", "downvotes", "downloads", "date"}) {
+        std::int64_t number = 0;
+        if (steamgriddb_int64(asset, key, number)) {
+          output[key] = number;
+        }
+      }
+      for (const char *key : {"nsfw", "humor", "epilepsy"}) {
+        const auto it = asset.find(key);
+        if (it != asset.end() && it->is_boolean()) {
+          output[key] = it->get<bool>();
+        }
+      }
+      return output;
+    }
+
+    bool steamgriddb_term_is_valid(std::string_view term) {
+      return !term.empty() && term.size() <= STEAMGRIDDB_MAX_TERM &&
+             std::none_of(term.begin(), term.end(), [](unsigned char c) {
+               return c < 0x20 || c == 0x7F;
+             });
+    }
+
+    std::string trim_steamgriddb_term(const std::string &value) {
+      const auto begin = value.find_first_not_of(" \t\r\n");
+      if (begin == std::string::npos) {
+        return {};
+      }
+      const auto end = value.find_last_not_of(" \t\r\n");
+      return value.substr(begin, end - begin + 1);
+    }
+  }  // namespace
+
+  /**
+   * @brief Public SteamGridDB game autocomplete.
+   * @api_examples{/api/covers/steamgrid/search?term=portal| GET| null}
+   */
+  void searchSteamGridGames(resp_https_t response, req_https_t request) {
+    if (!authenticate(response, request)) {
+      return;
+    }
+
+    const auto query = request->parse_query_string();
+    const auto term_it = query.find("term");
+    const std::string term = term_it == query.end() ? std::string {} :
+                                                      trim_steamgriddb_term(term_it->second);
+    if (!steamgriddb_term_is_valid(term)) {
+      bad_request(response, request, "Search term must be between 1 and 100 characters");
+      return;
+    }
+
+    const std::string cache_key = "search:" + term;
+    if (const auto cached = steamgriddb_cache_get(cache_key)) {
+      send_response(response, *cached);
+      return;
+    }
+
+    const auto upstream = http::fetch_text(
+      "https://www.steamgriddb.com/api/public/search/autocomplete?term=" + http::url_escape(term)
+    );
+    if (!upstream || upstream->status != 200 || upstream->body.empty()) {
+      steamgriddb_error(response, "SteamGridDB search is unavailable. Try again or choose a local image.");
+      return;
+    }
+
+    nlohmann::json parsed;
+    try {
+      parsed = nlohmann::json::parse(upstream->body);
+    } catch (...) {
+      steamgriddb_error(response, "SteamGridDB returned an invalid search response.");
+      return;
+    }
+
+    const auto data_it = parsed.find("data");
+    const auto success_it = parsed.find("success");
+    const bool upstream_success =
+      success_it != parsed.end() && success_it->is_boolean() && success_it->get<bool>();
+    if (!upstream_success || data_it == parsed.end() || !data_it->is_array()) {
+      steamgriddb_error(response, "SteamGridDB returned an invalid search response.");
+      return;
+    }
+
+    nlohmann::json output = {{"success", true}, {"data", nlohmann::json::array()}};
+    for (const auto &game : *data_it) {
+      if (!game.is_object() || output["data"].size() >= 12) {
+        continue;
+      }
+      const auto id_it = game.find("id");
+      std::string name;
+      std::int64_t game_id = 0;
+      if (!steamgriddb_int64(game, "id", game_id) || game_id <= 0 ||
+          !steamgriddb_string(game, "name", name)) {
+        continue;
+      }
+      nlohmann::json entry = {{"id", game_id}, {"name", name}};
+      const auto verified_it = game.find("verified");
+      if (verified_it != game.end() && verified_it->is_boolean()) {
+        entry["verified"] = verified_it->get<bool>();
+      }
+      const auto types_it = game.find("types");
+      if (types_it != game.end() && types_it->is_array()) {
+        entry["types"] = nlohmann::json::array();
+        for (const auto &type : *types_it) {
+          if (type.is_string() && entry["types"].size() < 8) {
+            entry["types"].push_back(type);
+          }
+        }
+      }
+      std::int64_t release_date = 0;
+      if (steamgriddb_int64(game, "release_date", release_date)) {
+        entry["release_date"] = release_date;
+      }
+      output["data"].push_back(std::move(entry));
+    }
+
+    steamgriddb_cache_put(cache_key, output);
+    send_response(response, output);
+  }
+
+  /**
+   * @brief Public SteamGridDB artwork assets for one game.
+   * @api_examples{/api/covers/steamgrid/assets| POST| {"game_id":9022,"asset_type":"grid","limit":24}}
+   */
+  void getSteamGridAssets(resp_https_t response, req_https_t request) {
+    if (!validateContentType(response, request, "application/json") || !authenticate(response, request)) {
+      return;
+    }
+
+    nlohmann::json input;
+    try {
+      std::stringstream ss;
+      ss << request->content.rdbuf();
+      input = nlohmann::json::parse(ss.str());
+    } catch (...) {
+      bad_request(response, request, "Invalid JSON body");
+      return;
+    }
+    if (!input.is_object()) {
+      bad_request(response, request, "Expected a JSON object");
+      return;
+    }
+
+    std::int64_t game_id = 0;
+    if (!steamgriddb_int64(input, "game_id", game_id)) {
+      bad_request(response, request, "game_id must be an integer");
+      return;
+    }
+    if (game_id <= 0 || game_id > 100000000) {
+      bad_request(response, request, "game_id is out of range");
+      return;
+    }
+
+    std::string asset_type;
+    if (!steamgriddb_string(input, "asset_type", asset_type)) {
+      asset_type = "grid";
+    }
+    if (asset_type != "grid" && asset_type != "hero") {
+      bad_request(response, request, "asset_type must be grid or hero");
+      return;
+    }
+
+    std::int64_t limit = 24;
+    if (std::int64_t requested = 0; steamgriddb_int64(input, "limit", requested)) {
+      limit = requested;
+    }
+    limit = std::clamp(limit, std::int64_t {1}, static_cast<std::int64_t>(STEAMGRIDDB_MAX_ASSETS));
+
+    std::int64_t page = 0;
+    if (std::int64_t requested = 0; steamgriddb_int64(input, "page", requested)) {
+      page = requested;
+    }
+    page = std::clamp(page, std::int64_t {0}, std::int64_t {50});
+
+    const std::string cache_key = "assets:" + std::to_string(game_id) + ':' + asset_type + ':' +
+                                  std::to_string(page) + ':' + std::to_string(limit);
+    if (const auto cached = steamgriddb_cache_get(cache_key)) {
+      send_response(response, *cached);
+      return;
+    }
+
+    // The public endpoint rejects partial payloads; keep the observed shape.
+    nlohmann::json upstream_body = {
+      {"styles", {"all"}},
+      {"languages", {"en"}},
+      {"dimensions", asset_type == "grid" ? nlohmann::json {"920x430"} :
+                                            nlohmann::json {"3840x1240"}},
+      {"formats", {"all"}},
+      {"order", "score_desc"},
+      {"game_id", {game_id}},
+      {"static", true},
+      {"animated", false},
+      {"nsfw", false},
+      {"epilepsy", false},
+      {"humor", false},
+      {"untagged", true},
+      {"asset_type", asset_type},
+      {"page", page},
+      {"limit", limit},
+      {"user_steam64", nullptr},
+      {"user_steam64_likes", nullptr},
+    };
+
+    const auto upstream = http::fetch_text(
+      "https://www.steamgriddb.com/api/public/search/assets",
+      "POST",
+      upstream_body.dump(),
+      "application/json"
+    );
+    if (!upstream || upstream->status != 200 || upstream->body.empty()) {
+      steamgriddb_error(response, "SteamGridDB artwork is unavailable. Try again or choose a local image.");
+      return;
+    }
+
+    nlohmann::json parsed;
+    try {
+      parsed = nlohmann::json::parse(upstream->body);
+    } catch (...) {
+      steamgriddb_error(response, "SteamGridDB returned an invalid artwork response.");
+      return;
+    }
+
+    const auto data_it = parsed.find("data");
+    const auto success_it = parsed.find("success");
+    const bool upstream_success =
+      success_it != parsed.end() && success_it->is_boolean() && success_it->get<bool>();
+    if (!upstream_success || data_it == parsed.end() || !data_it->is_object()) {
+      steamgriddb_error(response, "SteamGridDB returned an invalid artwork response.");
+      return;
+    }
+    const auto assets_it = data_it->find("assets");
+    if (assets_it == data_it->end() || !assets_it->is_array()) {
+      steamgriddb_error(response, "SteamGridDB returned an invalid artwork response.");
+      return;
+    }
+
+    nlohmann::json output = {
+      {"success", true},
+      {"asset_type", asset_type},
+      {"assets", nlohmann::json::array()},
+    };
+    if (const auto game_it_out = data_it->find("game"); game_it_out != data_it->end() && game_it_out->is_object()) {
+      std::string game_name;
+      if (steamgriddb_string(*game_it_out, "name", game_name)) {
+        output["game_name"] = game_name;
+      }
+    }
+    for (const auto &asset : *assets_it) {
+      if (output["assets"].size() >= STEAMGRIDDB_MAX_ASSETS) {
+        break;
+      }
+      if (auto cleaned = steamgriddb_asset_to_json(asset)) {
+        output["assets"].push_back(std::move(*cleaned));
+      }
+    }
+
+    steamgriddb_cache_put(cache_key, output);
+    send_response(response, output);
   }
 
   /**
@@ -6428,6 +6802,9 @@ namespace confighttp {
     blocking_route_pool.start(1);
     thread_pool_util::ThreadPool metadata_route_pool;
     metadata_route_pool.start(1);
+    // Public cover lookups can take seconds; keep them off the launch/stream pool.
+    thread_pool_util::ThreadPool cover_route_pool;
+    cover_route_pool.start(2);
     clear_token_route_catalog();
     auto register_api_route = [&](const char *pattern, const char *method, const auto &handler, bool stream_start = false) {
       server.resource[pattern][method] = [method, handler, stream_start](resp_https_t response, req_https_t request) {
@@ -6575,6 +6952,8 @@ namespace confighttp {
     register_api_route("^/api/webrtc/cert$", "GET", getWebRTCCert);
     // Keep legacy cover upload endpoint present in upstream master
     register_api_route("^/api/covers/upload$", "POST", uploadCover);
+    register_blocking_api_route("^/api/covers/steamgrid/search$", "GET", searchSteamGridGames, &cover_route_pool);
+    register_blocking_api_route("^/api/covers/steamgrid/assets$", "POST", getSteamGridAssets, &cover_route_pool);
     register_api_route("^/api/covers/([0-9]+)$", "GET", getCover);
     register_api_route("^/api/vigembus/status$", "GET", getViGEmBusStatus);
     register_api_route("^/api/vigembus/install$", "POST", installViGEmBus);
@@ -6669,8 +7048,10 @@ namespace confighttp {
     tcp.join();
     blocking_route_pool.stop();
     metadata_route_pool.stop();
+    cover_route_pool.stop();
     blocking_route_pool.join();
     metadata_route_pool.join();
+    cover_route_pool.join();
     webrtc_stream::shutdown_all_sessions();
     // std::jthread (cleanup_thread) auto-joins on destruction, no need for joinable/join
   }

@@ -22,8 +22,13 @@ import HostMemoryChart from '@/components/stats/HostMemoryChart.vue';
 import {
   groupSessionSummaries,
   parseHistoryPage,
+  type HistoryListPayload,
   type SessionHistoryRow,
 } from '@/components/stats/historyUtils';
+import {
+  buildDiagnosticsExport,
+  diagnosticsExportFilename,
+} from '@/components/stats/diagnosticsExport';
 import type { ChartValuePoint, PerformancePoint } from '@/components/stats/types';
 import type { HostInfo, HostStatsSnapshot } from '@/types/host';
 import type { RTSPSession, SessionSummary, WebRTCSession } from '@/types/sessions';
@@ -36,8 +41,14 @@ interface ConfigResponse extends Record<string, unknown> {
   status?: boolean;
 }
 
+interface HistoryStatus {
+  available?: boolean;
+  degraded?: boolean;
+}
+
 interface SessionsPayload<T> {
   sessions?: T[];
+  history_status?: HistoryStatus;
 }
 
 interface MutationResponse {
@@ -88,6 +99,11 @@ const historyTotal = ref(0);
 const historyHasMore = ref(false);
 const historyLoading = ref(false);
 const historyError = ref('');
+const historyAvailable = ref<boolean | null>(null);
+const historyDegraded = ref(false);
+const historyExportBusy = ref(false);
+const historyExportError = ref('');
+const historyExportNotice = ref('');
 const detailOpen = ref(false);
 const stopConfirmOpen = ref(false);
 const pendingStop = ref<ActiveVisualSession | null>(null);
@@ -382,10 +398,14 @@ async function loadHistoryPage(page: number, silent = false): Promise<void> {
   if (!silent) historyLoading.value = true;
   try {
     const offset = (nextPage - 1) * HISTORY_PAGE_SIZE;
-    const payload = await apiGet<SessionsPayload<SessionSummary> & Record<string, unknown>>(
+    const payload = await apiGet<HistoryListPayload & { history_status?: HistoryStatus }>(
       `/api/history/sessions?limit=${HISTORY_PAGE_SIZE + 1}&offset=${offset}`,
     );
     if (generation !== historyRequestGeneration || disposed) return;
+    if (payload.history_status && typeof payload.history_status.available === 'boolean') {
+      historyAvailable.value = payload.history_status.available;
+    }
+    historyDegraded.value = payload.history_status?.degraded === true;
     const parsed = parseHistoryPage(payload, HISTORY_PAGE_SIZE);
     if (!parsed.sessions.length && nextPage > 1) {
       await loadHistoryPage(nextPage - 1, silent);
@@ -409,6 +429,76 @@ async function loadHistoryPage(page: number, silent = false): Promise<void> {
     }
   } finally {
     if (generation === historyRequestGeneration) historyLoading.value = false;
+  }
+}
+
+const EXPORT_PAGE_SIZE = 100;
+const EXPORT_MAX_SESSIONS = 5000;
+
+interface ExportHistoryData {
+  sessions: SessionSummary[];
+  status: HistoryStatus | null;
+  truncated: boolean;
+}
+
+async function fetchAllHistoryForExport(): Promise<ExportHistoryData> {
+  const collected: SessionSummary[] = [];
+  let status: HistoryStatus | null = null;
+  for (let offset = 0; offset < EXPORT_MAX_SESSIONS; offset += EXPORT_PAGE_SIZE) {
+    const payload = await apiGet<SessionsPayload<SessionSummary>>(
+      `/api/history/sessions?limit=${EXPORT_PAGE_SIZE}&offset=${offset}`,
+    );
+    if (payload.history_status) status = payload.history_status;
+    const page = Array.isArray(payload.sessions) ? payload.sessions : [];
+    collected.push(...page);
+    if (page.length < EXPORT_PAGE_SIZE) {
+      return { sessions: collected, status, truncated: false };
+    }
+  }
+  return {
+    sessions: collected.slice(0, EXPORT_MAX_SESSIONS),
+    status,
+    truncated: collected.length >= EXPORT_MAX_SESSIONS,
+  };
+}
+
+async function exportSessionHistory(): Promise<void> {
+  if (historyExportBusy.value) return;
+  historyExportBusy.value = true;
+  historyExportError.value = '';
+  historyExportNotice.value = '';
+  let url = '';
+  try {
+    const history = await fetchAllHistoryForExport();
+    const generatedAt = new Date();
+    const payload = buildDiagnosticsExport({
+      sessions: history.sessions,
+      historyStatus: history.status,
+      truncated: history.truncated,
+      host: hostInfo.value,
+      generatedAt,
+    });
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: 'application/json',
+    });
+    url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = diagnosticsExportFilename(generatedAt);
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    historyExportNotice.value = t(
+      history.truncated
+        ? 'ui.sessions.history.export_truncated'
+        : 'ui.sessions.history.export_ready',
+      { count: history.sessions.length },
+    );
+  } catch {
+    historyExportError.value = t('ui.sessions.history.export_failed');
+  } finally {
+    if (url) URL.revokeObjectURL(url);
+    historyExportBusy.value = false;
   }
 }
 
@@ -805,7 +895,19 @@ onBeforeUnmount(() => {
             <h2 id="visual-history-title">{{ t('sessions.history_title') }}</h2>
             <p>{{ t('ui.sessions.history.description') }}</p>
           </div>
-          <span>{{ historyCountLabel }}</span>
+          <div class="stats-section__heading-actions">
+            <span>{{ historyCountLabel }}</span>
+            <AppButton
+              icon="download"
+              size="compact"
+              variant="secondary"
+              :label="t('ui.sessions.history.export')"
+              :busy="historyExportBusy"
+              :busy-label="t('ui.sessions.history.export_busy')"
+              :disabled="historyLoading"
+              @click="exportSessionHistory"
+            />
+          </div>
         </div>
         <InlineAlert
           v-if="historyError"
@@ -814,8 +916,35 @@ onBeforeUnmount(() => {
         >
           {{ historyError }}
         </InlineAlert>
+        <InlineAlert
+          v-if="historyAvailable === false"
+          tone="warning"
+          :title="t('ui.sessions.history.unavailable_title')"
+        >
+          {{ t('ui.sessions.history.unavailable_description') }}
+        </InlineAlert>
+        <InlineAlert
+          v-else-if="historyDegraded"
+          tone="warning"
+          :title="t('ui.sessions.history.degraded_title')"
+        >
+          {{ t('ui.sessions.history.degraded_description') }}
+        </InlineAlert>
+        <InlineAlert
+          v-if="historyExportError"
+          tone="danger"
+          :title="t('ui.sessions.history.export_failed_title')"
+        >
+          {{ historyExportError }}
+        </InlineAlert>
+        <InlineAlert
+          v-if="historyExportNotice"
+          tone="success"
+          :title="historyExportNotice"
+          announce="polite"
+        />
         <EmptyState
-          v-if="ready && !historyLoading && !sessionHistory.length"
+          v-if="historyAvailable !== false && ready && !historyLoading && !sessionHistory.length"
           :title="t('sessions.history_empty')"
           icon="logs"
           compact
@@ -935,6 +1064,14 @@ onBeforeUnmount(() => {
   align-items: end;
   justify-content: space-between;
   gap: var(--vs-space-16);
+}
+
+.stats-section__heading-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--vs-space-12);
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .stats-section__heading h2 {

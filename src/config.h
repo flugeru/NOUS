@@ -525,8 +525,8 @@ namespace config {
     // Interval in seconds between automatic update checks (0 disables periodic checks)
     int update_check_interval_seconds {86400};
     bool session_history_enabled {true};  ///< Persist stream/session history to SQLite
-    int session_history_ttl_days {0};  ///< Delete ended sessions older than this many days (0 disables age pruning)
-    int session_history_db_size_limit_mb {0};  ///< Approximate live DB quota in MiB (0 disables size pruning)
+    int session_history_ttl_days {30};  ///< Delete ended sessions older than this many days (0 disables age pruning)
+    int session_history_db_size_limit_mb {512};  ///< Approximate live DB quota in MiB (0 disables size pruning)
     std::vector<std::string> csrf_allowed_origins;
     bool hardware_metrics {false};  ///< Allow paired streaming clients to request hardware metrics
     int hardware_metrics_interval {1000};  ///< Minimum client sample interval, in milliseconds
