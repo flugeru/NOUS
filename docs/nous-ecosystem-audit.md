@@ -19,6 +19,14 @@ Entrega única integrada: host Windows com interface Web, backend, Android e set
 
 Usuário reduziu o escopo imediato para binários compilados e pendências registradas, depois pediu a pasta de entrega total. Pasta local: `build-local/ENTREGA-TOTAL-2026-11-18`; pacote `build-local/NOUS-ENTREGA-TOTAL-2026-11-18.zip` (hash externo em `NOUS-ENTREGA-TOTAL-2026-11-18.zip.sha256`; hashes dos arquivos internos em `SHA256SUMS.txt`). Contém `setup.exe`, `NOUS.msi`, motor, APK arm64 debug, auditoria, pendências, versão/hashes e LEIA-ME. Instruções: [`nous-entrega-total-2026-11-18.md`](nous-entrega-total-2026-11-18.md). Pendências detalhadas: [`nous-entrega-parcial-2026-11-18.md`](nous-entrega-parcial-2026-11-18.md). **Auditoria integral não concluída; não é release final.**
 
+## Capas padrão e biblioteca — build 1.0.390.818
+
+- Desktop, Remote Input, Remote Monitor e Steam: quatro PNG de 640×360, montados com Python a partir dos ícones e textos originais. Um conjunto de arquivos é distribuído pelo host aos dois clientes. Biblioteca Web usa 16:9 em grade e lista, sem sobrescrever imagens personalizadas.
+- Steam Big Picture vem com `library-category: launchers`; registros anteriores sem escolha explícita usam o comando padrão. Jogos Steam comuns mantêm categoria própria.
+- Host, MSI e Inno compilados; Playwright focado 7/7, teste unitário de categoria e teste de empacotamento de assets aprovados. Android: 79 testes aprovados, incluindo grid 16:9 e filtros. APK não recompilado. Exibição das novas capas no MuMu ainda não verificada; o cache dos controles de ID fixo não consome `ArtVersion`.
+- MCP Browse: páginas reais Dispositivos, Estatísticas, Registros, Integrações, Manutenção e Transmitir no navegador renderizaram sem iniciar transmissão. Desparelhamento individual de `POCO X6 Pro` confirmado no painel e ausência do nome no estado de pareamento. Disposição salva preservada. Serviço principal continuou ativo na versão `1.0.390.687`.
+- Bugcheck anterior: análise do minidump com `kd` Microsoft e símbolos públicos retornou `PAGE_FAULT_IN_NONPAGED_AREA` (`0x50`), processo `System`, `ViGEmBus.sys` no ponto da falha, bucket `AV_ViGEmBus!unknown_function`. Símbolos do ViGEmBus indisponíveis; minidump não confirma versão exata do driver da falha nem seu gatilho. Dump e saída bruta não distribuídos. Nenhum instalador ou novo host executado nesta rodada.
+
 ## Revisão pós-instalação — build 1.0.390.802
 
 - O serviço instalado `ApolloService` executa `C:\Windows\NOUS.exe`, versão numérica `1.0.390.687`, embora o texto legado mostre `1.0.3-local`. A interface em 47990 respondeu HTTP 200; biblioteca categorizada, histórico e busca SteamGridDB responderam com autenticação. O log anterior registra MSI concluído com código 0; isso não comprova preservação por comparação antes/depois.

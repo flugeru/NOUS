@@ -1,6 +1,15 @@
 # NOUS — entrega parcial e pendências — 18/11/2026
 
-## Atualização pós-instalação — revisão 1.0.390.802
+## Revisão atual — 1.0.390.818
+
+- As quatro capas padrão foram editadas com Python para 640×360 e incluídas no host, que as fornece ao Web e ao Android. Testes Web focados: 7 aprovados, mais teste unitário de categoria. Steam Big Picture vem em Launchers nas instalações novas; catálogos antigos sem escolha explícita usam o comando de abertura como padrão.
+- Android: 79 testes locais aprovados, incluindo cartões 16:9 e categorias. APK permanece o mesmo. Falta testar o recebimento das quatro capas pelo MuMu, em host de teste pareado, sem limpar dados. Remote Input e Remote Monitor têm IDs fixos; o APK atual guarda capa por ID e não usa `ArtVersion`. Entradas com cache anterior podem manter a arte antiga.
+- Web instalado: conferidos Dispositivos, Estatísticas, Registros, Integrações, Manutenção e Transmitir no navegador (sem iniciar sessão). Remoção autorizada apenas de `POCO X6 Pro`, confirmada no painel; a posição de tela salva não foi alterada.
+- Análise local com depurador Microsoft assinado e servidor público de símbolos: bugcheck `0x50`, processo `System`, `ViGEmBus.sys` (`AV_ViGEmBus!unknown_function`). O dump parcial não estabeleceu a sequência que acionou a falha, nem a versão exata do binário envolvido. Não confundir correção no fluxo de instalação com correção do driver. Dump e saída bruta ficam locais.
+- Setup/MSI recompilados, mas não executados. Validar instalação limpa, upgrade, preservação pré/pós, rollback, reinício e controle em Windows com snapshot antes do PC principal. O host acessa backends de controle na inicialização, mesmo sem streaming: não usar segunda instância no PC principal como substituto do ambiente recuperável.
+- CI: [Windows anterior](https://github.com/flugeru/NOUS/actions/runs/44351044736) falhou em `Build Windows`; [Android anterior](https://github.com/flugeru/NOUS/actions/runs/44280373747) falhou na captura do emulador. [Windows da revisão](https://github.com/flugeru/NOUS/actions/runs/44356490840) ainda não certificado.
+
+## Atualização pós-instalação — revisão 1.0.390.802 (histórico)
 
 Esta seção substitui o estado e os hashes históricos abaixo. Consulte `LEIA-ME.md` e `SHA256SUMS.txt` para os binários atuais.
 
