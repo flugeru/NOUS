@@ -4,6 +4,13 @@
 
 [Login, dispositivos e desktop](nous-conta-dispositivos-desktop.md) registra a janela própria no MSI/Inno `1.0.390.866` e o Google opcional no APK debug 60. No MuMu, o usuário concluiu o login Google; a entrada do PC foi preservada e ainda pede pareamento. Diálogos próprios Android usam o tema Material 3 compartilhado: conta, preferências, confirmações, progresso, menu de transmissão e editores. Telas Google/sistema inalteradas. APK debug 60 recompilado: 82 testes aprovados; reinstalação no MuMu manteve a sessão Google e a entrada do PC. Ainda faltam inspeção visual integral, texto ampliado, hardware e validação em sessão real. Windows/Web por conta, Discord, mescla, mesma conta sem PIN, QR local sem conta, convite entre contas e revogação por instalação continuam pendentes. Nenhuma validação de instalação real ou streaming foi feita nesta revisão.
 
+## Revisão de interface e APK debug 61
+
+- Browser streaming pausado na Web atual e clássica: sem atalhos nem tela de configuração; links antigos retornam ao painel. APIs e protocolos existentes não foram alterados.
+- Desktop: fundo e moldura escuros, barra de status WebView2 desativada, navegação compacta revisada. Ajustes: cartões Tokens de API e Interface clássica espaçados. Falha na consulta automática de versões aparece só em Manutenção.
+- Android: menu de sessão com largura mínima adaptada, rolagem e texto multilinha. APK debug 61 reinstalado no MuMu com `adb install -r`; manteve a data de primeira instalação. 82 testes Android aprovados. O painel sobre vídeo não foi validado em sessão real.
+- 138 unitários Web e cinco cenários Playwright focados passaram; dois cenários da interface clássica foram ignorados sem URL da fixture. QR LAN e conexão por conta ainda não podem ser testados. Discord adiado a pedido do usuário.
+
 ## Revisão 1.0.0 — validação pendente
 
 - Windows e Android exibem `1.0.0`; `FileVersion`, MSI `ProductVersion` e Android `versionCode` são técnicos. APK arm64 debug 59: 80 testes aprovados, zero falhas/erros. Atualizado no MuMu com `adb install -r`; manteve a data da primeira instalação. O cache agora considera `ArtVersion` sem mudar o ID da entrada. Ainda falta validar as quatro capas e a troca de capa personalizada de ponta a ponta com o host atualizado.

@@ -90,6 +90,39 @@ async function host(
   return patches;
 }
 
+test('paused browser streaming has no links or usable bookmarked route', async ({ page }) => {
+  await host(page, 'windows');
+  const requests: string[] = [];
+  page.on('request', (request) => {
+    if (new URL(request.url()).pathname.startsWith('/api/webrtc/')) requests.push(request.url());
+  });
+  for (const path of ['/v2/stream', '/v2/webrtc']) {
+    await page.goto(path);
+    await expect(page).toHaveURL(/\/v2\/$/);
+    await expect(page.getByRole('heading', { name: 'Ready to stream' })).toBeVisible();
+    await expect(page.locator('a[href="/v2/stream"], a[href="/v2/webrtc"]')).toHaveCount(0);
+  }
+  expect(requests).toEqual([]);
+});
+
+test('settings utility cards align and leave room between actions in a compact window', async ({ page }) => {
+  await host(page, 'windows');
+  for (const width of [960, 830, 540]) {
+    await page.setViewportSize({ width, height: 620 });
+    await page.goto('/v2/settings');
+    const cards = page.locator('.settings-utilities details');
+    await expect(cards).toHaveCount(2);
+    await cards.first().locator('summary').click();
+    await expect(cards.first().getByRole('link', { name: 'API tokens' })).toBeVisible();
+    const first = (await cards.first().boundingBox())!;
+    const second = (await cards.last().boundingBox())!;
+    expect(first.x).toBe(second.x);
+    expect(first.width).toBe(second.width);
+    expect(second.y - (first.y + first.height)).toBeGreaterThanOrEqual(12);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+  }
+});
+
 test('Linux Everyday presents essentials and preserves unrelated values when saving', async ({
   page,
 }) => {
@@ -1488,7 +1521,7 @@ async function settleUpdaterRendering(page: Page) {
   ));
 }
 
-test('Linux shows an automatic update notice across pages and retries failed checks', async ({
+test('Linux keeps update failures in maintenance and shows confirmed updates across pages', async ({
   page,
 }) => {
   await host(page);
@@ -1510,8 +1543,12 @@ test('Linux shows an automatic update notice across pages and retries failed che
           },
     );
   });
+  const initialCheck = page.waitForResponse(`${updaterReleasesUrl}?**`);
   await page.goto('/v2/');
+  await initialCheck;
   const notice = page.locator('.update-notice');
+  await expect(notice).toHaveCount(0);
+  await page.getByRole('link', { name: 'Maintenance', exact: true }).click();
   await expect(
     notice.getByText('Release information is unavailable. Try again later.'),
   ).toBeVisible();
@@ -1829,7 +1866,7 @@ test('Apollo updater interval zero still permits an explicit retry without resum
       ? { status: 403, json: { message: 'fixture unavailable' } }
       : { json: [updaterRelease('v2.0.0')] });
   });
-  await page.goto('/v2/');
+  await page.goto('/v2/maintenance');
   const notice = page.locator('.update-notice');
   await expect(notice.getByText('Release information is unavailable. Try again later.')).toBeVisible();
   config.update_check_interval = 0;
@@ -2030,8 +2067,10 @@ for (const ui of ['legacy', 'v2'] as const) {
     if (ui === 'v2') {
       await page.route(`${updaterReleasesUrl}?**`, (route) => route.fulfill({ status: 403, json: { message: 'fixture unavailable' } }));
     }
-    await page.goto(ui === 'legacy' ? legacyUrl + '/' : '/v2/');
-    const check = page.getByRole('button', { name: 'Check for updates', exact: true });
+    await page.goto(ui === 'legacy' ? legacyUrl + '/' : '/v2/maintenance');
+    const check = (ui === 'legacy' ? page : page.locator('.update-notice')).getByRole('button', {
+      name: 'Check for updates', exact: true,
+    });
     await expect(check).toBeVisible();
     await expect(check).toBeEnabled();
     config.update_check_interval = 0;
@@ -2046,7 +2085,7 @@ for (const ui of ['legacy', 'v2'] as const) {
     await page.clock.fastForward(15001);
     await expect.poll(async () => (await updaterBodyState(page))?.aborted).toBe(1);
     await expect(check).toBeEnabled();
-    await expect(page.getByText(ui === 'legacy'
+    await expect((ui === 'legacy' ? page : page.locator('.update-notice')).getByText(ui === 'legacy'
       ? 'Update check unavailable. Try again.'
       : 'Release information is unavailable. Try again later.', { exact: true })).toBeVisible();
     await expect(page.locator('.update-notice a')).toHaveCount(0);

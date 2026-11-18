@@ -43,6 +43,11 @@ Referências: [WebView2 security](https://learn.microsoft.com/en-us/microsoft-ed
 - Build local: `powershell -NoProfile -ExecutionPolicy Bypass -File packaging/windows/desktop/build_desktop_preview.ps1 -OutputDirectory build-local/desktop-preview`. C# x64, WebView2 SDK `1.0.4314.35` com SHA-256 fixo; pacote NuGet verificado com assinatura Microsoft. Usa runtime Evergreen já instalado.
 - `NOUS Desktop Preview.exe --self-test <certificado-público.pem>`: checagens de origem e da exceção TLS passaram. A validação TLS normal continua ativa; a exceção para certificado local autoassinado exige origem exata, bytes iguais ao PEM público informado e certificado dentro da validade. Sem alteração na confiança do Windows.
 - A janela abriu sem elevação e exibiu o login local real, sem abrir navegador externo. Fechar a janela manteve `ApolloService` em execução e o mesmo PID do host. O certificado público foi copiado para pasta local de teste porque a pasta de credenciais do host exige acesso elevado; não copie a chave privada nem altere permissões dessa pasta. Nenhuma transmissão iniciada; login autenticado, downloads, recursos externos e streaming não validados. Prévia ainda fora do MSI/Inno.
+## Revisão da interface — APK debug 61
+
+- Janela Desktop atualizada: DPI por monitor, moldura escura e sem barra de status do WebView2. Consulta de versões permite só a leitura do feed público do NOUS; login externo continua fora da janela. Browser streaming pausado na interface.
+- QR LAN e conexão pela mesma conta permanecem pendentes. Discord adiado. Esta revisão não altera a autorização do host nem substitui PIN.
+
 ## Build de teste com janela Windows e Google Android
 
 - O MSI/Inno `1.0.390.866` inclui `NOUS Desktop.exe`, dependências e avisos WebView2. Atalho instalado e bandeja passam pelo lançador do desktop. Serviço publica URL e SHA-256 do certificado TLS em HKLM; a janela aceita apenas HTTPS de loopback e usa perfil separado por pin. O build passou e a tabela MSI contém os arquivos esperados. Instalação, renovação TLS, runtime ausente, abertura pela bandeja e fechamento durante transmissão ainda precisam de teste em VM. O ZIP portátil foi recompilado e inspecionado: mantém `NOUS.exe`, sem o wrapper WebView2 nem o desinstalador MSI. O host do PC principal não foi atualizado.

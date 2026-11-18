@@ -216,7 +216,9 @@
   white-space: nowrap;
 }
 .app-shell--collapsed .sidebar__header {
-  padding-inline: var(--vs-space-20);
+  min-height: 64px;
+  padding-inline: 0;
+  justify-content: center;
 }
 .app-shell--collapsed .brand,
 .app-shell--collapsed .nav-link,
@@ -259,7 +261,35 @@
   color: var(--vs-color-text-secondary);
   font-size: 13px;
 }
-@media (min-width: 768px) and (max-width: 1023px) {
+.app-shell--collapsed .sidebar__navigation {
+  scrollbar-width: thin;
+  padding-inline: var(--vs-space-4);
+}
+.app-shell--collapsed .nav-link > svg {
+  flex-shrink: 0;
+}
+.app-shell--collapsed .sidebar__footer {
+  padding: var(--vs-space-8) var(--vs-space-4) 0;
+}
+.app-shell--collapsed .host-health {
+  min-height: var(--vs-navigation-item-height);
+}
+@media (max-height: 660px) and (min-width: 768px) {
+  .sidebar__header {
+    min-height: 56px;
+    padding-block: var(--vs-space-8);
+  }
+  .sidebar__navigation {
+    scrollbar-width: thin;
+  }
+  .app-shell--collapsed .theme-picker__options .icon-button {
+    min-width: 32px;
+    min-height: 32px;
+    width: 32px;
+    height: 32px;
+  }
+}
+@media (min-width: 768px) and (max-width: 899px) {
   .sidebar__collapse {
     display: none;
   }

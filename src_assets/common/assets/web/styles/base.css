@@ -152,7 +152,7 @@ hr {
   transition: translate var(--vs-motion-duration-control) var(--vs-motion-easing-standard);
 }
 
-.vs-skip-link:focus {
+.vs-skip-link:focus-visible {
   translate: 0;
 }
 

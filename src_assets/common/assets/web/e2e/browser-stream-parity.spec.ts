@@ -2,6 +2,9 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { localRoute, test, expect, type Page } from './fixtures';
 
+// Keep parity cases for when the browser streaming UI is available again.
+test.skip(true, 'Browser streaming UI is paused in NOUS 1.0.0');
+
 const screenshotDirectory = process.env.VIBEPOLLO_TEST_OUTPUT || process.env.VIBESHINE_TEST_OUTPUT || join(tmpdir(), 'vibepollo-ui-results');
 
 type SessionPayload = Record<string, unknown>;

@@ -1,5 +1,10 @@
 # Auditoria integrada NOUS
 
+## Revisão da interface de teste
+
+- Transmitir no navegador fica pausado nas interfaces atual e clássica. Rotas antigas retornam ao painel sem abrir os ajustes de streaming. API/RTSP não foram alterados; preservar a implementação para outra revisão.
+- Discord fica fora desta rodada. QR local e conexão Google pela mesma conta continuam no escopo e não fazem parte do APK debug 61.
+
 ## Contrato aprovado em 17/11/2026
 
 Entrega única integrada: host Windows com interface Web, backend, Android e setup.exe Inno Setup 6 com MSI incorporado. Não criar interface Desktop nativa separada. Preservar protocolos existentes e dados do usuário.

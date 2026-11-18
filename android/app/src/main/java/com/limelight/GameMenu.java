@@ -127,12 +127,14 @@ public class GameMenu implements Game.GameMenuCallbacks {
             panel.setOrientation(android.widget.LinearLayout.VERTICAL);
             int gap = Math.round(8 * themedContext.getResources().getDisplayMetrics().density);
             panel.setPadding(gap * 3, gap, gap * 3, gap * 2);
+            scroll.setFillViewport(true);
+            scroll.setFocusable(false);
             scroll.addView(panel);
             for (MenuOption option : options) {
                 com.google.android.material.button.MaterialButton button =
                         new com.google.android.material.button.MaterialButton(themedContext);
                 button.setText(option.label);
-                button.setMaxLines(3);
+                button.setSingleLine(false);
                 button.setCornerRadius(gap * 3);
                 boolean resume = option.label.equals(getString(R.string.nous_resume_session));
                 boolean destructive = option.label.equals(getString(R.string.game_menu_quit_session))
@@ -171,7 +173,10 @@ public class GameMenu implements Game.GameMenuCallbacks {
                     && themedContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 android.util.DisplayMetrics metrics = themedContext.getResources().getDisplayMetrics();
                 window.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
-                window.setLayout(Math.min(Math.round(390 * metrics.density), metrics.widthPixels / 2),
+                int minimum = Math.round(320 * metrics.density);
+                int maximum = Math.round(420 * metrics.density);
+                int width = Math.min(metrics.widthPixels, Math.max(minimum, Math.min(maximum, metrics.widthPixels / 2)));
+                window.setLayout(width,
                         android.view.ViewGroup.LayoutParams.MATCH_PARENT);
             }
             View decorView = window.getDecorView();

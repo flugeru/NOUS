@@ -9,7 +9,7 @@ Versão pública Windows e Android **1.0.0**. Entrega de teste, não release fin
 | `setup.exe` | Instalador Inno Setup 6.7.4, com motor C#, MSI e ViGEmBus 1.22.0 incorporados. Fornecedor **Flűgel**. FileVersion técnica no manifesto. |
 | `NOUS.msi` | MSI usado dentro do setup. ProductVersion `1.0.390.0`; não é necessário manter ao lado do `setup.exe`. |
 | `nous-install-engine.exe` | Motor de instalação C# já incorporado ao setup, incluído para inspeção/recuperação. |
-| `NOUS-Android-arm64-debug.apk` | APK Android arm64, pacote `com.flugel.nous`, versão 1.0.0 (versionCode 60), build **debug**. Na pasta local do usuário, chama-se `nous beta.apk`. |
+| `NOUS-Android-arm64-debug.apk` | APK Android arm64, pacote `com.flugel.nous`, versão 1.0.0 (versionCode 61), build **debug**. Na pasta local do usuário, chama-se `nous beta.apk`. |
 | `AUDITORIA-E-EVIDENCIAS.md` | Contrato aprovado, decisões e evidências registradas. |
 | `PENDENCIAS.md` | O que falta, limites de validação e cuidados de retomada. |
 | `VERSAO-BUILD.json` | Branch, commit, versões e hashes. |
@@ -41,10 +41,10 @@ O APK é **debug**: não é assinado para distribuição pública, não cobre ou
 
 ## Evidências desta entrega
 
-- Android: **82 testes, zero falhas, zero erros**. APK 60 com Material 3 reinstalado no MuMu com `adb install -r`; manteve a primeira data de instalação, a entrada do PC e o login Google. O login não autoriza acesso ao PC. Pareamento local por QR e conexão pela mesma conta seguem pendentes.
-- Web: **138 unitários aprovados**; build/typecheck aprovado. Playwright no Edge: 222 aprovados, 16 ignorados, um caso falhou ao abrir contexto e passou isolado.
-- Host/setup: build técnico `1.0.390.866`, com `NOUS Desktop.exe` e WebView2 no MSI. Versão pública `1.0.0`; MSI ProductVersion `1.0.390.0`. ZIP portátil inspecionado sem wrapper WebView2. As quatro capas padrão 640×360 vêm do host; cache Android atualizado por `ArtVersion`, sem trocar IDs. Capas reais no MuMu pendentes.
-- O host instalado permanece em `1.0.390.687`; respondeu em 47990, com biblioteca, histórico e SteamGridDB verificados. A instância isolada anterior, em 48189/48190, também validou login/CSRF e upload de capas.
+- Android: **82 testes, zero falhas, zero erros**. APK 61 reinstalado no MuMu com `adb install -r`; manteve a primeira data de instalação. O menu Material 3 sobre o vídeo ganhou largura mínima, rolagem e texto multilinha; falta validar numa transmissão. Login Google não autoriza acesso ao PC. QR local e conexão pela mesma conta seguem pendentes; Discord foi adiado.
+- Web: **138 unitários e cinco cenários Playwright focados aprovados** nesta revisão. Ajustes alinha Tokens de API e Interface clássica; falha na checagem de versões fica em Manutenção. Transmitir no navegador foi retirado da navegação atual e clássica, e os links antigos retornam ao painel. API e protocolos de streaming preservados.
+- Host/setup: build técnico no manifesto, com `NOUS Desktop.exe` e WebView2 no MSI. Versão pública `1.0.0`; MSI ProductVersion `1.0.390.0`. Janela revisada para DPI, moldura escura e sem barra de status do WebView2. As quatro capas padrão 640×360 vêm do host; cache Android atualizado por `ArtVersion`, sem trocar IDs. Capas reais no MuMu pendentes.
+- Nenhum setup desta revisão foi executado no PC. Testes anteriores do host em 47990 conferiram biblioteca, histórico e SteamGridDB; instância isolada em 48189/48190 validou login/CSRF e upload de capas.
 - SteamGridDB: busca HTTP 200, grid 920×430, hero 3840×1240, cache 0,389543 s → 0,005745 s, upload real de PNG (71233 bytes) e rejeição de host não permitido.
 - Diagnósticos: defaults 30 dias/512 MiB; export JSON com allowlist, `excluded`, `history.available`, `history.degraded` e `history.truncated`.
 - Apps frequentes: ranking de 30 dias restrito a apps já existentes.

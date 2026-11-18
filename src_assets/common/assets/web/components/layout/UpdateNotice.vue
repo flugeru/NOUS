@@ -13,6 +13,8 @@ import {
   prereleasesEnabled,
 } from '@/utils/updates';
 
+defineProps<{ showFailure: boolean }>();
+
 const system = useSystemStore();
 const { t } = useI18n();
 const available = ref<ChangelogEntry | null>(null);
@@ -82,7 +84,7 @@ function dismiss(): void {
 </script>
 
 <template>
-  <div v-if="available || failed" class="update-notice">
+  <div v-if="available || (failed && showFailure)" class="update-notice">
     <InlineAlert
       v-if="available"
       tone="info"
@@ -101,7 +103,7 @@ function dismiss(): void {
       >
       <AppButton :label="t('ui.updates.dismiss')" variant="secondary" @click="dismiss" />
     </InlineAlert>
-    <InlineAlert v-if="failed" tone="warning" :title="t('ui.maintenance.releases.unavailable')">
+    <InlineAlert v-if="failed && showFailure" tone="warning" :title="t('ui.maintenance.releases.unavailable')">
       <AppButton
         :label="t('ui.maintenance.releases.check')"
         :busy="loading"

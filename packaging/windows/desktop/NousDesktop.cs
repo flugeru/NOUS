@@ -23,6 +23,12 @@ internal static class NousDesktop {
       (url.Host == "127.0.0.1" || url.Host == "localhost" || url.Host == "[::1]") && url.UserInfo.Length == 0;
   }
 
+  private static bool IsPublicReleaseFeed(Uri url) {
+    return url.Scheme == Uri.UriSchemeHttps && url.IsDefaultPort && url.UserInfo.Length == 0 &&
+      url.Host == "api.github.com" && url.AbsolutePath == "/repos/flugeru/NOUS/releases" &&
+      (url.Query.Length == 0 || System.Text.RegularExpressions.Regex.IsMatch(url.Query, @"^\?per_page=100&page=(?:[1-9]|10)$"));
+  }
+
   private static bool SameOrigin(Uri origin, string target) {
     Uri url;
     return Uri.TryCreate(target, UriKind.Absolute, out url) && IsLoopbackHttps(url) &&
@@ -70,6 +76,9 @@ internal static class NousDesktop {
   private static int SelfTest(string certificatePath) {
     var origin = new Uri("https://127.0.0.1:47990/");
     if (!SameOrigin(origin, "https://127.0.0.1:47990/pin?q=1")) return 1;
+    if (!IsPublicReleaseFeed(new Uri("https://api.github.com/repos/flugeru/NOUS/releases?per_page=100&page=10")) ||
+        IsPublicReleaseFeed(new Uri("https://api.github.com/repos/flugeru/NOUS/releases?per_page=100&page=11")) ||
+        IsPublicReleaseFeed(new Uri("https://api.github.com/repos/flugeru/NOUS/releases/latest"))) return 1;
     foreach (var blocked in new[] { "http://127.0.0.1:47990/", "https://localhost:47990/", "https://127.0.0.1:443/", "https://127.0.0.1:47990.example.org/", "https://127.0.0.1:47990@www.example.org/", "https://u@127.0.0.1:47990/", "file:///C:/foo", "javascript:alert(1)" }) {
       if (SameOrigin(origin, blocked)) return 1;
     }
@@ -88,6 +97,9 @@ internal static class NousDesktop {
     return 0;
   }
 
+  [System.Runtime.InteropServices.DllImport("user32.dll")]
+  private static extern bool SetProcessDpiAwarenessContext(IntPtr context);
+
   [STAThread]
   private static int Main(string[] args) {
     if (args.Length == 2 && args[0] == "--self-test") return SelfTest(args[1]);
@@ -98,6 +110,8 @@ internal static class NousDesktop {
         return 1;
       }
     }
+    // A legacy .NET Framework manifest can report Windows 8 on Windows 10/11.
+    try { SetProcessDpiAwarenessContext(new IntPtr(-4)); } catch (EntryPointNotFoundException) { }
     Application.EnableVisualStyles();
     Application.SetCompatibleTextRenderingDefault(false);
     Uri url;
@@ -153,6 +167,8 @@ internal static class NousDesktop {
       Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
       Size = new Size(1150, 780);
       MinimumSize = new Size(540, 440);
+      AutoScaleMode = AutoScaleMode.Dpi;
+      web.DefaultBackgroundColor = Color.FromArgb(20, 22, 30);
       StartPosition = FormStartPosition.CenterScreen;
       BackColor = Color.FromArgb(20, 22, 30);
       ForeColor = Color.White;
@@ -162,6 +178,15 @@ internal static class NousDesktop {
       Controls.Add(retry);
       InitializeOnShow();
     }
+
+    protected override void OnHandleCreated(EventArgs e) {
+      base.OnHandleCreated(e);
+      int enabled = 1;
+      DwmSetWindowAttribute(Handle, 20, ref enabled, sizeof(int));
+    }
+
+    [System.Runtime.InteropServices.DllImport("dwmapi.dll")]
+    private static extern int DwmSetWindowAttribute(IntPtr window, int attribute, ref int value, int size);
 
     private void InitializeOnShow() {
       Shown += async (sender, args) => {
@@ -183,16 +208,17 @@ internal static class NousDesktop {
           core.Settings.AreDevToolsEnabled = false;
           core.Settings.AreDefaultContextMenusEnabled = false;
           core.Settings.AreBrowserAcceleratorKeysEnabled = false;
+          core.Settings.IsStatusBarEnabled = false;
           core.NavigationStarting += (s, e) => e.Cancel = !SameOrigin(url, e.Uri);
           core.FrameNavigationStarting += (s, e) => e.Cancel = !SameOrigin(url, e.Uri) && e.Uri != "about:blank";
           core.NewWindowRequested += (s, e) => e.Handled = true;
           core.PermissionRequested += (s, e) => e.State = CoreWebView2PermissionState.Deny;
           core.AddWebResourceRequestedFilter("*", CoreWebView2WebResourceContext.All, CoreWebView2WebResourceRequestSourceKinds.All);
           core.WebResourceRequested += (s, e) => {
-            // Local management preview only. No cross-origin provider sign-in or third-party resources.
             Uri request;
             if (Uri.TryCreate(e.Request.Uri, UriKind.Absolute, out request) &&
-                (request.Scheme == "blob" || request.Scheme == "data" || SameOrigin(url, e.Request.Uri))) return;
+                (request.Scheme == "blob" || request.Scheme == "data" || SameOrigin(url, e.Request.Uri) ||
+                 (e.Request.Method == "GET" && e.ResourceContext == CoreWebView2WebResourceContext.Fetch && IsPublicReleaseFeed(request)))) return;
             e.Response = environment.CreateWebResourceResponse(null, 403, "Blocked by NOUS", "");
           };
           core.ServerCertificateErrorDetected += (s, e) => {

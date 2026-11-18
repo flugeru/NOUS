@@ -1527,21 +1527,26 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload));
             {{ t('ui.settings.display_recovery.action') }}
           </button>
         </section>
+        <section v-if="!isSearching" class="settings-section settings-utilities">
+          <details class="settings-disclosure">
+            <summary class="settings-section__heading"><h3>{{ t('ui.nav.api_tokens') }}</h3></summary>
+            <div class="settings-group settings-utilities__body">
+              <p>{{ t('ui.api_tokens.description') }}</p>
+              <RouterLink class="button button--secondary" to="/api-tokens">{{ t('ui.nav.api_tokens') }}</RouterLink>
+            </div>
+          </details>
+          <details class="settings-disclosure">
+            <summary class="settings-section__heading"><h3>{{ t('ui.shell.classic_interface') }}</h3></summary>
+            <div class="settings-group settings-utilities__body">
+              <a class="button button--secondary" href="/?classic=1">{{ t('ui.shell.classic_interface') }}</a>
+            </div>
+          </details>
+        </section>
       </div>
     </div>
 
-    <details class="settings-disclosure">
-      <summary>{{ t('ui.nav.api_tokens') }}</summary>
-      <RouterLink class="button button--secondary" to="/api-tokens">{{ t('ui.nav.api_tokens') }}</RouterLink>
-    </details>
-
-    <details class="settings-disclosure">
-      <summary>{{ t('ui.shell.classic_interface') }}</summary>
-      <a class="button button--secondary" href="/?classic=1">{{ t('ui.shell.classic_interface') }}</a>
-    </details>
-
     <div
-      v-if="isDirty"
+      v-if="isDirty"{
       class="save-bar"
       role="region"
       :aria-label="t('ui.settings.unsaved_region')"
@@ -1718,6 +1723,21 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload));
 
 .settings-section__heading {
   margin-bottom: var(--vs-space-12);
+}
+
+.settings-utilities {
+  display: grid;
+  gap: var(--vs-space-16);
+  margin-top: var(--vs-space-24);
+}
+
+.settings-utilities__body {
+  padding: var(--vs-space-16) var(--vs-space-20);
+}
+
+.settings-utilities__body p {
+  margin: 0 0 var(--vs-space-12);
+  color: var(--vs-color-text-secondary);
 }
 
 .settings-section__alert {

@@ -12,7 +12,7 @@ const route = useRoute();
 const { t } = useI18n();
 const baseUrl = import.meta.env.BASE_URL;
 const mobileQuery = window.matchMedia('(max-width: 767px)');
-const compactQuery = window.matchMedia('(max-width: 1023px)');
+const compactQuery = window.matchMedia('(max-width: 899px)');
 const isMobile = ref(mobileQuery.matches);
 const isCompact = ref(compactQuery.matches);
 const compactNavigation = computed(
@@ -26,7 +26,6 @@ const navigationGroups = [
       { labelKey: 'ui.nav.overview', icon: 'overview', to: '/' },
       { labelKey: 'ui.nav.library', icon: 'library', to: '/library' },
       { labelKey: 'ui.nav.devices', icon: 'devices', to: '/devices' },
-      { labelKey: 'ui.nav.browser_stream', icon: 'play', to: '/stream' },
     ],
   },
   {
@@ -291,7 +290,7 @@ onBeforeUnmount(() => {
       class="main-content"
       tabindex="-1"
     >
-      <UpdateNotice />
+      <UpdateNotice :show-failure="route.name === 'maintenance'" />
       <slot />
     </main>
   </div>
