@@ -33,7 +33,9 @@ Referências: [WebView2 security](https://learn.microsoft.com/en-us/microsoft-ed
 
 ## Diretório de PCs da conta
 
-Firestore `(default)` criado no projeto `nous-game-stream`, região `southamerica-east1` (São Paulo), plano Spark, edição Standard, sem backups pagos. Inicialização em modo produção: nenhuma leitura ou gravação por clientes. A política em `cloud/firestore.rules` é candidata, não publicada: escopo por UID Firebase e identidade estável do Google, nome e impressão digital pública do host, sem endereço público, token, chave privada ou concessão de pareamento. O diretório não autoriza conexão; o host precisa conferir o vínculo local e a chave da instalação.
+Firestore `(default)` criado no projeto `nous-game-stream`, região `southamerica-east1` (São Paulo), plano Spark, edição Standard, sem backups pagos. Inicialização em modo produção: nenhuma leitura ou gravação por clientes. A política em `cloud/firestore.rules` foi publicada e relida no console: escopo por UID Firebase e identidade estável do Google, nome e impressão digital pública do host, sem endereço público, token, chave privada ou concessão de pareamento. O diretório não autoriza conexão; o host precisa conferir o vínculo local e a chave da instalação.
+
+Cliente OAuth nativo `NOUS Desktop` registrado no mesmo projeto. Teste no MuMu com APK 63 e sessão preservada: **Ajustes → Conta NOUS → PCs da conta** retornou lista vazia, não erro. Consulta anônima ao diretório retornou HTTP 403. Teste de configuração do endpoint de token, sem credenciais de usuário: Google exigiu `client_secret` pelo cliente Desktop mesmo com `code_verifier`. Não colocar segredo de servidor no aplicativo. Estes testes não concedem acesso ao PC nem demonstram conexão sem PIN.
 
 ## Etapas e aceitação
 
