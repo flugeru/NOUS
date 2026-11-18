@@ -2,7 +2,7 @@
 
 ## Escopo adicional — conta NOUS e desktop
 
-[Login, dispositivos e desktop](nous-conta-dispositivos-desktop.md) acrescenta Google/Discord opcionais, vínculo de dispositivos e janela Windows que reutiliza a Web UI. A prévia da janela passou em teste local, mas não faz parte do setup já empacotado. Nenhuma pendência anterior foi removida.
+[Login, dispositivos e desktop](nous-conta-dispositivos-desktop.md) registra a janela própria no MSI/Inno `1.0.390.866` e o Google opcional no APK debug 60. No MuMu, a entrada do PC foi preservada e o fluxo oficial do Google abriu; falta autenticar com conta de teste. Windows/Web por conta, Discord, mescla, mesma conta sem PIN, QR local sem conta, convite entre contas e revogação por instalação continuam pendentes. Nenhuma validação de instalação real ou streaming foi feita nesta revisão.
 
 ## Revisão 1.0.0 — validação pendente
 

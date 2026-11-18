@@ -365,7 +365,24 @@ namespace confighttp {
     }
   }
 
+#ifdef _WIN32
+  class https_server_t: public SimpleWeb::Server<SimpleWeb::HTTPS> {
+  public:
+    using SimpleWeb::Server<SimpleWeb::HTTPS>::Server;
+
+    std::string desktop_certificate_pin() {
+      crypto::sha256_t fingerprint {};
+      unsigned int length = 0;
+      auto *certificate = SSL_CTX_get0_certificate(context.native_handle());
+      if (!certificate || X509_digest(certificate, EVP_sha256(), fingerprint.data(), &length) != 1 || length != fingerprint.size()) {
+        return {};
+      }
+      return util::hex_vec(fingerprint, true);
+    }
+  };
+#else
   using https_server_t = SimpleWeb::Server<SimpleWeb::HTTPS>;
+#endif
   using args_t = SimpleWeb::CaseInsensitiveMultimap;
   using resp_https_t = std::shared_ptr<typename SimpleWeb::ServerBase<SimpleWeb::HTTPS>::Response>;
   using req_https_t = std::shared_ptr<typename SimpleWeb::ServerBase<SimpleWeb::HTTPS>::Request>;
@@ -7017,7 +7034,20 @@ namespace confighttp {
     auto accept_and_run = [&](auto *server) {
       try {
         platf::set_thread_name("confighttp::tcp");
+#ifdef _WIN32
+        const auto desktop_binding = get_web_ui_url() + "|" + server->desktop_certificate_pin();
+        server->start([desktop_binding](unsigned short) {
+          if (platf::is_running_as_system()) {
+            const auto value = platf::from_utf8(desktop_binding);
+            const auto result = RegSetKeyValueW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\NOUS\\Desktop", L"LocalHost", REG_SZ,
+              value.c_str(), static_cast<DWORD>((value.size() + 1) * sizeof(wchar_t)));
+            if (result != ERROR_SUCCESS) {
+              BOOST_LOG(warning) << "Could not publish local NOUS Desktop endpoint: " << result;
+            }
+          }
+#else
         server->start([](unsigned short) {
+#endif
           BOOST_LOG(info) << "Configuration UI available at ["sv << get_web_ui_url() << "]";
         });
       } catch (boost::system::system_error &err) {

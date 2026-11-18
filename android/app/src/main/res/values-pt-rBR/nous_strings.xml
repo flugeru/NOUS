@@ -39,6 +39,12 @@
     <string name="nous_diagnostics_summary">Informações do dispositivo e dos controles</string>
     <string name="nous_help_summary">Configuração e ajuda de conexão</string>
     <string name="nous_settings_hint">Personalize o streaming e os controles.</string>
+    <string name="nous_account">Conta NOUS</string>
+    <string name="nous_account_optional">Entrar é opcional. O pareamento e o streaming locais funcionam sem conta.</string>
+    <string name="nous_account_google">Entrar com Google</string>
+    <string name="nous_account_signed_in">Conectado como %1$s. Isso não concede acesso a um PC.</string>
+    <string name="nous_account_sign_out">Sair</string>
+    <string name="nous_account_sign_in_failed">Não foi possível entrar. Confira a conexão e o Google Play Services, ou continue usando o NOUS localmente.</string>
     <string name="nous_streaming">Streaming</string>
     <string name="nous_support">Suporte</string>
     <string name="nous_waiting_for_pc">Aguardando confirmação do PC</string>

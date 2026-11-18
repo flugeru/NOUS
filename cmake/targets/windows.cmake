@@ -160,7 +160,28 @@ add_custom_command(
 )
 add_custom_target(build_uninstall_ui ALL DEPENDS "${SUNSHINE_UNINSTALL_UI_EXE}")
 
-set(SUNSHINE_WINDOWS_PACKAGED_TARGETS sunshine)
+# Compile the desktop window separately; the host service does not load WebView2.
+set(SUNSHINE_DESKTOP_DIR "${CMAKE_BINARY_DIR}/desktop")
+set(SUNSHINE_DESKTOP_FILES
+    "${SUNSHINE_DESKTOP_DIR}/NOUS Desktop.exe"
+    "${SUNSHINE_DESKTOP_DIR}/Microsoft.Web.WebView2.Core.dll"
+    "${SUNSHINE_DESKTOP_DIR}/Microsoft.Web.WebView2.WinForms.dll"
+    "${SUNSHINE_DESKTOP_DIR}/WebView2Loader.dll"
+    "${SUNSHINE_DESKTOP_DIR}/WebView2-LICENSE.txt"
+    "${SUNSHINE_DESKTOP_DIR}/WebView2-NOTICE.txt")
+add_custom_command(
+    OUTPUT ${SUNSHINE_DESKTOP_FILES}
+    COMMAND powershell -NoProfile -ExecutionPolicy Bypass -File "${CMAKE_SOURCE_DIR}/packaging/windows/desktop/build_desktop_preview.ps1"
+        -OutputDirectory "${SUNSHINE_DESKTOP_DIR}" -Packaged
+    DEPENDS "${CMAKE_SOURCE_DIR}/packaging/windows/desktop/build_desktop_preview.ps1"
+            "${CMAKE_SOURCE_DIR}/packaging/windows/desktop/NousDesktop.cs"
+            "${CMAKE_SOURCE_DIR}/nous.ico"
+    COMMENT "Building NOUS Desktop window"
+    VERBATIM
+)
+add_custom_target(build_nous_desktop ALL DEPENDS ${SUNSHINE_DESKTOP_FILES})
+
+set(SUNSHINE_WINDOWS_PACKAGED_TARGETS sunshine build_nous_desktop)
 list(APPEND SUNSHINE_WINDOWS_PACKAGED_TARGETS vibepollo_dualsense_haptics vibepollo_dualsense_audio)
 foreach(_packaged_target IN ITEMS
         dxgi-info

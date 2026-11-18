@@ -83,6 +83,9 @@ AGENTS.md
 /src_assets/windows/drivers/vhf-gamepad/tools/
 /src_assets/windows/drivers/vhf-gamepad/manifest.json
 
+# Local Firebase client configuration; never commit provider or service-account credentials.
+/android/app/google-services.json
+
 # Local runtime/test artifacts
 test_sunshine.log
 vibeshine_state.json

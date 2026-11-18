@@ -60,7 +60,7 @@
           <Component Id="StartMenuShortcut" Guid="{A3B4C5D6-E7F8-4A5B-9C2D-3E4F5A6B7C8D}">
             <Shortcut Id="VibepolloStartMenuShortcut"
                       Name="NOUS"
-                      Description="Launch the NOUS Web UI"
+                      Description="Open the NOUS desktop window"
                       Target="[INSTALL_ROOT]NOUS.exe"
                       Icon="ProductIcon.ico"
                       Arguments="--shortcut"

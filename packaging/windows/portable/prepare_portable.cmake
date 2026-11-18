@@ -103,7 +103,16 @@ function(sunshine_prepare_windows_portable)
     endif()
     # This bootstrapper manages installed MSI products and has no role in
     # removing a portable folder. Keep it in MSI packages only.
-    file(REMOVE "${PORTABLE_STAGE}/uninstall.exe")
+    # The desktop window is bound to the installed service's HKLM endpoint.
+    # Never let a portable host open a different, installed NOUS instance.
+    file(REMOVE
+        "${PORTABLE_STAGE}/uninstall.exe"
+        "${PORTABLE_STAGE}/desktop/NOUS Desktop.exe"
+        "${PORTABLE_STAGE}/desktop/Microsoft.Web.WebView2.Core.dll"
+        "${PORTABLE_STAGE}/desktop/Microsoft.Web.WebView2.WinForms.dll"
+        "${PORTABLE_STAGE}/desktop/WebView2Loader.dll"
+        "${PORTABLE_STAGE}/desktop/WebView2-LICENSE.txt"
+        "${PORTABLE_STAGE}/desktop/WebView2-NOTICE.txt")
     foreach(_required IN LISTS PORTABLE_REQUIRED_FILES)
         if(NOT EXISTS "${PORTABLE_STAGE}/${_required}" OR IS_DIRECTORY "${PORTABLE_STAGE}/${_required}")
             message(FATAL_ERROR "Required portable runtime file missing: ${_required}")

@@ -68,6 +68,9 @@ namespace platf {
    */
   bool is_running_as_system();
 
+  /// Open the packaged management window under the interactive user's token.
+  bool open_nous_desktop(std::string_view path);
+
   /**
    * @brief Check whether a user is logged into the active console session.
    * @return true if an active console session exists, false otherwise.

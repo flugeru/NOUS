@@ -2,12 +2,18 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
+using Microsoft.Win32;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
 
+#if NOUS_PACKAGED
+[assembly: System.Reflection.AssemblyProduct("NOUS")]
+#else
 [assembly: System.Reflection.AssemblyProduct("NOUS Desktop Preview")]
+#endif
 [assembly: System.Reflection.AssemblyVersion("1.0.0.0")]
 [assembly: System.Reflection.AssemblyInformationalVersion("1.0.0")]
 
@@ -23,14 +29,42 @@ internal static class NousDesktop {
       origin.Host == url.Host && origin.Port == url.Port;
   }
 
-  private static bool MatchesCertificate(X509Certificate2 expected, string pem, DateTime now) {
-    if (expected == null || now < expected.NotBefore || now >= expected.NotAfter || string.IsNullOrEmpty(pem)) return false;
+  private static X509Certificate2 ReadCertificate(string pem) {
+    const string begin = "-----BEGIN CERTIFICATE-----";
+    const string end = "-----END CERTIFICATE-----";
+    pem = (pem ?? "").Trim();
+    if (!pem.StartsWith(begin, StringComparison.Ordinal) || !pem.EndsWith(end, StringComparison.Ordinal)) throw new FormatException();
+    var der = Convert.FromBase64String(pem.Substring(begin.Length, pem.Length - begin.Length - end.Length));
+    if (X509Certificate2.GetCertContentType(der) != X509ContentType.Cert) throw new FormatException();
+    return new X509Certificate2(der);
+  }
+
+  private static string Fingerprint(X509Certificate2 cert) {
+    using (var hash = SHA256.Create()) return BitConverter.ToString(hash.ComputeHash(cert.RawData)).Replace("-", "");
+  }
+
+  private static bool MatchesCertificate(string expected, string pem, DateTime now) {
+    if (string.IsNullOrEmpty(expected)) return false;
     try {
-      var der = Convert.FromBase64String(pem.Replace("-----BEGIN CERTIFICATE-----", "").Replace("-----END CERTIFICATE-----", ""));
-      return expected.RawData.SequenceEqual(der);
+      using (var cert = ReadCertificate(pem)) {
+        return now >= cert.NotBefore && now < cert.NotAfter && String.Equals(Fingerprint(cert), expected, StringComparison.OrdinalIgnoreCase);
+      }
     } catch (FormatException) {
       return false;
+    } catch (CryptographicException) {
+      return false;
     }
+  }
+
+  private static bool ParseLocalBinding(string value, out Uri url, out string pin) {
+    url = null;
+    pin = null;
+    var parts = (value ?? "").Split('|');
+    if (parts.Length != 2 || parts[1].Length != 64 || !parts[1].All(Uri.IsHexDigit) ||
+        !Uri.TryCreate(parts[0], UriKind.Absolute, out url) || !IsLoopbackHttps(url) ||
+        url.AbsolutePath != "/" || url.Query.Length != 0 || url.Fragment.Length != 0) return false;
+    pin = parts[1];
+    return true;
   }
 
   private static int SelfTest(string certificatePath) {
@@ -39,10 +73,16 @@ internal static class NousDesktop {
     foreach (var blocked in new[] { "http://127.0.0.1:47990/", "https://localhost:47990/", "https://127.0.0.1:443/", "https://127.0.0.1:47990.example.org/", "https://127.0.0.1:47990@www.example.org/", "https://u@127.0.0.1:47990/", "file:///C:/foo", "javascript:alert(1)" }) {
       if (SameOrigin(origin, blocked)) return 1;
     }
-    using (var cert = new X509Certificate2(certificatePath)) {
-      var pem = "-----BEGIN CERTIFICATE-----\r\n" + Convert.ToBase64String(cert.RawData) + "\r\n-----END CERTIFICATE-----";
-      if (!MatchesCertificate(cert, pem, cert.NotBefore) || MatchesCertificate(cert, pem, cert.NotAfter) ||
-          MatchesCertificate(cert, "AAAA", cert.NotBefore) || MatchesCertificate(cert, "invalid", cert.NotBefore) ||
+    var pem = File.ReadAllText(certificatePath);
+    using (var cert = ReadCertificate(pem)) {
+      var fingerprint = Fingerprint(cert);
+      Uri binding;
+      string pin;
+      if (!ParseLocalBinding(origin.AbsoluteUri + "|" + fingerprint, out binding, out pin) || binding != origin || pin != fingerprint ||
+          ParseLocalBinding("https://example.org/|" + fingerprint, out binding, out pin) ||
+          ParseLocalBinding(origin.AbsoluteUri + "|invalid", out binding, out pin) ||
+          !MatchesCertificate(fingerprint, pem, cert.NotBefore) || MatchesCertificate(fingerprint, pem, cert.NotAfter) ||
+          MatchesCertificate(new string('0', 64), pem, cert.NotBefore) || MatchesCertificate(fingerprint, "invalid", cert.NotBefore) ||
           MatchesCertificate(null, pem, cert.NotBefore)) return 1;
     }
     return 0;
@@ -60,39 +100,53 @@ internal static class NousDesktop {
     }
     Application.EnableVisualStyles();
     Application.SetCompatibleTextRenderingDefault(false);
-    Uri url = new Uri("https://127.0.0.1:47990/");
+    Uri url;
+    string pin = null;
+#if NOUS_PACKAGED
+    SetCurrentProcessExplicitAppUserModelID("Nonary.Vibepollo");
+    using (var machine = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64))
+    using (var key = machine.OpenSubKey(@"SOFTWARE\NOUS\Desktop")) {
+      if (!ParseLocalBinding(key == null ? null : key.GetValue("LocalHost") as string, out url, out pin)) {
+        MessageBox.Show("O host NOUS ainda não disponibilizou um endereço HTTPS local. Confira se o serviço está ativo e se a interface Web aceita acesso por loopback.", "NOUS");
+        return 1;
+      }
+    }
+    Uri target;
+    if (args.Length > 1 || (args.Length == 1 && (!args[0].StartsWith("/", StringComparison.Ordinal) ||
+        !Uri.TryCreate(url, args[0], out target) || !SameOrigin(url, target.AbsoluteUri)))) return 1;
+    if (args.Length == 1) url = new Uri(url, args[0]);
+#else
+    url = new Uri("https://127.0.0.1:47990/");
     if (args.Length > 2 || (args.Length > 0 && (!Uri.TryCreate(args[0], UriKind.Absolute, out url) || !IsLoopbackHttps(url)))) {
       MessageBox.Show("Use uma URL HTTPS local do NOUS (127.0.0.1, localhost ou [::1]).", "NOUS");
       return 1;
     }
-    X509Certificate2 certificate = null;
     if (args.Length == 2) {
       try {
-        var pem = File.ReadAllText(args[1]).Trim();
-        const string begin = "-----BEGIN CERTIFICATE-----";
-        const string end = "-----END CERTIFICATE-----";
-        if (!pem.StartsWith(begin, StringComparison.Ordinal) || !pem.EndsWith(end, StringComparison.Ordinal)) throw new FormatException();
-        var der = Convert.FromBase64String(pem.Substring(begin.Length, pem.Length - begin.Length - end.Length));
-        if (X509Certificate2.GetCertContentType(der) != X509ContentType.Cert) throw new FormatException();
-        certificate = new X509Certificate2(der);
+        using (var certificate = ReadCertificate(File.ReadAllText(args[1]))) pin = Fingerprint(certificate);
       } catch (Exception) {
         MessageBox.Show("Informe somente o certificado público TLS do host NOUS em formato PEM.", "NOUS");
         return 1;
       }
     }
-    using (certificate)
-    using (var form = new DesktopWindow(url, certificate)) Application.Run(form);
+#endif
+    using (var form = new DesktopWindow(url, pin)) Application.Run(form);
     return 0;
   }
+
+#if NOUS_PACKAGED
+  [System.Runtime.InteropServices.DllImport("shell32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+  private static extern int SetCurrentProcessExplicitAppUserModelID(string appId);
+#endif
 
   private sealed class DesktopWindow : Form {
     private readonly WebView2 web = new WebView2 { Dock = DockStyle.Fill, Visible = false };
     private readonly Label status = new Label { Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter };
     private readonly Button retry = new Button { Text = "Tentar novamente", Dock = DockStyle.Bottom, Height = 38, Enabled = false };
     private readonly Uri url;
-    private readonly X509Certificate2 pinnedCertificate;
+    private readonly string pinnedCertificate;
 
-    public DesktopWindow(Uri url, X509Certificate2 pinnedCertificate) {
+    public DesktopWindow(Uri url, string pinnedCertificate) {
       this.url = url;
       this.pinnedCertificate = pinnedCertificate;
       Text = "NOUS";
@@ -112,8 +166,13 @@ internal static class NousDesktop {
     private void InitializeOnShow() {
       Shown += async (sender, args) => {
         try {
-          // ponytail: profile dedicated to preview. Installer integration must resolve the host identity before reusing it.
-          var profile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "NOUS", "DesktopPreview");
+          // WebView2 remembers TLS exceptions in the profile. Never reuse one after a pin change.
+#if NOUS_PACKAGED
+          const string profileKind = "Desktop";
+#else
+          const string profileKind = "DesktopPreview";
+#endif
+          var profile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "NOUS", profileKind, pinnedCertificate ?? "system-trust");
           var environment = await CoreWebView2Environment.CreateAsync(null, profile);
           if (IsDisposed) return;
           await web.EnsureCoreWebView2Async(environment);

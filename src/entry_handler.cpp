@@ -27,9 +27,18 @@ extern "C" {
 #endif
 }
 
+#ifdef _WIN32
+  #include "platform/windows/misc.h"
+#endif
+
 using namespace std::literals;
 
 void launch_ui(const std::optional<std::string> &path) {
+#ifdef _WIN32
+  if (platf::open_nous_desktop(path ? std::string_view {*path} : std::string_view {})) {
+    return;
+  }
+#endif
   std::string url = confighttp::get_web_ui_url(path ? std::string_view {*path} : std::string_view {});
   platf::open_url(url);
 }

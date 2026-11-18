@@ -51,6 +51,9 @@ final class NousSettingsTab {
                     activity.startActivity(new Intent(activity, DebugInfoActivity.class)));
             settings.findViewById(R.id.nous_settings_help).setOnClickListener(v ->
                     HelpLauncher.launchSetupGuide(activity));
+            View account = settings.findViewById(R.id.nous_settings_account);
+            account.setVisibility(NousAccountDialog.isConfigured() ? View.VISIBLE : View.GONE);
+            account.setOnClickListener(v -> NousAccountDialog.show(activity));
         }
         if (settings != null) {
             settings.setVisibility(visible ? View.VISIBLE : View.GONE);

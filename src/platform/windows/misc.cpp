@@ -1596,6 +1596,35 @@ namespace platf {
     return create_boost_child_from_results(ret, cmd, ec, process_info);
   }
 
+  bool open_nous_desktop(std::string_view path) {
+    std::wstring module(32768, L'\0');
+    const auto length = GetModuleFileNameW(nullptr, module.data(), static_cast<DWORD>(module.size()));
+    if (length == 0 || length >= module.size()) {
+      return false;
+    }
+    module.resize(length);
+    const auto directory = std::filesystem::path(module).parent_path() / L"desktop";
+    const auto executable = directory / L"NOUS Desktop.exe";
+    std::error_code ec;
+    if (!std::filesystem::is_regular_file(executable, ec)) {
+      return false;
+    }
+
+    auto command = escape_argument(executable.native());
+    if (!path.empty()) {
+      command += L' ' + escape_argument(from_utf8(path));
+    }
+    auto working_dir = boost::filesystem::path(directory.native());
+    auto child = run_command(false, false, to_utf8(command), working_dir, bp::this_process::env(), nullptr, ec, nullptr);
+    if (!ec) {
+      child.detach();
+    } else {
+      BOOST_LOG(warning) << "Could not open NOUS Desktop: " << ec.message();
+    }
+    // Do not launch a browser if the installed window could not start.
+    return true;
+  }
+
   /**
    * @brief Open a url in the default web browser.
    * @param url The url to open.
