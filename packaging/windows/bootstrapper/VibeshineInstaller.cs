@@ -2626,6 +2626,7 @@ namespace VibepolloInstaller {
       public string VersionText { get; set; }
       public Version Version { get; set; }
       public bool SupportsTransactionalReplacement { get; set; }
+      public bool SupportsDeferredHostStart { get; set; }
       public bool HasBundledVirtualGamepadDriver { get; set; }
       public bool HasBundledUsbIpTransport { get; set; }
       public bool HasLocalGamepadCertificate { get; set; }
@@ -2906,6 +2907,7 @@ namespace VibepolloInstaller {
           VersionText = versionText ?? string.Empty,
           Version = ParseVersion(versionText),
           SupportsTransactionalReplacement = string.Equals(transactionalReplacement, "1", StringComparison.Ordinal),
+          SupportsDeferredHostStart = string.Equals(ReadMsiProperty(packageHandle, "NOUS_DEFER_HOST_START"), "0", StringComparison.Ordinal),
           HasBundledVirtualGamepadDriver = string.Equals(virtualGamepadDriverBundled, "1", StringComparison.Ordinal),
           HasBundledUsbIpTransport = string.Equals(usbIpTransportBundled, "1", StringComparison.Ordinal),
           HasLocalGamepadCertificate = string.Equals(localGamepadPackage, "1", StringComparison.Ordinal) && IsCertificateThumbprint(localGamepadCertificateThumbprint),
@@ -3975,6 +3977,7 @@ namespace VibepolloInstaller {
         "REBOOT=ReallySuppress",
         "SUPPRESSMSGBOXES=1"
       };
+      var deferHostStart = ConfigureDeferredHostStart(args, msiPath);
       TryAppendSameProductReinstallProperties(args, msiPath);
 
       args.AddRange(BuildDriverSelectionArguments(arguments, installVirtualDisplayDriver, installVirtualGamepadDriver));
@@ -4005,7 +4008,7 @@ namespace VibepolloInstaller {
       }
 
       var componentFailures = CollectInstallComponentFailures(logPath, installVirtualDisplayDriver);
-      exitCode = CompleteViGEmBusSetup(exitCode, logPath, componentFailures);
+      exitCode = CompleteViGEmBusSetup(exitCode, logPath, componentFailures, deferHostStart);
       var savedLogPath = string.Empty;
       var saveLogsWarning = string.Empty;
       var saveLogsDetail = string.Empty;
@@ -4053,10 +4056,40 @@ namespace VibepolloInstaller {
       return result;
     }
 
-    private static int CompleteViGEmBusSetup(int msiExitCode, string logPath, List<string> warnings) {
+    private const string ApolloServiceName = "ApolloService";
+    private const string DeferHostStartProperty = "NOUS_DEFER_HOST_START";
+
+    private static bool ConfigureDeferredHostStart(List<string> args, string msiPath) {
+      args.RemoveAll(arg => arg.StartsWith(DeferHostStartProperty + "=", StringComparison.OrdinalIgnoreCase));
+      var payload = TryGetPayloadMsiInfo(msiPath);
+      if (payload == null || !payload.SupportsDeferredHostStart) return false;
+      args.Add(DeferHostStartProperty + "=1");
+      return true;
+    }
+
+    private static int CompleteViGEmBusSetup(int msiExitCode, string logPath, List<string> warnings, bool deferHostStart) {
+      return CompleteHostInstall(msiExitCode, warnings,
+        () => {
+          InstallerProgress.Report("Verificando ViGEmBus");
+          return InstallBundledViGEmBus(logPath, deferHostStart && msiExitCode == 0);
+        },
+        () => {
+          InstallerProgress.Report("Iniciando serviço NOUS");
+          return StartApolloAfterInstall(logPath);
+        }, deferHostStart);
+    }
+
+    private static int CompleteHostInstall(int msiExitCode, List<string> warnings, Func<int> driverSetup,
+        Func<bool> startHost, bool deferHostStart) {
       if (msiExitCode != 0 && msiExitCode != 3010) return msiExitCode;
-      InstallerProgress.Report("Verificando e instalando ViGEmBus");
-      return CombineViGEmBusResult(msiExitCode, InstallBundledViGEmBus(logPath), warnings);
+      var driverCode = driverSetup();
+      var result = CombineViGEmBusResult(msiExitCode, driverCode, warnings);
+      if (deferHostStart && driverCode == 1460) {
+        warnings.Add("Serviço NOUS aguardando: o instalador do ViGEmBus pode ainda estar em execução. Não execute outro setup em paralelo.");
+      } else if (deferHostStart && result == 0 && !startHost()) {
+        warnings.Add("Serviço NOUS não iniciou. Consulte o log de instalação.");
+      }
+      return result;
     }
 
     private static int CombineViGEmBusResult(int msiExitCode, int driverExitCode, List<string> warnings) {
@@ -4069,7 +4102,7 @@ namespace VibepolloInstaller {
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    private struct ViGEmBusServiceStatus {
+    private struct ServiceStatus {
       public uint Type, State, AcceptedControls, Win32ExitCode, ServiceExitCode, Checkpoint, WaitHint;
     }
 
@@ -4078,39 +4111,83 @@ namespace VibepolloInstaller {
     [DllImport("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
     private static extern IntPtr OpenService(IntPtr manager, string name, uint access);
     [DllImport("advapi32.dll", SetLastError = true)]
-    private static extern bool QueryServiceStatus(IntPtr service, out ViGEmBusServiceStatus status);
+    private static extern bool QueryServiceStatus(IntPtr service, out ServiceStatus status);
+    [DllImport("advapi32.dll", EntryPoint = "StartServiceW", SetLastError = true)]
+    private static extern bool StartService(IntPtr service, uint argumentCount, IntPtr arguments);
     [DllImport("advapi32.dll")]
     private static extern bool CloseServiceHandle(IntPtr service);
 
-    private static uint QueryViGEmBusState() {
+    private static uint QueryServiceState(string name, bool start = false) {
       var manager = OpenSCManager(null, null, 1); // SC_MANAGER_CONNECT
       if (manager == IntPtr.Zero) throw new System.ComponentModel.Win32Exception();
       try {
-        var service = OpenService(manager, "ViGEmBus", 4); // SERVICE_QUERY_STATUS
+        var service = OpenService(manager, name, start ? 0x14u : 4u); // SERVICE_START | SERVICE_QUERY_STATUS
         if (service == IntPtr.Zero) {
           var error = Marshal.GetLastWin32Error();
           if (error == 1060) return 0; // Not installed.
           throw new System.ComponentModel.Win32Exception(error);
         }
         try {
-          ViGEmBusServiceStatus status;
-          if (!QueryServiceStatus(service, out status)) throw new System.ComponentModel.Win32Exception();
+          ServiceStatus status;
+          if (!QueryServiceStatus(service, out status)) throw new Win32Exception();
+          if (start && status.State == 1 && !StartService(service, 0, IntPtr.Zero)) {
+            var error = Marshal.GetLastWin32Error();
+            if (error != 1056) throw new Win32Exception(error); // Already running.
+          }
           return status.State;
         } finally { CloseServiceHandle(service); }
       } finally { CloseServiceHandle(manager); }
     }
 
-    // Installer release 1.22.0 ships kernel driver 1.21.442.0.
-    private static readonly Version BundledViGEmBusDriverVersion = new Version(1, 21, 442, 0);
-
-    private static bool ShouldRunBundledViGEmBus(Version installedVersion, uint serviceState) {
-      if (installedVersion == null) return serviceState == 0; // Registered service, but version unknown: do not overwrite.
-      if (installedVersion > BundledViGEmBusDriverVersion) return false;
-      if (serviceState != 0 && serviceState != 1 && serviceState != 4) return false; // Transitional/paused.
-      return installedVersion < BundledViGEmBusDriverVersion || serviceState != 4;
+    private static bool StartApolloAfterInstall(string logPath) {
+      try {
+        var state = QueryServiceState(ApolloServiceName, true);
+        var elapsed = Stopwatch.StartNew();
+        while (state != 0 && state != 4 && elapsed.ElapsedMilliseconds < 15000) {
+          Thread.Sleep(250);
+          state = QueryServiceState(ApolloServiceName);
+        }
+        AppendInstallerLogMessage(logPath, "Post-install NOUS service state: " + state + ".");
+        return state == 4;
+      } catch (Exception ex) {
+        AppendInstallerLogMessage(logPath, "Could not start NOUS service: " + ex.Message);
+        return false;
+      }
     }
 
-    private static int InstallBundledViGEmBus(string logPath) {
+    // Installer release 1.22.0 ships kernel driver 1.21.442.0; ViGEmClient accepts 1.17 and up.
+    private static readonly Version MinimumViGEmBusVersion = new Version(1, 17);
+
+    private const int ViGEmBusNotReadyAfterInstall = 1167;
+    private static Guid ViGEmBusInterface = new Guid("96E42B22-F5E9-42F8-B043-ED0F932F014F"); // ViGEmClient BusShared.h
+
+    [DllImport("cfgmgr32.dll", EntryPoint = "CM_Get_Device_Interface_List_SizeW", CharSet = CharSet.Unicode)]
+    private static extern uint GetDeviceInterfaceListSize(out uint length, ref Guid interfaceClass, string deviceId, uint flags);
+
+    private static bool HasPresentViGEmBusInterface() {
+      uint length;
+      var status = GetDeviceInterfaceListSize(out length, ref ViGEmBusInterface, null, 0); // CM_GET_DEVICE_INTERFACE_LIST_PRESENT
+      if (status != 0) throw new InvalidOperationException("ViGEmBus PnP inventory failed (CONFIGRET " + status + ").");
+      return length > 1; // Empty MULTI_SZ is just the terminating NUL.
+    }
+
+    private static bool ShouldRunBundledViGEmBus(Version installedVersion, uint serviceState, bool hasInterface, bool packageRegistered) {
+      // Do not replace live, partially removed, or unknown shared installations. The vendor MSI only
+      // creates the bus on a fresh install; same-version maintenance can exit 0 without fixing PnP.
+      return installedVersion == null && serviceState == 0 && !hasInterface && !packageRegistered;
+    }
+
+    private static bool HasRegisteredViGEmBusPackage() {
+      var product = new StringBuilder(39);
+      var result = MsiEnumRelatedProducts("{67175F6C-AA18-43A7-AE60-2FC3FD10BF79}", 0, 0, product);
+      if (result != MsiErrorSuccess && result != MsiErrorNoMoreItems) throw new Win32Exception((int)result);
+      return result == MsiErrorSuccess;
+    }
+
+    [DllImport("msi.dll", CharSet = CharSet.Unicode)]
+    private static extern uint MsiEnumRelatedProducts(string upgradeCode, uint reserved, uint index, StringBuilder productCode);
+
+    private static int InstallBundledViGEmBus(string logPath, bool canInstallNow) {
       // Shared driver stays installed when NOUS is removed. Never downgrade an existing driver.
       var driverPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32", "drivers", "ViGEmBus.sys");
       try {
@@ -4119,14 +4196,26 @@ namespace VibepolloInstaller {
           var info = FileVersionInfo.GetVersionInfo(driverPath);
           if (info.FileMajorPart != 0) version = new Version(info.FileMajorPart, info.FileMinorPart, info.FileBuildPart, info.FilePrivatePart);
         }
-        var state = QueryViGEmBusState();
-        AppendInstallerLogMessage(logPath, "ViGEmBus inventory: driver " + (version == null ? "unavailable" : version.ToString()) + ", SCM state " + state + ".");
-        if (version != null && version >= BundledViGEmBusDriverVersion && state == 4) {
+        var state = QueryServiceState("ViGEmBus");
+        var present = HasPresentViGEmBusInterface();
+        AppendInstallerLogMessage(logPath, "ViGEmBus inventory: driver " + (version == null ? "unavailable" : version.ToString()) + ", SCM state " + state + ", PnP interface present: " + present + ".");
+        if (state == 4 && present && version != null && version >= MinimumViGEmBusVersion) {
           AppendInstallerLogMessage(logPath, "Preserving existing running ViGEmBus driver.");
           return 0;
         }
-        if (!ShouldRunBundledViGEmBus(version, state)) {
-          AppendInstallerLogMessage(logPath, "ViGEmBus setup skipped: existing driver cannot be safely replaced. Check driver version and service state.");
+        if (!canInstallNow) {
+          AppendInstallerLogMessage(logPath, "ViGEmBus setup deferred: host MSI requires a reboot or does not support deferred host startup.");
+          return 1062;
+        }
+        var registered = HasRegisteredViGEmBusPackage();
+        AppendInstallerLogMessage(logPath, "ViGEmBus MSI family registered: " + registered + ".");
+        if (!ShouldRunBundledViGEmBus(version, state, present, registered) || File.Exists(driverPath)) {
+          AppendInstallerLogMessage(logPath, "ViGEmBus setup skipped: existing shared installation requires manual diagnosis. No removal or downgrade attempted.");
+          return 1062;
+        }
+        var hostState = QueryServiceState(ApolloServiceName);
+        if (hostState != 1 || Process.GetProcessesByName("NOUS").Any()) {
+          AppendInstallerLogMessage(logPath, "ViGEmBus setup skipped: NOUS is not confirmed stopped (SCM state " + hostState + ").");
           return 1062;
         }
         var directory = Path.Combine(Path.GetTempPath(), "NOUS-ViGEmBus-" + Guid.NewGuid().ToString("N"));
@@ -4152,10 +4241,16 @@ namespace VibepolloInstaller {
         if (!FileHashMatches(installerPath, "89220a7865076b342892f98865f3499fb7c4cfd673159e89d352c360fd014c6a")) {
           throw new InvalidOperationException("Bundled ViGEmBus SHA-256 mismatch.");
         }
-        AppendInstallerLogMessage(logPath, "Installing official Nefarius ViGEmBus 1.22.0 silently, outside MSI transaction.");
-        var start = new ProcessStartInfo(installerPath, "/quiet /norestart") {
-          UseShellExecute = true,
-          Verb = IsProcessElevated() ? "open" : "runas"
+        var vendorLog = Path.Combine(directory, "ViGEmBus-exe.log");
+        var vendorMsiLog = Path.Combine(directory, "ViGEmBus-msi.log");
+        AppendInstallerLogMessage(logPath, "Installing official Nefarius ViGEmBus 1.22.0 outside MSI transaction; vendor logs: " + directory);
+        InstallerProgress.Report("Instalando ViGEmBus oficial");
+        // Advanced Installer bootstrapper switches must precede MSI switches.
+        var start = new ProcessStartInfo(installerPath,
+          "/exenoui /exelog " + QuoteArgument(vendorLog) + " /qn /norestart REBOOT=ReallySuppress /l*v! " + QuoteArgument(vendorMsiLog)) {
+          UseShellExecute = false,
+          CreateNoWindow = true,
+          WorkingDirectory = directory
         };
         using (var process = Process.Start(start)) {
           if (process == null) throw new InvalidOperationException("ViGEmBus installer did not start.");
@@ -4166,12 +4261,17 @@ namespace VibepolloInstaller {
           var code = process.ExitCode;
           AppendInstallerLogMessage(logPath, "ViGEmBus installer exit code: " + code);
           TryDeleteFile(installerPath);
-          if (code == 0 && (!File.Exists(driverPath) || QueryViGEmBusState() != 4)) {
-            AppendInstallerLogMessage(logPath, "ViGEmBus not running after setup; restart and verify controller support.");
-          }
-          // NOUS service may have probed controllers before this driver was installed.
-          // Require restart so its ViGEmClient reconnects against the newly installed bus.
-          return code == 0 ? 3010 : code;
+          if (code != 0) return code;
+          var elapsed = Stopwatch.StartNew();
+          do {
+            if (File.Exists(driverPath) && QueryServiceState("ViGEmBus") == 4 && HasPresentViGEmBusInterface()) {
+              AppendInstallerLogMessage(logPath, "ViGEmBus service running and PnP interface present after setup.");
+              return 0;
+            }
+            Thread.Sleep(250);
+          } while (elapsed.ElapsedMilliseconds < 10000);
+          AppendInstallerLogMessage(logPath, "ViGEmBus setup exited 0 without a ready PnP interface. No automatic repair attempted.");
+          return ViGEmBusNotReadyAfterInstall;
         }
       } catch (Exception ex) {
         AppendInstallerLogMessage(logPath, "ViGEmBus installation failed: " + ex.Message);
@@ -6055,6 +6155,7 @@ namespace VibepolloInstaller {
       PreserveCliInstallDirectory(cliArgs);
       PreserveCliVirtualDisplayDriverSelection(cliArgs);
 
+      var deferHostStart = isInstallOperation && ConfigureDeferredHostStart(cliArgs, installMsiPath);
       var logPath = TryGetMsiLogPath(cliArgs);
       if (!HasLogSwitch(cliArgs)) {
         logPath = BuildLogPath("cli");
@@ -6361,7 +6462,7 @@ namespace VibepolloInstaller {
       }
       var componentWarnings = isInstallOperation ? CollectInstallComponentFailures(logPath, false) : new List<string>();
       if (isInstallOperation) {
-        exitCode = CompleteViGEmBusSetup(exitCode, logPath, componentWarnings);
+        exitCode = CompleteViGEmBusSetup(exitCode, logPath, componentWarnings, deferHostStart);
       }
       var cliResult = new InstallerResult {
         Operation = isUninstallOperation ? InstallerOperation.Uninstall : InstallerOperation.Install,
@@ -6475,6 +6576,7 @@ namespace VibepolloInstaller {
     };
 
     private static readonly string[] PostInstallServiceNames = {
+      ApolloServiceName,
       "SunshineService",
       "VibeshineService",
       "sunshinesvc"

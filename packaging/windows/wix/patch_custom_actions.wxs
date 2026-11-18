@@ -30,6 +30,8 @@
     <Property Id="USBIP_TRANSPORT_BUNDLED" Value="$(var.UsbIpTransportBundled)"/>
     <Property Id="INSTALL_USBIP_TRANSPORT" Value="0" Secure="yes"/>
     <Property Id="SKIP_REMOVE_CONFLICTING_PRODUCTS" Value="0" Secure="yes"/>
+    <!-- Standalone MSI still starts the host. setup.exe owns startup after external driver setup. -->
+    <Property Id="NOUS_DEFER_HOST_START" Value="0" Secure="yes"/>
     <Condition Message="Administrator privileges are required.">Privileged</Condition>
     <Property Id="VIGEMBUS_PRESENT">
       <RegistrySearch Id="Search_ViGEmBus_Service64" Root="HKLM" Key="SYSTEM\CurrentControlSet\Services\ViGEmBus" Name="DisplayName" Type="raw" Win64="yes"/>
@@ -72,9 +74,10 @@
       <Custom Action="SetStopSvcQuiet" After="InstallInitialize">((Installed OR WIX_UPGRADE_DETECTED) AND NOT REMOVE AND UILevel &lt; 5) OR (REMOVE = "ALL" AND NOT UPGRADINGPRODUCTCODE)</Custom>
       <Custom Action="StopSvcQuiet" After="SetStopSvcQuiet">((Installed OR WIX_UPGRADE_DETECTED) AND NOT REMOVE AND UILevel &lt; 5) OR (REMOVE = "ALL" AND NOT UPGRADINGPRODUCTCODE)</Custom>
 
-      <!-- Start quietly on repair with basic/silent UI -->
-      <Custom Action="SetStartSvcQuiet" Before="StartSvcQuiet">Installed AND NOT REMOVE AND UILevel &lt; 5</Custom>
-      <Custom Action="StartSvcQuiet" Before="InstallFinalize">Installed AND NOT REMOVE AND UILevel &lt; 5</Custom>
+      <!-- setup.exe starts ApolloService only after the external driver step. -->
+      <StartServices>NOUS_DEFER_HOST_START &lt;&gt; "1"</StartServices>
+      <Custom Action="SetStartSvcQuiet" Before="StartSvcQuiet">Installed AND NOT REMOVE AND UILevel &lt; 5 AND NOUS_DEFER_HOST_START &lt;&gt; "1"</Custom>
+      <Custom Action="StartSvcQuiet" Before="InstallFinalize">Installed AND NOT REMOVE AND UILevel &lt; 5 AND NOUS_DEFER_HOST_START &lt;&gt; "1"</Custom>
 
       <!-- Manual uninstall: process/legacy service cleanup -->
       <Custom Action="SetKillProcsQuiet" After="StopSvcQuiet">REMOVE="ALL" AND NOT UPGRADINGPRODUCTCODE</Custom>

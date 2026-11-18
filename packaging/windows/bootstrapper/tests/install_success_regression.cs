@@ -63,11 +63,21 @@ internal static class InstallSuccessRegression {
   static int Main(string[] args) {
     var directory = args[0];
     var shouldRun = typeof(InstallerRunner).GetMethod("ShouldRunBundledViGEmBus", PrivateStatic);
-    Func<Version, uint, bool> runs = (version, state) => (bool)shouldRun.Invoke(null, new object[] { version, state });
-    var bundled = new Version(1, 21, 442, 0);
-    Check(runs(null, 0) && runs(bundled, 0) && runs(bundled, 1), "Missing or stopped ViGEmBus needs bundled setup");
-    Check(runs(new Version(1, 20), 4), "Older running ViGEmBus can be upgraded");
-    Check(!runs(bundled, 4) && !runs(new Version(1, 23), 1) && !runs(bundled, 2) && !runs(null, 1), "Preserve healthy, newer, transitional or unknown registered driver");
+    Func<Version, uint, bool, bool, bool> runs = (version, state, present, registered) =>
+      (bool)shouldRun.Invoke(null, new object[] { version, state, present, registered });
+    Check(runs(null, 0, false, false), "Fresh machine needs bundled setup");
+    Check(!runs(new Version(1, 20), 4, true, true) && !runs(new Version(1, 23), 0, false, false), "Preserve existing shared driver");
+    Check(!runs(null, 1, false, false) && !runs(null, 0, true, false) && !runs(null, 0, false, true), "Preserve partial installation");
+    var complete = typeof(InstallerRunner).GetMethod("CompleteHostInstall", PrivateStatic);
+    foreach (var scenario in new[] { new[] { 0, 0, 1, 0, 0 }, new[] { 0, 3010, 1, 3010, 0 }, new[] { 0, 1460, 1, 0, 2 }, new[] { 0, 1167, 1, 0, 1 }, new[] { 3010, 0, 1, 3010, 0 }, new[] { 1603, 0, 1, 1603, 0 }, new[] { 0, 0, 0, 0, 0 } }) {
+      var calls = new List<string>();
+      var warnings = new List<string>();
+      Func<int> driver = () => { calls.Add("driver"); return scenario[1]; };
+      Func<bool> host = () => { calls.Add("host"); return true; };
+      var code = (int)complete.Invoke(null, new object[] { scenario[0], warnings, driver, host, scenario[2] == 1 });
+      var expected = scenario[0] == 1603 ? "" : scenario[2] == 1 && scenario[3] == 0 && scenario[1] != 1460 ? "driver,host" : "driver";
+      Check(code == scenario[3] && string.Join(",", calls) == expected && warnings.Count == scenario[4], "Host startup follows driver handling and restart policy");
+    }
     var combine = typeof(InstallerRunner).GetMethod("CombineViGEmBusResult", PrivateStatic);
     foreach (var scenario in new[] { new[] { 0, 0, 0, 0 }, new[] { 3010, 0, 3010, 0 }, new[] { 0, 3010, 3010, 0 }, new[] { 0, 1641, 3010, 0 }, new[] { 0, 1603, 0, 1 }, new[] { 3010, 1460, 3010, 1 } }) {
       var warnings = new List<string>();

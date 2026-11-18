@@ -12,7 +12,8 @@ Entrega única integrada: host Windows com interface Web, backend, Android e set
 - Controle virtual dentro de Controles. Demonstração exclusivamente em Desenvolvimento.
 - Menu rápido com atalho configurável por controle, incluindo Xbox/DualSense; comando reconhecido reservado ao menu. Alça lateral recolhe após inatividade, preservando acesso.
 - Diagnósticos reais de host/cliente, histórico local de 30 dias com limite de tamanho e exclusão manual. Sem gravação de tela, áudio, teclas ou área de transferência; exportação manual sem credenciais.
-- MuMu: testes isolados usando segundo monitor, sem desligar/alterar monitor principal. Usuário autorizou instalação de APK, reinícios e testes de instalação/atualização preservando dados e configurações.
+- MuMu: transmitir somente a tela **virtual** secundária, criada pelo host e removida após a sessão. Sem exigir monitor físico extra; manter o monitor principal físico ativo, primário e com a mesma resolução, frequência e posição. Abortar se a saída virtual não puder ser isolada.
+- Versão pública **1.0.0** no Windows (host/Web, setup e identificação do produto) e no Android. Distinguir versão pública de `FileVersion`/`ProductVersion` técnicos, `versionCode` e outros identificadores de build: não reduzir ordenação de upgrades nem apagar configurações ou pareamentos.
 - Progresso do instalador deve refletir operações reais, não temporizador fictício.
 
 ## Entrega total solicitada em 18/11/2026
@@ -26,6 +27,12 @@ Usuário reduziu o escopo imediato para binários compilados e pendências regis
 - Host, MSI e Inno compilados; Playwright focado 7/7, teste unitário de categoria e teste de empacotamento de assets aprovados. Android: 79 testes aprovados, incluindo grid 16:9 e filtros. APK não recompilado. Exibição das novas capas no MuMu ainda não verificada; o cache dos controles de ID fixo não consome `ArtVersion`.
 - MCP Browse: páginas reais Dispositivos, Estatísticas, Registros, Integrações, Manutenção e Transmitir no navegador renderizaram sem iniciar transmissão. Desparelhamento individual de `POCO X6 Pro` confirmado no painel e ausência do nome no estado de pareamento. Disposição salva preservada. Serviço principal continuou ativo na versão `1.0.390.687`.
 - Bugcheck anterior: análise do minidump com `kd` Microsoft e símbolos públicos retornou `PAGE_FAULT_IN_NONPAGED_AREA` (`0x50`), processo `System`, `ViGEmBus.sys` no ponto da falha, bucket `AV_ViGEmBus!unknown_function`. Símbolos do ViGEmBus indisponíveis; minidump não confirma versão exata do driver da falha nem seu gatilho. Dump e saída bruta não distribuídos. Nenhum instalador ou novo host executado nesta rodada.
+
+## ViGEmBus — sequência corrigida após o relato do controle
+
+- O MSI iniciou `ApolloService` às 07:00:46. SetupAPI registrou instalação ViGEmBus às 07:00:49; `SUCCESS` do INF não comprova barramento utilizável. Após reiniciar, o host registrou `BUS_NOT_FOUND` em tentativas às 07:13 e 07:14. A instalação manual relatada coincide com nova instalação PnP às 07:17:11 e conexão com callback de vibração às 07:17:23. O gatilho da falha `0x50` continua desconhecido.
+- O MSI usado pelo setup adia o início do serviço. O motor só chama o EXE original assinado em instalação nova, com host parado e sem reinício pendente do MSI. Confere estado SCM e interface PnP sem abrir o dispositivo, guarda logs EXE/MSI e só então inicia o host, salvo reinício ou processo do driver ainda em execução. Mantém instalações compartilhadas, inclusive parciais, sem tentar desinstalar ou reparar sozinho. MSI avulso mantém a inicialização normal.
+- Regressão com operações simuladas passou. Instalação, atualização, reinício e uso do controle ainda precisam de VM com snapshot. Não testar reinstalação de driver no PC principal.
 
 ## Revisão pós-instalação — build 1.0.390.802
 
