@@ -1,6 +1,14 @@
 # NOUS — entrega parcial e pendências — 18/11/2026
 
-## Revisão atual — 1.0.390.818
+## Revisão 1.0.0 — validação pendente
+
+- Windows e Android exibem `1.0.0`; `FileVersion`, MSI `ProductVersion` e Android `versionCode` são técnicos. APK arm64 debug 59: 80 testes aprovados, zero falhas/erros. Atualizado no MuMu com `adb install -r`; manteve a data da primeira instalação. O cache agora considera `ArtVersion` sem mudar o ID da entrada. Ainda falta validar as quatro capas e a troca de capa personalizada de ponta a ponta com o host atualizado.
+- O motor adia o início do host até verificar o ViGEmBus, sem reinstalar automaticamente um barramento compartilhado. Regressão simulada aprovada; instalação real e causa do bugcheck continuam não demonstradas. Usar Windows recuperável com snapshot.
+- Teste MuMu: criar **tela virtual secundária** no host, usar `Estendido + isolado` e capturar só a saída virtual. Comparar monitor físico antes, durante e depois (ativo, primário, resolução, frequência e posição). Não iniciar no host atual: `dd_configuration_option = ensure_primary` e a captura tem possibilidade de fallback. Não precisa de outro monitor físico.
+- HIDMaestro continua sem integração: piloto deve ser opt-in, sem substituir o ViGEmBus padrão, sem USB/IP na primeira etapa e sem novo certificado no PC principal. Comparar modos Bluetooth reportados do GameSir Cyclone 2 no Android com as personas apresentadas no Windows; verificar botões, eixos, gatilhos, vibração, reconexão e Steam/jogos separadamente.
+- CI: [Windows `44356490840`](https://github.com/flugeru/NOUS/actions/runs/44356490840), [Windows `44351044736`](https://github.com/flugeru/NOUS/actions/runs/44351044736) e [Android `44280373747`](https://github.com/flugeru/NOUS/actions/runs/44280373747) terminaram com falha. Build local não substitui CI aprovada e assinatura autorizada.
+
+## Revisão anterior — 1.0.390.818
 
 - As quatro capas padrão foram editadas com Python para 640×360 e incluídas no host, que as fornece ao Web e ao Android. Testes Web focados: 7 aprovados, mais teste unitário de categoria. Steam Big Picture vem em Launchers nas instalações novas; catálogos antigos sem escolha explícita usam o comando de abertura como padrão.
 - Android: 79 testes locais aprovados, incluindo cartões 16:9 e categorias. APK permanece o mesmo. Falta testar o recebimento das quatro capas pelo MuMu, em host de teste pareado, sem limpar dados. Remote Input e Remote Monitor têm IDs fixos; o APK atual guarda capa por ID e não usa `ArtVersion`. Entradas com cache anterior podem manter a arte antiga.
