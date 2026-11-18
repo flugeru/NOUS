@@ -1978,7 +1978,8 @@ namespace confighttp {
           if (!app.is_object()) return false;
           if (std::string_view {key} == "desktop") return app.value("name", std::string {}) == "Desktop";
           const auto control = std::string_view {key} == "input" ? remote_session::control_e::input : remote_session::control_e::monitor;
-          return app.value("uuid", std::string {}) == remote_session::synthetic_uuid(control);
+          return app.contains("uuid") && app["uuid"].is_string() &&
+             app["uuid"] == remote_session::synthetic_uuid(control);
         });
         if (!present) restorable.push_back({{"id", key}, {"name", name}});
       }

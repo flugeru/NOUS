@@ -17,6 +17,11 @@ PRELUDE = r'''
 #include "src/remote_monitor_profile_policy.h"
 #include "src/utility.h"
 #include "src/uuid.h"
+#ifdef _WIN32
+#include "src/platform/windows/playnite_sync_policy.h"
+int setenv(const char* name,const char* value,int){return _putenv_s(name,value);}
+int unsetenv(const char* name){return _putenv_s(name,"");}
+#endif
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/algorithm/string.hpp>
 #include <filesystem>
@@ -52,12 +57,13 @@ std::string read_file(const char*) { fixture_events.push_back("read"); return fi
 void write_file(const char*,const std::string& text) { fixture_events.push_back("write"); fixture_writes.push_back(json::parse(text)); fixture_disk_text=text; }
 }
 namespace proc {
-struct ctx_t {std::optional<size_t> configured_index; bool remote_monitor_profile{};std::string uuid,id;};
+struct ctx_t {std::optional<size_t> configured_index; bool remote_monitor_profile{};std::string uuid,id,library_category;};
 std::vector<ctx_t> fixture_after_refresh;
 struct process_t {
  std::vector<ctx_t> apps;
  auto get_apps() const {fixture_events.push_back("snapshot");return apps;}
  std::string get_running_app_uuid() const {return "controlled-running-app";}
+ bool update_active_app_live_rtx_hdr_overrides(const std::string&){return false;}
 } proc;
 void refresh(const std::string&,bool=false) {fixture_events.push_back("refresh");++fixture_refreshes;proc.apps=fixture_after_refresh;}
 }
@@ -66,6 +72,8 @@ std::recursive_mutex& apps_file_mutex(){static std::recursive_mutex lock;return 
 bool check_content_type(resp_https_t,req_https_t,const char*){return true;}
 bool validateContentType(resp_https_t,req_https_t,const char*){return true;}
 void normalize_adapter_config_pair(json&){}
+void enhance_app_with_playnite_cover(json&){}
+void enhance_app_with_playnite_icon(json&){}
 bool refresh_client_apps_cache(json& value,bool=true){file_handler::write_file(config::stream.file_apps.c_str(),value.dump(4));proc::refresh(config::stream.file_apps);return true;}
 bool authenticate(resp_https_t,req_https_t){if(!fixture_authorized)fixture_http=401;return fixture_authorized;}
 void print_req(req_https_t){}
@@ -246,12 +254,32 @@ void legacy_get_then_repair(){
  get();successful_list();CHECK(fixture_writes.size()==3);CHECK(fixture_refreshes==3);CHECK(fixture_response["apps"][0]["id"]=="401");
  const auto normalized=json::parse(fixture_disk_text);CHECK(normalized["apps"][0]["auto-detach"]==true);CHECK(normalized["apps"][0]["exit-timeout"]==5);CHECK(normalized["apps"][0]["prep-cmd"][0]["elevated"]==true);no_transient_fields(normalized);
 }
+void library_response_metadata(){
+ reset(json{{"apps",json::array({{{"name","Game"},{"uuid",profile_uuid},{"cmd","game.exe"},{"library-category","games"}}})}}.dump());
+ proc::fixture_after_refresh={{0,false,profile_uuid,"42","launchers"}};
+ proc::proc.apps=proc::fixture_after_refresh;
+ get();successful_list();
+ CHECK(fixture_response["apps"][0]["effective-library-category"]=="launchers");
+ CHECK(fixture_response["apps"][0]["running"]==false);
+ for(const auto& write:fixture_writes)for(const auto& app:write["apps"]){
+  CHECK(!app.contains("effective-library-category"));CHECK(!app.contains("running"));
+ }
+}
+void invalid_library_categories(){
+ for(const auto& category:std::vector<json>{nullptr,12,true,"unknown",""}){
+  reset(R"({"apps":[]})");
+  auto request=std::make_shared<request_t>();
+  request->content<<json{{"name","Game"},{"library-category",category}}.dump();
+  confighttp::saveApp(0,request);
+  CHECK(fixture_http==400);CHECK(fixture_writes.empty());CHECK(fixture_refreshes==0);
+ }
+}
 void authentication_boundary(){reset("not JSON");fixture_authorized=false;get();CHECK(fixture_http==401);CHECK(fixture_events.empty());CHECK(fixture_writes.empty());}
 int main(int argc,char**argv){
  confighttp::install_fixture_route();
  if(argc>1 && std::string(argv[1])=="target-save-repair-probe"){try{target_save_repair_probe();return 0;}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
  std::vector<std::pair<std::string,std::function<void()>>> cases{
-  {"invalid-own-legacy-fields",invalid_own_legacy_fields},{"valid-profile-legacy-normalization",valid_profile_legacy_normalization},{"invalid-missing-builtins",invalid_missing_builtins},{"invalid-ordinary-normalization",invalid_ordinary_normalization},{"ordinary-normalization",ordinary_normalization},{"illegal-environment-order",illegal_environment_order},{"invalid-original-environment-order",invalid_original_environment_order},{"no-normalization-stale-snapshot",no_normalization_and_stale_snapshot},{"authentication-boundary",authentication_boundary}
+  {"invalid-own-legacy-fields",invalid_own_legacy_fields},{"valid-profile-legacy-normalization",valid_profile_legacy_normalization},{"invalid-missing-builtins",invalid_missing_builtins},{"invalid-ordinary-normalization",invalid_ordinary_normalization},{"ordinary-normalization",ordinary_normalization},{"illegal-environment-order",illegal_environment_order},{"invalid-original-environment-order",invalid_original_environment_order},{"no-normalization-stale-snapshot",no_normalization_and_stale_snapshot},{"authentication-boundary",authentication_boundary},{"invalid-library-categories",invalid_library_categories},{"library-response-metadata",library_response_metadata}
  };
  if(source_uuid_expansion){cases.push_back({"get-then-repair",get_then_repair});cases.push_back({"legacy-get-then-repair",legacy_get_then_repair});}
  try{for(const auto& [name,test]:cases){if(argc>1 && name!=argv[1])continue;test();std::cout<<"PASS "<<name<<'\n';}}
@@ -264,8 +292,8 @@ int main(int argc,char**argv){
 def fixture(root, http_source=None):
     sys.path.insert(0,str(root/'tests/input'))
     from test_delayed_mouse_release import function
-    source=(http_source or root/'src/confighttp.cpp').read_text()
-    process=(root/'src/process.cpp').read_text()
+    source=(http_source or root/'src/confighttp.cpp').read_text(encoding='utf-8')
+    process=(root/'src/process.cpp').read_text(encoding='utf-8')
     signatures=[
         'bool is_valid_env_key(', 'std::string_view::iterator find_match(',
         'std::string parse_env_val(', 'bp::native_environment configured_app_environment(',
@@ -306,13 +334,14 @@ def main():
     parser.add_argument('--save-exe',type=Path)
     parser.add_argument('--json-include',type=Path)
     parser.add_argument('--generate-only',action='store_true')
+    parser.add_argument('--case')
     args=parser.parse_args()
     with tempfile.TemporaryDirectory() as tmp:
         cpp=args.save_cpp or Path(tmp)/'get.cpp'
         cpp.write_text(fixture(args.root,args.http_source))
         if args.generate_only:return
         exe=args.save_exe or Path(tmp)/'get'
-        subprocess.run(['g++','-std=c++23','-O0','-pthread','-I'+str(args.root),'-I'+str(args.root/'src'),*(['-I'+str(args.json_include)] if args.json_include else []),str(args.root/'src/remote_session.cpp'),str(cpp),'-lboost_process','-o',str(exe)],check=True)
-        subprocess.run([str(exe)],check=True)
+        subprocess.run(['g++','-std=c++23','-O0','-pthread','-DBOOST_PROCESS_V2_HEADER_ONLY','-DBOOST_PROCESS_STATIC_LINK','-I'+str(args.root),'-iquote'+str(args.root/'src'),*(['-I'+str(args.json_include)] if args.json_include else []),str(args.root/'src/remote_session.cpp'),*([str(args.root/'src/platform/windows/playnite_sync_policy.cpp')] if sys.platform=='win32' else []),str(cpp),*(['-lboost_process'] if sys.platform!='win32' else ['-lboost_process-mt','-lws2_32']),'-o',str(exe)],check=True)
+        subprocess.run([str(exe),args.case] if args.case else [str(exe)],check=True)
 
 if __name__=='__main__':main()
