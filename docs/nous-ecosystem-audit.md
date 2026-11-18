@@ -19,6 +19,16 @@ Entrega única integrada: host Windows com interface Web, backend, Android e set
 
 Usuário reduziu o escopo imediato para binários compilados e pendências registradas, depois pediu a pasta de entrega total. Pasta local: `build-local/ENTREGA-TOTAL-2026-11-18`; pacote `build-local/NOUS-ENTREGA-TOTAL-2026-11-18.zip` (hash externo em `NOUS-ENTREGA-TOTAL-2026-11-18.zip.sha256`; hashes dos arquivos internos em `SHA256SUMS.txt`). Contém `setup.exe`, `NOUS.msi`, motor, APK arm64 debug, auditoria, pendências, versão/hashes e LEIA-ME. Instruções: [`nous-entrega-total-2026-11-18.md`](nous-entrega-total-2026-11-18.md). Pendências detalhadas: [`nous-entrega-parcial-2026-11-18.md`](nous-entrega-parcial-2026-11-18.md). **Auditoria integral não concluída; não é release final.**
 
+## Revisão pós-instalação — build 1.0.390.802
+
+- O serviço instalado `ApolloService` executa `C:\Windows\NOUS.exe`, versão numérica `1.0.390.687`, embora o texto legado mostre `1.0.3-local`. A interface em 47990 respondeu HTTP 200; biblioteca categorizada, histórico e busca SteamGridDB responderam com autenticação. O log anterior registra MSI concluído com código 0; isso não comprova preservação por comparação antes/depois.
+- O Windows registrou bugcheck `0x00000050` às 07:01:40, após o MSI anterior. Minidump preservado localmente; módulo causador ainda não identificado. Nenhum driver foi alterado nesta revisão. O ViGEmBus instalado manualmente está ativo: instalador 1.22.0, versão do driver `1.21.442.0`. O MSI local não contém VHF NOUS.
+- O setup revisado incorpora ViGEmBus oficial assinado e verifica o SHA-256 do payload. Consulta estado do serviço pelo SCM, não só presença do arquivo; preserva driver igual em execução e nunca faz downgrade de versão conhecida. Falhas depois do MSI aparecem como aviso, sem rollback do host registrado; o resultado entra no log persistido. Inno não concede confiança a certificado beta em modo silencioso e exige consentimento vinculado ao certificado em modo interativo.
+- Windows: compilações host, MSI e Inno 6.7.4 aprovadas; regressões locais de instalação, consentimento, segurança, rollback (387 checks) e interop aprovadas em fixtures, sem executar instalação/driver. Compilação do ramo Inno VHF com consentimento também aprovada usando placeholder, sem instalação.
+- Web: build/typecheck e 138 unitários aprovados. Playwright/Edge: 222 aprovados, 16 ignorados e 1 falha de abertura de contexto na suíte completa; o caso restante passou isolado. Regressões cobrem interface com fixtures, não streaming nem hardware real.
+- MuMu: APK arm64 debug 58 abriu em execução real; duas entradas offline foram removidas com autorização pela interface Android, restando uma entrada que pede pareamento. Sem limpeza de dados ou streaming. Apenas um monitor detectado. POCO, controles físicos e segundo monitor continuam pendentes.
+- CI anterior: Windows falhou no passo de segurança/rollback e Android no de capturas; logs dos jobs retornaram HTTP 403 sem autenticação. A regressão local de texto de consentimento desatualizado foi corrigida; não comprova a causa da falha remota. Nova CI e assinatura de release não estão certificadas.
+
 ## Evidências iniciais (não equivalem a auditoria concluída)
 
 - `AppGridAdapter.java`: categorização limitada a `demoCategories`; aplicativos reais ignoram filtro de categoria.

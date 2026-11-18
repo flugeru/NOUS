@@ -1,6 +1,17 @@
 # NOUS — entrega parcial e pendências — 18/11/2026
 
-## Estado desta entrega
+## Atualização pós-instalação — revisão 1.0.390.802
+
+Esta seção substitui o estado e os hashes históricos abaixo. Consulte `LEIA-ME.md` e `SHA256SUMS.txt` para os binários atuais.
+
+- Elevação confirmada. Host anterior `1.0.390.687` e serviço em execução; APIs de biblioteca, histórico e SteamGridDB verificadas. MSI anterior registrou sucesso, mas não houve comparação antes/depois de dados, nem teste de upgrade/rollback com o setup novo.
+- Windows registrou tela azul `0x00000050`. Minidump local preservado, sem causa identificada. Testar primeiro em Windows descartável com snapshot, incluindo caso ViGEmBus ausente, reinício, reparo e upgrade. Nenhum driver, serviço ou certificado foi alterado nesta revisão.
+- Setup `1.0.390.802` verifica o serviço ViGEmBus antes de decidir instalar a versão oficial embutida. Falha do componente aparece como aviso e fica no log, sem desfazer o host. Build local sem assinatura; MSI não inclui VHF NOUS. Regressões e compilação do Inno aprovadas; tela/progresso durante instalação real não verificados.
+- Web: 138 unitários, build e typecheck aprovados. E2E Edge: 222 aprovados, 16 ignorados, 1 falha de abertura de contexto que passou isolada. Auditoria autenticada completa não concluída.
+- MuMu confirmou abertura do APK arm64 debug 58; após remoção autorizada de duas entradas offline, resta uma pedindo pareamento. APK não mudou. POCO, controles físicos, toque e decodificação real continuam pendentes. Não iniciar streaming sem segundo monitor isolado.
+- CI Windows/Android anterior falhou; download de logs recusado (403). Regressões locais aprovadas não substituem CI. Release depende de CI e assinatura autorizada.
+
+## Estado da entrega anterior (histórico)
 
 Esta rodada concluiu o que não exige UAC: integração e validação do proxy SteamGridDB, exportação de diagnósticos, sugestões de apps frequentes, modos de preferência por dispositivo, testes web, build do host e recompilação do MSI/setup Inno. **Não representa auditoria integrada concluída nem release final.** Instalação/upgrade/rollback reais, drivers, streaming e hardware físico continuam pendentes.
 
