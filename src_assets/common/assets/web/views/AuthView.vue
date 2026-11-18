@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import AccountLogin from '@/components/AccountLogin.vue';
 import { UiIcon } from '@/components/ui';
 import { useSystemStore } from '@/stores/system';
 
@@ -15,6 +16,7 @@ const rememberMe = ref(true);
 const submitting = ref(false);
 const error = ref('');
 
+const preview = import.meta.env.VITE_NOUS_LOCAL_ACCOUNT_TEST === '1' && location.origin === 'http://127.0.0.1:48174';
 const isSetup = computed(() => system.needsSetup);
 
 async function submit(): Promise<void> {
@@ -62,7 +64,8 @@ async function submit(): Promise<void> {
         </div>
       </div>
 
-      <form class="auth-form" novalidate @submit.prevent="submit">
+      <p v-if="preview">Prévia local. Para administrar o host, <a href="https://127.0.0.1:47990/" rel="noreferrer">abra o painel instalado</a>.</p>
+      <form v-else class="auth-form" novalidate @submit.prevent="submit">
         <div v-if="error" class="form-error" role="alert">
           <UiIcon name="alert-triangle" />
           <span>{{ error }}</span>
@@ -120,6 +123,7 @@ async function submit(): Promise<void> {
         </button>
       </form>
 
+      <AccountLogin />
       <p class="auth-security-note">
         {{ t('ui.auth.security_note') }}
       </p>
