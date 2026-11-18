@@ -255,4 +255,8 @@
     <string name="summary_analog_scrolling">Selecciona um stick analógico para fazer scroll quando a emulação de rato está ativada</string>
     <string name="title_enable_commit_text">Ativar entrada de texto commit (gesto/voz)</string>
     <string name="summary_enable_commit_text">Reencaminha texto com vários caracteres proveniente de teclados virtuais (digitação por gestos, previsões, ditado por voz). Pode causar problemas em jogos que dependem de entradas tecla-a-tecla.</string>
+    <string name="quick_menu_button_title">Botão do comando para menu rápido</string>
+    <string name="quick_menu_button_summary">Botão escolhido abre o menu e fica reservado: não é enviado ao jogo. Android pode intercetar Guide/PS/Xbox.</string>
+    <string name="quick_menu_legacy">Atalho existente (premir e depois manter Start)</string>
+    <string name="quick_menu_disabled">Desativado (apenas atalho do comando)</string>
 </resources>

@@ -755,4 +755,8 @@
 
     <string name="title_checkbox_full_screen">Enable Full Screen</string>
     <string name="summary_checkbox_full_screen">Hide system bars with immersive mode</string>
+    <string name="quick_menu_button_title">Quick menu controller button</string>
+    <string name="quick_menu_button_summary">Selected button opens the menu and is reserved: it is not sent to the game. Guide/PS/Xbox may be intercepted by Android.</string>
+    <string name="quick_menu_legacy">Existing shortcut (press, then hold Start)</string>
+    <string name="quick_menu_disabled">Disabled (controller shortcut only)</string>
 </resources>

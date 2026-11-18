@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="quick_menu_button_names">
+        <item>@string/quick_menu_legacy</item>
+        <item>Guide / PS / Xbox</item>
+        <item>Start / Options / Menu</item>
+        <item>Select / Create / View</item>
+        <item>L3</item>
+        <item>R3</item>
+        <item>@string/quick_menu_disabled</item>
+    </string-array>
+    <string-array name="quick_menu_button_values" translatable="false">
+        <item>legacy</item><item>guide</item><item>start</item><item>select</item>
+        <item>l3</item><item>r3</item><item>disabled</item>
+    </string-array>
     <string-array name="resolution_names">
         <item>@string/resolution_360p</item>
         <item>@string/resolution_480p</item>

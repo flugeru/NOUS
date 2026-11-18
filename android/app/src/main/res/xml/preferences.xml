@@ -244,6 +244,17 @@
         android:title="@string/category_gamepad_settings"
         app:initialExpandedChildrenCount="1"
         app:iconSpaceReserved="false">
+        <ListPreference
+            android:key="list_quick_menu_button"
+            android:defaultValue="legacy"
+            android:title="@string/quick_menu_button_title"
+            android:entries="@array/quick_menu_button_names"
+            android:entryValues="@array/quick_menu_button_values"
+            app:iconSpaceReserved="false" />
+        <Preference
+            android:title="@string/quick_menu_button_summary"
+            android:selectable="false"
+            app:iconSpaceReserved="false" />
         <com.limelight.preferences.SeekBarPreference
             android:defaultValue="5"
             android:key="seekbar_deadzone"

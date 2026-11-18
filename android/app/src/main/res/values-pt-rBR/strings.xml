@@ -255,4 +255,8 @@
     <string name="category_general_settings">Geral</string>
     <string name="category_perf_monitor_settings">Monitor de desempenho</string>
     <string name="title_settings_misc">Outras opções</string>
+    <string name="quick_menu_button_title">Botão do controle para menu rápido</string>
+    <string name="quick_menu_button_summary">Botão escolhido abre o menu e fica reservado: não é enviado ao jogo. Android pode interceptar Guide/PS/Xbox.</string>
+    <string name="quick_menu_legacy">Atalho existente (pressionar e depois segurar Start)</string>
+    <string name="quick_menu_disabled">Desativado (somente atalho do controle)</string>
 </resources>

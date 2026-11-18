@@ -284,6 +284,8 @@ public class PreferenceConfiguration {
 
     public boolean enableLatencyToast;
     public boolean enableBackMenu;
+    public static final String QUICK_MENU_BUTTON_PREF = "list_quick_menu_button";
+    public String quickMenuButton;
     public boolean enableFloatingButton;
     public boolean showOverlayZoomToggleButton;
 
@@ -940,6 +942,10 @@ private static int getFramePacingValue(Context context) {
 //        config.touchscreenTrackpad = prefs.getBoolean(TOUCHSCREEN_TRACKPAD_PREF_STRING, DEFAULT_TOUCHSCREEN_TRACKPAD);
         config.enableLatencyToast = prefs.getBoolean(LATENCY_TOAST_PREF_STRING, DEFAULT_LATENCY_TOAST);
         config.enableBackMenu = prefs.getBoolean(CHECKBOX_ENABLE_QUIT_DIALOG,true);
+        config.quickMenuButton = prefs.getString(QUICK_MENU_BUTTON_PREF, "legacy");
+        if (!java.util.Arrays.asList("legacy", "guide", "start", "select", "l3", "r3", "disabled").contains(config.quickMenuButton)) {
+            config.quickMenuButton = "legacy";
+        }
         config.enableFloatingButton = prefs.getBoolean(CHECKBOX_ENABLE_FLOATING_BUTTON,DEFAULT_ENABLE_FLOATING_BUTTON);
         config.showOverlayZoomToggleButton = prefs.getBoolean(CHECKBOX_SHOW_OVERLAY_ZOOM_TOGGLE_BUTTON, DEFAULT_SHOW_OVERLAY_TOGGLE_BUTTON);
         config.autoOrientation = prefs.getBoolean(CHECKBOX_AUTO_ORIENTATION,false);

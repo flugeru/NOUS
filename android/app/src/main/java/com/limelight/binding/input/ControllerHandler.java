@@ -1212,7 +1212,22 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         }
     }
 
+    static int quickMenuButtonMask(String selection) {
+        if ("guide".equals(selection)) return ControllerPacket.SPECIAL_BUTTON_FLAG;
+        if ("start".equals(selection)) return ControllerPacket.PLAY_FLAG;
+        if ("select".equals(selection)) return ControllerPacket.BACK_FLAG;
+        if ("l3".equals(selection)) return ControllerPacket.LS_CLK_FLAG;
+        if ("r3".equals(selection)) return ControllerPacket.RS_CLK_FLAG;
+        return 0;
+    }
+
     private void sendControllerInputPacket(GenericControllerContext originalContext) {
+        int menuMask = prefConfig.enableBackMenu ? quickMenuButtonMask(prefConfig.quickMenuButton) : 0;
+        boolean menuDown = menuMask != 0 && (originalContext.inputMap & menuMask) != 0;
+        if (menuDown && !originalContext.quickMenuDown) {
+            mainThreadHandler.post(() -> { if (!stopped) gestures.showGameMenu(originalContext); });
+        }
+        originalContext.quickMenuDown = menuDown;
         assignControllerNumberIfNeeded(originalContext);
 
         // Take the context's controller number and fuse all inputs with the same number
@@ -1266,6 +1281,8 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
             rightStickY |= maxByMagnitude(rightStickY, defaultContext.rightStickY);
         }
 
+        // Reserved menu button never reaches the host, including USB and split controllers.
+        inputMap &= ~menuMask;
         if (originalContext.mouseEmulationActive) {
             int changedMask = inputMap ^  originalContext.mouseEmulationLastInputMap;
 
@@ -2505,11 +2522,12 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
             // any action.
             if ((context.inputMap & ControllerPacket.PLAY_FLAG) != 0 &&
                     context.startUpTime - context.startDownTime > ControllerHandler.START_DOWN_TIME_MOUSE_MODE_MS) {
-                if (prefConfig.enableBackMenu && context.backMenuPending){
+                if (prefConfig.enableBackMenu && "legacy".equals(prefConfig.quickMenuButton) && context.backMenuPending){
                     //todo 展示快捷菜单
                     context.backMenuPending = false;
                     gestures.showGameMenu(context);
-                } else if (prefConfig.mouseEmulation) {
+                } else if (prefConfig.mouseEmulation && !(prefConfig.enableBackMenu &&
+                        quickMenuButtonMask(prefConfig.quickMenuButton) == ControllerPacket.PLAY_FLAG)) {
                     context.toggleMouseEmulation();
                 }
             }
@@ -2877,15 +2895,16 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
             return false;
         }
 
-        // Start+Back+LB+RB is the quit combo
-        if (context.inputMap == (ControllerPacket.BACK_FLAG | ControllerPacket.PLAY_FLAG |
+        int reservedMenuMask = prefConfig.enableBackMenu ? quickMenuButtonMask(prefConfig.quickMenuButton) : 0;
+        // Start+Back+LB+RB is the quit combo, unless one button is reserved for the menu.
+        if ((reservedMenuMask & (ControllerPacket.BACK_FLAG | ControllerPacket.PLAY_FLAG | ControllerPacket.LB_FLAG | ControllerPacket.RB_FLAG)) == 0 && context.inputMap == (ControllerPacket.BACK_FLAG | ControllerPacket.PLAY_FLAG |
                                  ControllerPacket.LB_FLAG | ControllerPacket.RB_FLAG)) {
             // Wait for the combo to lift and then finish the activity
             context.pendingExit = true;
         }
 
-        // Start+LB acts like select for controllers with one button
-        if (!context.hasSelect) {
+        // Start+LB acts like select unless its input is reserved for the menu.
+        if (!context.hasSelect && (context.inputMap & reservedMenuMask) == 0) {
             if (context.inputMap == (ControllerPacket.PLAY_FLAG | ControllerPacket.LB_FLAG) ||
                     (context.inputMap == ControllerPacket.PLAY_FLAG &&
                             event.getEventTime() - context.lastLbUpTime <= MAXIMUM_BUMPER_UP_DELAY_MS))
@@ -2896,7 +2915,7 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
                 context.emulatingButtonFlags |= ControllerHandler.EMULATING_SELECT;
             }
         }
-        else if (context.needsClickpadEmulation) {
+        else if (context.needsClickpadEmulation && (context.inputMap & reservedMenuMask) == 0) {
             // Select+LB acts like the clickpad when we're faking a PS4 controller for motion support
             if (context.inputMap == (ControllerPacket.BACK_FLAG | ControllerPacket.LB_FLAG) ||
                     (context.inputMap == ControllerPacket.BACK_FLAG &&
@@ -2911,7 +2930,7 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
 
         // If there is a physical select button, we'll use Start+Select as the special button combo
         // otherwise we'll use Start+RB.
-        if (!context.hasMode) {
+        if (!context.hasMode && (context.inputMap & reservedMenuMask) == 0) {
             if (context.hasSelect) {
                 if (context.inputMap == (ControllerPacket.PLAY_FLAG | ControllerPacket.BACK_FLAG)) {
                     context.inputMap &= ~(ControllerPacket.PLAY_FLAG | ControllerPacket.BACK_FLAG);
@@ -3029,6 +3048,7 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
     }
 
     class GenericControllerContext implements GameInputDevice{
+        boolean quickMenuDown;
         public int id;
         public boolean external;
 
