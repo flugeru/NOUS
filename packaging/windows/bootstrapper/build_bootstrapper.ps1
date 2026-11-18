@@ -277,7 +277,7 @@ $assemblyInfoContent = @(
     "[assembly: AssemblyTitle(""$assemblyTitle"")]",
     "[assembly: AssemblyDescription(""$assemblyTitle"")]",
     "[assembly: AssemblyProduct(""$assemblyTitle"")]",
-    "[assembly: AssemblyCompany(""Nonary"")]",
+    "[assembly: AssemblyCompany(""Flűgel"")]",
     "[assembly: AssemblyVersion(""$assemblyVersion"")]",
     "[assembly: AssemblyFileVersion(""$assemblyVersion"")]",
     "[assembly: AssemblyInformationalVersion(""$informationalVersion"")]"
@@ -361,6 +361,10 @@ Write-Host "[bootstrapper] Version: $assemblyVersion ($informationalVersion)"
 & $cscPath @args
 if ($LASTEXITCODE -ne 0) {
     throw "C# compiler failed with exit code $LASTEXITCODE"
+}
+
+if (-not $UninstallOnly) {
+    & (Join-Path $scriptDir '..\inno\build_inno.ps1') -EnginePath $outputPath -MsiPath $MsiPath -FileVersion $assemblyVersion
 }
 
 if ($shouldSignWithSignPath) {

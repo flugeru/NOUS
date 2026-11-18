@@ -49,6 +49,7 @@ set(CPACK_WIX_EXTENSIONS WixUtilExtension;WixFirewallExtension)
 
 # Point WiX to your source folder so those VBS files can be resolved
 set(CPACK_WIX_LIGHT_EXTRA_FLAGS
+  "-loc" "${CMAKE_SOURCE_DIR}/packaging/windows/wix/encoding.wxl"
   "-b" "MyScripts=${CMAKE_SOURCE_DIR}/packaging/windows/wix"
   "-b" "PayloadRoot=${CMAKE_BINARY_DIR}/wix_payload/"
 )

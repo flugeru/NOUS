@@ -20,6 +20,10 @@ internal static class MigrationRegression {
       UninstallString = "\"" + Path.Combine(root, "uninstall.exe") + "\" /S", Version = new Version(2, 0, 99, 0) };
   }
   public static void Main(string[] args) {
+    Check(InstallerProgress.MsiAction("Action start 12:34:56: InstallFiles.") == "InstallFiles", "MSI progress reports actual action");
+    Check(InstallerProgress.MsiAction("Action start 12:34:56: Rollback.") == "Rollback", "rollback is not presented as success");
+    foreach (var line in new[] { null, "", "Property(S): TOKEN=secret", "Action start 12:34:56: TOKEN=secret", "Action start malformed", "Action start 12:34:56: ." })
+      Check(InstallerProgress.MsiAction(line) == null, "progress excludes arbitrary log and property data");
     var root = Path.Combine(Path.GetTempPath(), "installed root ' & 日本");
     var otherRoot = root + " other";
     var facade = Product(false, root + Path.DirectorySeparatorChar);

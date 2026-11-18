@@ -30,6 +30,25 @@ namespace VibepolloInstaller {
 #endif
   }
 
+  internal static class InstallerProgress {
+    internal static bool Enabled;
+
+    internal static void Report(string message) {
+      if (!Enabled) return;
+      Console.WriteLine("NOUS_STATUS:" + message);
+      Console.Out.Flush();
+    }
+
+    internal static string MsiAction(string line) {
+      const string prefix = "Action start ";
+      if (line == null || !line.StartsWith(prefix, StringComparison.Ordinal)) return null;
+      var separator = line.IndexOf(": ", prefix.Length, StringComparison.Ordinal);
+      if (separator < 0) return null;
+      var action = line.Substring(separator + 2).TrimEnd('.');
+      return action.Length > 0 && action.Length <= 128 && action.All(c => char.IsLetterOrDigit(c) || c == '_') ? action : null;
+    }
+  }
+
   internal static class Program {
     [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
     private static extern int SetCurrentProcessExplicitAppUserModelID(string appID);
@@ -60,6 +79,8 @@ namespace VibepolloInstaller {
         return uninstallResult.ExitCode == 1605 ? 0 : uninstallResult.ExitCode;
       }
       if (parsed.InternalElevatedInstall) {
+        InstallerProgress.Enabled = true;
+        InstallerProgress.Report("Verificando pacote e instalação existente");
         var installPath = string.IsNullOrWhiteSpace(parsed.InternalInstallPath)
           ? InstallerRunner.DefaultInstallDirectory
           : parsed.InternalInstallPath;
@@ -72,6 +93,7 @@ namespace VibepolloInstaller {
           parsed.InternalInstallSaveLogs,
           false);
         InstallerRunner.TryWriteInternalInstallResult(parsed.InternalInstallResultPath, internalInstall);
+        InstallerProgress.Report(internalInstall.Succeeded ? "Instalação concluída; resultado verificado" : "Instalação não concluída; consulte os registros");
         return internalInstall.ExitCode;
       }
 
@@ -3700,6 +3722,7 @@ namespace VibepolloInstaller {
           saveInstallLogs);
       }
 
+      InstallerProgress.Report("Preparando recuperação e extraindo MSI");
       SweepStaleInstallerRecoveryDirectories();
 
       string msiPath;
@@ -3714,6 +3737,7 @@ namespace VibepolloInstaller {
       }
       var recoveryDetails = new List<string>();
       StashedVibeshinePayload stashedPreviousPayload = null;
+      InstallerProgress.Report("Verificando conflitos e versões anteriores");
       var uninstallCompetingProductsResult = UninstallCompetingProducts(
         "install_remove_competing",
         true,
@@ -3768,6 +3792,7 @@ namespace VibepolloInstaller {
         }
       }
 
+      InstallerProgress.Report("Preparando migração da instalação existente");
       var migrationCleanupResult = RunPreinstallMigrationCleanup("preinstall", true, false);
       if (!migrationCleanupResult.Succeeded) {
         string recoveryDetail;
@@ -3942,7 +3967,7 @@ namespace VibepolloInstaller {
         msiPath,
         "/qn",
         "/norestart",
-        "/l*v",
+        "/l*vx!",
         logPath,
         CreatePropertyArgument("INSTALL_ROOT", installDirectory),
         "INSTALL_USBIP_TRANSPORT=" + (installUsbIpTransport ? "1" : "0"),
@@ -3955,6 +3980,7 @@ namespace VibepolloInstaller {
       args.AddRange(BuildDriverSelectionArguments(arguments, installVirtualDisplayDriver, installVirtualGamepadDriver));
       args.AddRange(BuildLocalGamepadTrustArguments(arguments, installVirtualGamepadDriver));
 
+      InstallerProgress.Report("Preparando serviços para atualização");
       AppendInstallerLogMessage(logPath, "Quiescing related services and helper processes before MSI install attempt.");
       TryStopRelatedServicesAndProcesses(logPath);
 
@@ -3971,6 +3997,7 @@ namespace VibepolloInstaller {
       if (exitCode == 0 && InstallLogIndicatesDriverRebootRequired(logPath)) {
         exitCode = 3010;
       }
+      InstallerProgress.Report("Verificando registro e componentes instalados");
       string validationFailure;
       if ((exitCode == 0 || exitCode == 3010) && !ValidatePayloadRegisteredAfterInstall(msiPath, logPath, out validationFailure)) {
         AppendInstallerLogMessage(logPath, validationFailure);
@@ -3990,6 +4017,7 @@ namespace VibepolloInstaller {
       }
 
       if (exitCode == 0 || exitCode == 3010) {
+        InstallerProgress.Report("Verificando e instalando ViGEmBus");
         var driverExitCode = InstallBundledViGEmBus(logPath);
         if (driverExitCode != 0) exitCode = driverExitCode;
       }
@@ -6273,6 +6301,7 @@ namespace VibepolloInstaller {
         TryRecoverServiceStateAfterFailedInstall();
       }
       if (isInstallOperation && (exitCode == 0 || exitCode == 3010)) {
+        InstallerProgress.Report("Verificando e instalando ViGEmBus");
         var driverExitCode = InstallBundledViGEmBus(logPath);
         if (driverExitCode != 0) exitCode = driverExitCode;
       }
@@ -8502,6 +8531,36 @@ namespace VibepolloInstaller {
         TryGetMsiLogPath(arguments == null ? new List<string>() : arguments.ToList()));
     }
 
+    private static bool WaitForProcessWithProgress(Process process, int timeoutMilliseconds, string logPath) {
+      var elapsed = Stopwatch.StartNew();
+      StreamReader reader = null;
+      try {
+        while (true) {
+          var exited = process.WaitForExit(200);
+          try {
+            if (reader == null && File.Exists(logPath))
+              reader = new StreamReader(new FileStream(logPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete), Encoding.Default, true);
+            if (reader != null) {
+              string line;
+              while ((line = reader.ReadLine()) != null) {
+                var action = InstallerProgress.MsiAction(line);
+                if (action != null) InstallerProgress.Report("MSI: " + action);
+              }
+            }
+          } catch (IOException) {
+            if (reader != null) reader.Dispose();
+            reader = null;
+          } catch (UnauthorizedAccessException) {
+            // Progress must never interrupt the MSI transaction; its result is verified separately.
+          }
+          if (exited) return true;
+          if (timeoutMilliseconds > 0 && elapsed.ElapsedMilliseconds >= timeoutMilliseconds) return false;
+        }
+      } finally {
+        if (reader != null) reader.Dispose();
+      }
+    }
+
     private static int RunProcess(string executablePath, string arguments, bool hiddenWindow, bool requestElevationIfNeeded) {
       return RunProcess(executablePath, arguments, hiddenWindow, requestElevationIfNeeded, 0, 0, null);
     }
@@ -8542,7 +8601,10 @@ namespace VibepolloInstaller {
           if (process == null) {
             return 1;
           }
-          if (timeoutMilliseconds > 0 && !process.WaitForExit(timeoutMilliseconds)) {
+          var completed = InstallerProgress.Enabled && !string.IsNullOrWhiteSpace(timeoutLogPath)
+            ? WaitForProcessWithProgress(process, timeoutMilliseconds, timeoutLogPath)
+            : timeoutMilliseconds <= 0 || process.WaitForExit(timeoutMilliseconds);
+          if (!completed) {
             AppendInstallerLogMessage(
               timeoutLogPath,
               Path.GetFileName(executablePath) + " did not exit within "

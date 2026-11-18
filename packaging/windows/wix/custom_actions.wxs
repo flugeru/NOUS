@@ -308,7 +308,7 @@
                bootstrapper's ParseVersion maps this string back into the
                encoded space for comparisons. -->
           <RegistryValue Name="DisplayVersion" Type="string" Value="$(var.VibeshineSemVer)" />
-          <RegistryValue Name="Publisher" Type="string" Value="Nonary" />
+          <RegistryValue Name="Publisher" Type="string" Value="Flűgel" />
           <RegistryValue Name="InstallLocation" Type="string" Value="[INSTALL_ROOT]" />
           <RegistryValue Name="DisplayIcon" Type="string" Value="[INSTALL_ROOT]NOUS.exe" />
           <RegistryValue Name="UninstallString" Type="string" Value="&quot;[INSTALL_ROOT]uninstall.exe&quot;" />
