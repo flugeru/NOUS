@@ -7,8 +7,8 @@ import android.app.Activity;
 import androidx.appcompat.app.AlertDialog;
 import com.limelight.ui.ControllerDialogBuilder;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.limelight.R;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
@@ -81,19 +81,25 @@ public class SpinnerDialog implements Runnable,OnCancelListener {
 
         if (progress == null)
         {
-            int padding = Math.round(24 * activity.getResources().getDisplayMetrics().density);
-            LinearLayout content = new LinearLayout(activity);
+            ControllerDialogBuilder builder = new ControllerDialogBuilder(activity);
+            android.content.Context context = builder.getContext();
+            int padding = Math.round(24 * context.getResources().getDisplayMetrics().density);
+            LinearLayout content = new LinearLayout(context);
             content.setGravity(android.view.Gravity.CENTER_VERTICAL);
-            content.setPadding(padding, padding / 2, padding, padding);
-            ProgressBar spinner = new ProgressBar(activity);
-            spinner.setIndeterminateTintList(android.content.res.ColorStateList.valueOf(
-                    androidx.core.content.ContextCompat.getColor(activity, R.color.nous_secondary)));
+            content.setPaddingRelative(padding, padding / 2, padding, padding);
+            CircularProgressIndicator spinner = new CircularProgressIndicator(context);
+            spinner.setIndicatorSize(padding);
+            spinner.setIndicatorInset(0);
+            spinner.setIndicatorColor(context.getColor(R.color.nous_secondary));
+            spinner.setIndeterminate(true);
             content.addView(spinner, new LinearLayout.LayoutParams(padding, padding));
-            messageView = new TextView(activity);
+            messageView = new TextView(context);
+            messageView.setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium);
+            messageView.setTextColor(context.getColor(R.color.nous_text_muted));
             messageView.setText(message);
-            messageView.setPadding(padding, 0, 0, 0);
+            messageView.setPaddingRelative(padding / 2, 0, 0, 0);
             content.addView(messageView, new LinearLayout.LayoutParams(0, -2, 1));
-            progress = new ControllerDialogBuilder(activity).setTitle(title).setView(content).create();
+            progress = builder.setTitle(title).setView(content).create();
             progress.setOnCancelListener(this);
 
             // If we want to finish the activity when this is killed, make it cancellable

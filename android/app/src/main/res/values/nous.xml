@@ -43,8 +43,12 @@
     </style>
     <style name="NousDialogTheme" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="colorSurface">@color/nous_surface</item>
-        <item name="colorControlActivated">@color/nous_secondary</item>
         <item name="colorSurfaceContainerHigh">@color/nous_surface_high</item>
+        <item name="colorOnSurface">@color/nous_text</item>
+        <item name="colorOnSurfaceVariant">@color/nous_text_muted</item>
+        <item name="colorPrimary">@color/nous_primary</item>
+        <item name="colorControlActivated">@color/nous_secondary</item>
+        <item name="android:colorControlActivated">@color/nous_secondary</item>
     </style>
     <style name="Nous.Title" parent="TextAppearance.Material3.HeadlineLarge">
         <item name="android:textSize">30sp</item>

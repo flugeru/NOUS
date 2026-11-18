@@ -22,6 +22,7 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.limelight.ui.ControllerDialogBuilder;
 
 /** Optional cloud identity. Never reads or writes local host pairing state. */
 final class NousAccountDialog {
@@ -49,7 +50,7 @@ final class NousAccountDialog {
         auth.setLanguageCode(activity.getResources().getConfiguration().getLocales().get(0).toLanguageTag());
         FirebaseUser user = auth.getCurrentUser();
         if (user != null) {
-            new AlertDialog.Builder(activity)
+            new ControllerDialogBuilder(activity)
                     .setTitle(R.string.nous_account)
                     .setMessage(activity.getString(R.string.nous_account_signed_in,
                             user.getEmail() == null ? activity.getString(R.string.nous_account) : user.getEmail()))
@@ -58,7 +59,7 @@ final class NousAccountDialog {
                     .show();
             return;
         }
-        AlertDialog dialog = new AlertDialog.Builder(activity)
+        AlertDialog dialog = new ControllerDialogBuilder(activity)
                 .setTitle(R.string.nous_account)
                 .setMessage(R.string.nous_account_optional)
                 .setNegativeButton(android.R.string.cancel, null)

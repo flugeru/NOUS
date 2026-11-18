@@ -116,6 +116,38 @@ public class ProfilesNavigationTest {
     }
 
     @Test
+    public void materialTextPreferenceKeepsInputValidationAndCancel() {
+        prepareEnvironment();
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), StreamSettings.class)
+                .putExtra(StreamSettings.SECTION, StreamSettings.Section.VIDEO_AUDIO.name());
+        try (ActivityController<StreamSettings> controller =
+                     Robolectric.buildActivity(StreamSettings.class, intent).setup()) {
+            var manager = controller.get().getSupportFragmentManager();
+            manager.executePendingTransactions();
+            var fragment = (androidx.preference.PreferenceFragmentCompat) manager.getFragments().get(0);
+            var preference = (androidx.preference.EditTextPreference) fragment.findPreference("edit_diy_bitrate");
+            assertNotNull(preference);
+            preference.setText("20");
+            String[] inputs = {"35", "0", "35"};
+            for (int i = 0; i < inputs.length; i++) {
+                fragment.onDisplayPreferenceDialog(preference);
+                manager.executePendingTransactions();
+                var popup = (androidx.fragment.app.DialogFragment) manager.findFragmentByTag("nous.preference.dialog");
+                assertNotNull(popup);
+                var dialog = (androidx.appcompat.app.AlertDialog) popup.requireDialog();
+                var input = (android.widget.EditText) dialog.findViewById(android.R.id.edit);
+                assertTrue(input instanceof com.google.android.material.textfield.TextInputEditText);
+                assertEquals("20", input.getText().toString());
+                input.setText(inputs[i]);
+                dialog.getButton(i == 0 ? dialog.BUTTON_NEGATIVE : dialog.BUTTON_POSITIVE).performClick();
+                Shadows.shadowOf(android.os.Looper.getMainLooper()).idle();
+                manager.executePendingTransactions();
+                assertEquals(i == 2 ? "35" : "20", preference.getText());
+            }
+        }
+    }
+
+    @Test
     public void gamesTabShowsSearchableDemoAppsWithoutAPairedComputer() {
         prepareEnvironment();
         try (ActivityController<PcView> controller = Robolectric.buildActivity(PcView.class).setup()) {

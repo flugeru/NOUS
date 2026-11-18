@@ -44,6 +44,12 @@ public class ConfirmDeleteKeyboardPreference extends DialogPreference {
         }
 
         @Override
+        @NonNull
+        public android.app.Dialog onCreateDialog(@Nullable Bundle state) {
+            return MaterialPreferenceDialogs.confirmation(this);
+        }
+
+        @Override
         public void onDialogClosed(boolean positiveResult) {
             if (positiveResult) {
                 String name= PreferenceManager.getDefaultSharedPreferences(getContext()).getString(OSC_PREFERENCE,OSC_PREFERENCE_VALUE);

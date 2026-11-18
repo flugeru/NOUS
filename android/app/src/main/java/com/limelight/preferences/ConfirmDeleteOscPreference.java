@@ -41,6 +41,12 @@ public class ConfirmDeleteOscPreference extends DialogPreference {
         }
 
         @Override
+        @NonNull
+        public android.app.Dialog onCreateDialog(@Nullable Bundle state) {
+            return MaterialPreferenceDialogs.confirmation(this);
+        }
+
+        @Override
         public void onDialogClosed(boolean positiveResult) {
             if (positiveResult) {
                 getContext().getSharedPreferences(OSC_PREFERENCE, Context.MODE_PRIVATE).edit().clear().apply();

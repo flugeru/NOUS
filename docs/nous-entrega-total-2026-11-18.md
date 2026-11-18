@@ -1,6 +1,6 @@
 # NOUS — pasta de entrega total — 18/11/2026
 
-Versão pública Windows e Android **1.0.0**. Entrega de teste, não release final. Inclui capas 16:9, Steam Big Picture em Launchers, atualização de cache Android e nova ordem de instalação do ViGEmBus. A tela azul apontou `ViGEmBus.sys`; o gatilho não foi identificado. Não teste o setup revisado no PC principal; use antes um Windows recuperável com snapshot. Leia `PENDENCIAS.md`.
+Versão pública Windows e Android **1.0.0**. Entrega de teste, não release final. Inclui janela NOUS Desktop no setup, Google opcional e diálogos Material 3 no Android, capas 16:9, Steam Big Picture em Launchers, cache de capas e nova ordem de instalação do ViGEmBus. A tela azul apontou `ViGEmBus.sys`; o gatilho não foi identificado. Não teste o setup revisado no PC principal; use antes um Windows recuperável com snapshot. Leia `PENDENCIAS.md`.
 
 ## Conteúdo
 
@@ -9,7 +9,7 @@ Versão pública Windows e Android **1.0.0**. Entrega de teste, não release fin
 | `setup.exe` | Instalador Inno Setup 6.7.4, com motor C#, MSI e ViGEmBus 1.22.0 incorporados. Fornecedor **Flűgel**. FileVersion técnica no manifesto. |
 | `NOUS.msi` | MSI usado dentro do setup. ProductVersion `1.0.390.0`; não é necessário manter ao lado do `setup.exe`. |
 | `nous-install-engine.exe` | Motor de instalação C# já incorporado ao setup, incluído para inspeção/recuperação. |
-| `NOUS-Android-arm64-debug.apk` | APK Android arm64, pacote `com.flugel.nous`, versão 1.0.0 (versionCode 59), build **debug**. Na pasta local do usuário, chama-se `nous beta.apk`. |
+| `NOUS-Android-arm64-debug.apk` | APK Android arm64, pacote `com.flugel.nous`, versão 1.0.0 (versionCode 60), build **debug**. Na pasta local do usuário, chama-se `nous beta.apk`. |
 | `AUDITORIA-E-EVIDENCIAS.md` | Contrato aprovado, decisões e evidências registradas. |
 | `PENDENCIAS.md` | O que falta, limites de validação e cuidados de retomada. |
 | `VERSAO-BUILD.json` | Branch, commit, versões e hashes. |
@@ -41,9 +41,9 @@ O APK é **debug**: não é assinado para distribuição pública, não cobre ou
 
 ## Evidências desta entrega
 
-- Android: **80 testes, zero falhas, zero erros**. APK 59 instalado no MuMu com `adb install -r`; primeira data de instalação e entrada do PC foram mantidas. A entrada ainda exige pareamento. Não houve limpeza de dados.
+- Android: **82 testes, zero falhas, zero erros**. APK 60 com Material 3 reinstalado no MuMu com `adb install -r`; manteve a primeira data de instalação, a entrada do PC e o login Google. O login não autoriza acesso ao PC. Pareamento local por QR e conexão pela mesma conta seguem pendentes.
 - Web: **138 unitários aprovados**; build/typecheck aprovado. Playwright no Edge: 222 aprovados, 16 ignorados, um caso falhou ao abrir contexto e passou isolado.
-- Host/setup: build técnico `1.0.390.843`; versão pública `1.0.0` verificada nos recursos Windows e no MSI. MSI manteve ProductVersion técnico `1.0.390.0`. As quatro capas padrão 640×360 vêm do host. APK 59 atualiza o cache por versão de capa, sem trocar IDs. Capas reais no MuMu pendentes.
+- Host/setup: build técnico `1.0.390.866`, com `NOUS Desktop.exe` e WebView2 no MSI. Versão pública `1.0.0`; MSI ProductVersion `1.0.390.0`. ZIP portátil inspecionado sem wrapper WebView2. As quatro capas padrão 640×360 vêm do host; cache Android atualizado por `ArtVersion`, sem trocar IDs. Capas reais no MuMu pendentes.
 - O host instalado permanece em `1.0.390.687`; respondeu em 47990, com biblioteca, histórico e SteamGridDB verificados. A instância isolada anterior, em 48189/48190, também validou login/CSRF e upload de capas.
 - SteamGridDB: busca HTTP 200, grid 920×430, hero 3840×1240, cache 0,389543 s → 0,005745 s, upload real de PNG (71233 bytes) e rejeição de host não permitido.
 - Diagnósticos: defaults 30 dias/512 MiB; export JSON com allowlist, `excluded`, `history.available`, `history.degraded` e `history.truncated`.

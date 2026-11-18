@@ -48,10 +48,6 @@ import androidx.preference.PreferenceGroup;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.limelight.ui.ControllerDialogBuilder;
-import com.google.android.material.shape.MaterialShapeDrawable;
-import com.google.android.material.shape.ShapeAppearanceModel;
-import android.content.res.ColorStateList;
-import androidx.core.content.ContextCompat;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -1181,14 +1177,16 @@ public class StreamSettings extends ControllerMenuActivity {
 
         @Override
         public void onDisplayPreferenceDialog(@NonNull Preference preference) {
-            if (preference instanceof ConfirmDeleteOscPreference) {
-                DialogFragment dialogFragment = ConfirmDeleteOscPreference.DialogFragmentCompat.newInstance(preference.getKey());
-                dialogFragment.setTargetFragment(this, 0);
-                dialogFragment.show(getFragmentManager(), null);
-            } else if (preference instanceof ConfirmDeleteKeyboardPreference) {
-                DialogFragment dialogFragment = ConfirmDeleteKeyboardPreference.DialogFragmentCompat.newInstance(preference.getKey());
-                dialogFragment.setTargetFragment(this, 0);
-                dialogFragment.show(getFragmentManager(), null);
+            if (preference instanceof EditTextPreference || preference instanceof ConfirmDeleteOscPreference
+                    || preference instanceof ConfirmDeleteKeyboardPreference) {
+                String tag = "nous.preference.dialog";
+                if (getParentFragmentManager().findFragmentByTag(tag) != null) return;
+                String key = preference.getKey();
+                DialogFragment fragment = preference instanceof EditTextPreference ? MaterialPreferenceDialogs.Text.forKey(key)
+                        : preference instanceof ConfirmDeleteOscPreference ? ConfirmDeleteOscPreference.DialogFragmentCompat.newInstance(key)
+                        : ConfirmDeleteKeyboardPreference.DialogFragmentCompat.newInstance(key);
+                fragment.setTargetFragment(this, 0);
+                fragment.show(getParentFragmentManager(), tag);
             } else if (preference instanceof ListPreference) {
                 ListPreference list = (ListPreference) preference;
                 CharSequence[] entries = list.getEntries();
@@ -1198,12 +1196,7 @@ public class StreamSettings extends ControllerMenuActivity {
                     return;
                 }
                 Context context = requireContext();
-                float corner = 28 * context.getResources().getDisplayMetrics().density;
-                MaterialShapeDrawable background = new MaterialShapeDrawable(
-                        ShapeAppearanceModel.builder().setAllCornerSizes(corner).build());
-                background.setFillColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.nous_surface)));
                 new ControllerDialogBuilder(context)
-                        .setBackground(background)
                         .setTitle(list.getDialogTitle())
                         .setNegativeButton(android.R.string.cancel, null)
                         .setSingleChoiceItems(entries, list.findIndexOfValue(list.getValue()), (dialog, which) -> {

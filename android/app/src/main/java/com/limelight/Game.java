@@ -40,6 +40,7 @@ import com.limelight.nvstream.jni.MoonBridge;
 import com.limelight.preferences.GlPreferences;
 import com.limelight.preferences.PreferenceConfiguration;
 import com.limelight.profiles.ProfilesManager;
+import com.limelight.ui.ControllerDialogBuilder;
 import com.limelight.ui.ExternalControllerView;
 import com.limelight.ui.GameGestures;
 import com.limelight.ui.StreamContainer;
@@ -55,7 +56,7 @@ import com.limelight.utils.UiHelper;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.app.PictureInPictureParams;
 import android.app.Service;
 import android.content.ClipData;
@@ -3655,7 +3656,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                                     MoonBridge.stringifyPortFlags(portFlags, "\n");
                         }
 
-                        new com.google.android.material.dialog.MaterialAlertDialogBuilder(Game.this)
+                        new ControllerDialogBuilder(Game.this)
                                 .setTitle(R.string.conn_terminated_title)
                                 .setMessage(message)
                                 .setCancelable(false)
@@ -4159,7 +4160,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         }
         final MouseModeOption[] optionArray = options.toArray(new MouseModeOption[0]);
 
-        new AlertDialog.Builder(context)
+        new ControllerDialogBuilder(context)
                 .setTitle(getString(R.string.game_menu_select_mouse_mode))
                 .setItems(labels, (dialog, which) -> {
                     dialog.dismiss();
@@ -4269,7 +4270,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         } else {
             context = this;
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder = new ControllerDialogBuilder(context);
         builder.setTitle(R.string.game_dialog_title_quit_confirm);
         builder.setMessage(R.string.game_dialog_message_quit_confirm);
 

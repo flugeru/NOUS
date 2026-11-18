@@ -100,8 +100,8 @@ final class ControllerDialogActions {
         }
         Context context = button.getContext();
         int accent = context.getColor(R.color.nous_secondary);
-        int base = context.getColor(confirm ? R.color.nous_secondary_container : R.color.nous_surface_high);
-        int text = context.getColor(R.color.nous_text);
+        int base = context.getColor(R.color.nous_surface_high);
+        int text = context.getColor(confirm ? R.color.nous_primary : R.color.nous_text);
         int muted = context.getColor(R.color.nous_text_muted);
         int onAccent = context.getColor(R.color.nous_on_secondary);
         float density = context.getResources().getDisplayMetrics().density;

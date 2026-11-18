@@ -81,6 +81,21 @@ public class ControllerNavigationTest {
     }
 
     @Test
+    public void dialogUsesNousMaterialSurfaceAndPrimaryAction() {
+        try (ActivityController<Host> controller = Robolectric.buildActivity(Host.class).setup()) {
+            Host host = controller.get();
+            ControllerDialogBuilder builder = new ControllerDialogBuilder(host);
+            assertTrue(builder.getBackground() instanceof com.google.android.material.shape.MaterialShapeDrawable);
+            AlertDialog dialog = builder.setMessage("Test")
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
+            assertEquals(host.getColor(R.color.nous_primary),
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).getCurrentTextColor());
+            dialog.dismiss();
+        }
+    }
+
+    @Test
     public void joystickUsesDominantAxisAndIgnoresSmallMovements() {
         int none = KeyEvent.KEYCODE_UNKNOWN;
         assertEquals(none, ControllerNavigation.joystickDirection(0.25f, -0.32f, none));
