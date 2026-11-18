@@ -276,6 +276,12 @@ target_include_directories(sunshine_test_nanors_headers SYSTEM INTERFACE
 
 enable_testing()
 
+if(SUNSHINE_TEST_ENABLE_COMPONENT)
+    add_executable(test_component_nous_account_token unit/test_nous_account_token.cpp)
+    target_link_libraries(test_component_nous_account_token PRIVATE nlohmann_json::nlohmann_json OpenSSL::Crypto)
+    add_test(NAME test_component_nous_account_token COMMAND test_component_nous_account_token)
+endif()
+
 # Exercise the Windows API-independent desktop/input ownership contract on the
 # native test host without requiring a physical Windows desktop.
 find_program(SUNSHINE_TEST_PYTHON_EXECUTABLE NAMES python3)
