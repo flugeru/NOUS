@@ -15,6 +15,10 @@ Entrega única integrada: host Windows com interface Web, backend, Android e set
 - MuMu: testes isolados usando segundo monitor, sem desligar/alterar monitor principal. Usuário autorizou instalação de APK, reinícios e testes de instalação/atualização preservando dados e configurações.
 - Progresso do instalador deve refletir operações reais, não temporizador fictício.
 
+## Entrega parcial solicitada em 18/11/2026
+
+Usuário reduziu escopo imediato para APK e instalador Inno compilados, com pendências salvas. Artefatos, hashes, limites de validação e roteiro de retomada: [`nous-entrega-parcial-2026-11-18.md`](nous-entrega-parcial-2026-11-18.md). Auditoria integral não concluída.
+
 ## Evidências iniciais (não equivalem a auditoria concluída)
 
 - `AppGridAdapter.java`: categorização limitada a `demoCategories`; aplicativos reais ignoram filtro de categoria.
