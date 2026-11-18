@@ -31,6 +31,10 @@ O host C++ serve a mesma Web UI por HTTPS (`src/confighttp.cpp`); `launch_ui()` 
 
 Referências: [WebView2 security](https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/security), [Tauri Windows installer](https://v2.tauri.app/distribute/windows-installer/), [Electron security](https://www.electronjs.org/docs/latest/tutorial/security), [RFC 8252](https://www.rfc-editor.org/rfc/rfc8252), [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700).
 
+## Diretório de PCs da conta
+
+Firestore `(default)` criado no projeto `nous-game-stream`, região `southamerica-east1` (São Paulo), plano Spark, edição Standard, sem backups pagos. Inicialização em modo produção: nenhuma leitura ou gravação por clientes. A política em `cloud/firestore.rules` é candidata, não publicada: escopo por UID Firebase e identidade estável do Google, nome e impressão digital pública do host, sem endereço público, token, chave privada ou concessão de pareamento. O diretório não autoriza conexão; o host precisa conferir o vínculo local e a chave da instalação.
+
 ## Etapas e aceitação
 
 1. Prévia da janela e teste local: HTTPS loopback, origem restrita, popups bloqueados, nada elevado e nenhuma mudança de serviço/driver. Validar render da interface existente, fechamento e mensagens de indisponibilidade. Prévia pode receber certificado público do host por argumento explícito; não adicionar confiança global.

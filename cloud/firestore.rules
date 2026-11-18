@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Discovery only. A directory entry is not an installation grant.
+    match /accounts/{uid}/google/{subject}/hosts/{host} {
+      function owner() {
+        return request.auth != null && request.auth.uid == uid &&
+          request.auth.token.firebase.sign_in_provider == 'google.com' &&
+          request.auth.token.firebase.identities['google.com'] == [subject];
+      }
+      function validHost() {
+        let d = request.resource.data;
+        return host.matches('^[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$') &&
+          d.keys().hasOnly(['name', 'pin']) && d.name is string &&
+          d.name.size() > 0 && d.name.size() <= 96 &&
+          d.pin is string && d.pin.matches('^[A-F0-9]{64}$');
+      }
+      allow get, list, delete: if owner();
+      allow create: if owner() && validHost();
+      allow update: if owner() && validHost() && request.resource.data.pin == resource.data.pin;
+    }
+  }
+}
