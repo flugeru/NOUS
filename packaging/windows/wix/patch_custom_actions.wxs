@@ -32,6 +32,7 @@
     <Property Id="SKIP_REMOVE_CONFLICTING_PRODUCTS" Value="0" Secure="yes"/>
     <!-- Standalone MSI still starts the host. setup.exe owns startup after external driver setup. -->
     <Property Id="NOUS_DEFER_HOST_START" Value="0" Secure="yes"/>
+    <Property Id="NOUS_PUBLIC_VERSION" Value="$(var.NousPublicVersion)"/>
     <Condition Message="Administrator privileges are required.">Privileged</Condition>
     <Property Id="VIGEMBUS_PRESENT">
       <RegistrySearch Id="Search_ViGEmBus_Service64" Root="HKLM" Key="SYSTEM\CurrentControlSet\Services\ViGEmBus" Name="DisplayName" Type="raw" Win64="yes"/>

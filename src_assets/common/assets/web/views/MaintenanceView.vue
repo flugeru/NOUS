@@ -455,6 +455,7 @@ const crashState = computed<{ label: string; tone: StatusTone }>(() => {
 });
 
 function versionLabel(): string {
+  if (metadata.value?.public_version) return metadata.value.public_version;
   if (!metadata.value?.version) return t('ui.maintenance.version.unknown');
   const prerelease = typeof metadata.value.prerelease === 'string' ? metadata.value.prerelease : '';
   return `${metadata.value.version}${prerelease ? `-${prerelease}` : ''}`;

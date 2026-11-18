@@ -525,7 +525,7 @@ onBeforeUnmount(() => {
       <footer class="overview-footer">
         <span
           >{{ t('ui.overview.installedVersion') }}
-          <strong>{{ system.metadata?.version || t('_common.unknown') }}</strong></span
+          <strong>{{ system.metadata?.public_version || system.metadata?.version || t('_common.unknown') }}</strong></span
         >
         <nav :aria-label="t('ui.overview.support')">
           <a

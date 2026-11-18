@@ -3306,6 +3306,9 @@ namespace confighttp {
     output_tree["architecture"] = "unknown";
 #endif
     output_tree["version"] = PROJECT_VERSION;
+#ifdef _WIN32
+    output_tree["public_version"] = NOUS_PUBLIC_VERSION;
+#endif
     output_tree["commit"] = PROJECT_VERSION_COMMIT;
 #ifdef PROJECT_VERSION_PRERELEASE
     output_tree["prerelease"] = PROJECT_VERSION_PRERELEASE;

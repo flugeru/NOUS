@@ -303,11 +303,8 @@
         <CreateFolder />
         <RegistryKey Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Vibepollo">
           <RegistryValue Name="DisplayName" Type="string" Value="NOUS" KeyPath="yes" />
-          <!-- Human-readable semver; ProductVersion is ordinal-encoded (e.g.
-               1.18.0-beta.2 -> 1.18.32.0) and would confuse users here. The
-               bootstrapper's ParseVersion maps this string back into the
-               encoded space for comparisons. -->
-          <RegistryValue Name="DisplayVersion" Type="string" Value="$(var.VibeshineSemVer)" />
+          <!-- This is the public ARP entry, separate from the hidden MSI's technical version. -->
+          <RegistryValue Name="DisplayVersion" Type="string" Value="$(var.NousPublicVersion)" />
           <RegistryValue Name="Publisher" Type="string" Value="Flűgel" />
           <RegistryValue Name="InstallLocation" Type="string" Value="[INSTALL_ROOT]" />
           <RegistryValue Name="DisplayIcon" Type="string" Value="[INSTALL_ROOT]NOUS.exe" />

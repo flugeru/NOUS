@@ -237,7 +237,7 @@ onBeforeUnmount(() => {
           <UiIcon :name="statusIcon" :size="18" />
           <span class="sidebar__label">
             <strong>{{ statusText }}</strong>
-            <small>{{ system.metadata?.version || t('ui.shell.host_status') }}</small>
+            <small>{{ system.metadata?.public_version || system.metadata?.version || t('ui.shell.host_status') }}</small>
           </span>
           <UiIcon name="refresh" :size="14" class="host-health__refresh sidebar__label" />
         </button>

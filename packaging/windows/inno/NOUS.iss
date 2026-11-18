@@ -12,6 +12,7 @@ AppVersion={#ProductVersion}
 AppPublisher=Flűgel
 VersionInfoCompany=Flűgel
 VersionInfoVersion={#FileVersion}
+VersionInfoProductVersion={#ProductVersion}
 DefaultDirName={autopf}\NOUS
 UsePreviousAppDir=no
 DisableProgramGroupPage=yes

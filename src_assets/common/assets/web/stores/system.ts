@@ -26,6 +26,7 @@ export interface HostMetadata extends ReadinessMetadata {
   architecture?: string;
   status?: boolean;
   version?: string;
+  public_version?: string;
   commit?: string;
   branch?: string;
   release_date?: string;

@@ -61,7 +61,7 @@ set(CPACK_WIX_CANDLE_EXTRA_FLAGS
   "-dVibepolloAppId=${WINDOWS_APP_USER_MODEL_ID}"
   # Human-readable version for ARP DisplayVersion; ProductVersion itself is
   # ordinal-encoded (see below) and no longer matches the semver.
-  "-dVibeshineSemVer=${PROJECT_VERSION_FULL}"
+  "-dNousPublicVersion=${NOUS_PUBLIC_VERSION}"
 )
 
 # Daily packages forbid unattended trust changes; production defaults stay zero.
@@ -151,7 +151,7 @@ set(CPACK_WIX_TEMPLATE "${CMAKE_SOURCE_DIR}/packaging/windows/wix/WIX.template.i
 #
 # Every release is now a real MSI major upgrade, handled inside a single
 # transaction.  The human-readable version is preserved for ARP via the
-# VibeshineSemVer candle define below; a third field >= 100 is also how the
+# NousPublicVersion candle define above; a third field >= 100 is also how the
 # bootstrapper detects a payload that supports transactional downgrades.
 set(_RAW_VER "${PROJECT_VERSION_NUMERIC}")
 set(_WIX_MAJ 0)

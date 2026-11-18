@@ -28,6 +28,8 @@ function Read-Property([string]$Name) {
     $view = $database.OpenView("SELECT ``Value`` FROM ``Property`` WHERE ``Property``='$Name'")
     try { $null=$view.Execute(); $row=$view.Fetch(); if ($row) { return $row.StringData(1) }; return '' } finally { $null=$view.Close() }
 }
+$publicVersion = Read-Property 'NOUS_PUBLIC_VERSION'
+if ($publicVersion -notmatch '^\d+\.\d+\.\d+$') { throw 'Invalid or missing NOUS_PUBLIC_VERSION in MSI' }
 $gamepad = Read-Property 'VhfGamepadDriverBundled'
 $usbip = Read-Property 'USBIP_TRANSPORT_BUNDLED'
 $thumbprint = Read-Property 'LOCAL_GAMEPAD_CERTIFICATE_THUMBPRINT'
@@ -36,7 +38,7 @@ if ($thumbprint -and $thumbprint -notmatch '^[0-9A-Fa-f]{40}$') { throw 'Invalid
 $args = @(
     '/Qp', "/DEnginePath=$engine", "/DArtifactDir=$directory",
     "/DOutputBase=$([IO.Path]::GetFileNameWithoutExtension($EnginePath))",
-    "/DProductVersion=$(Read-Property 'ProductVersion')", "/DFileVersion=$FileVersion",
+    "/DProductVersion=$publicVersion", "/DFileVersion=$FileVersion",
     "/DEngineSha256=$((Get-FileHash $engine -Algorithm SHA256).Hash)",
     "/DGamepadBundled=$(if($gamepad -eq '1'){'1'}else{'0'})",
     "/DUsbIpBundled=$(if($usbip -eq '1'){'1'}else{'0'})",

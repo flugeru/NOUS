@@ -24,7 +24,7 @@ BEGIN
             VALUE "FileVersion",      TOSTRING(PROJECT_VERSION)
             VALUE "InternalName",     TOSTRING(PROJECT_NAME)
             VALUE "ProductName",      TOSTRING(PROJECT_NAME)
-            VALUE "ProductVersion",   TOSTRING(PROJECT_VERSION)
+            VALUE "ProductVersion",   TOSTRING(NOUS_PUBLIC_VERSION)
             VALUE "LegalCopyright",   "https://raw.githubusercontent.com/ClassicOldSong/Apollo/master/LICENSE"
         END
     END
