@@ -3706,6 +3706,18 @@ namespace VibepolloInstaller {
       }
     }
 
+    internal static bool IsProtectedInstallRoot(string path) {
+      if (string.IsNullOrWhiteSpace(path)) return false; // Older ARP records can omit InstallLocation.
+      var dir = new DirectoryInfo(path);
+      var windows = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.Windows));
+      if (dir.Parent == null) return true;
+      for (; dir != null; dir = dir.Parent) {
+        if (string.Equals(dir.FullName.TrimEnd('\\'), windows.FullName.TrimEnd('\\'), StringComparison.OrdinalIgnoreCase)) return true;
+        if (dir.Exists && (dir.Attributes & FileAttributes.ReparsePoint) != 0) return true;
+      }
+      return false;
+    }
+
     public static InstallerResult RunInteractiveInstall(
       InstallerArguments arguments,
       string installDirectory,
@@ -3724,6 +3736,15 @@ namespace VibepolloInstaller {
           saveInstallLogs);
       }
 
+      // A different destination does not protect the previous root: migration runs first.
+      try {
+        if (IsProtectedInstallRoot(installDirectory) || GetInstalledProductRegistrations(true).Any(p => IsProtectedInstallRoot(p.InstallLocation))) {
+          return new InstallerResult { Operation = InstallerOperation.Install, ExitCode = 1610,
+            Message = "Instalação bloqueada: pasta de sistema, raiz de unidade ou ponto de redirecionamento no destino ou na instalação anterior. Migre os dados antes de atualizar." };
+        }
+      } catch (Exception) {
+        return new InstallerResult { Operation = InstallerOperation.Install, ExitCode = 1610, Message = "Não foi possível verificar as pastas da instalação." };
+      }
       InstallerProgress.Report("Preparando recuperação e extraindo MSI");
       SweepStaleInstallerRecoveryDirectories();
 

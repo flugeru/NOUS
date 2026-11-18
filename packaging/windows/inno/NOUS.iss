@@ -157,6 +157,8 @@ begin
   if not ExecAndLogOutput(ExpandConstant('{tmp}\nous-install-engine.exe'), Params, '', SW_HIDE, ewWaitUntilTerminated, ExitCode, @EngineOutput) then
     RaiseException('Não foi possível iniciar instalação. Código: ' + IntToStr(ExitCode));
   Log('Motor de instalação retornou: ' + IntToStr(ExitCode));
+  if ExitCode = 1610 then
+    RaiseException('Instalação bloqueada. Verifique se a instalação anterior ou o destino usa uma pasta do Windows, a raiz de uma unidade ou uma pasta redirecionada. Não desinstale nem exclua os dados para contornar o bloqueio.');
   if ExitCode = 3017 then
     RaiseException('Instalação adiada: reinicie o Windows e execute este instalador novamente.');
   if (ExitCode <> 0) and (ExitCode <> 3010) then

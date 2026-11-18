@@ -62,6 +62,9 @@ internal static class InstallSuccessRegression {
   [STAThread]
   static int Main(string[] args) {
     var directory = args[0];
+    var windows = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
+    Check(InstallerRunner.IsProtectedInstallRoot(windows) && InstallerRunner.IsProtectedInstallRoot(Path.Combine(windows, @"System32\drivers")) && InstallerRunner.IsProtectedInstallRoot(Path.GetPathRoot(windows)), "Reject OS and drive roots before touching installed products");
+    Check(!InstallerRunner.IsProtectedInstallRoot(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "NOUS")), "Accept dedicated local program folder");
     var shouldRun = typeof(InstallerRunner).GetMethod("ShouldRunBundledViGEmBus", PrivateStatic);
     Func<Version, uint, bool, bool, bool> runs = (version, state, present, registered) =>
       (bool)shouldRun.Invoke(null, new object[] { version, state, present, registered });
