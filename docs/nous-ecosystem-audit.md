@@ -16,6 +16,10 @@ Entrega única integrada: host Windows com interface Web, backend, Android e set
 - Versão pública **1.0.0** no Windows (host/Web, setup e identificação do produto) e no Android. Distinguir versão pública de `FileVersion`/`ProductVersion` técnicos, `versionCode` e outros identificadores de build: não reduzir ordenação de upgrades nem apagar configurações ou pareamentos.
 - Progresso do instalador deve refletir operações reais, não temporizador fictício.
 
+## Escopo adicional — conta NOUS, dispositivos e janela Windows
+
+Contrato em [Login, dispositivos e desktop](nous-conta-dispositivos-desktop.md). Janela Windows própria reutiliza a interface Web, não a substitui por uma UI nativa. Demais requisitos e pendências continuam válidos.
+
 ## Entrega total solicitada em 18/11/2026
 
 Usuário reduziu o escopo imediato para binários compilados e pendências registradas, depois pediu a pasta de entrega total. Pasta local: `build-local/ENTREGA-TOTAL-2026-11-18`; pacote `build-local/NOUS-ENTREGA-TOTAL-2026-11-18.zip` (hash externo em `NOUS-ENTREGA-TOTAL-2026-11-18.zip.sha256`; hashes dos arquivos internos em `SHA256SUMS.txt`). Contém `setup.exe`, `NOUS.msi`, motor, APK arm64 debug, auditoria, pendências, versão/hashes e LEIA-ME. Instruções: [`nous-entrega-total-2026-11-18.md`](nous-entrega-total-2026-11-18.md). Pendências detalhadas: [`nous-entrega-parcial-2026-11-18.md`](nous-entrega-parcial-2026-11-18.md). **Auditoria integral não concluída; não é release final.**

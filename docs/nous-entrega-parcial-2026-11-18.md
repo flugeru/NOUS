@@ -1,5 +1,9 @@
 # NOUS — entrega parcial e pendências — 18/11/2026
 
+## Escopo adicional — conta NOUS e desktop
+
+[Login, dispositivos e desktop](nous-conta-dispositivos-desktop.md) acrescenta Google/Discord opcionais, vínculo de dispositivos e janela Windows que reutiliza a Web UI. A prévia da janela passou em teste local, mas não faz parte do setup já empacotado. Nenhuma pendência anterior foi removida.
+
 ## Revisão 1.0.0 — validação pendente
 
 - Windows e Android exibem `1.0.0`; `FileVersion`, MSI `ProductVersion` e Android `versionCode` são técnicos. APK arm64 debug 59: 80 testes aprovados, zero falhas/erros. Atualizado no MuMu com `adb install -r`; manteve a data da primeira instalação. O cache agora considera `ArtVersion` sem mudar o ID da entrada. Ainda falta validar as quatro capas e a troca de capa personalizada de ponta a ponta com o host atualizado.
