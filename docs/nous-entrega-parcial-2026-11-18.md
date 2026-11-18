@@ -2,85 +2,125 @@
 
 ## Estado desta entrega
 
-Escopo reduzido pelo usuário para entregar instalador Inno e APK compilados, registrando trabalho restante. **Não representa auditoria concluída nem versão final integrada.**
+Esta rodada concluiu o que não exige UAC: integração e validação do proxy SteamGridDB, exportação de diagnósticos, sugestões de apps frequentes, modos de preferência por dispositivo, testes web, build do host e recompilação do MSI/setup Inno. **Não representa auditoria integrada concluída nem release final.** Instalação/upgrade/rollback reais, drivers, streaming e hardware físico continuam pendentes.
 
-Branch: `feat/nous-ecosystem-audit`. Código Android entregue no commit `dbb58fb34`; instalador/CI no commit `c1e564f88`. Este documento será commitado separadamente. Contrato completo e evidências anteriores: `docs/nous-ecosystem-audit.md`.
+Branch: `feat/nous-ecosystem-audit`. Contrato completo e evidências anteriores: `docs/nous-ecosystem-audit.md`. Instruções da pasta de entrega: `docs/nous-entrega-total-2026-11-18.md`.
 
-## Artefatos entregues
+## Artefatos desta rodada
 
-Pasta local: `C:\Users\Flugel\Desktop\NOUS-desktop-input-fix\build-local\entrega-2026-11-18`.
+Pasta local: `C:\Users\Flugel\Desktop\NOUS-desktop-input-fix\build-local\ENTREGA-TOTAL-2026-11-18`.
 
 | Arquivo | Bytes | SHA-256 |
 | --- | ---: | --- |
-| `setup.exe` | 80091917 | `1465AE7C027D204C5DD653FD185F4829C1C9A39AEEC4F2CE4A3D6B1638EB00A7` |
+| `setup.exe` | 80144336 | `D2879A201FE35E0DAE88A7DA5172B77D748D0066F499F63127A32AF3DA7902C0` |
+| `NOUS.msi` | 74492782 | `6AA258332E41EAEF857CAA4B5BA9FA7A055AA5AD60074D81B3C8A7A659838D69` |
+| `nous-install-engine.exe` | 81124352 | `BA9BDB623C8837C382519C9687F771B44B5CE2C87CFE7A2FE289A21D83C44A38` |
 | `NOUS-Android-arm64-debug.apk` | 63188991 | `9413D9E9BBDD90D6F8FCF6B6A53A87EDFCA882C2FF56C0CB7614372FD50D1264` |
+| `NOUS.exe` (build interno) | 85041133 | `E3E36F11C43CF3FCED426A4EE88D0CDF1654E98C09CC8F85AB6331A8E05CA4B6` |
 
-- Setup recompilado com Inno Setup 6.7.4, fornecedor **Flűgel**, versão numérica do bootstrapper `1.0.390.579`. Contém motor C# e MSI incorporado; não exige MSI ao lado. Empacotamento verificou identidade SHA-256 entre MSI selecionado e recurso `Payload.msi`.
-- MSI utilizado: `build-local/cpack_artifacts/NOUS.msi`, SHA-256 `DE3148FCDEAF5F6A133FBA162AB55A5AC5C398AE9BB9EBED690A881571E8AF3C`. MSI foi produzido antes do commit de progresso Inno; contém build host anterior às alterações exclusivamente Android.
-- Setup local **sem assinatura Authenticode**; não equivale a release assinada. Não desative proteções do Windows para executá-lo. Drivers beta podem exigir consentimento explícito para confiança no certificado incluído; recusá-lo deve continuar possível.
-- APK **debug**, variante `nonRoot_gameDebug`, ABI `arm64-v8a`, pacote `com.flugel.nous`, versão `1.0.0`, versionCode `58`, Android mínimo 7.0/API 24. Não é APK release nem cobre dispositivos de outras ABIs.
-- Artefatos ficam fora do Git; commits/push sincronizam fontes e documentação, não estes binários. Cópia deste documento acompanha pasta de entrega.
+- Host/engine: FileVersion `1.0.390.687`. MSI ProductVersion `1.0.390.0`; o setup usa a versão do MSI para `AppVersion` e a FileVersion para `VersionInfoVersion`.
+- Setup Inno Setup 6.7.4, fornecedor **Flűgel**, motor C# e MSI incorporado como `Payload.msi`. O empacotamento verifica o SHA-256 do MSI incorporado contra o MSI selecionado antes de compilar o Inno.
+- `setup.exe` e `NOUS.msi` locais estão **NotSigned** (Authenticode ausente). Não desative proteções do Windows para executá-los.
+- O APK não foi recompilado nesta rodada; permanece o build debug arm64 anterior (`com.flugel.nous`, versionCode 58).
+- Artefatos ficam fora do Git; a fonte e a documentação estão na branch.
 
-## Validação realizada
+## Concluído e validado nesta rodada
 
-- Último build Android: `BUILD SUCCESSFUL`; relatórios XML somam **79 testes, zero falhas, zero erros, zero ignorados**.
-- APK mais recente instalado no MuMu `127.0.0.1:16384` com `adb install -r`, sem limpar dados. PCs e seleção R3 preservados após atualização. Ajustes e Controles abriram; aviso sobre reserva do botão/interceptação pelo Android apareceu.
-- Três testes novos exercitam cinco atalhos, repetição, release, preferência inválida, desativação e entrada USB simulada. JNI e serviço SHIELD são limites simulados; isso não comprova controle físico.
-- Web: 126 testes passaram na validação anterior; build aprovado. Categoria Launchers de Steam Big Picture persistiu após recarga na interface real usada anteriormente.
-- Host: harness HTTP com 11 casos passou, incluindo UUIDs nulos/não-string e rejeição de categorias inválidas. Host atualizado compilou; execução integrada desse binário ainda pendente.
-- Instalador: recompilação Inno aprovada; verificações do MSI incorporado aprovadas. Regressões anteriores: 25 migração/metadados, 24 despacho de desinstalação, 7 diretório e 387 rollback. Inventário, MSI e processos externos são simulados nesses testes; nenhuma instalação real foi feita por eles.
-- Progresso Inno usa etapas reais do motor e nomes de ações MSI; barra indeterminada até resultado verificado, sem percentual global inventado. Captura e apresentação visual durante instalação real **não foram validadas**.
+### Capas horizontais SteamGridDB
+
+- Proxy autenticado no backend: `GET /api/covers/steamgrid/search` e `POST /api/covers/steamgrid/assets`.
+- O navegador não chama o SteamGridDB diretamente; o backend usa somente HTTPS, limita a resposta a 2 MiB, valida termo (1–100 caracteres), `game_id`, `asset_type` (`grid`/`hero`), página (0–50) e limite (1–30).
+- Cache em memória com TTL de 15 minutos e limite de 128 entradas. O pool de rotas é separado do pool de lançamento/streaming para que uma falha do provedor não bloqueie `/api/apps/launch`.
+- Respostas são sanitizadas: somente campos de artwork necessários, URLs apenas de `https://cdn2.steamgriddb.com/`, sem repassar payload bruto do provedor. Erros retornam 502 com mensagem genérica.
+- Upload de capa passou a aceitar `images.igdb.com` e `cdn2.steamgriddb.com`, somente HTTPS; outros hosts retornam 400. O arquivo continua sendo convertido e gravado localmente.
+- Apresentação 16:9 é feita por recorte (`object-fit: cover`) em frame 16:9. Grids observados são 920×430 e heroes 3840×1240; **não são arquivos 16:9 nativos** e a interface não os declara como tal.
+- Fallback: GameDB (IGDB) continua disponível em paralelo; se ambos falharem, o modal mostra erro e o upload local continua possível.
+
+Validação real em instância isolada (`C:\Users\Flugel\AppData\Local\Temp\opencode\nous-host-test`, portas 48189/48190, sem tocar na instância instalada em 47990):
+
+- Busca `portal`: HTTP 200 com 10 jogos; resposta inclui `Portal` (id 9022).
+- Assets grid: HTTP 200, 3 itens, 920×430, URLs oficiais do CDN.
+- Segunda chamada idêntica: 0,389543 s → 0,005745 s (cache).
+- Assets hero: HTTP 200, 3840×1240.
+- Sem autenticação: HTTP 401. `asset_type` inválido: HTTP 400. `term` vazio: HTTP 400. `game_id` acima de `int64`: HTTP 400 sem derrubar o processo.
+- Fluxo de navegador: `/api/csrf-token` → `/api/auth/login` → busca/assets/upload com cookie de sessão e `X-CSRF-Token`; todos HTTP 200.
+- Upload real de capa SGDB: HTTP 200 e PNG de 71233 bytes gravado em `config/covers/`.
+- Upload de `https://example.com/a.png`: HTTP 400.
+
+### Diagnósticos e histórico
+
+- Defaults de retenção: 30 dias e 512 MiB (`session_history_ttl_days`, `session_history_db_size_limit_mb`) no host e nas duas interfaces web.
+- Exportação manual em JSON com allowlist explícita de campos de sessão. Credenciais, tokens, headers, IPs, payloads brutos e identidades de rede não entram.
+- O export registra `excluded` (garantias fixas), `history.available`, `history.degraded`, `history.truncated` e a contagem real; ausência ou degradação não é mascarada.
+- Paginação limitada a 5000 sessões por exportação; ao atingir o teto, o arquivo marca `truncated: true` e a interface avisa.
+- A tela mostra alertas distintos para histórico indisponível e degradado, sem inventar sessões.
+
+### Apps frequentes
+
+- Ranking por sessões concluídas nos últimos 30 dias, com desempate por uso mais recente e nome.
+- A seção “Frequentes nas suas sessões” apenas filtra aplicativos que já existem na biblioteca; nada é adicionado automaticamente.
+- Falha ou ausência de histórico não exibe erro nem inventa sugestões.
+
+### Preferências por dispositivo
+
+- Seletor `synced` / `mixed` / `device` por cliente pareado.
+- `synced`: remove overrides locais e segue o host.
+- `device`: fixa os valores atuais de todas as opções compatíveis.
+- `mixed`: estado com overrides parciais; o usuário edita as opções abaixo. As opções de transmissão/controle permanecem locais ao cliente e não são copiadas indiscriminadamente.
+
+### Testes e build
+
+- Web: **138 testes unitários, zero falhas** (`npm.cmd run test:unit`).
+- Web build/typecheck: aprovado (`npm.cmd run build`).
+- Host: `cmake --build build-local --target sunshine -j 8` aprovado; `NOUS.exe` 85041133 bytes.
+- MSI: `cmake --build build-local --target package_msi -j 8` aprovado.
+- Setup: `build_bootstrapper.ps1 -BuildDir build-local -MsiPath build-local\cpack_artifacts\NOUS.msi -OutputName setup.exe -DisableSignPath` aprovado.
+- Instância isolada: `/api/apps` e `/api/history/sessions` responderam; `history_status.available=true`, `degraded=false`; `/api/auth/status` confirmou sessão autenticada.
 
 ## Não concluído
 
-### Instalador e host em execução
+### Instalador, host e drivers (exigem UAC)
 
-- Instalação e upgrade reais do setup entregue; preservação efetiva de configurações, credenciais, pareamentos e biblioteca.
-- Verificação visual da mesma janela Inno, captura de stdout do motor `winexe`, progresso durante MSI/drivers e mensagens de conclusão/avisos.
-- Recuperação/rollback reais diante de falha, reinício necessário e drivers recusados ou bloqueados.
-- Execução do host atualizado; validação ponta a ponta `/api/apps`, `/applist`, persistência, filtros de execução e rejeição sem gravação.
-- GitHub Actions: execução e resultados ainda não verificados nesta entrega.
-- Assinatura e empacotamento de release final; hashes novos obrigatórios após qualquer rebuild.
+- Instalação, upgrade e rollback reais do `setup.exe`; preservação efetiva de configurações, credenciais, pareamentos e biblioteca.
+- Verificação visual da janela Inno, progresso real durante MSI/drivers, mensagens de conclusão e comportamento em reinício.
+- Drivers de tela virtual e controle virtual: confiança de certificado, instalação, desinstalação e recuperação.
+- Teste do host recém-instalado em `47990` e dos fluxos que dependem de serviço/elevação.
 
-### Biblioteca e capas
+### Android, sessão e hardware
 
-- Integração SteamGridDB público sem chave, com limites, cache, tratamento de indisponibilidade/bloqueio e alternativa manual/local.
-- Pesquisa HTTP pública funcionou: GET `/api/public/search/autocomplete` com `term` duplamente codificado; POST `/api/public/search/assets` com `game_id`, `asset_type`, filtros, página e limite. **Não integrado ao produto.**
-- Grids observados: 920×430; heroes: 3840×1240. Não são 16:9 nativos. Resolver apresentação/conversão sem deformar nem chamar isso de imagem 16:9 original. Endpoint público sem CORS para host Web exige integração pelo backend.
-- Sugestões de apps frequentes e detecção de execução externa com decisão explícita do usuário, sem inclusão automática.
-- Auditoria completa da seleção manual de pasta/executável, categorias Desktop/Jogos/Launchers e filtros em ambas as interfaces.
+- Transmissão real no MuMu usando somente segundo monitor isolado.
+- Alça lateral durante sessão, recolhimento por inatividade, menu rápido e navegação por controle.
+- Xbox/DualSense físicos, USB/Bluetooth, controles divididos e múltiplos controles.
+- Performance, latência, estabilidade e Warp em sessão real. MuMu não comprova hardware POCO nem desempenho.
 
-### Android, sessão e identidade visual
+### Produto e auditoria
 
-- Transmissão real no MuMu usando somente segundo monitor isolado, sem alterar monitor principal.
-- Alça lateral durante sessão, recolhimento por inatividade, menu rápido e navegação por controle durante transmissão.
-- Xbox/DualSense físicos, USB/Bluetooth, controles divididos e múltiplos controles reais; Android pode interceptar Guide/PS/Xbox antes do aplicativo.
-- Performance, latência, estabilidade e Warp em sessão real; MuMu não comprova hardware POCO ou controle físico.
 - Auditoria integral de todas as páginas Web e opções Android: backend real, persistência, permissões, acessibilidade, retrato/paisagem e estados vazios/erros.
-- Padronização visual restante preservando fundo escuro, ações rosa e navegação ciano.
-
-### Diagnósticos e preferências
-
-- Diagnósticos reais host/cliente integrados por sessão; ausência explícita de dados, histórico local de 30 dias, limite de tamanho, exclusão e exportação manual sem credenciais.
-- Preferências por dispositivo com modos local, sincronizado e misto, sem copiar transmissão/controles indiscriminadamente.
+- Revisão visual completa preservando fundo escuro, ações rosa e navegação ciano.
+- GitHub Actions não executado/verificado nesta entrega; `gh` não está instalado neste ambiente.
+- Assinatura Authenticode do setup/MSI e empacotamento de release final.
+- O browser MCP permanece desconectado; não repetir chamadas até reconexão/decisão do usuário.
 
 ## Cuidados para retomada
 
-1. Preserve instalação histórica: registro `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Vibepollo` foi observado com `InstallLocation=C:\Windows\` e `DisplayVersion=1.0.3-local`. Configurações/credenciais históricas em `C:\Windows\config`. Faça backup protegido antes de instalação real; não exponha conteúdo em logs/documentos públicos.
-2. Não apague chaves históricas `SOFTWARE\Nonary\Vibepollo\Installer\DriverSelections` nem identidade ARP `Vibepollo` por causa da mudança de fornecedor.
-3. Shell atual não elevado; instalação exige UAC. Browser MCP foi desconectado quando barra de depuração foi fechada; não repetir chamadas até reconexão/decisão do usuário. Nenhum controle físico/POCO conectado durante validações registradas.
-4. Retome contrato em `docs/nous-ecosystem-audit.md` e respostas em `C:\Users\Flugel\Downloads\NOUS_respostas_revisadas.md`. Trabalhe na branch existente, preserve alterações e mantenha commits/push.
+1. Preserve a instalação histórica: registro `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Vibepollo` foi observado com `InstallLocation=C:\Windows\` e `DisplayVersion=1.0.3-local`. Configurações/credenciais históricas em `C:\Windows\config`. Faça backup protegido antes de instalação real; não exponha conteúdo em logs/documentos públicos.
+2. Não apague chaves históricas `SOFTWARE\Nonary\Vibepollo\Installer\DriverSelections` nem a identidade ARP `Vibepollo` por causa da mudança de fornecedor.
+3. A instância instalada em `47990` (PID observado 9400) não foi interrompida. Testes isolados usaram `C:\Users\Flugel\AppData\Local\Temp\opencode\nous-host-test` e portas 48189/48190.
+4. Retome o contrato em `docs/nous-ecosystem-audit.md` e as respostas em `C:\Users\Flugel\Downloads\NOUS_respostas_revisadas.md`. Trabalhe na branch existente, preserve alterações e mantenha commits/push.
 
 ## Comandos já utilizados
 
 ```powershell
-# Build Android + testes (script local configura JDK/SDK)
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\Users\Flugel\AppData\Local\Temp\opencode\nous-android\build-android.ps1
-# Executar acima com diretório de trabalho: <repo>\android
+# Testes e build web
+cd src_assets\common\assets\web
+npm.cmd run test:unit
+npm.cmd run build
 
-# Recompilar setup com MSI selecionado
+# Host, MSI e setup
+cmake --build build-local --target sunshine -j 8
+cmake --build build-local --target package_msi -j 8
 $env:INNO_SETUP_COMPILER='C:\Users\Flugel\AppData\Local\Temp\opencode\inno6\ISCC.exe'
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File packaging\windows\bootstrapper\build_bootstrapper.ps1 -BuildDir build-local -MsiPath build-local\cpack_artifacts\NOUS.msi -OutputName setup.exe -DisableSignPath
+powershell -NoProfile -ExecutionPolicy Bypass -File packaging\windows\bootstrapper\build_bootstrapper.ps1 -BuildDir build-local -MsiPath build-local\cpack_artifacts\NOUS.msi -OutputName setup.exe -DisableSignPath
 ```
 
-Scripts temporários e ferramentas locais podem precisar reinstalação em outro computador. Inno CI foi configurado para 6.7.4, mas workflow ainda precisa validação real.
+Scripts temporários e ferramentas locais podem precisar reinstalação em outro computador. O workflow Inno foi configurado para 6.7.4, mas ainda precisa validação real em CI.

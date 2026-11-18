@@ -5361,11 +5361,11 @@ Enables persistent session-history recording.
 
 ### session_history_ttl_days
 
-Sets the number of days to retain session-history records. Set `0` to retain records until another configured limit removes them.
+Sets the number of days to retain session-history records. The default is `30`. Set `0` to retain records until another configured limit removes them.
 
 ### session_history_db_size_limit_mb
 
-Sets the maximum on-disk size, in MiB, of the session-history database before older records are pruned.
+Sets the maximum on-disk size, in MiB, of the session-history database before older records are pruned. The default is `512`. Set `0` to disable size-based pruning.
 
 ### vulkan_hdr_layer
 
