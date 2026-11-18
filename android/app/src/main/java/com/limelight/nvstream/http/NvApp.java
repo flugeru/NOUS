@@ -7,6 +7,15 @@ public class NvApp {
     private String appName = "";
     private String appUUID = "";
     private String libraryCategory = "games";
+    private String artVersion = "";
+
+    public String getArtVersion() {
+        return artVersion;
+    }
+
+    public void setArtVersion(String version) {
+        artVersion = version != null && version.matches("[A-Za-z0-9_-]{1,80}") ? version : "";
+    }
 
     public String getLibraryCategory() {
         return libraryCategory;

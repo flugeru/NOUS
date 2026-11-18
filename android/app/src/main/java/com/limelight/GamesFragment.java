@@ -879,6 +879,10 @@ public class GamesFragment extends android.app.Fragment implements AdapterFragme
                     for (AppView.AppObject existingApp : unfilteredApps) {
                         if (existingApp.app.getAppId() == app.getAppId()) {
                             // Found the app; update its properties
+                            if (!existingApp.app.getArtVersion().equals(app.getArtVersion())) {
+                                existingApp.app.setArtVersion(app.getArtVersion());
+                                updated = true;
+                            }
                             if (!existingApp.app.getLibraryCategory().equals(app.getLibraryCategory())) {
                                 existingApp.app.setLibraryCategory(app.getLibraryCategory());
                                 updated = true;

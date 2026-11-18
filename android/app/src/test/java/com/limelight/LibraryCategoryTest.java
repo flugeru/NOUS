@@ -44,6 +44,30 @@ public class LibraryCategoryTest {
     }
 
     @Test
+    public void artworkRefreshKeepsAppIdAndSeparatesOldCache() throws Exception {
+        var apps = NvHTTP.getAppListByReader(new StringReader(
+                "<root status_code=\"200\"><App><AppTitle>Remote Input</AppTitle><ID>123</ID>"
+                + "<ArtVersion>cover-2</ArtVersion></App><App><ID>124</ID></App></root>"));
+        var host = new com.limelight.nvstream.http.ComputerDetails();
+        host.uuid = "host";
+        var app = apps.get(0);
+        var old = new com.limelight.grid.assets.CachedAppAssetLoader.LoaderTuple(host, app);
+        assertEquals("123-cover-2.png", old.cacheFileName);
+        var disk = new com.limelight.grid.assets.DiskAssetLoader(org.robolectric.RuntimeEnvironment.getApplication());
+        disk.populateCacheWithStream(old, new java.io.ByteArrayInputStream(new byte[] {1}));
+        assertTrue(disk.checkCacheExists(old));
+        app.setArtVersion("cover-3");
+        var refreshed = new com.limelight.grid.assets.CachedAppAssetLoader.LoaderTuple(host, app);
+        assertNotEquals(old, refreshed);
+        assertFalse(disk.checkCacheExists(refreshed));
+        assertTrue(disk.checkCacheExists(old));
+        assertEquals(123, app.getAppId());
+        assertEquals("", apps.get(1).getArtVersion());
+        app.setArtVersion("../escape");
+        assertEquals("123.png", new com.limelight.grid.assets.CachedAppAssetLoader.LoaderTuple(host, app).cacheFileName);
+    }
+
+    @Test
     public void optionalCategoriesKeepLegacyHostsCompatible() throws Exception {
         var apps = NvHTTP.getAppListByReader(new StringReader(
                 "<root status_code=\"200\"><App><AppTitle>Discord</AppTitle><ID>1</ID>"

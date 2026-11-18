@@ -11,6 +11,7 @@ import com.limelight.LimeLog;
 import com.limelight.utils.CacheHelper;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,7 +34,7 @@ public class DiskAssetLoader {
     }
 
     public boolean checkCacheExists(CachedAppAssetLoader.LoaderTuple tuple) {
-        return CacheHelper.cacheFileExists(cacheDir, "boxart", tuple.computer.uuid, tuple.app.getAppId() + ".png");
+        return CacheHelper.cacheFileExists(cacheDir, "boxart", tuple.computer.uuid, tuple.cacheFileName);
     }
 
     // https://developer.android.com/topic/performance/graphics/load-bitmap.html
@@ -59,7 +60,7 @@ public class DiskAssetLoader {
     }
 
     public ScaledBitmap loadBitmapFromCache(CachedAppAssetLoader.LoaderTuple tuple, int sampleSize) {
-        File file = getFile(tuple.computer.uuid, tuple.app.getAppId());
+        File file = CacheHelper.openPath(false, cacheDir, "boxart", tuple.computer.uuid, tuple.cacheFileName);
 
         // Don't bother with anything if it doesn't exist
         if (!file.exists()) {
@@ -158,19 +159,20 @@ public class DiskAssetLoader {
     }
 
     public void populateCacheWithStream(CachedAppAssetLoader.LoaderTuple tuple, InputStream input) {
-        boolean success = false;
-        try (final OutputStream out = CacheHelper.openCacheFileForOutput(
-                cacheDir, "boxart", tuple.computer.uuid, tuple.app.getAppId() + ".png")
-        ) {
-            CacheHelper.writeInputStreamToOutputStream(input, out, MAX_ASSET_SIZE);
-            success = true;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (!success) {
-                LimeLog.warning("Unable to populate cache with tuple: "+tuple);
-                CacheHelper.deleteCacheFile(cacheDir, "boxart", tuple.computer.uuid, tuple.app.getAppId() + ".png");
+        File target = CacheHelper.openPath(true, cacheDir, "boxart", tuple.computer.uuid, tuple.cacheFileName);
+        File temp = null;
+        try {
+            temp = File.createTempFile("cover-", ".tmp", target.getParentFile());
+            try (OutputStream out = new FileOutputStream(temp)) {
+                CacheHelper.writeInputStreamToOutputStream(input, out, MAX_ASSET_SIZE);
             }
+            if (temp.length() == 0 || !temp.renameTo(target)) {
+                throw new IOException("Could not publish cover cache entry");
+            }
+        } catch (IOException e) {
+            LimeLog.warning("Unable to populate cache with tuple: " + tuple + ": " + e.getMessage());
+        } finally {
+            if (temp != null) temp.delete();
         }
     }
 }

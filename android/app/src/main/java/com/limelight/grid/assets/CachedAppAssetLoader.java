@@ -361,10 +361,18 @@ public class CachedAppAssetLoader {
     public static class LoaderTuple {
         public final ComputerDetails computer;
         public final NvApp app;
+        public final String cacheFileName;
 
         public LoaderTuple(ComputerDetails computer, NvApp app) {
             this.computer = computer;
             this.app = app;
+            String version = app.getArtVersion(); // Snapshot before list refresh can mutate the app.
+            cacheFileName = app.getAppId() + (version.isEmpty() ? "" : "-" + version) + ".png";
+        }
+
+        @Override
+        public int hashCode() {
+            return 31 * computer.uuid.hashCode() + cacheFileName.hashCode();
         }
 
         @Override
@@ -374,7 +382,7 @@ public class CachedAppAssetLoader {
             }
 
             LoaderTuple other = (LoaderTuple) o;
-            return computer.uuid.equals(other.computer.uuid) && app.getAppId() == other.app.getAppId();
+            return computer.uuid.equals(other.computer.uuid) && cacheFileName.equals(other.cacheFileName);
         }
 
         @Override

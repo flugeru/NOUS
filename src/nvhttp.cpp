@@ -3050,6 +3050,11 @@ namespace nvhttp {
       return result;
     }
 
+    std::string remote_control_artwork_path(remote_session::control_e control) {
+      const auto artwork = remote_session::synthetic_artwork_filename(control);
+      return artwork ? "remote-session/" + std::string {*artwork} : std::string {};
+    }
+
     static std::shared_ptr<rtsp_stream::launch_session_t> make_launch_session_from_snapshot(
       bool host_audio,
       bool input_only,
@@ -4755,12 +4760,16 @@ namespace nvhttp {
           if (entry.synthetic && remote_session::identify(entry.id, entry.uuid) == remote_session::control_e::running_game && current_app) {
             cached_running_game_tiles.remember(identity.uuid, entry.id, game.app);
           }
-          app_node.put(
-            "ArtVersion",
-            remote_session::identify(entry.id, entry.uuid) == remote_session::control_e::running_game && current_app ? current_app->art_version :
-            entry.synthetic ? (configured == visible_apps.end() ? "remote-session-v6" : (*configured)->art_version) :
-                              (configured == visible_apps.end() ? "" : (*configured)->art_version)
-          );
+          const auto control = remote_session::identify(entry.id, entry.uuid);
+          if (control == remote_session::control_e::running_game && current_app) {
+            app_node.put("ArtVersion", proc::configured_app_image_version(*current_app));
+          } else if (configured != visible_apps.end()) {
+            app_node.put("ArtVersion", proc::configured_app_image_version(**configured));
+          } else if (auto artwork = remote_control_artwork_path(control); !artwork.empty()) {
+            proc::ctx_t fallback {};
+            fallback.image_path = std::move(artwork);
+            app_node.put("ArtVersion", proc::configured_app_image_version(fallback));
+          }
 
           apps.push_back(std::make_pair("App", std::move(app_node)));
         }
@@ -6845,8 +6854,15 @@ launch_session->exact_target_hold.reset();
       if (const auto running_app = proc::proc.resolve_app(current_appid)) {
         app_image = proc::validate_app_image_path(running_app->image_path);
       }
-    } else if (const auto artwork = remote_session::synthetic_artwork_filename(synthetic_control)) {
-      app_image = (fs::path {SUNSHINE_ASSETS_DIR} / "remote-session" / std::string {*artwork}).string();
+    } else if (auto artwork = remote_control_artwork_path(synthetic_control); !artwork.empty()) {
+      if (synthetic_control == remote_session::control_e::input || synthetic_control == remote_session::control_e::monitor) {
+        if (const auto configured = proc::proc.resolve_app("0", remote_session::synthetic_uuid(synthetic_control))) {
+          app_image = proc::validate_app_image_path(configured->image_path);
+        }
+      }
+      if (app_image.empty() || app_image == DEFAULT_APP_IMAGE_PATH) {
+        app_image = proc::validate_app_image_path(std::move(artwork));
+      }
     } else {
       app_image = proc::proc.get_app_image((int) util::from_view(appid));
     }
