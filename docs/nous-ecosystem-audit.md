@@ -15,9 +15,9 @@ Entrega única integrada: host Windows com interface Web, backend, Android e set
 - MuMu: testes isolados usando segundo monitor, sem desligar/alterar monitor principal. Usuário autorizou instalação de APK, reinícios e testes de instalação/atualização preservando dados e configurações.
 - Progresso do instalador deve refletir operações reais, não temporizador fictício.
 
-## Entrega parcial solicitada em 18/11/2026
+## Entrega total solicitada em 18/11/2026
 
-Usuário reduziu escopo imediato para APK e instalador Inno compilados, com pendências salvas. Artefatos, hashes, limites de validação e roteiro de retomada: [`nous-entrega-parcial-2026-11-18.md`](nous-entrega-parcial-2026-11-18.md). Auditoria integral não concluída.
+Usuário reduziu o escopo imediato para binários compilados e pendências registradas, depois pediu a pasta de entrega total. Pasta local: `build-local/ENTREGA-TOTAL-2026-11-18`; pacote `build-local/NOUS-ENTREGA-TOTAL-2026-11-18.zip` (SHA-256 `DCA33656EFBBD95EF76398E95408FE84876CA01CEF55A4851B9DF5228ADDE670`). Contém `setup.exe`, `NOUS.msi`, motor, APK arm64 debug, auditoria, pendências, versão/hashes e LEIA-ME. Instruções: [`nous-entrega-total-2026-11-18.md`](nous-entrega-total-2026-11-18.md). Pendências detalhadas: [`nous-entrega-parcial-2026-11-18.md`](nous-entrega-parcial-2026-11-18.md). **Auditoria integral não concluída; não é release final.**
 
 ## Evidências iniciais (não equivalem a auditoria concluída)
 
