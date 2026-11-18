@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import QRCode from 'qrcode';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 
@@ -12,7 +13,58 @@ interface PairResponse {
   status?: boolean;
 }
 
-const requestedName = useRoute().query.name;
+const route = useRoute();
+const requestedName = route.query.name;
+const lanId = computed(() => typeof route.query.lan === 'string' && /^[A-F0-9]{64}$/.test(route.query.lan) ? route.query.lan : '');
+const lan = ref<{ name?: string; source?: string; issued?: boolean }>();
+const qr = ref('');
+const lanBusy = ref(false);
+const lanUnavailable = ref(false);
+let lanGeneration = 0;
+let expiry: ReturnType<typeof setTimeout> | undefined;
+
+async function lanAction(action: 'inspect' | 'approve' | 'deny'): Promise<void> {
+  const id = lanId.value;
+  if (!id || lanBusy.value) return;
+  const generation = lanGeneration;
+  lanBusy.value = true;
+  try {
+    const reply = await apiPost<PairResponse & { name?: string; source?: string; issued?: boolean; payload?: string; expires_in_ms?: number }>('/api/lan-pairing', { id, action });
+    if (generation !== lanGeneration) return;
+    if (!reply.status || action === 'deny') {
+      qr.value = '';
+      lanUnavailable.value = true;
+    } else if (action === 'inspect') {
+      lan.value = reply;
+      lanUnavailable.value = !!reply.issued;
+    } else if (reply.payload && reply.expires_in_ms && reply.expires_in_ms > 0) {
+      const image = await QRCode.toDataURL(reply.payload, { errorCorrectionLevel: 'M', width: 384, margin: 4 });
+      if (generation !== lanGeneration) return;
+      qr.value = image;
+      expiry = setTimeout(() => {
+        qr.value = '';
+        lanUnavailable.value = true;
+      }, reply.expires_in_ms);
+    } else {
+      lanUnavailable.value = true;
+    }
+  } catch {
+    if (generation === lanGeneration) lanUnavailable.value = true;
+  } finally {
+    if (generation === lanGeneration) lanBusy.value = false;
+  }
+}
+
+watch(lanId, () => {
+  ++lanGeneration;
+  clearTimeout(expiry);
+  lan.value = undefined;
+  qr.value = '';
+  lanBusy.value = false;
+  lanUnavailable.value = false;
+  void lanAction('inspect');
+}, { immediate: true });
+onBeforeUnmount(() => { ++lanGeneration; clearTimeout(expiry); });
 const name = ref(typeof requestedName === 'string' ? requestedName.slice(0, 96) : '');
 const pin = ref('');
 const submitting = ref(false);
@@ -90,7 +142,22 @@ function resetForm(): void {
       </template>
     </PageHeader>
 
-    <div class="pair-layout">
+    <section v-if="lanId" class="pair-panel vs-surface" aria-labelledby="lan-pair-title">
+      <h2 id="lan-pair-title">{{ t('ui.lan_pair.title') }}</h2>
+      <p v-if="lanUnavailable" role="status">{{ t('ui.lan_pair.unavailable') }}</p>
+      <template v-else-if="qr">
+        <p role="status">{{ t('ui.lan_pair.scan') }}</p>
+        <img class="lan-qr" :src="qr" :alt="t('ui.lan_pair.title')" />
+        <AppButton :label="t('ui.lan_pair.deny')" variant="secondary" :busy="lanBusy" @click="lanAction('deny')" />
+      </template>
+      <template v-else-if="lan">
+        <p>{{ t('ui.lan_pair.verify', { name: lan.name, address: lan.source }) }}</p>
+        <AppButton :label="t('ui.lan_pair.approve')" variant="primary" :busy="lanBusy" @click="lanAction('approve')" />
+        <AppButton :label="t('ui.lan_pair.deny')" variant="secondary" :busy="lanBusy" @click="lanAction('deny')" />
+      </template>
+    </section>
+
+    <div v-else class="pair-layout">
       <section class="pair-instructions" aria-labelledby="pair-steps-title">
         <h2 id="pair-steps-title">{{ t('ui.pair.steps.title') }}</h2>
         <ol>
@@ -221,6 +288,12 @@ function resetForm(): void {
 </template>
 
 <style scoped>
+.lan-qr {
+  width: min(100%, 384px);
+  height: auto;
+  image-rendering: pixelated;
+}
+
 .pair-page {
   display: grid;
   gap: var(--vs-space-24);

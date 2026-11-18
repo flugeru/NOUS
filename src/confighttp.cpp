@@ -5497,6 +5497,43 @@ namespace confighttp {
    *
    * @api_examples{/api/pin| POST| {"pin":"1234","name":"My PC"}}
    */
+  void handleLanPairing(resp_https_t response, req_https_t request) {
+    const auto origin = net::from_address(net::addr_to_normalized_string(request->remote_endpoint().address()));
+    if (!validateContentType(response, request, "application/json")) return;
+    const auto body = request->content.size() <= 2048 ? nlohmann::json::parse(request->content, nullptr, false) : nlohmann::json {};
+    if (origin == net::LAN) {
+      // Only signed redemption is available on LAN; no dashboard credentials or CORS.
+      const bool status = request->header.count("Origin") == 0 &&
+                          nvhttp::redeem_lan_pairing(net::addr_to_normalized_string(request->remote_endpoint().address()), body);
+      response->write(success_ok, nlohmann::json({{"status", status}}).dump(), {{"Content-Type", "application/json"}, {"Cache-Control", "no-store"}});
+      return;
+    }
+    response->write(StatusCode::client_error_forbidden);
+  }
+
+  void approveLanPairing(resp_https_t response, req_https_t request) {
+    if (!net::normalize_address(request->remote_endpoint().address()).is_loopback() || request->header.count("Authorization") != 0) {
+      response->write(StatusCode::client_error_forbidden);
+      return;
+    }
+    if (!authenticate(response, request) || !validateContentType(response, request, "application/json")) return;
+    if (const auto origin = request->header.find("Origin"); origin != request->header.end() && origin->second != get_web_ui_url()) {
+      response->write(StatusCode::client_error_forbidden);
+      return;
+    }
+    const auto csrf = request->header.find("X-CSRF-Token");
+    if (csrf == request->header.end()) return bad_request(response, request, "Missing CSRF token");
+    if (!validate_stored_csrf_token(response, request, get_client_id(request), csrf->second)) return;
+    const auto body = request->content.size() <= 512 ? nlohmann::json::parse(request->content, nullptr, false) : nlohmann::json {};
+    if (!body.is_object() || !body.contains("id") || !body["id"].is_string() || !body.contains("action") || !body["action"].is_string()) {
+      return bad_request(response, request);
+    }
+    const auto &id = body["id"].get_ref<const std::string &>();
+    const auto &action = body["action"].get_ref<const std::string &>();
+    if (action != "inspect" && action != "approve" && action != "deny") return bad_request(response, request);
+    send_response(response, nvhttp::lan_pairing_request(id, action), "no-store");
+  }
+
   void savePin(resp_https_t response, req_https_t request) {
     if (!validateContentType(response, request, "application/json") || !authenticate(response, request)) {
       return;
@@ -6884,6 +6921,9 @@ namespace confighttp {
     };
 
     register_api_route("^/api/pin$", "POST", savePin);
+    // Keep local device approval out of the API-token route catalog.
+    server.resource["^/api/lan-pairing$"]["POST"] = approveLanPairing;
+    server.resource["^/nous/lan-pairing$"]["POST"] = handleLanPairing;
     register_api_route("^/api/otp$", "POST", getOTP);
     register_api_route("^/api/apps$", "GET", getApps);
     register_api_route("^/api/logs$", "GET", getLogs);

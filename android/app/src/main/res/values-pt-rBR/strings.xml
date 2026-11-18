@@ -82,6 +82,11 @@
     <string name="pair_pc_offline">Esse computador está indisponível</string>
     <string name="pair_pc_ingame">Esse computador está atualmente em um jogo. Você deve fechar o jogo antes de parear.</string>
     <string name="pair_pairing_title">Pareando</string>
+    <string name="nous_lan_pair_explain">Confirme a solicitação no NOUS Desktop e escaneie o QR exibido no PC. Não precisa de conta.</string>
+    <string name="nous_lan_pair_request">Parear com QR</string>
+    <string name="nous_lan_pair_pin">Usar PIN</string>
+    <string name="nous_lan_pair_scan">Confirme no PC e escaneie o QR no NOUS Desktop.</string>
+    <string name="nous_lan_pair_error">O pareamento por QR falhou ou expirou. Tente de novo ou use o PIN.</string>
     <string name="pair_pairing_msg">Insira o seguinte PIN no PC de destino:</string>
     <string name="pair_incorrect_pin">PIN incorreto</string>
     <string name="pair_fail">Falha no pareamento</string>

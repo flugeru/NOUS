@@ -13,6 +13,9 @@ import com.limelight.grid.assets.DiskAssetLoader;
 import com.limelight.nvstream.http.ComputerDetails;
 import com.limelight.nvstream.http.NvApp;
 import com.limelight.nvstream.http.NvHTTP;
+import com.limelight.nvstream.http.LanPairing;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 import com.limelight.nvstream.http.PairingManager;
 import com.limelight.nvstream.http.PairingManager.PairState;
 import com.limelight.nvstream.wol.WakeOnLanSender;
@@ -534,6 +537,84 @@ public class PcView extends ControllerMenuActivity implements AdapterFragmentCal
                 this::startComputerUpdates);
     }
 
+    private LanPairing lanPairing;
+    private ComputerDetails lanPairingComputer;
+    private boolean lanPairingBusy;
+    private final androidx.activity.result.ActivityResultLauncher<ScanOptions> lanScanner =
+            registerForActivityResult(new ScanContract(), result -> {
+                LanPairing request = lanPairing;
+                ComputerDetails computer = lanPairingComputer;
+                lanPairing = null;
+                lanPairingComputer = null;
+                String qr = result.getContents();
+                if (request == null || computer == null || qr == null) return;
+                lanPairingBusy = true;
+                var binder = managerBinder;
+                new Thread(() -> {
+                    boolean paired = false;
+                    try {
+                        var cert = request.redeem(qr, computer.uuid);
+                        paired = binder != null && binder.persistPairingPin(computer.uuid, cert);
+                    } catch (java.io.IOException | org.json.JSONException | java.security.GeneralSecurityException ignored) {
+                        // Do not display or log scanned payload, proof, or raw response.
+                    }
+                    final boolean success = paired;
+                    runOnUiThread(() -> {
+                        lanPairingBusy = false;
+                        if (isDestroyed() || isFinishing()) return;
+                        if (success) doAppList(computer, true, false);
+                        else Toast.makeText(this, R.string.nous_lan_pair_error, Toast.LENGTH_LONG).show();
+                    });
+                }, "nous-lan-pair-redeem").start();
+            });
+
+    private void choosePairing(ComputerDetails computer) {
+        if (!computer.lanPairingSupported || !getPackageManager().hasSystemFeature("android.hardware.camera.any")) {
+            doPair(computer, null, null);
+            return;
+        }
+        if (lanPairingBusy || lanPairing != null) return;
+        new ControllerDialogBuilder(this)
+                .setTitle(R.string.pair_pairing_title)
+                .setMessage(R.string.nous_lan_pair_explain)
+                .setPositiveButton(R.string.nous_lan_pair_request, (dialog, which) -> beginLanPairing(computer))
+                .setNeutralButton(R.string.nous_lan_pair_pin, (dialog, which) -> doPair(computer, null, null))
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    private void beginLanPairing(ComputerDetails computer) {
+        if (lanPairingBusy || lanPairing != null) return;
+        lanPairingBusy = true;
+        var address = computer.activeAddress;
+        var pin = computer.serverCert;
+        new Thread(() -> {
+            LanPairing pending = null;
+            try {
+                if (address != null) pending = LanPairing.begin(address, pin, PlatformBinding.getCryptoProvider(this));
+            } catch (java.io.IOException | org.json.JSONException | java.security.GeneralSecurityException | IllegalArgumentException ignored) {
+                // Preserve manual pairing on hosts that do not support local QR.
+            }
+            final LanPairing request = pending;
+            runOnUiThread(() -> {
+                lanPairingBusy = false;
+                if (isFinishing() || isDestroyed()) return;
+                if (request == null) {
+                    new ControllerDialogBuilder(this).setTitle(R.string.pair_pairing_title)
+                            .setMessage(R.string.nous_lan_pair_error)
+                            .setPositiveButton(R.string.nous_lan_pair_pin, (dialog, which) -> doPair(computer, null, null))
+                            .setNegativeButton(R.string.cancel, null).show();
+                    return;
+                }
+                lanPairing = request;
+                lanPairingComputer = computer;
+                lanScanner.launch(new ScanOptions().setDesiredBarcodeFormats(ScanOptions.QR_CODE)
+                        .setPrompt(getString(R.string.nous_lan_pair_scan)).setBeepEnabled(false)
+                        .setBarcodeImageEnabled(false).setOrientationLocked(false));
+            });
+        }, "nous-lan-pair-request").start();
+    }
+
     private void doPair(final ComputerDetails computer, String otp, String passphrase) {
         if (computer.state == ComputerDetails.State.OFFLINE || computer.activeAddress == null) {
             Toast.makeText(PcView.this, getResources().getString(R.string.pair_pc_offline), Toast.LENGTH_SHORT).show();
@@ -1028,8 +1109,7 @@ public class PcView extends ControllerMenuActivity implements AdapterFragmentCal
                     // Open the context menu if a PC is offline or refreshing
                     showComputerActions(computer);
                 } else if (computer.details.pairState != PairState.PAIRED) {
-                    // Pair an unpaired machine by default
-                    doPair(computer.details, null, null);
+                    choosePairing(computer.details);
                 } else {
                     doAppList(computer.details, false, false);
                 }

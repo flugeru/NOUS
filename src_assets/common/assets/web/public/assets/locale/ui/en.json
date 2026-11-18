@@ -1423,6 +1423,14 @@
       "installedVersion": "Installed version",
       "support": "Help & updates"
     },
+    "lan_pair": {
+      "title": "Local QR pairing",
+      "verify": "Only approve if you just requested pairing from this device: {name} ({address}).",
+      "scan": "Scan with NOUS on the requesting device. This code expires and can be used only once.",
+      "unavailable": "Request unavailable, used or expired. Request another QR from NOUS on Android.",
+      "approve": "Approve and show QR",
+      "deny": "Decline"
+    },
     "pair": {
       "action": {
         "approve": "Approve device",

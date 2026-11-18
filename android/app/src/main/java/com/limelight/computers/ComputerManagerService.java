@@ -290,6 +290,29 @@ public class ComputerManagerService extends Service {
             return null;
         }
 
+        public boolean persistPairingPin(String uuid, java.security.cert.X509Certificate pin) {
+            if (!getLocalDatabaseReference()) return false;
+            try {
+                synchronized (pollingTuples) {
+                    for (PollingTuple tuple : pollingTuples) {
+                        if (!uuid.equals(tuple.computer.uuid)) continue;
+                        synchronized (tuple.networkLock) {
+                            ComputerDetails stored = dbManager.getComputerByUUID(uuid);
+                            if (stored == null || (stored.serverCert != null && !stored.serverCert.equals(pin))) return false;
+                            stored.serverCert = pin;
+                            if (!dbManager.updateComputer(stored)) return false;
+                            tuple.computer.serverCert = pin;
+                            tuple.computer.state = ComputerDetails.State.UNKNOWN;
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            } finally {
+                releaseLocalDatabaseReference();
+            }
+        }
+
         public void invalidateStateForComputer(String uuid) {
             synchronized (pollingTuples) {
                 for (PollingTuple tuple : pollingTuples) {

@@ -970,6 +970,14 @@
       "description": "Esta página não está disponível.",
       "action": "Voltar à visão geral"
     },
+    "lan_pair": {
+      "title": "Pareamento local por QR",
+      "verify": "Só confirme se você acabou de solicitar o pareamento neste dispositivo: {name} ({address}).",
+      "scan": "Escaneie com o NOUS no aparelho que fez a solicitação. O código expira e só funciona uma vez.",
+      "unavailable": "Solicitação indisponível, usada ou expirada. Solicite outro QR pelo NOUS no Android.",
+      "approve": "Confirmar e mostrar QR",
+      "deny": "Recusar"
+    },
     "pair": {
       "action": {
         "approve": "Aprovar dispositivo",

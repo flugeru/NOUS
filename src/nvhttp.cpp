@@ -40,6 +40,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <Simple-Web-Server/server_http.hpp>
+#include <openssl/rand.h>
 
 // local includes
 #include "app_display_policy.h"
@@ -2242,6 +2243,12 @@ namespace nvhttp {
     std::unordered_map<std::string, pair_session_t> map_id_sess;
     std::mutex pairing_sessions_mutex;
     constexpr auto pairing_session_expiry = std::chrono::minutes(10);
+    constexpr auto qr_pairing_expiry = std::chrono::minutes(2);
+    struct lan_pairing_t {
+      std::string id, source, name, certificate, secret;
+      std::chrono::steady_clock::time_point expires;
+    };
+    std::optional<lan_pairing_t> pending_lan_pairing;
     client_t client_root;
     std::mutex client_mutex;
     // Serialize layout writes with pairing removal through coordinator updates.
@@ -3564,6 +3571,103 @@ namespace nvhttp {
       BOOST_LOG(warning) << "Pair attempt failed due to " << status_msg;
     }
 
+    std::string qr_random_hex() {
+      std::array<unsigned char, 32> bytes {};
+      if (RAND_bytes(bytes.data(), static_cast<int>(bytes.size())) != 1) return {};
+      return util::hex(bytes, true).to_string();
+    }
+
+    std::string lan_pairing_payload(const lan_pairing_t &session) {
+      auto certificate = crypto::x509(conf_intern.servercert);
+      crypto::sha256_t fingerprint {};
+      unsigned int length = 0;
+      if (!certificate || !X509_digest(certificate.get(), EVP_sha256(), fingerprint.data(), &length) || length != fingerprint.size()) return {};
+      return "NOUS-LAN-1:" + http::unique_id + ":" + session.id + ":" + util::hex(fingerprint, true).to_string() + ":" +
+             util::hex(crypto::hash(session.certificate), true).to_string() + ":" + session.secret;
+    }
+
+    nlohmann::json lan_pairing_request(std::string_view id, std::string_view action) {
+      std::lock_guard lock {pairing_sessions_mutex};
+      const auto now = std::chrono::steady_clock::now();
+      if (!config::sunshine.enable_pairing || !pending_lan_pairing || now >= pending_lan_pairing->expires || pending_lan_pairing->id != id) {
+        return {{"status", false}};
+      }
+      auto &session = *pending_lan_pairing;
+      if (action == "deny") {
+        pending_lan_pairing.reset();
+        return {{"status", true}};
+      }
+      nlohmann::json result {{"status", true}, {"name", session.name}, {"source", session.source}, {"issued", !session.secret.empty()}};
+      if (action != "approve") return result;
+      // Never re-display or extend an already issued code.
+      if (!session.secret.empty()) return {{"status", false}};
+      session.secret = qr_random_hex();
+      if (session.secret.empty()) return {{"status", false}};
+      auto payload = lan_pairing_payload(session);
+      if (payload.empty()) return {{"status", false}};
+      result["payload"] = std::move(payload);
+      result["expires_in_ms"] = std::chrono::duration_cast<std::chrono::milliseconds>(session.expires - now).count();
+      return result;
+    }
+
+    bool redeem_lan_pairing(std::string_view source, const nlohmann::json &body) {
+      if (!body.is_object() || !body.contains("payload") || !body["payload"].is_string() ||
+          !body.contains("signature") || !body["signature"].is_string()) return false;
+      const auto &payload = body["payload"].get_ref<const std::string &>();
+      const auto &signature = body["signature"].get_ref<const std::string &>();
+      constexpr auto payload_length = std::string_view {"NOUS-LAN-1:"}.size() + 36 + 4 * 64 + 4;
+      if (payload.size() != payload_length || signature.size() > 1024 || !pairing_policy::valid_hex_field(signature, 2)) return false;
+      std::lock_guard lock {pairing_sessions_mutex};
+      if (!config::sunshine.enable_pairing || !pending_lan_pairing || pending_lan_pairing->source != source ||
+          pending_lan_pairing->secret.empty() || std::chrono::steady_clock::now() >= pending_lan_pairing->expires) return false;
+      auto &session = *pending_lan_pairing;
+      const auto expected = lan_pairing_payload(session);
+      if (expected.size() != payload.size() || CRYPTO_memcmp(expected.data(), payload.data(), payload.size()) != 0 ||
+          !crypto::verify256(crypto::x509(session.certificate), payload, util::from_hex_vec(signature, true))) return false;
+      auto client = std::make_shared<crypto::named_cert_t>();
+      client->name = session.name;
+      auto certificate = crypto::x509(session.certificate);
+      if (!certificate) return false;
+      client->cert = crypto::pem(certificate);
+      client->uuid = uuid_util::uuid_t::generate().string();
+      client->perm = PERM::_default;
+      client->allow_client_commands = false;
+      pending_lan_pairing.reset();
+      return add_authorized_client(client);
+    }
+
+    void begin_lan_pairing(resp_http_t response, req_http_t request) {
+      nlohmann::json result {{"status", false}};
+      auto reply = util::fail_guard([&] {
+        response->write(result.dump(), {{"Content-Type", "application/json"}, {"Cache-Control", "no-store"}});
+        response->close_connection_after_response = true;
+      });
+#if defined(_WIN32) && defined(SUNSHINE_TRAY) && SUNSHINE_TRAY >= 1
+      const auto source = net::addr_to_normalized_string(request->remote_endpoint().address());
+      if (!config::sunshine.enable_pairing || !authorization_state_ready.load(std::memory_order_acquire) ||
+          net::from_address(source) != net::LAN || request->content.size() > 8192 || request->header.count("Origin") != 0) return;
+      const auto body = nlohmann::json::parse(request->content, nullptr, false);
+      if (!body.is_object() || !body.contains("certificate") || !body["certificate"].is_string() ||
+          !body.contains("name") || !body["name"].is_string()) return;
+      const auto &cert = body["certificate"].get_ref<const std::string &>();
+      const auto &name = body["name"].get_ref<const std::string &>();
+      auto parsed_cert = crypto::x509(cert);
+      if (cert.empty() || cert.size() > 4096 || !parsed_cert || !X509_get0_pubkey(parsed_cert.get()) ||
+          name.empty() || name.size() > 96 || is_placeholder_client_name(name) ||
+          std::any_of(name.begin(), name.end(), [](unsigned char c) { return c < 32 || c == 127; })) return;
+      const auto id = qr_random_hex();
+      if (id.empty()) return;
+      {
+        std::lock_guard lock {pairing_sessions_mutex};
+        const auto now = std::chrono::steady_clock::now();
+        if (pending_lan_pairing && now < pending_lan_pairing->expires) return;
+        pending_lan_pairing = lan_pairing_t {id, source, name, cert, {}, now + qr_pairing_expiry};
+      }
+      result = {{"status", true}, {"id", id}, {"port", net::map_port(confighttp::PORT_HTTPS)}};
+      system_tray::update_tray_require_lan_pairing(id);
+#endif
+    }
+
     void getservercert(pair_session_t &sess, pt::ptree &tree, const std::string &pin) {
       if (sess.last_phase != PAIR_PHASE::NONE) {
         fail_pair(sess, tree, "Out of order call to getservercert");
@@ -4251,6 +4355,11 @@ namespace nvhttp {
         }
       }
       tree.put("root.ExternalPort", net::map_port(PORT_HTTP));
+#if defined(_WIN32) && defined(SUNSHINE_TRAY) && SUNSHINE_TRAY >= 1
+      if (config::sunshine.enable_pairing && net::from_address(net::addr_to_normalized_string(request->remote_endpoint().address())) == net::LAN) {
+        tree.put("root.NousLanPairing", 1);
+      }
+#endif
 
       // Optional Moonlight extension. These describe integration/configuration,
       // not proof that a particular game's limiter was successfully applied.
@@ -7617,6 +7726,7 @@ launch_session->exact_target_hold.reset();
         serverinfo<SimpleWeb::HTTP>(std::move(resp), std::move(req));
       });
     };
+    http_server.resource["^/nous/lan-pairing$"]["POST"] = begin_lan_pairing;
     http_server.resource["^/pair/?$"]["GET"] = pair<SimpleWeb::HTTP>;
     http_server.resource["^/pair/?$"]["POST"] = pair<SimpleWeb::HTTP>;
     http_server.resource["^/unpair/?$"]["GET"] = unpair<SimpleWeb::HTTP>;
@@ -7659,7 +7769,9 @@ launch_session->exact_target_hold.reset();
           break;
         }
         std::lock_guard pairing_lock {pairing_sessions_mutex};
-        expire_pairing_sessions_locked(std::chrono::steady_clock::now());
+        const auto now = std::chrono::steady_clock::now();
+        expire_pairing_sessions_locked(now);
+        if (pending_lan_pairing && now >= pending_lan_pairing->expires) pending_lan_pairing.reset();
       }
     });
 

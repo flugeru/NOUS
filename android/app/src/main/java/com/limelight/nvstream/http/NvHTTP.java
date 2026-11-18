@@ -419,6 +419,7 @@ public class NvHTTP {
         }
 
         details.httpsPort = getHttpsPort(serverInfo);
+        details.lanPairingSupported = "1".equals(getXmlString(serverInfo, "NousLanPairing", false));
 
         details.macAddress = getXmlString(serverInfo, "mac", false);
 

@@ -7,6 +7,7 @@
 
   #if defined(_WIN32)
     #define WIN32_LEAN_AND_MEAN
+    #include "platform/windows/misc.h"
     #include "platform/windows/utils.h"
 
     #include <Windows.h>
@@ -556,6 +557,14 @@ namespace system_tray {
       tray_update(&tray);
     });
   }
+
+#ifdef _WIN32
+  void update_tray_require_lan_pairing(std::string id) {
+    run_on_tray_thread([path = "/v2/pair?lan=" + std::move(id)] {
+      platf::open_nous_desktop(path);  // QR approval never opens a browser.
+    });
+  }
+#endif
 
   void update_tray_require_pin(std::string device_name) {
     run_on_tray_thread([device_name = std::move(device_name)]() {

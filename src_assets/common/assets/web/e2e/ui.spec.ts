@@ -24,6 +24,32 @@ test('pairing request prefills an editable device name without approving automat
   await expect.poll(() => submitted).toEqual({ pin: '1234', name: 'Sala' });
 });
 
+test('LAN pairing renders QR locally only after approval, then clears it on expiry', async ({ page }) => {
+  await host(page, 'windows');
+  const id = 'A'.repeat(64);
+  const actions: string[] = [];
+  await localRoute(page, '**/api/lan-pairing', async (route) => {
+    const body = route.request().postDataJSON();
+    expect(body.id).toBe(id);
+    actions.push(body.action);
+    const approved = body.action === 'approve';
+    await route.fulfill({ json: {
+      status: true, name: 'Test phone', source: '192.168.1.10',
+      ...(approved ? { payload: 'NOUS-LAN-1:12345678-9abc-1234-5678-123456789abc:' + [id, id, id, id].join(':'), expires_in_ms: 1500 } : {}),
+    } });
+  });
+  await page.goto(`/v2/pair?lan=${id}`);
+  await expect(page.getByText(/Test phone.*192\.168\.1\.10/)).toBeVisible();
+  expect(actions).toEqual(['inspect']);
+  const qr = page.getByRole('img', { name: 'Local QR pairing' });
+  await expect(qr).toHaveCount(0);
+  await page.getByRole('button', { name: 'Approve and show QR' }).click();
+  await expect(qr).toHaveAttribute('src', /^data:image\/png;base64,/);
+  await expect(qr).toHaveCount(0);
+  await expect(page.getByText(/Request unavailable, used or expired/)).toBeVisible();
+  expect(actions).toEqual(['inspect', 'approve']);
+});
+
 async function host(
   page: Page,
   platform = 'linux',

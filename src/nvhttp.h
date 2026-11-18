@@ -135,6 +135,9 @@ namespace nvhttp {
     PAIR_PHASE last_phase = PAIR_PHASE::NONE;
   };
 
+  nlohmann::json lan_pairing_request(std::string_view id, std::string_view action);
+  bool redeem_lan_pairing(std::string_view source, const nlohmann::json &body);
+
   /**
    * @brief removes the temporary pairing session
    * @param sess

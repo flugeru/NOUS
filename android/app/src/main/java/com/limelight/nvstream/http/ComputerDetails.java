@@ -81,6 +81,7 @@ public class ComputerDetails {
     public String runningGameUUID;
     public String rawAppList;
     public boolean nvidiaServer;
+    public boolean lanPairingSupported;
 
     // VDisplay info
     public boolean vDisplaySupported = false;
@@ -159,6 +160,7 @@ public class ComputerDetails {
         this.runningGameId = details.runningGameId;
         this.runningGameUUID = details.runningGameUUID;
         this.nvidiaServer = details.nvidiaServer;
+        this.lanPairingSupported = details.lanPairingSupported;
         this.rawAppList = details.rawAppList;
 
         this.vDisplayDriverReady = details.vDisplayDriverReady;
