@@ -41,6 +41,9 @@
     <string name="nous_settings_hint">Customize streaming and controls.</string>
     <string name="nous_account">NOUS account</string>
     <string name="nous_account_optional">Sign-in is optional. Local pairing and streaming still work without an account.</string>
+    <string name="nous_account_hosts">Account PCs</string>
+    <string name="nous_account_hosts_empty">No PCs listed for this Google account.</string>
+    <string name="nous_account_hosts_error">Account PC list unavailable. Local pairing still works.</string>
     <string name="nous_account_google">Sign in with Google</string>
     <string name="nous_account_signed_in">Signed in as %1$s. This does not grant access to a PC.</string>
     <string name="nous_account_sign_out">Sign out</string>

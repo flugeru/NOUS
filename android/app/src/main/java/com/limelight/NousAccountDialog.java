@@ -54,6 +54,7 @@ final class NousAccountDialog {
                     .setTitle(R.string.nous_account)
                     .setMessage(activity.getString(R.string.nous_account_signed_in,
                             user.getEmail() == null ? activity.getString(R.string.nous_account) : user.getEmail()))
+                    .setNeutralButton(R.string.nous_account_hosts, (dialog, which) -> NousAccountHosts.show(activity, auth, user))
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.nous_account_sign_out, (dialog, which) -> signOut(activity, auth))
                     .show();
