@@ -3221,7 +3221,7 @@ onBeforeUnmount(() => {
         <div class="editor-group editor-grid">
           <div class="vs-field editor-field">
             <label class="vs-field__label" for="library-category">{{ t('ui.library.category') }}</label>
-            <select id="library-category" v-model="libraryCategory" class="vs-input">
+            <select id="library-category" v-model="libraryCategory" class="vs-select">
               <option value="">{{ t('ui.library.categories.auto') }}</option>
               <option value="desktop">{{ t('ui.library.categories.desktop') }}</option>
               <option value="games">{{ t('ui.library.categories.games') }}</option>

@@ -922,11 +922,15 @@ function applyDisplaySelection(selection: ClientDisplaySelection): void {
           compact
         />
       </div>
-      <div class="client-preference-mode__options" role="radiogroup">
+      <div
+        class="client-preference-mode__options"
+        role="radiogroup"
+        :aria-labelledby="`${controlIdPrefix}-preference-mode`"
+      >
         <label
           v-for="option in preferenceModeOptions"
           :key="option.value"
-          class="client-preference-mode__option"
+          class="vs-radio client-preference-mode__option"
         >
           <input
             type="radio"
@@ -1258,11 +1262,17 @@ function applyDisplaySelection(selection: ClientDisplaySelection): void {
 }
 
 .client-preference-mode__option:has(input:checked) {
-  border-color: var(--vs-color-accent-default);
+  border-color: var(--vs-color-navigation-selected);
+  background: var(--vs-color-navigation-container);
+}
+
+.client-preference-mode__option:has(input:disabled) {
+  cursor: not-allowed;
 }
 
 .client-preference-mode__option input {
-  margin-block-start: 0.2rem;
+  flex: none;
+  margin-block-start: var(--vs-space-2);
 }
 
 .client-preference-mode__option > span {

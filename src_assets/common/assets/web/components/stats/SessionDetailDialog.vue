@@ -410,7 +410,7 @@ onBeforeUnmount(() => {
 }
 
 .stats-detail-dialog::backdrop {
-  background: rgb(0 0 0 / 0.68);
+  background: var(--vs-overlay-backdrop);
   backdrop-filter: blur(3px);
 }
 

@@ -1911,6 +1911,7 @@ onBeforeUnmount(() => {
         class="stream-surface"
         v-show="!streamCollapsed"
         :class="{
+          'stream-surface--active': isConnected,
           'stream-surface--interactive': inputReady,
           'stream-surface--pseudo-fullscreen': pseudoFullscreen,
           'stream-surface--touch-exit': showFullscreenSwipeExit,
@@ -2512,11 +2513,17 @@ onBeforeUnmount(() => {
   border: 1px solid var(--vs-color-border-strong);
   border-radius: var(--vs-radius-card);
   outline: none;
-  background: #090b10;
+  background: var(--vs-color-bg-surface);
+}
+
+/* Keep neutral letterboxing only while displaying video. */
+.stream-surface--active {
+  background: black;
 }
 
 .stream-surface:focus-visible {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--vs-color-accent-default) 44%, transparent);
+  outline: var(--vs-focus-width) solid var(--vs-color-focus);
+  outline-offset: var(--vs-focus-offset);
 }
 
 .stream-surface--interactive {
@@ -2602,7 +2609,8 @@ onBeforeUnmount(() => {
   justify-items: center;
   gap: var(--vs-space-8);
   padding: var(--vs-space-24);
-  color: rgb(255 255 255 / 0.82);
+  background: var(--vs-color-bg-surface);
+  color: var(--vs-color-text-primary);
   text-align: center;
 }
 
@@ -2671,7 +2679,7 @@ onBeforeUnmount(() => {
 
 .stream-surface__empty span:not(.stream-surface__empty-icon):not(.stream-surface__spinner) {
   max-width: 28rem;
-  color: rgb(255 255 255 / 0.66);
+  color: var(--vs-color-text-secondary);
 }
 
 .stream-surface__empty-icon {
@@ -2679,16 +2687,17 @@ onBeforeUnmount(() => {
   width: 3.25rem;
   height: 3.25rem;
   place-items: center;
-  border: 1px solid rgb(255 255 255 / 0.26);
+  border: 1px solid var(--vs-color-border-subtle);
   border-radius: 50%;
-  background: rgb(255 255 255 / 0.1);
+  background: var(--vs-color-navigation-container);
+  color: var(--vs-color-navigation-selected);
 }
 
 .stream-surface__spinner {
   width: 2rem;
   height: 2rem;
-  border: 2px solid rgb(255 255 255 / 0.28);
-  border-right-color: rgb(255 255 255 / 0.9);
+  border: 2px solid var(--vs-color-border-subtle);
+  border-right-color: var(--vs-color-accent-default);
   border-radius: 50%;
   animation: stream-spin 0.8s linear infinite;
 }

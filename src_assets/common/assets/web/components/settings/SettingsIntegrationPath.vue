@@ -761,7 +761,7 @@ onBeforeUnmount(() => {
 }
 
 .integration-path__dialog::backdrop {
-  background: rgb(0 0 0 / 45%);
+  background: var(--vs-overlay-backdrop);
 }
 
 .integration-path__dialog-panel {

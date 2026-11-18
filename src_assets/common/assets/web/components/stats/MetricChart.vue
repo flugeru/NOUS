@@ -1003,7 +1003,7 @@ onBeforeUnmount(() => {
   box-shadow: var(--vs-shadow-overlay);
 }
 .metric-chart__dialog::backdrop {
-  background: rgb(0 0 0 / 0.7);
+  background: var(--vs-overlay-backdrop);
   backdrop-filter: blur(3px);
 }
 .metric-chart__dialog-panel {
