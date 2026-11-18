@@ -42,6 +42,9 @@ Source: "{#EnginePath}"; DestName: "nous-install-engine.exe"; Flags: dontcopy
 [Code]
 var
   Drivers: TInputOptionWizardPage;
+#if GamepadBundled == "1" && LocalGamepadCertificate == "1"
+  GamepadConsent: Boolean;
+#endif
   RestartNeeded: Boolean;
   ResultPath: String;
 
@@ -58,20 +61,20 @@ begin
     WizardForm.DirEdit.Text := InstallDir;
   Drivers := CreateInputOptionPage(wpSelectDir, 'Drivers e recursos',
     'Escolha recursos para este computador',
-    'Drivers incluídos no instalador. Nenhum download adicional é necessário.'#13#10 +
+    'ViGEmBus 1.22.0 está incluído e será instalado se necessário. Nenhum download adicional é necessário.'#13#10 +
     'NOUS Display Driver usa certificado autoassinado; instalação depende das políticas de segurança do Windows.', False, False);
   Drivers.Add('Instalar ou atualizar driver de tela virtual');
   Drivers.Add('Usar SudoVDA legado em vez de NOUS Display Driver');
   Drivers.Values[0] := True;
   if RegQueryStringValue(HKLM64, 'SOFTWARE\Nonary\Vibepollo\Installer\DriverSelections', 'DisplayEnabled', Saved) then
     Drivers.Values[0] := Saved <> '0';
-#if GamepadBundled
+#if GamepadBundled == "1"
   Drivers.Add('Instalar driver de controle virtual NOUS');
   Drivers.Values[2] := True;
   if RegQueryStringValue(HKLM64, 'SOFTWARE\Nonary\Vibepollo\Installer\DriverSelections', 'GamepadEnabled', Saved) then
     Drivers.Values[2] := Saved <> '0';
 #endif
-#if UsbIpBundled
+#if UsbIpBundled == "1"
   Drivers.Add('Instalar USB/IP para áudio e resposta tátil do DualSense (opcional)');
 #endif
   ResultPath := ExpandConstant('{tmp}\nous-install-result.ini');
@@ -80,12 +83,18 @@ end;
 function NextButtonClick(CurPageID: Integer): Boolean;
 begin
   Result := True;
-#if GamepadBundled
-#if LocalGamepadCertificate
-  if (CurPageID = Drivers.ID) and Drivers.Values[2] then
-    Result := MsgBox('Instalar este driver beta adiciona confiança persistente, para todo o computador, no certificado de assinatura incluído.'#13#10 +
-      'Impressão digital: {#GamepadThumbprint}'#13#10 +
-      'As proteções de segurança do Windows permanecem ativas. Autorizar?', mbConfirmation, MB_YESNO) = IDYES;
+#if GamepadBundled == "1"
+#if LocalGamepadCertificate == "1"
+  if (CurPageID = Drivers.ID) and not WizardSilent then begin
+    GamepadConsent := False;
+    if Drivers.Values[2] then begin
+      GamepadConsent := MsgBox('Instalar este driver beta adiciona confiança persistente, para todo o computador, no certificado de assinatura verificado incluído.'#13#10 +
+        'Drivers instalados de versão igual ou superior permanecem inalterados.'#13#10 +
+        'Impressão digital: {#GamepadThumbprint}'#13#10 +
+        'As proteções de segurança do Windows permanecem ativas. Autorizar? Se recusar, o NOUS será instalado sem adicionar este driver.', mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES;
+      Drivers.Values[2] := GamepadConsent;
+    end;
+  end;
 #endif
 #endif
 end;
@@ -123,17 +132,19 @@ begin
     ' --internal-install-display-drivers ' + Selected(Drivers.Values[0]) +
     ' --internal-install-virtual-display-driver ' + Selected(not Drivers.Values[1]) +
     ' --internal-install-save-logs 1 --internal-install-result-path ' + AddQuotes(ResultPath);
-#if GamepadBundled
+#if GamepadBundled == "1"
+#if LocalGamepadCertificate == "1"
+  Params := Params + ' --internal-install-virtual-gamepad-driver ' + Selected(Drivers.Values[2] and GamepadConsent and not WizardSilent);
+  if Drivers.Values[2] and GamepadConsent and not WizardSilent then
+    Params := Params + ' --internal-gamepad-certificate-trust 1 --internal-gamepad-consent-thumbprint {#GamepadThumbprint}';
+#else
   Params := Params + ' --internal-install-virtual-gamepad-driver ' + Selected(Drivers.Values[2]);
-#if LocalGamepadCertificate
-  Params := Params + ' --internal-gamepad-certificate-trust ' + Selected(Drivers.Values[2]) +
-    ' --internal-gamepad-consent-thumbprint {#GamepadThumbprint}';
 #endif
 #else
   Params := Params + ' --internal-install-virtual-gamepad-driver 0';
 #endif
-#if UsbIpBundled
-#if GamepadBundled
+#if UsbIpBundled == "1"
+#if GamepadBundled == "1"
   Params := Params + ' --internal-install-usbip-transport ' + Selected(Drivers.Values[3]);
 #else
   Params := Params + ' --internal-install-usbip-transport ' + Selected(Drivers.Values[2]);

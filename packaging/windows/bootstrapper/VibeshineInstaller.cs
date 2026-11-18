@@ -4005,6 +4005,7 @@ namespace VibepolloInstaller {
       }
 
       var componentFailures = CollectInstallComponentFailures(logPath, installVirtualDisplayDriver);
+      exitCode = CompleteViGEmBusSetup(exitCode, logPath, componentFailures);
       var savedLogPath = string.Empty;
       var saveLogsWarning = string.Empty;
       var saveLogsDetail = string.Empty;
@@ -4016,12 +4017,7 @@ namespace VibepolloInstaller {
         }
       }
 
-      if (exitCode == 0 || exitCode == 3010) {
-        InstallerProgress.Report("Verificando e instalando ViGEmBus");
-        var driverExitCode = InstallBundledViGEmBus(logPath);
-        if (driverExitCode != 0) exitCode = driverExitCode;
-      }
-      var resultMessage = BuildResultMessage("Install (including Nefarius ViGEmBus)", exitCode, logPath);
+      var resultMessage = BuildResultMessage("Install", exitCode, logPath);
       if (saveInstallLogs) {
         if (!string.IsNullOrWhiteSpace(savedLogPath)) {
           resultMessage += " Saved log copy: " + savedLogPath;
@@ -4057,17 +4053,81 @@ namespace VibepolloInstaller {
       return result;
     }
 
+    private static int CompleteViGEmBusSetup(int msiExitCode, string logPath, List<string> warnings) {
+      if (msiExitCode != 0 && msiExitCode != 3010) return msiExitCode;
+      InstallerProgress.Report("Verificando e instalando ViGEmBus");
+      return CombineViGEmBusResult(msiExitCode, InstallBundledViGEmBus(logPath), warnings);
+    }
+
+    private static int CombineViGEmBusResult(int msiExitCode, int driverExitCode, List<string> warnings) {
+      if (driverExitCode == 3010 || driverExitCode == 1641) return 3010;
+      // A post-MSI shared component failure must not roll back the registered NOUS host.
+      if (driverExitCode != 0) {
+        warnings.Add("ViGEmBus indisponível (código " + driverExitCode + "). Consulte o log antes de reparar o controle virtual.");
+      }
+      return msiExitCode;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct ViGEmBusServiceStatus {
+      public uint Type, State, AcceptedControls, Win32ExitCode, ServiceExitCode, Checkpoint, WaitHint;
+    }
+
+    [DllImport("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    private static extern IntPtr OpenSCManager(string machine, string database, uint access);
+    [DllImport("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    private static extern IntPtr OpenService(IntPtr manager, string name, uint access);
+    [DllImport("advapi32.dll", SetLastError = true)]
+    private static extern bool QueryServiceStatus(IntPtr service, out ViGEmBusServiceStatus status);
+    [DllImport("advapi32.dll")]
+    private static extern bool CloseServiceHandle(IntPtr service);
+
+    private static uint QueryViGEmBusState() {
+      var manager = OpenSCManager(null, null, 1); // SC_MANAGER_CONNECT
+      if (manager == IntPtr.Zero) throw new System.ComponentModel.Win32Exception();
+      try {
+        var service = OpenService(manager, "ViGEmBus", 4); // SERVICE_QUERY_STATUS
+        if (service == IntPtr.Zero) {
+          var error = Marshal.GetLastWin32Error();
+          if (error == 1060) return 0; // Not installed.
+          throw new System.ComponentModel.Win32Exception(error);
+        }
+        try {
+          ViGEmBusServiceStatus status;
+          if (!QueryServiceStatus(service, out status)) throw new System.ComponentModel.Win32Exception();
+          return status.State;
+        } finally { CloseServiceHandle(service); }
+      } finally { CloseServiceHandle(manager); }
+    }
+
+    // Installer release 1.22.0 ships kernel driver 1.21.442.0.
+    private static readonly Version BundledViGEmBusDriverVersion = new Version(1, 21, 442, 0);
+
+    private static bool ShouldRunBundledViGEmBus(Version installedVersion, uint serviceState) {
+      if (installedVersion == null) return serviceState == 0; // Registered service, but version unknown: do not overwrite.
+      if (installedVersion > BundledViGEmBusDriverVersion) return false;
+      if (serviceState != 0 && serviceState != 1 && serviceState != 4) return false; // Transitional/paused.
+      return installedVersion < BundledViGEmBusDriverVersion || serviceState != 4;
+    }
+
     private static int InstallBundledViGEmBus(string logPath) {
       // Shared driver stays installed when NOUS is removed. Never downgrade an existing driver.
       var driverPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32", "drivers", "ViGEmBus.sys");
       try {
+        Version version = null;
         if (File.Exists(driverPath)) {
           var info = FileVersionInfo.GetVersionInfo(driverPath);
-          if (new Version(info.FileMajorPart, info.FileMinorPart, info.FileBuildPart, info.FilePrivatePart)
-              >= new Version(1, 21, 442, 0)) {
-            AppendInstallerLogMessage(logPath, "Preserving existing ViGEmBus driver " + info.FileVersion + ".");
-            return 0;
-          }
+          if (info.FileMajorPart != 0) version = new Version(info.FileMajorPart, info.FileMinorPart, info.FileBuildPart, info.FilePrivatePart);
+        }
+        var state = QueryViGEmBusState();
+        AppendInstallerLogMessage(logPath, "ViGEmBus inventory: driver " + (version == null ? "unavailable" : version.ToString()) + ", SCM state " + state + ".");
+        if (version != null && version >= BundledViGEmBusDriverVersion && state == 4) {
+          AppendInstallerLogMessage(logPath, "Preserving existing running ViGEmBus driver.");
+          return 0;
+        }
+        if (!ShouldRunBundledViGEmBus(version, state)) {
+          AppendInstallerLogMessage(logPath, "ViGEmBus setup skipped: existing driver cannot be safely replaced. Check driver version and service state.");
+          return 1062;
         }
         var directory = Path.Combine(Path.GetTempPath(), "NOUS-ViGEmBus-" + Guid.NewGuid().ToString("N"));
         var security = new DirectorySecurity();
@@ -4106,9 +4166,8 @@ namespace VibepolloInstaller {
           var code = process.ExitCode;
           AppendInstallerLogMessage(logPath, "ViGEmBus installer exit code: " + code);
           TryDeleteFile(installerPath);
-          if (code == 0 && !File.Exists(driverPath)) {
-            AppendInstallerLogMessage(logPath, "ViGEmBus driver missing after setup; restart and verify controller support.");
-            return 3010;
+          if (code == 0 && (!File.Exists(driverPath) || QueryViGEmBusState() != 4)) {
+            AppendInstallerLogMessage(logPath, "ViGEmBus not running after setup; restart and verify controller support.");
           }
           // NOUS service may have probed controllers before this driver was installed.
           // Require restart so its ViGEmClient reconnects against the newly installed bus.
@@ -6300,25 +6359,19 @@ namespace VibepolloInstaller {
       if (exitCode != 0 && exitCode != 3010) {
         TryRecoverServiceStateAfterFailedInstall();
       }
-      if (isInstallOperation && (exitCode == 0 || exitCode == 3010)) {
-        InstallerProgress.Report("Verificando e instalando ViGEmBus");
-        var driverExitCode = InstallBundledViGEmBus(logPath);
-        if (driverExitCode != 0) exitCode = driverExitCode;
+      var componentWarnings = isInstallOperation ? CollectInstallComponentFailures(logPath, false) : new List<string>();
+      if (isInstallOperation) {
+        exitCode = CompleteViGEmBusSetup(exitCode, logPath, componentWarnings);
       }
       var cliResult = new InstallerResult {
         Operation = isUninstallOperation ? InstallerOperation.Uninstall : InstallerOperation.Install,
         ExitCode = exitCode,
         Message = BuildResultMessage("CLI operation", exitCode, logPath),
-        LogPath = logPath
+        LogPath = logPath,
+        ComponentFailures = componentWarnings
       };
-      if (isInstallOperation) {
-        // The VHF custom action is best-effort. Surface its own log markers in
-        // direct /i and forwarded-msiexec use just as the interactive flow
-        // does, without assuming which virtual-display option was chosen.
-        var componentWarnings = CollectInstallComponentFailures(logPath, false);
-        if (componentWarnings.Count > 0) {
-          cliResult.Message += " Component warnings: " + string.Join(" ", componentWarnings);
-        }
+      if (componentWarnings.Count > 0) {
+        cliResult.Message += " Component warnings: " + string.Join(" ", componentWarnings);
       }
       AppendRecoveryDetails(cliResult, recoveryDetails);
       return ApplyStashedPayloadRecovery(cliResult, stashedPreviousPayload, "cli_restore_previous");

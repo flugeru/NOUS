@@ -35,13 +35,14 @@ internal static class InstallSuccessRegression {
     Func<Task<InstallerResult>> action = () => Task.FromResult(result);
     var operation = (Task)typeof(InstallerWindow).GetMethod("RunOperationAsync", PrivateInstance)
       .Invoke(window, new object[] { action, "Install", "Installing fixture...", typeof(InstallerWindow).Namespace.Replace("Installer", "") + " installation completed." });
-    Check(Field<TextBlock>(window, "_overlayTitleText").Text == title, name + ": final dialog title");
+    var actualTitle = Field<TextBlock>(window, "_overlayTitleText").Text;
+    Check(actualTitle == title, name + ": final dialog title: " + actualTitle);
     var message = Field<TextBlock>(window, "_overlayMessageText").Text;
-    Check(message.Contains("Save logs") == (warning || !result.Succeeded), name + ": support report prompt");
+    Check(message.Contains("Salve os registros") == (warning || !result.Succeeded), name + ": support report prompt");
     if (result.Succeeded && !warning) {
       Check(Field<TextBlock>(window, "_statusText").Foreground == Field<Brush>(window, "_statusSuccessBrush"), name + ": green success");
-      Check(Field<TextBlock>(window, "_statusDetailText").Text.Contains("restart is required") == reboot, name + ": reboot detail");
-      Check(!message.Contains("failed") && !message.Contains("warnings"), name + ": no alarming message");
+      Check(Field<TextBlock>(window, "_statusDetailText").Text.Contains("Reinicie o Windows") == reboot, name + ": reboot detail");
+      Check(!message.Contains("falhou") && !message.Contains("avisos"), name + ": no alarming message");
       Check(Field<Button>(window, "_overlaySecondaryButton").Visibility == Visibility.Collapsed, name + ": no report action");
     }
     // Render the actual production completion controls without showing a window.
@@ -61,6 +62,18 @@ internal static class InstallSuccessRegression {
   [STAThread]
   static int Main(string[] args) {
     var directory = args[0];
+    var shouldRun = typeof(InstallerRunner).GetMethod("ShouldRunBundledViGEmBus", PrivateStatic);
+    Func<Version, uint, bool> runs = (version, state) => (bool)shouldRun.Invoke(null, new object[] { version, state });
+    var bundled = new Version(1, 21, 442, 0);
+    Check(runs(null, 0) && runs(bundled, 0) && runs(bundled, 1), "Missing or stopped ViGEmBus needs bundled setup");
+    Check(runs(new Version(1, 20), 4), "Older running ViGEmBus can be upgraded");
+    Check(!runs(bundled, 4) && !runs(new Version(1, 23), 1) && !runs(bundled, 2) && !runs(null, 1), "Preserve healthy, newer, transitional or unknown registered driver");
+    var combine = typeof(InstallerRunner).GetMethod("CombineViGEmBusResult", PrivateStatic);
+    foreach (var scenario in new[] { new[] { 0, 0, 0, 0 }, new[] { 3010, 0, 3010, 0 }, new[] { 0, 3010, 3010, 0 }, new[] { 0, 1641, 3010, 0 }, new[] { 0, 1603, 0, 1 }, new[] { 3010, 1460, 3010, 1 } }) {
+      var warnings = new List<string>();
+      var exitCode = (int)combine.Invoke(null, new object[] { scenario[0], scenario[1], warnings });
+      Check(exitCode == scenario[2] && warnings.Count == scenario[3], "ViGEmBus result must preserve MSI success and restart state");
+    }
     var diagnostic = Path.Combine(directory, "shared-unavailable.log");
     Check(File.ReadAllText(diagnostic).Contains("USBIP_TRANSPORT_INFO"), "Readiness detail remains in the MSI log");
     var saved = (string)typeof(InstallerRunner).GetMethod("PersistInstallLog", PrivateStatic)
@@ -69,17 +82,17 @@ internal static class InstallSuccessRegression {
     foreach (var name in new[] { "shared-unavailable", "shared-ready", "new-ready" }) {
       var path = Path.Combine(directory, name + ".log");
       Check(Failures(path).Count == 0 && !Reboot(path), name + ": clean success classification");
-      Finish(directory, name, 0, path, "Complete", false, false);
+      Finish(directory, name, 0, path, "Concluído", false, false);
     }
     foreach (var name in new[] { "new-not-ready", "new-reboot" }) {
       var path = Path.Combine(directory, name + ".log");
       Check(Failures(path).Count == 0 && Reboot(path), name + ": reboot remains success");
-      Finish(directory, name, 3010, path, "Complete", false, true);
+      Finish(directory, name, 3010, path, "Concluído", false, true);
     }
     var failure = Path.Combine(directory, "staging-failed.log");
     Check(Failures(failure).Count > 0, "USB/IP staging error must remain visible");
-    Finish(directory, "optional-failure", 0, failure, "Install completed with warnings", true, false);
-    Finish(directory, "msi-failure", 1603, Path.Combine(directory, "new-ready.log"), "Install failed", false, false);
+    Finish(directory, "optional-failure", 0, failure, "Instalação concluída com avisos", true, false);
+    Finish(directory, "msi-failure", 1603, Path.Combine(directory, "new-ready.log"), "Falha na instalação", false, false);
     foreach (var marker in new[] { "VIRTUAL_DISPLAY_DRIVER_WARNING", "VIRTUAL_GAMEPAD_DRIVER_WARNING", "CustomAction InstallUsbIpTransport returned actual error code 1603" }) {
       var path = Path.Combine(directory, "required-failure.log");
       File.WriteAllText(path, marker);

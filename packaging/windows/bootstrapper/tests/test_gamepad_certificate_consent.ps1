@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../../..'))
 $sourcePath = Join-Path $repo 'packaging/windows/bootstrapper/VibeshineInstaller.cs'
-$source = Get-Content -LiteralPath $sourcePath -Raw
+$source = Get-Content -LiteralPath $sourcePath -Raw -Encoding UTF8
 $framework = Join-Path $env:WINDIR 'Microsoft.NET/Framework64/v4.0.30319'
 $assemblyPath = Join-Path ([IO.Path]::GetTempPath()) ('gamepad-consent-contract-' + [Guid]::NewGuid().ToString('N') + '.exe')
 $compilerArgs = @('/nologo', '/target:winexe', "/out:$assemblyPath")
@@ -47,8 +47,14 @@ try {
     Assert-ConsentArguments $arguments $true $false
 
     if ($source.Contains('_localGamepadCertificateTrustCheckBox')) { throw 'Separate beta certificate checkbox must be removed.' }
-    foreach ($disclosure in @('verified bundled signing certificate', 'Equal or newer installed drivers remain unchanged', 'Windows security enforcement stays enabled')) {
-        if (-not $source.Contains($disclosure)) { throw "Missing concise beta disclosure: $disclosure" }
+    $inno = Get-Content -LiteralPath (Join-Path $repo 'packaging/windows/inno/NOUS.iss') -Raw -Encoding UTF8
+    foreach ($disclosure in @('confian\u00e7a persistente', 'certificado de assinatura verificado inclu\u00eddo', 'Drivers instalados de vers\u00e3o igual ou superior permanecem inalterados', 'prote\u00e7\u00f5es de seguran\u00e7a do Windows')) {
+        if ($source -notmatch $disclosure -or $inno -notmatch $disclosure) { throw "Missing beta disclosure in bootstrapper or Inno: $disclosure" }
+    }
+    if ($inno -notmatch 'mbConfirmation, MB_YESNO or MB_DEFBUTTON2\) = IDYES;\s+Drivers\.Values\[2\] := GamepadConsent;' -or
+        $inno -notmatch 'Selected\(Drivers\.Values\[2\] and GamepadConsent and not WizardSilent\)' -or
+        $inno -notmatch 'if Drivers\.Values\[2\] and GamepadConsent and not WizardSilent then\s+Params := Params \+ '' --internal-gamepad-certificate-trust 1 --internal-gamepad-consent-thumbprint \{#GamepadThumbprint\}') {
+        throw 'Inno must skip a declined driver and bind affirmative consent to its exact certificate.'
     }
     [xml]$wix = Get-Content (Join-Path $repo 'packaging/windows/wix/custom_actions.wxs') -Raw
     $namespace = New-Object Xml.XmlNamespaceManager($wix.NameTable)

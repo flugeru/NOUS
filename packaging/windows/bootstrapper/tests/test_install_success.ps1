@@ -66,7 +66,7 @@ foreach ($scenario in @('shared-unavailable','shared-ready','new-ready','new-not
 }
 $framework = Join-Path $env:WINDIR 'Microsoft.NET/Framework64/v4.0.30319'
 $harness = Join-Path $output 'regression.cs'
-(Get-Content (Join-Path $PSScriptRoot 'install_success_regression.cs') -Raw).Replace('PRODUCT_NAMESPACE', 'VibepolloInstaller') | Set-Content $harness
+(Get-Content (Join-Path $PSScriptRoot 'install_success_regression.cs') -Raw -Encoding UTF8).Replace('PRODUCT_NAMESPACE', 'VibepolloInstaller') | Set-Content $harness -Encoding UTF8
 $exe = Join-Path $output 'install-success-regression.exe'
 $compile = @('/nologo','/target:exe','/main:InstallSuccessRegression',"/out:$exe")
 foreach ($reference in @('System.dll','System.Core.dll','System.Data.dll','System.Xml.dll','System.Xaml.dll','System.Windows.Forms.dll','WPF/WindowsBase.dll','WPF/PresentationCore.dll','WPF/PresentationFramework.dll')) { $compile += '/reference:' + (Join-Path $framework $reference) }
