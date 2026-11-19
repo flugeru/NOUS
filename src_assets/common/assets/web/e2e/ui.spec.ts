@@ -36,6 +36,7 @@ test('skip navigation stays hidden on activation but remains available by keyboa
 });
 
 test('search input has one cyan focus border even while hovered', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
   await host(page, 'windows');
   await page.goto('/v2/library');
   const search = page.locator('.library-search input');
@@ -48,6 +49,7 @@ test('search input has one cyan focus border even while hovered', async ({ page 
 });
 
 test('combobox has one cyan focus border for pointer and keyboard', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
   await host(page, 'windows');
   await page.goto('/v2/');
   await page.evaluate(() => {
@@ -104,7 +106,7 @@ test('pairing request prefills an editable device name without approving automat
   expect(submitted).toBeUndefined();
   await page.locator('#pair-name').fill('Sala');
   await page.locator('#pair-pin').fill('1234');
-  await page.locator('.pair-form button[type="submit"]').click();
+  await page.getByRole('button', { name: 'Approve device', exact: true }).click();
   await expect.poll(() => submitted).toEqual({ pin: '1234', name: 'Sala' });
 });
 
@@ -132,6 +134,24 @@ test('LAN pairing renders QR locally only after approval, then clears it on expi
   await expect(qr).toHaveCount(0);
   await expect(page.getByText(/Request unavailable, used or expired/)).toBeVisible();
   expect(actions).toEqual(['inspect', 'approve']);
+});
+
+test('integration exclusion drafts warn before leaving and survive canceled navigation', async ({ page }) => {
+  await host(page, 'linux');
+  await localRoute(page, '**/api/steam/status', route => route.fulfill({ json: { enabled: true, available: true } }));
+  await localRoute(page, '**/api/steam/games', route => route.fulfill({ json: { games: [{ appid: '42', name: 'Draft game', excluded: false }] } }));
+  await page.goto('/v2/integrations');
+  await page.getByText('Choose synchronized games', { exact: true }).click();
+  await page.getByRole('button', { name: 'Exclude', exact: true }).click();
+  await page.getByRole('link', { name: 'Overview', exact: true }).click();
+  const discard = page.getByRole('dialog', { name: 'Discard unsaved changes?' });
+  await expect(discard).toBeVisible();
+  await discard.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await expect(page).toHaveURL(/\/integrations$/);
+  await expect(page.getByRole('button', { name: 'Include', exact: true })).toBeVisible();
+  await page.getByRole('link', { name: 'Overview', exact: true }).click();
+  await discard.getByRole('button', { name: 'Discard and leave', exact: true }).click();
+  await expect(page).toHaveURL(/\/v2\/$/);
 });
 
 test('Artemis OTP stays separate from LAN QR and clears secrets on expiry', async ({ page }) => {
@@ -1672,6 +1692,7 @@ test('manual library order persists full list and reports rejected writes', asyn
   await page.getByRole('menuitem', { name: 'Move earlier', exact: true }).click();
   await expect.poll(() => orders).toEqual([['z', 'a', 'hidden']]);
   await expect(items).toHaveText(['Zebra', 'Alpha', 'Hidden']);
+  await expect(page).toHaveURL(/sort=manual/);
   await page.reload();
   await expect(items).toHaveText(['Zebra', 'Alpha', 'Hidden']);
   reject = true;

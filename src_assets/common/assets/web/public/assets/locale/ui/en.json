@@ -2493,6 +2493,8 @@
           "virtual_display_outputs": "Leave empty to use the managed virtual-screen pool. Explicit DRM connector names are an advanced override."
         }
       },
+      "discard_title": "Discard unsaved changes?",
+      "discard": "Discard and leave",
       "leave_warning": "You have unsaved changes. Leave this page and discard them?",
       "reset_warning": "This restores the desktop and clears saved display state. It can interrupt the current stream.",
       "more_options": "More settings",

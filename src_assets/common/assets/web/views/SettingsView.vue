@@ -2,6 +2,7 @@
 import { computed, nextTick, onMounted, onBeforeUnmount, reactive, ref, toRaw, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
+import { confirmDiscard } from '@/composables/useUnsavedChanges';
 import { useSystemStore, type HostMetadata } from '@/stores/system';
 import LinuxCaptureStatus from '@/components/settings/LinuxCaptureStatus.vue';
 import NetworkPortDetails from '@/components/settings/NetworkPortDetails.vue';
@@ -1007,7 +1008,7 @@ function beforeUnload(event: BeforeUnloadEvent): void {
   }
 }
 onBeforeRouteLeave(
-  () => (!isDirty.value && !saving.value) || window.confirm(t('ui.settings.leave_warning')),
+  () => (!isDirty.value && !saving.value) || confirmDiscard(),
 );
 onMounted(() => {
   void load();

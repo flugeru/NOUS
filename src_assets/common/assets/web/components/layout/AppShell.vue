@@ -3,9 +3,12 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 
-import { UiIcon } from '@/components/ui';
+import { ConfirmDialog, UiIcon } from '@/components/ui';
+import { discardDialogOpen, resolveDiscard } from '@/composables/useUnsavedChanges';
 import { useSystemStore } from '@/stores/system';
 import UpdateNotice from './UpdateNotice.vue';
+
+onBeforeUnmount(() => resolveDiscard(false));
 
 const system = useSystemStore();
 const route = useRoute();
@@ -294,5 +297,8 @@ onBeforeUnmount(() => {
       <UpdateNotice :show-failure="route.name === 'maintenance'" />
       <slot />
     </main>
+    <ConfirmDialog :open="discardDialogOpen" :title="t('ui.settings.discard_title')"
+      :description="t('ui.settings.leave_warning')" :confirm-label="t('ui.settings.discard')"
+      tone="danger" @confirm="resolveDiscard(true)" @cancel="resolveDiscard(false)" />
   </div>
 </template>

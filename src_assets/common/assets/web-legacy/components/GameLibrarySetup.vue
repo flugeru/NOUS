@@ -618,7 +618,7 @@ onBeforeUnmount(() => {
   box-shadow: none;
   border-color: var(--vs-color-focus, #80d7df);
 }
-.game-library-setup input[type='checkbox']:focus-visible {
+.game-library-setup__settings input[type='checkbox']:focus-visible {
   outline: 2px solid var(--vs-color-focus, #80d7df);
   outline-offset: 2px;
 }

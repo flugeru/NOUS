@@ -87,6 +87,8 @@
       "unsaved_one": "1 alteração não salva",
       "unsaved_region": "Ajustes não salvos",
       "unsaved_short": "{count} não salvos",
+      "discard_title": "Descartar alterações não salvas?",
+      "discard": "Descartar e sair",
       "leave_warning": "Há alterações não salvas. Sair e descartá-las?",
       "reset_warning": "Isso restaura a área de trabalho e limpa o estado salvo das telas. Pode interromper a transmissão.",
       "more_options": "Mais ajustes",

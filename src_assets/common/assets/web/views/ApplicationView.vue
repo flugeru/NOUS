@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { providerSupported } from '@/utils/providerCapabilities';
 import { computed, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue';
-import { useUnsavedChanges } from '@/composables/useUnsavedChanges';
+import { confirmDiscard, useUnsavedChanges } from '@/composables/useUnsavedChanges';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -3027,7 +3027,7 @@ async function submit(): Promise<void> {
 }
 
 async function cancel(): Promise<void> {
-  if (isDirty.value && !window.confirm(t('ui.settings.leave_warning'))) return;
+  if (isDirty.value && !(await confirmDiscard())) return;
   leavingAfterSave.value = true;
   await restoreOriginalRtxHdrLiveOverrides();
   void router.push({ name: 'library' });

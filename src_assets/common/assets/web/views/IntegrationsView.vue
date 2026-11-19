@@ -152,7 +152,15 @@ interface LibraryApp {
   'remote-monitor-profile'?: unknown;
 }
 
-type IntegrationId = 'steam' | 'lutris' | 'mangohud' | 'playnite' | 'rtss' | 'lossless' | 'vigem' | 'vulkan';
+type IntegrationId =
+  | 'steam'
+  | 'lutris'
+  | 'mangohud'
+  | 'playnite'
+  | 'rtss'
+  | 'lossless'
+  | 'vigem'
+  | 'vulkan';
 type SteamGameFilter = 'all' | 'included' | 'excluded';
 type PendingAction =
   | 'playnite-install'
@@ -219,7 +227,10 @@ const confirmOpen = ref(false);
 const pendingAction = ref<PendingAction | null>(null);
 
 const playniteAutoSyncCount = computed(
-  () => libraryApps.value.filter((app) => app['playnite-managed'] === 'auto' && app['remote-monitor-profile'] !== true).length,
+  () =>
+    libraryApps.value.filter(
+      (app) => app['playnite-managed'] === 'auto' && app['remote-monitor-profile'] !== true,
+    ).length,
 );
 
 const isWindows = computed(() =>
@@ -253,7 +264,10 @@ function lutrisGameId(game: LutrisGame): string {
 }
 
 function lutrisGameName(game: LutrisGame): string {
-  return String(game.name ?? '').trim() || t('ui.integrations.lutris.unknownGame', { id: lutrisGameId(game) });
+  return (
+    String(game.name ?? '').trim() ||
+    t('ui.integrations.lutris.unknownGame', { id: lutrisGameId(game) })
+  );
 }
 
 function parseLibraryApps(payload: unknown): LibraryApp[] {
@@ -326,8 +340,14 @@ const filteredLutrisGames = computed(() => {
       const excluded = lutrisGameExcluded(game);
       if (lutrisGameFilter.value === 'included' && excluded) return false;
       if (lutrisGameFilter.value === 'excluded' && !excluded) return false;
-      return !query || lutrisGameName(game).toLocaleLowerCase().includes(query) ||
-        lutrisGameId(game).includes(query) || String(game.runner ?? '').toLocaleLowerCase().includes(query);
+      return (
+        !query ||
+        lutrisGameName(game).toLocaleLowerCase().includes(query) ||
+        lutrisGameId(game).includes(query) ||
+        String(game.runner ?? '')
+          .toLocaleLowerCase()
+          .includes(query)
+      );
     })
     .sort((left, right) => lutrisGameName(left).localeCompare(lutrisGameName(right)));
 });
@@ -335,7 +355,8 @@ const filteredLutrisGames = computed(() => {
 function setLutrisDraftExclusion(game: LutrisGame, excluded: boolean): void {
   const id = lutrisGameId(game);
   const next = new Set(lutrisExclusionDraft.value);
-  if (excluded) next.add(id); else next.delete(id);
+  if (excluded) next.add(id);
+  else next.delete(id);
   lutrisExclusionDraft.value = next;
 }
 
@@ -343,7 +364,8 @@ function setVisibleLutrisDraftExclusions(excluded: boolean): void {
   const next = new Set(lutrisExclusionDraft.value);
   for (const game of filteredLutrisGames.value) {
     const id = lutrisGameId(game);
-    if (excluded) next.add(id); else next.delete(id);
+    if (excluded) next.add(id);
+    else next.delete(id);
   }
   lutrisExclusionDraft.value = next;
 }
@@ -482,7 +504,8 @@ async function load(preserveNotice = false): Promise<void> {
   if (!system.metadata) await system.refreshHost();
 
   const steamResult = providerSupported(system.metadata, 'steam')
-    ? (await Promise.allSettled([apiGet<SteamStatus>('/api/steam/status')]))[0] : undefined;
+    ? (await Promise.allSettled([apiGet<SteamStatus>('/api/steam/status')]))[0]
+    : undefined;
   const lutrisResult = providerSupported(system.metadata, 'lutris')
     ? (await Promise.allSettled([apiGet<LutrisStatus>('/api/lutris/status')]))[0]
     : undefined;
@@ -503,7 +526,8 @@ async function load(preserveNotice = false): Promise<void> {
     windowsResults;
 
   if (steamResult?.status === 'fulfilled') steam.value = steamResult.value;
-  else if (steamResult) nextErrors.steam = message(steamResult.reason, t('ui.integrations.errors.steamStatus'));
+  else if (steamResult)
+    nextErrors.steam = message(steamResult.reason, t('ui.integrations.errors.steamStatus'));
 
   if (lutrisResult?.status === 'fulfilled') lutris.value = lutrisResult.value;
   else if (lutrisResult)
@@ -550,8 +574,10 @@ async function load(preserveNotice = false): Promise<void> {
     nextErrors.playnite = message(appsResult.reason, t('ui.integrations.errors.playniteApps'));
   }
 
-  if (steamResult?.status === 'fulfilled') await loadSteamGames();
-  if (lutrisResult?.status === 'fulfilled') await loadLutrisGames();
+  if (steamResult?.status === 'fulfilled')
+    await loadSteamGames(!steamExclusionsDirty.value && !steamExclusionsSaving.value);
+  if (lutrisResult?.status === 'fulfilled')
+    await loadLutrisGames(!lutrisExclusionsDirty.value && !lutrisExclusionsSaving.value);
 
   errors.value = nextErrors;
   loading.value = false;
@@ -648,12 +674,22 @@ function lutrisSummary(): IntegrationSummary {
     id: 'lutris',
     name,
     description,
-    status: !enabled ? t('_common.disabled') : value.available ? t('ui.integrations.status.ready') : t('ui.integrations.status.notDetected'),
+    status: !enabled
+      ? t('_common.disabled')
+      : value.available
+        ? t('ui.integrations.status.ready')
+        : t('ui.integrations.status.notDetected'),
     tone: enabled && value.available ? 'success' : enabled ? 'warning' : 'neutral',
     details: [
-      value.game_count !== undefined ? t('ui.integrations.lutris.gameCount', { count: value.game_count }) : '',
-      value.importable_game_count !== undefined ? t('ui.integrations.lutris.importableCount', { count: value.importable_game_count }) : '',
-      value.steam_game_count ? t('ui.integrations.lutris.steamHandledBySteam', { count: value.steam_game_count }) : '',
+      value.game_count !== undefined
+        ? t('ui.integrations.lutris.gameCount', { count: value.game_count })
+        : '',
+      value.importable_game_count !== undefined
+        ? t('ui.integrations.lutris.importableCount', { count: value.importable_game_count })
+        : '',
+      value.steam_game_count
+        ? t('ui.integrations.lutris.steamHandledBySteam', { count: value.steam_game_count })
+        : '',
     ].filter(Boolean),
   };
 }
@@ -862,7 +898,10 @@ function failedSummary(id: IntegrationId, name: string, description: string): In
 }
 
 const summaries = computed(() => {
-  if (isLinux.value) return [steamSummary(), lutrisSummary(), mangoHudSummary()].filter((item) => providerSupported(system.metadata, item.id));
+  if (isLinux.value)
+    return [steamSummary(), lutrisSummary(), mangoHudSummary()].filter((item) =>
+      providerSupported(system.metadata, item.id),
+    );
   if (isWindows.value) {
     return [
       ...(providerSupported(system.metadata, 'steam') ? [steamSummary()] : []),
@@ -882,13 +921,15 @@ const dialogCopy = computed(() => {
   switch (pendingAction.value) {
     case 'playnite-install':
       return {
-        title: playnite.value?.installed || playnite.value?.legacy_plugin
-          ? t('ui.integrations.confirm.playniteUpdateTitle')
-          : t('ui.integrations.confirm.playniteInstallTitle'),
+        title:
+          playnite.value?.installed || playnite.value?.legacy_plugin
+            ? t('ui.integrations.confirm.playniteUpdateTitle')
+            : t('ui.integrations.confirm.playniteInstallTitle'),
         description: t('ui.integrations.confirm.playniteInstallDescription'),
-        confirm: playnite.value?.installed || playnite.value?.legacy_plugin
-          ? t('ui.integrations.actions.updateExtension')
-          : t('ui.integrations.actions.installExtension'),
+        confirm:
+          playnite.value?.installed || playnite.value?.legacy_plugin
+            ? t('ui.integrations.actions.updateExtension')
+            : t('ui.integrations.actions.installExtension'),
         tone: 'default' as const,
       };
     case 'playnite-uninstall':
@@ -1090,17 +1131,24 @@ async function syncLutris(): Promise<void> {
   notice.value = '';
   try {
     const result = await apiPost<MutationResult>('/api/lutris/force_sync', {});
-    if (result.status === false) throw new Error(result.error || t('ui.integrations.errors.lutrisSyncRejected'));
+    if (result.status === false)
+      throw new Error(result.error || t('ui.integrations.errors.lutrisSyncRejected'));
     notice.value = t('ui.integrations.notices.lutrisSynced');
     await load(true);
   } catch (cause) {
-    errors.value = { ...errors.value, lutris: message(cause, t('ui.integrations.errors.lutrisSyncFailed')) };
+    errors.value = {
+      ...errors.value,
+      lutris: message(cause, t('ui.integrations.errors.lutrisSyncFailed')),
+    };
   } finally {
     syncing.value = false;
   }
 }
 
-async function setProviderEnabled(provider: 'steam' | 'lutris' | 'playnite', enabled: boolean): Promise<void> {
+async function setProviderEnabled(
+  provider: 'steam' | 'lutris' | 'playnite',
+  enabled: boolean,
+): Promise<void> {
   if (provider === 'steam' && steam.value?.forced) return;
   try {
     await apiPatch('/api/config', { [`${provider}_enabled`]: enabled });
@@ -1122,13 +1170,17 @@ async function setLutrisPolicy(
     await apiPatch('/api/config', { [key]: value });
     if (lutris.value) {
       if (key === 'lutris_auto_sync') lutris.value.auto_sync = value;
-      else if (key === 'lutris_autosync_remove_uninstalled') lutris.value.autosync_remove_uninstalled = value;
+      else if (key === 'lutris_autosync_remove_uninstalled')
+        lutris.value.autosync_remove_uninstalled = value;
       else lutris.value.include_steam = value;
     }
     notice.value = t('ui.integrations.notices.providerUpdated');
     if (key === 'lutris_include_steam') await loadLutrisGames(false);
   } catch (cause) {
-    errors.value = { ...errors.value, lutris: message(cause, t('ui.integrations.errors.providerUpdateFailed')) };
+    errors.value = {
+      ...errors.value,
+      lutris: message(cause, t('ui.integrations.errors.providerUpdateFailed')),
+    };
   }
 }
 
@@ -1139,13 +1191,18 @@ async function saveLutrisExclusions(): Promise<void> {
     const gamesById = new Map(lutrisGames.value.map((game) => [lutrisGameId(game), game]));
     const next = [...lutrisExclusionDraft.value]
       .map((id) => ({ id, name: gamesById.has(id) ? lutrisGameName(gamesById.get(id)!) : '' }))
-      .sort((left, right) => left.name.localeCompare(right.name) || left.id.localeCompare(right.id));
+      .sort(
+        (left, right) => left.name.localeCompare(right.name) || left.id.localeCompare(right.id),
+      );
     await apiPatch('/api/config', { lutris_exclude_games: next });
     if (lutris.value) lutris.value.exclude_games = next;
     lutrisExclusionOriginal.value = new Set(lutrisExclusionDraft.value);
     notice.value = t('ui.integrations.notices.lutrisExclusionsUpdated');
   } catch (cause) {
-    errors.value = { ...errors.value, lutris: message(cause, t('ui.integrations.errors.exclusionsUpdateFailed')) };
+    errors.value = {
+      ...errors.value,
+      lutris: message(cause, t('ui.integrations.errors.exclusionsUpdateFailed')),
+    };
   } finally {
     lutrisExclusionsSaving.value = false;
   }
@@ -1264,7 +1321,17 @@ async function saveMangoSettings(): Promise<void> {
   }
 }
 
-useUnsavedChanges(computed(() => mangoDirty.value || mangoSaving.value));
+useUnsavedChanges(
+  computed(
+    () =>
+      mangoDirty.value ||
+      mangoSaving.value ||
+      steamExclusionsDirty.value ||
+      steamExclusionsSaving.value ||
+      lutrisExclusionsDirty.value ||
+      lutrisExclusionsSaving.value,
+  ),
+);
 const route = useRoute();
 watch(
   () => [loading.value, route.hash],
@@ -1274,9 +1341,12 @@ watch(
     document.getElementById(route.hash.slice(1))?.scrollIntoView({ block: 'start' });
   },
 );
-watch(() => system.metadata, (metadata, previous) => {
-  if (metadata && !previous) void nextTick(() => load());
-});
+watch(
+  () => system.metadata,
+  (metadata, previous) => {
+    if (metadata && !previous) void nextTick(() => load());
+  },
+);
 onMounted(() => void load());
 const librarySetupOpen = ref(false);
 function libraryRequest(
@@ -1544,126 +1614,126 @@ function libraryRequest(
                     compact
                   />
                 </div>
-              <div class="game-manager__toolbar">
-                <label class="game-manager__search">
-                  <span class="vs-sr-only">{{ t('ui.integrations.steam.searchGames') }}</span>
-                  <UiIcon name="search" :size="16" aria-hidden="true" />
-                  <input
-                    v-model="steamGameSearch"
-                    type="search"
-                    :placeholder="t('ui.integrations.steam.searchGames')"
-                  />
-                </label>
-                <label class="game-manager__filter">
-                  <span class="vs-sr-only">{{ t('ui.integrations.steam.filterGames') }}</span>
-                  <select v-model="steamGameFilter">
-                    <option value="all">{{ t('ui.integrations.steam.filters.all') }}</option>
-                    <option value="included">
-                      {{ t('ui.integrations.steam.filters.included') }}
-                    </option>
-                    <option value="excluded">
-                      {{ t('ui.integrations.steam.filters.excluded') }}
-                    </option>
-                  </select>
-                </label>
-              </div>
-              <div class="game-manager__bulk">
-                <span>{{
-                  t('ui.integrations.steam.resultCount', { count: filteredSteamGames.length })
-                }}</span>
-                <div>
-                  <AppButton
-                    :label="t('ui.integrations.steam.includeResults')"
-                    variant="tertiary"
-                    size="compact"
-                    :disabled="!filteredSteamGames.length"
-                    @click="setVisibleDraftExclusions(false)"
-                  />
-                  <AppButton
-                    :label="t('ui.integrations.steam.excludeResults')"
-                    variant="tertiary"
-                    size="compact"
-                    :disabled="!filteredSteamGames.length"
-                    @click="setVisibleDraftExclusions(true)"
-                  />
+                <div class="game-manager__toolbar">
+                  <label class="game-manager__search">
+                    <span class="vs-sr-only">{{ t('ui.integrations.steam.searchGames') }}</span>
+                    <UiIcon name="search" :size="16" aria-hidden="true" />
+                    <input
+                      v-model="steamGameSearch"
+                      type="search"
+                      :placeholder="t('ui.integrations.steam.searchGames')"
+                    />
+                  </label>
+                  <label class="game-manager__filter">
+                    <span class="vs-sr-only">{{ t('ui.integrations.steam.filterGames') }}</span>
+                    <select v-model="steamGameFilter">
+                      <option value="all">{{ t('ui.integrations.steam.filters.all') }}</option>
+                      <option value="included">
+                        {{ t('ui.integrations.steam.filters.included') }}
+                      </option>
+                      <option value="excluded">
+                        {{ t('ui.integrations.steam.filters.excluded') }}
+                      </option>
+                    </select>
+                  </label>
                 </div>
-              </div>
-              <p v-if="steamGamesLoading" class="game-manager__notice">
-                {{ t('ui.integrations.steam.loadingGames') }}
-              </p>
-              <p
-                v-else-if="steamGamesError"
-                class="game-manager__notice game-manager__notice--error"
-              >
-                {{ steamGamesError }}
-              </p>
-              <p v-else-if="!steamGames.length" class="game-manager__notice">
-                {{ t('ui.integrations.steam.noGames') }}
-              </p>
-              <p v-else-if="!filteredSteamGames.length" class="game-manager__notice">
-                {{ t('ui.integrations.steam.noMatchingGames') }}
-              </p>
-              <div v-else class="game-manager__list">
-                <div
-                  v-for="game in filteredSteamGames"
-                  :key="steamGameId(game)"
-                  class="game-manager__game"
+                <div class="game-manager__bulk">
+                  <span>{{
+                    t('ui.integrations.steam.resultCount', { count: filteredSteamGames.length })
+                  }}</span>
+                  <div>
+                    <AppButton
+                      :label="t('ui.integrations.steam.includeResults')"
+                      variant="tertiary"
+                      size="compact"
+                      :disabled="!filteredSteamGames.length"
+                      @click="setVisibleDraftExclusions(false)"
+                    />
+                    <AppButton
+                      :label="t('ui.integrations.steam.excludeResults')"
+                      variant="tertiary"
+                      size="compact"
+                      :disabled="!filteredSteamGames.length"
+                      @click="setVisibleDraftExclusions(true)"
+                    />
+                  </div>
+                </div>
+                <p v-if="steamGamesLoading" class="game-manager__notice">
+                  {{ t('ui.integrations.steam.loadingGames') }}
+                </p>
+                <p
+                  v-else-if="steamGamesError"
+                  class="game-manager__notice game-manager__notice--error"
                 >
-                  <span class="game-manager__game-icon" aria-hidden="true"
-                    ><UiIcon name="gamepad" :size="16"
-                  /></span>
-                  <span class="game-manager__game-copy">
-                    <strong>{{ steamGameName(game) }}</strong>
-                    <small>
-                      {{ t('ui.integrations.steam.appId', { id: steamGameId(game) }) }}
-                      <template v-if="game.filtered">
-                        · {{ t('ui.integrations.steam.filteredTool') }}</template
-                      >
-                    </small>
-                  </span>
-                  <StatusBadge
-                    :label="
-                      gameExcluded(game)
-                        ? t('ui.integrations.steam.excluded')
-                        : t('ui.integrations.steam.included')
-                    "
-                    :tone="gameExcluded(game) ? 'neutral' : 'success'"
-                    compact
-                  />
-                  <AppButton
-                    :label="
-                      gameExcluded(game)
-                        ? t('ui.integrations.steam.include')
-                        : t('ui.integrations.steam.exclude')
-                    "
-                    variant="tertiary"
-                    size="compact"
-                    @click="setDraftExclusion(game, !gameExcluded(game))"
-                  />
+                  {{ steamGamesError }}
+                </p>
+                <p v-else-if="!steamGames.length" class="game-manager__notice">
+                  {{ t('ui.integrations.steam.noGames') }}
+                </p>
+                <p v-else-if="!filteredSteamGames.length" class="game-manager__notice">
+                  {{ t('ui.integrations.steam.noMatchingGames') }}
+                </p>
+                <div v-else class="game-manager__list">
+                  <div
+                    v-for="game in filteredSteamGames"
+                    :key="steamGameId(game)"
+                    class="game-manager__game"
+                  >
+                    <span class="game-manager__game-icon" aria-hidden="true"
+                      ><UiIcon name="gamepad" :size="16"
+                    /></span>
+                    <span class="game-manager__game-copy">
+                      <strong>{{ steamGameName(game) }}</strong>
+                      <small>
+                        {{ t('ui.integrations.steam.appId', { id: steamGameId(game) }) }}
+                        <template v-if="game.filtered">
+                          · {{ t('ui.integrations.steam.filteredTool') }}</template
+                        >
+                      </small>
+                    </span>
+                    <StatusBadge
+                      :label="
+                        gameExcluded(game)
+                          ? t('ui.integrations.steam.excluded')
+                          : t('ui.integrations.steam.included')
+                      "
+                      :tone="gameExcluded(game) ? 'neutral' : 'success'"
+                      compact
+                    />
+                    <AppButton
+                      :label="
+                        gameExcluded(game)
+                          ? t('ui.integrations.steam.include')
+                          : t('ui.integrations.steam.exclude')
+                      "
+                      variant="tertiary"
+                      size="compact"
+                      @click="setDraftExclusion(game, !gameExcluded(game))"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div class="game-manager__footer">
-                <span v-if="steamExclusionsDirty">{{ t('ui.integrations.unsavedChanges') }}</span>
-                <span v-else>{{ t('ui.integrations.saved') }}</span>
-                <div>
-                  <AppButton
-                    :label="t('_common.cancel')"
-                    variant="tertiary"
-                    size="compact"
-                    :disabled="!steamExclusionsDirty"
-                    @click="resetSteamExclusionDraft"
-                  />
-                  <AppButton
-                    :label="t('_common.apply')"
-                    variant="primary"
-                    size="compact"
-                    :busy="steamExclusionsSaving"
-                    :busy-label="t('ui.integrations.applying')"
-                    :disabled="!steamExclusionsDirty"
-                    @click="saveSteamExclusions"
-                  />
+                <div class="game-manager__footer">
+                  <span v-if="steamExclusionsDirty">{{ t('ui.integrations.unsavedChanges') }}</span>
+                  <span v-else>{{ t('ui.integrations.saved') }}</span>
+                  <div>
+                    <AppButton
+                      :label="t('_common.cancel')"
+                      variant="tertiary"
+                      size="compact"
+                      :disabled="!steamExclusionsDirty"
+                      @click="resetSteamExclusionDraft"
+                    />
+                    <AppButton
+                      :label="t('_common.apply')"
+                      variant="primary"
+                      size="compact"
+                      :busy="steamExclusionsSaving"
+                      :busy-label="t('ui.integrations.applying')"
+                      :disabled="!steamExclusionsDirty"
+                      @click="saveSteamExclusions"
+                    />
+                  </div>
                 </div>
-              </div>
               </div>
             </details>
           </section>
@@ -1680,16 +1750,58 @@ function libraryRequest(
               </div>
             </div>
             <div class="integration-settings__rows">
-              <SettingRow :label="t('ui.integrations.lutris.autoSync')" :description="t('ui.integrations.lutris.autoSyncDescription')" control-id="lutris-auto-sync">
-                <input id="lutris-auto-sync" class="integration-switch" type="checkbox" :checked="lutris?.auto_sync !== false" @change="setLutrisPolicy('lutris_auto_sync', ($event.target as HTMLInputElement).checked)" />
+              <SettingRow
+                :label="t('ui.integrations.lutris.autoSync')"
+                :description="t('ui.integrations.lutris.autoSyncDescription')"
+                control-id="lutris-auto-sync"
+              >
+                <input
+                  id="lutris-auto-sync"
+                  class="integration-switch"
+                  type="checkbox"
+                  :checked="lutris?.auto_sync !== false"
+                  @change="
+                    setLutrisPolicy('lutris_auto_sync', ($event.target as HTMLInputElement).checked)
+                  "
+                />
               </SettingRow>
-              <SettingRow :label="t('ui.integrations.lutris.removeUninstalled')" :description="t('ui.integrations.lutris.removeUninstalledDescription')" control-id="lutris-remove-uninstalled">
-                <input id="lutris-remove-uninstalled" class="integration-switch" type="checkbox" :checked="lutris?.autosync_remove_uninstalled !== false" @change="setLutrisPolicy('lutris_autosync_remove_uninstalled', ($event.target as HTMLInputElement).checked)" />
+              <SettingRow
+                :label="t('ui.integrations.lutris.removeUninstalled')"
+                :description="t('ui.integrations.lutris.removeUninstalledDescription')"
+                control-id="lutris-remove-uninstalled"
+              >
+                <input
+                  id="lutris-remove-uninstalled"
+                  class="integration-switch"
+                  type="checkbox"
+                  :checked="lutris?.autosync_remove_uninstalled !== false"
+                  @change="
+                    setLutrisPolicy(
+                      'lutris_autosync_remove_uninstalled',
+                      ($event.target as HTMLInputElement).checked,
+                    )
+                  "
+                />
               </SettingRow>
               <details class="integration-advanced">
                 <summary>{{ t('ui.integrations.lutris.advancedSettings') }}</summary>
-                <SettingRow :label="t('ui.integrations.lutris.includeSteam')" :description="t('ui.integrations.lutris.includeSteamDescription')" control-id="lutris-include-steam">
-                  <input id="lutris-include-steam" class="integration-switch" type="checkbox" :checked="lutris?.include_steam === true" @change="setLutrisPolicy('lutris_include_steam', ($event.target as HTMLInputElement).checked)" />
+                <SettingRow
+                  :label="t('ui.integrations.lutris.includeSteam')"
+                  :description="t('ui.integrations.lutris.includeSteamDescription')"
+                  control-id="lutris-include-steam"
+                >
+                  <input
+                    id="lutris-include-steam"
+                    class="integration-switch"
+                    type="checkbox"
+                    :checked="lutris?.include_steam === true"
+                    @change="
+                      setLutrisPolicy(
+                        'lutris_include_steam',
+                        ($event.target as HTMLInputElement).checked,
+                      )
+                    "
+                  />
                 </SettingRow>
               </details>
             </div>
@@ -1697,53 +1809,139 @@ function libraryRequest(
             <div class="game-manager" aria-labelledby="lutris-exclusions-heading">
               <div class="game-manager__heading">
                 <div>
-                  <h4 id="lutris-exclusions-heading">{{ t('ui.integrations.lutris.exclusionsTitle') }}</h4>
+                  <h4 id="lutris-exclusions-heading">
+                    {{ t('ui.integrations.lutris.exclusionsTitle') }}
+                  </h4>
                   <small>{{ t('ui.integrations.lutris.exclusionsDescription') }}</small>
                 </div>
-                <StatusBadge :label="t('ui.integrations.lutris.excludedCount', { count: lutrisExcludedCount })" :tone="lutrisExclusionsDirty ? 'warning' : 'neutral'" compact />
+                <StatusBadge
+                  :label="t('ui.integrations.lutris.excludedCount', { count: lutrisExcludedCount })"
+                  :tone="lutrisExclusionsDirty ? 'warning' : 'neutral'"
+                  compact
+                />
               </div>
               <div class="game-manager__toolbar">
                 <label class="game-manager__search">
                   <span class="vs-sr-only">{{ t('ui.integrations.lutris.searchGames') }}</span>
                   <UiIcon name="search" :size="16" aria-hidden="true" />
-                  <input v-model="lutrisGameSearch" type="search" :placeholder="t('ui.integrations.lutris.searchGames')" />
+                  <input
+                    v-model="lutrisGameSearch"
+                    type="search"
+                    :placeholder="t('ui.integrations.lutris.searchGames')"
+                  />
                 </label>
                 <label class="game-manager__filter">
                   <span class="vs-sr-only">{{ t('ui.integrations.lutris.filterGames') }}</span>
                   <select v-model="lutrisGameFilter">
                     <option value="all">{{ t('ui.integrations.steam.filters.all') }}</option>
-                    <option value="included">{{ t('ui.integrations.steam.filters.included') }}</option>
-                    <option value="excluded">{{ t('ui.integrations.steam.filters.excluded') }}</option>
+                    <option value="included">
+                      {{ t('ui.integrations.steam.filters.included') }}
+                    </option>
+                    <option value="excluded">
+                      {{ t('ui.integrations.steam.filters.excluded') }}
+                    </option>
                   </select>
                 </label>
               </div>
               <div class="game-manager__bulk">
-                <span>{{ t('ui.integrations.lutris.resultCount', { count: filteredLutrisGames.length }) }}</span>
+                <span>{{
+                  t('ui.integrations.lutris.resultCount', { count: filteredLutrisGames.length })
+                }}</span>
                 <div>
-                  <AppButton :label="t('ui.integrations.steam.includeResults')" variant="tertiary" size="compact" :disabled="!filteredLutrisGames.length" @click="setVisibleLutrisDraftExclusions(false)" />
-                  <AppButton :label="t('ui.integrations.steam.excludeResults')" variant="tertiary" size="compact" :disabled="!filteredLutrisGames.length" @click="setVisibleLutrisDraftExclusions(true)" />
+                  <AppButton
+                    :label="t('ui.integrations.steam.includeResults')"
+                    variant="tertiary"
+                    size="compact"
+                    :disabled="!filteredLutrisGames.length"
+                    @click="setVisibleLutrisDraftExclusions(false)"
+                  />
+                  <AppButton
+                    :label="t('ui.integrations.steam.excludeResults')"
+                    variant="tertiary"
+                    size="compact"
+                    :disabled="!filteredLutrisGames.length"
+                    @click="setVisibleLutrisDraftExclusions(true)"
+                  />
                 </div>
               </div>
-              <p v-if="lutrisGamesLoading" class="game-manager__notice">{{ t('ui.integrations.lutris.loadingGames') }}</p>
-              <p v-else-if="lutrisGamesError" class="game-manager__notice game-manager__notice--error">{{ lutrisGamesError }}</p>
-              <p v-else-if="!lutrisGames.length" class="game-manager__notice">{{ t('ui.integrations.lutris.noGames') }}</p>
-              <p v-else-if="!filteredLutrisGames.length" class="game-manager__notice">{{ t('ui.integrations.lutris.noMatchingGames') }}</p>
+              <p v-if="lutrisGamesLoading" class="game-manager__notice">
+                {{ t('ui.integrations.lutris.loadingGames') }}
+              </p>
+              <p
+                v-else-if="lutrisGamesError"
+                class="game-manager__notice game-manager__notice--error"
+              >
+                {{ lutrisGamesError }}
+              </p>
+              <p v-else-if="!lutrisGames.length" class="game-manager__notice">
+                {{ t('ui.integrations.lutris.noGames') }}
+              </p>
+              <p v-else-if="!filteredLutrisGames.length" class="game-manager__notice">
+                {{ t('ui.integrations.lutris.noMatchingGames') }}
+              </p>
               <div v-else class="game-manager__list">
-                <div v-for="game in filteredLutrisGames" :key="lutrisGameId(game)" class="game-manager__game">
-                  <span class="game-manager__game-icon" aria-hidden="true"><UiIcon name="gamepad" :size="16" /></span>
+                <div
+                  v-for="game in filteredLutrisGames"
+                  :key="lutrisGameId(game)"
+                  class="game-manager__game"
+                >
+                  <span class="game-manager__game-icon" aria-hidden="true"
+                    ><UiIcon name="gamepad" :size="16"
+                  /></span>
                   <span class="game-manager__game-copy">
                     <strong>{{ lutrisGameName(game) }}</strong>
-                    <small>{{ t('ui.integrations.lutris.gameMetadata', { id: lutrisGameId(game), runner: game.runner || game.platform || 'unknown' }) }}<template v-if="game.steam_backed"> · {{ t('ui.integrations.lutris.steamGame') }}</template></small>
+                    <small
+                      >{{
+                        t('ui.integrations.lutris.gameMetadata', {
+                          id: lutrisGameId(game),
+                          runner: game.runner || game.platform || 'unknown',
+                        })
+                      }}<template v-if="game.steam_backed">
+                        · {{ t('ui.integrations.lutris.steamGame') }}</template
+                      ></small
+                    >
                   </span>
-                  <StatusBadge :label="lutrisGameExcluded(game) ? t('ui.integrations.steam.excluded') : t('ui.integrations.steam.included')" :tone="lutrisGameExcluded(game) ? 'neutral' : 'success'" compact />
-                  <AppButton :label="lutrisGameExcluded(game) ? t('ui.integrations.steam.include') : t('ui.integrations.steam.exclude')" variant="tertiary" size="compact" @click="setLutrisDraftExclusion(game, !lutrisGameExcluded(game))" />
+                  <StatusBadge
+                    :label="
+                      lutrisGameExcluded(game)
+                        ? t('ui.integrations.steam.excluded')
+                        : t('ui.integrations.steam.included')
+                    "
+                    :tone="lutrisGameExcluded(game) ? 'neutral' : 'success'"
+                    compact
+                  />
+                  <AppButton
+                    :label="
+                      lutrisGameExcluded(game)
+                        ? t('ui.integrations.steam.include')
+                        : t('ui.integrations.steam.exclude')
+                    "
+                    variant="tertiary"
+                    size="compact"
+                    @click="setLutrisDraftExclusion(game, !lutrisGameExcluded(game))"
+                  />
                 </div>
               </div>
               <div class="game-manager__footer">
-                <span v-if="lutrisExclusionsDirty">{{ t('ui.integrations.unsavedChanges') }}</span><span v-else>{{ t('ui.integrations.saved') }}</span>
+                <span v-if="lutrisExclusionsDirty">{{ t('ui.integrations.unsavedChanges') }}</span
+                ><span v-else>{{ t('ui.integrations.saved') }}</span>
                 <div>
-                  <AppButton :label="t('_common.cancel')" variant="tertiary" size="compact" :disabled="!lutrisExclusionsDirty" @click="resetLutrisExclusionDraft" />
-                  <AppButton :label="t('_common.apply')" variant="primary" size="compact" :busy="lutrisExclusionsSaving" :busy-label="t('ui.integrations.applying')" :disabled="!lutrisExclusionsDirty" @click="saveLutrisExclusions" />
+                  <AppButton
+                    :label="t('_common.cancel')"
+                    variant="tertiary"
+                    size="compact"
+                    :disabled="!lutrisExclusionsDirty"
+                    @click="resetLutrisExclusionDraft"
+                  />
+                  <AppButton
+                    :label="t('_common.apply')"
+                    variant="primary"
+                    size="compact"
+                    :busy="lutrisExclusionsSaving"
+                    :busy-label="t('ui.integrations.applying')"
+                    :disabled="!lutrisExclusionsDirty"
+                    @click="saveLutrisExclusions"
+                  />
                 </div>
               </div>
             </div>
@@ -1889,7 +2087,10 @@ function libraryRequest(
             </div>
           </section>
         </div>
-        <div v-if="summary.id === 'steam' || summary.id === 'lutris' || isWindows" class="integration-row__actions">
+        <div
+          v-if="summary.id === 'steam' || summary.id === 'lutris' || isWindows"
+          class="integration-row__actions"
+        >
           <template v-if="summary.id === 'steam'">
             <AppButton
               v-if="!steam?.forced"
@@ -1914,8 +2115,26 @@ function libraryRequest(
             />
           </template>
           <template v-else-if="summary.id === 'lutris'">
-            <AppButton :label="lutris?.enabled === false ? t('ui.integrations.actions.enable') : t('ui.integrations.actions.disable')" variant="tertiary" size="compact" @click="setProviderEnabled('lutris', lutris?.enabled === false)" />
-            <AppButton icon="refresh" :label="t('ui.integrations.actions.rescan')" variant="secondary" size="compact" :busy="syncing" :busy-label="t('ui.integrations.syncing')" :disabled="lutris?.enabled === false || lutris?.available === false" @click="syncLutris" />
+            <AppButton
+              :label="
+                lutris?.enabled === false
+                  ? t('ui.integrations.actions.enable')
+                  : t('ui.integrations.actions.disable')
+              "
+              variant="tertiary"
+              size="compact"
+              @click="setProviderEnabled('lutris', lutris?.enabled === false)"
+            />
+            <AppButton
+              icon="refresh"
+              :label="t('ui.integrations.actions.rescan')"
+              variant="secondary"
+              size="compact"
+              :busy="syncing"
+              :busy-label="t('ui.integrations.syncing')"
+              :disabled="lutris?.enabled === false || lutris?.available === false"
+              @click="syncLutris"
+            />
           </template>
           <template v-else-if="summary.id === 'playnite'">
             <AppButton
