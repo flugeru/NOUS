@@ -178,6 +178,10 @@ a release source. Classic UI remains recovery fallback until parity is proven.
   preference. With host playback off, runtime equalizer on selects standard AudioTrack
   (`1920 false`), equalizer off selects low-latency track (`1920 true`). This checks routing,
   not audible equalization: MuMu does not certify physical audio output or effect availability.
+- Strict VSync threshold preference was written but never read by the renderer. It now
+  selects the display-vsync period instead of the longer stream period when enabled.
+  Runnable Java check extracts the production expression and tests all toggle combinations;
+  physical high-refresh comparison remains pending. Removed reflective access to known field.
 - Custom refresh input accepts decimal comma, stores Locale.ROOT decimal point, rejects
   non-finite/nonpositive values, and prevents dialog persistence overwriting normalized input.
   Regression extends existing profile test; pacing/audio source checks remain runnable via

@@ -65,6 +65,23 @@ game = (Path(__file__).resolve().parents[1] / 'app/src/main/java/com/limelight/G
 startup = game[game.index('decoderRenderer = new MediaCodecDecoderRenderer('):game.index('// Don\'t stream HDR')]
 assert 'prefConfig.framePacing =' not in startup, 'Decoder tuning must preserve selected pacing mode'
 assert 'setPreferLowerDelays(prefConfig.preferLowerDelays)' in startup
+assert 'setForceTightThresholds(prefConfig.forceTightThresholds)' in startup
+period = source[source.index('final long periodNs = '):].splitlines()[0].strip()
+with tempfile.TemporaryDirectory() as directory:
+    java = Path(directory) / 'ThresholdCheck.java'
+    java.write_text('''class ThresholdCheck {
+        public static void main(String[] args) {
+            long vsyncPeriodNs = 8_333_333, streamPeriodNs = 16_666_666;
+            for (boolean forceTightThresholds : new boolean[]{false, true}) {
+                for (boolean preferLowerDelays : new boolean[]{false, true}) {
+                    PERIOD
+                    long expected = forceTightThresholds || preferLowerDelays ? vsyncPeriodNs : streamPeriodNs;
+                    if (periodNs != expected) throw new AssertionError("Threshold preference ignored");
+                }
+            }
+        }
+    }'''.replace('PERIOD', period), encoding='utf-8')
+    subprocess.run(['java', str(java)], check=True)
 assert 'new AndroidAudioRenderer(Game.this, prefConfig.enableAudioFx)' in game
 assert '.enableLocalAudioPlayback(prefConfig.playHostAudio)' in game
 print('Decoder pacing and independent audio preference checks passed (production drain and negative control)')
