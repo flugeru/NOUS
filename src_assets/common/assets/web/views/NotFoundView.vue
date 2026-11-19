@@ -9,6 +9,7 @@ const { t } = useI18n();
   <div class="page page--narrow">
     <EmptyState
       icon="help"
+      heading="h1"
       :title="t('ui.not_found.title')"
       :description="t('ui.not_found.description')"
     >

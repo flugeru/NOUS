@@ -6,6 +6,16 @@ import { localRoute, test, expect, type Page } from './fixtures';
 
 const screenshotDirectory = process.env.VIBEPOLLO_TEST_OUTPUT || process.env.VIBESHINE_TEST_OUTPUT || join(tmpdir(), 'vibepollo-ui-results');
 
+test('unknown page has a main heading and keyboard recovery', async ({ page }) => {
+  await host(page, 'windows');
+  await page.setViewportSize({ width: 360, height: 780 });
+  await page.goto('/v2/no-such-page');
+  const main = page.getByRole('main');
+  await expect(main.getByRole('heading', { level: 1, name: 'Page not found' })).toBeVisible();
+  await main.getByRole('link', { name: 'Return to overview' }).press('Enter');
+  await expect(page).toHaveURL(/\/v2\/$/);
+});
+
 test('pairing request prefills an editable device name without approving automatically', async ({ page }) => {
   await host(page, 'windows');
   let submitted: Record<string, unknown> | undefined;

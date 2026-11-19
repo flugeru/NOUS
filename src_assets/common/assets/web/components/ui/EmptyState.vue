@@ -10,6 +10,7 @@ const props = withDefaults(
     description?: string;
     icon?: UiIconName;
     compact?: boolean;
+    heading?: 'h1' | 'h2';
     announce?: 'off' | 'polite';
   }>(),
   {
@@ -38,7 +39,7 @@ const hasDescription = computed(() => Boolean(props.description || slots.descrip
     <div class="vs-empty-state__icon" aria-hidden="true">
       <UiIcon :name="icon" :size="24" />
     </div>
-    <h2 :id="titleId" class="vs-empty-state__title">{{ title }}</h2>
+    <component :is="heading ?? 'h2'" :id="titleId" class="vs-empty-state__title">{{ title }}</component>
     <div v-if="hasDescription" :id="descriptionId" class="vs-empty-state__description">
       <slot name="description">{{ description }}</slot>
     </div>
