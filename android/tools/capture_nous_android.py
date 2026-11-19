@@ -57,10 +57,16 @@ def match(root, identifier=None, labels=()):
 
 def immersive_confirmation(root):
     # Only Android's own first-use fullscreen hint; never dismiss app dialogs by label.
-    for node in root.iter("node"):
+    nodes = list(root.iter("node"))
+    for node in nodes:
         if (node.get("package") == "com.android.systemui"
                 and node.get("resource-id") == "com.android.systemui:id/ok"):
             return node
+    # Framework-owned layout on Android 15: core/res/res/layout/immersive_mode_cling.xml.
+    if any(n.get("resource-id") == "android:id/immersive_cling_title" for n in nodes):
+        for node in nodes:
+            if node.get("resource-id") == "android:id/ok" and node.get("package") in ("android", "com.android.systemui"):
+                return node
     return None
 
 
