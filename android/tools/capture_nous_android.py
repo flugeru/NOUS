@@ -55,9 +55,22 @@ def match(root, identifier=None, labels=()):
     return None
 
 
+def immersive_confirmation(root):
+    # Only Android's own first-use fullscreen hint; never dismiss app dialogs by label.
+    for node in root.iter("node"):
+        if (node.get("package") == "com.android.systemui"
+                and node.get("resource-id") == "com.android.systemui:id/ok"):
+            return node
+    return None
+
+
 def wait_for(identifier=None, labels=()):
     for _ in range(5):
         root, _ = tree()
+        hint = immersive_confirmation(root)
+        if hint is not None:
+            tap(hint)
+            continue
         node = match(root, identifier, labels)
         if node is not None:
             return node
