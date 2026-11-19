@@ -24,7 +24,7 @@ async function access(action: 'start' | 'disable') {
 }
 </script>
 <template>
-  <section :class="manage ? 'vs-page vs-stack account-page' : 'vs-stack account-login'" aria-labelledby="account-title">
+  <section :class="manage ? 'vs-page vs-stack account-page' : 'vs-stack account-login'" :aria-labelledby="manage ? 'account-title' : undefined">
     <header v-if="manage" class="vs-stack account-heading">
       <h1 id="account-title">{{ pt ? 'Conta NOUS' : 'NOUS account' }}</h1>
       <p>{{ pt ? 'Encontre este PC nos seus dispositivos e escolha como autorizar novas conexões.' : 'Find this PC on your devices and choose how to authorize new connections.' }}</p>

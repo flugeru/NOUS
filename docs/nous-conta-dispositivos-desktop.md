@@ -41,7 +41,7 @@ Esse fluxo é uma prévia, não uma instrução para distribuir segredos no inst
 
 1. Mantenha o JSON do cliente OAuth Desktop autorizado em `%LOCALAPPDATA%\NOUS\desktop-oauth.json`. Mantenha a configuração pública Firebase correspondente em `%LOCALAPPDATA%\NOUS\google-services.json`. Ambos ficam fora do Git; nunca publique o conteúdo.
 2. Com Node.js disponível, execute `node "<pasta do NOUS>\desktop\desktop-login.mjs"` na sessão normal do usuário. O broker escuta somente em `127.0.0.1:48173`.
-3. Entre no painel HTTPS local com a senha administrativa. Em **Dispositivos**, conclua o login Google, escolha **Ativar acesso por conta** e **Continuar no navegador**. Confirme a publicação conscientemente.
+3. Entre no painel HTTPS local com a senha administrativa. Em **Seu PC → Conta NOUS**, conclua o login Google, escolha **Ativar acesso por conta** e **Continuar no navegador**. Confirme a publicação conscientemente.
 4. No Android da mesma conta, abra **Conta NOUS → PCs da conta**, escolha o PC descoberto na LAN e toque em **Conectar**. Se necessário, adicione o PC localmente antes.
 
 O ticket de ativação é temporário e de uso único. O broker verifica o certificado do endpoint local antes de enviar credenciais. O diretório apenas descobre PCs; não é a autoridade de pareamento. Se a publicação falhar, confira o painel e bloqueie novos vínculos caso não queira manter a autorização.

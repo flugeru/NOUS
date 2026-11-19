@@ -6,6 +6,16 @@ import { localRoute, test, expect, type Page } from './fixtures';
 
 const screenshotDirectory = process.env.VIBEPOLLO_TEST_OUTPUT || process.env.VIBESHINE_TEST_OUTPUT || join(tmpdir(), 'vibepollo-ui-results');
 
+test('login account section never references an absent heading', async ({ page }) => {
+  await host(page);
+  await localRoute(page, '**/api/auth/status', route => route.fulfill({ json: {
+    authenticated: false, login_required: true, credentials_configured: true,
+  } }));
+  await page.goto('/v2/');
+  await expect(page.locator('.auth-panel')).toBeVisible();
+  await expect(page.locator('.account-login')).not.toHaveAttribute('aria-labelledby');
+});
+
 test('account lives in workspace navigation and button labels survive hover', async ({ page }) => {
   await host(page, 'windows');
   await page.goto('/v2/devices');

@@ -99,9 +99,16 @@ export function identity(token, keys, nonce, now) {
 }
 const cookieName = '__Host-nous-account-test';
 const cookie = (id,age) => `${cookieName}=${id}; Max-Age=${age}; Path=/; HttpOnly; Secure; SameSite=Lax`;
-function page(message, action, label) {
+export function page(message, action, label) {
   // All arguments below are static application strings, never provider/user data.
-  return `<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Conta NOUS · Teste</title><style>:root{color-scheme:dark;font:18px system-ui;background:#14161e;color:#f1f1f5}main{max-width:33rem;margin:12vh auto;padding:1.5rem}button{background:#ffacd9;color:#251322;font:inherit;border:0;border-radius:.7rem;padding:.7rem 1.2rem;cursor:pointer}:focus-visible{outline:3px solid cyan}a{color:#94e7ed}</style><main><small>NOUS · Teste local</small><h1>Conta NOUS</h1><p>${message}</p>${action ? `<form method="post" action="${action}"><button>${label}</button></form>`:''}<p><a href="https://127.0.0.1:47990/" rel="noreferrer">Abrir painel administrativo do host</a></p></main></html>`;
+  // ponytail: standalone broker mirrors NOUS tokens; share generated CSS when broker packaging is unified.
+  return `<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Conta NOUS · Teste</title><style>
+:root{color-scheme:dark;--canvas:#101216;--surface:#1B1F25;--text:#F2F2F4;--muted:#B7BEC9;--border:#343B45;--accent:#FF9EA9;--hover:#FFBAC2;--on-accent:#3B0A16;--focus:#83DBE4;font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--canvas);color:var(--text)}
+*{box-sizing:border-box}body{margin:0;padding:24px}main{max-inline-size:480px;margin:8vh auto;padding:32px;border:1px solid var(--border);border-radius:28px;background:var(--surface);overflow-wrap:anywhere}small,p{color:var(--muted)}h1{font-size:32px;line-height:1.25;margin:16px 0}p{margin-block:20px}button{min-block-size:44px;max-inline-size:100%;background:var(--accent);color:var(--on-accent);font:600 14px/20px system-ui;border:0;border-radius:20px;padding:12px 16px;cursor:pointer}button:hover{background:var(--hover)}:focus-visible{outline:2px solid var(--focus);outline-offset:2px}a{color:var(--focus);text-underline-offset:3px}main>p:last-child{margin-block-end:0}a{display:inline-block;padding-block:8px}
+@media(prefers-color-scheme:light){:root{color-scheme:light;--canvas:#F7F7F5;--surface:#FFFFFF;--text:#252923;--muted:#535D50;--border:#DADFD7;--accent:#9C3F52;--hover:#7D293C;--on-accent:#FFFFFF;--focus:#007987}}
+@media(max-width:480px){body{padding:16px}main{margin:24px auto;padding:24px}}
+@media(forced-colors:active){button{border:1px solid ButtonText}}
+</style><main><small>NOUS · Teste local</small><h1>Conta NOUS</h1><p>${message}</p>${action ? `<form method="post" action="${action}"><button>${label}</button></form>`:''}<p><a href="https://127.0.0.1:47990/v2/account" rel="noreferrer">Abrir Conta NOUS no painel do PC</a></p></main></html>`;
 }
 export function serve(configFile, firebaseKey) {
   const pending = new Map(), sessions = new Map();
@@ -115,7 +122,7 @@ export function serve(configFile, firebaseKey) {
     const id = (req.headers.cookie||'').split('; ').find(x=>x.startsWith(cookieName+'='))?.slice(cookieName.length+1);
     try {
       const u=new URL(req.url,origin);
-      if (req.method==='GET' && req.url==='/') return send(200,sessions.has(id) ? page('Conta Google autenticada no Firebase. Para autorizar novas instalações, use Dispositivos no painel do PC.','/logout','Sair da conta') : page('Login da conta é separado da senha administrativa. Entrar não autoriza dispositivos.','/login','Entrar com Google'));
+      if (req.method==='GET' && req.url==='/') return send(200,sessions.has(id) ? page('Conta Google autenticada no Firebase. Para autorizar novas instalações, use Conta NOUS no painel do PC.','/logout','Sair da conta') : page('Login da conta é separado da senha administrativa. Entrar não autoriza dispositivos.','/login','Entrar com Google'));
       if (req.method==='GET' && req.url==='/link') {
         if (!sessions.has(id)) return send(401,page('Entre com Google primeiro. Depois volte ao painel do PC e selecione Ativar acesso por conta.','/login','Entrar com Google'));
         return send(200,page('Autorizar instalações da sua conta Google neste PC?','/link','Autorizar e publicar PC').replace('<button>','<input type="hidden" name="ticket" id="ticket"><button>')+`<script>${linkScript}</script>`);

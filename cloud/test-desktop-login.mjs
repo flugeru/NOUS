@@ -5,7 +5,14 @@ import {mkdtempSync, readFileSync, rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createServer} from 'node:https';
-import {begin,enableHost,identity,serve} from './desktop-login.mjs';
+import {begin,enableHost,identity,page,serve} from './desktop-login.mjs';
+
+const accountPage = page('Teste de conta.', '/login', 'Entrar com Google');
+assert.match(accountPage, /outline:2px solid var\(--focus\);outline-offset:2px/);
+assert.match(accountPage, /prefers-color-scheme:light/);
+assert.match(accountPage, /href="https:\/\/127\.0\.0\.1:47990\/v2\/account"/);
+assert.match(accountPage, /form method="post" action="\/login"/);
+assert.doesNotMatch(accountPage, /#ffacd9|solid cyan/);
 
 // Generated fixture only. The real OAuth token never enters this test.
 const fixture = mkdtempSync(join(tmpdir(),'nous-tls-'));

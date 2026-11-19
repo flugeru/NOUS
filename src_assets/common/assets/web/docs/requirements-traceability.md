@@ -121,7 +121,12 @@ Incremental evidence (2026-11-19): Web build and 138 unit checks pass. Broad bro
 passes separately. Dedicated classic/NOUS display and HDR matrix: 26 passed. Follow-up recovery,
 statistics accessible names, discard/OTP and draft regressions pass. These are mocked UI checks,
 not real hardware or installed-binary certification. In-place asset copy was denied by Windows;
-backup exists and no host restart was performed. Installer/APK refresh is still pending.
+backup exists and no host restart was performed. Later UAC elevation was canceled; no retry.
+Google broker now mirrors NOUS colors, rounded controls, dark/light system theme and single cyan
+keyboard focus; four 390/1440 px screenshots and PKCE/OIDC/TLS checks pass without real credentials.
+Login account section no longer references a missing heading; both account UI regressions pass.
+Android CI `44520537861` passed build and emulator screen capture at `977bda3c5`; this does not
+certify physical navigation or camera. Installer/APK refresh is still pending.
 
 Release gate: all rows need implementation or explicit supported exclusion, functional regression,
 visual evidence for reachable states, and artifact provenance. Dirty Windows isolation draft is not
