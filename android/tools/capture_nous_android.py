@@ -207,8 +207,9 @@ def run(c):
         shell("am", "start", "-W", "-a", "android.intent.action.MAIN",
               "-c", "android.intent.category.HOME")
         pause(5)
-        shell("input", "swipe", str(width // 2), str(height * 4 // 5),
-              str(width // 2), str(height // 5), "500")
+        # Short upward gesture opens the drawer without triggering launcher long-press.
+        shell("input", "swipe", str(width // 2), str(height * 9 // 10),
+              str(width // 2), str(height // 3), "180")
         try:
             wait_for(labels=("NOUS",))
         except RuntimeError:

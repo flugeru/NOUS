@@ -9,10 +9,12 @@
 
 Recursos compilados do desktop ficam em `nous.png`, `nous.ico`, `nous.svg`, `nous.icns` na raiz e nas pastas de assets das interfaces web e macOS. Variações de status usam marcador colorido sobre mesmo emblema. Android mantém fundo preto no ícone normal e adaptativo.
 
-Para regenerar a partir do PNG preto, com Python e Pillow:
+Identidade atual: emblema tricolor alinhado. SVG original em `nous-tricolor-alinhado.svg`; nomes legados de assets permanecem para preservar referências. O PNG não quadrado recebe margens transparentes, sem distorcer proporções nem remover cores.
+
+Para regenerar com Python e Pillow:
 
 ```sh
-python tools/update_branding.py branding/NOUS/new-project-icon-black.png
+python tools/update_branding.py nous.png branding/NOUS/nous-tricolor-alinhado.svg nous.ico
 ```
 
-Gerador verifica transparência, ícones Android opacos e resoluções dos ICOs. SVG contém PNG incorporado; não é reconstrução vetorial do emblema.
+Gerador verifica transparência, ícones Android opacos e resoluções dos ICOs gerados. SVG e ICO fornecidos são preservados; variantes de status usam PNG incorporado em SVG.

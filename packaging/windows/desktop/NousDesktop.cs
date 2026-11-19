@@ -80,6 +80,7 @@ internal static class NousDesktop {
   }
 
   private static int SelfTest(string certificatePath) {
+    if (!DesktopWindow.TestWindowBounds()) return 1;
     var origin = new Uri("https://127.0.0.1:47990/");
     if (!IsAccountBroker("http://127.0.0.1:48173/") || !IsAccountBroker("http://127.0.0.1:48173/link#ticket=" + new string('A', 64)) ||
         IsAccountBroker("http://127.0.0.1:48173/link#ticket=" + new string('G', 64)) || IsAccountBroker("http://127.0.0.1:48173/other") ||
@@ -168,17 +169,90 @@ internal static class NousDesktop {
     private readonly Button retry = new Button { Text = "Tentar novamente", Dock = DockStyle.Bottom, Height = 38, Enabled = false };
     private readonly Uri url;
     private readonly string pinnedCertificate;
+    private const string WindowKey = @"Software\NOUS\Desktop\Window";
+
+    private static Rectangle FitWindow(Rectangle bounds, Rectangle work) {
+      int width = Math.Min(Math.Max(bounds.Width, 800), work.Width);
+      int height = Math.Min(Math.Max(bounds.Height, 600), work.Height);
+      return new Rectangle(Math.Max(work.Left, Math.Min(bounds.X, work.Right - width)),
+        Math.Max(work.Top, Math.Min(bounds.Y, work.Bottom - height)), width, height);
+    }
+
+    [System.Runtime.InteropServices.DllImport("shcore.dll")]
+    private static extern int GetDpiForMonitor(IntPtr monitor, int type, out uint x, out uint y);
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern IntPtr MonitorFromPoint(Point point, uint flags);
+
+    private static float ScreenScale(Screen screen) {
+      uint x, y;
+      try {
+        if (GetDpiForMonitor(MonitorFromPoint(new Point(screen.Bounds.Left + 1, screen.Bounds.Top + 1), 2), 0, out x, out y) == 0)
+          return x / 96f;
+      } catch (DllNotFoundException) { } catch (EntryPointNotFoundException) { }
+      return 1f;
+    }
+
+    private void RestoreWindow() {
+      var screen = Screen.FromPoint(Cursor.Position);
+      try {
+        using (var key = Registry.CurrentUser.OpenSubKey(WindowKey)) {
+          if (key != null) {
+            string name = key.GetValue("Monitor") as string;
+            screen = Screen.AllScreens.FirstOrDefault(s => s.DeviceName == name) ?? screen;
+            float scale = ScreenScale(screen);
+            var work = screen.WorkingArea;
+            Bounds = FitWindow(new Rectangle(work.Left + (int)(Convert.ToInt32(key.GetValue("X", 0)) * scale),
+              work.Top + (int)(Convert.ToInt32(key.GetValue("Y", 0)) * scale),
+              (int)(Convert.ToInt32(key.GetValue("Width", 1100)) * scale),
+              (int)(Convert.ToInt32(key.GetValue("Height", 760)) * scale)), work);
+            MinimumSize = new Size(Math.Min((int)(800 * scale), work.Width), Math.Min((int)(600 * scale), work.Height));
+            if (Convert.ToInt32(key.GetValue("Maximized", 0)) == 1) WindowState = FormWindowState.Maximized;
+            return;
+          }
+        }
+      } catch (IOException) { } catch (UnauthorizedAccessException) { } catch (System.Security.SecurityException) { }
+      catch (FormatException) { } catch (InvalidCastException) { } catch (OverflowException) { }
+      var area = screen.WorkingArea;
+      float dpi = ScreenScale(screen);
+      MinimumSize = new Size(Math.Min((int)(800 * dpi), area.Width), Math.Min((int)(600 * dpi), area.Height));
+      int width = Math.Min(area.Width, Math.Max(MinimumSize.Width, (int)(area.Width * .85)));
+      int height = Math.Min(area.Height, Math.Max(MinimumSize.Height, (int)(area.Height * .85)));
+      Bounds = new Rectangle(area.Left + (area.Width - width) / 2, area.Top + (area.Height - height) / 2, width, height);
+    }
+
+    protected override void OnFormClosing(FormClosingEventArgs e) {
+      base.OnFormClosing(e);
+      if (e.Cancel) return;
+      var bounds = WindowState == FormWindowState.Normal ? Bounds : RestoreBounds;
+      var screen = Screen.FromRectangle(bounds);
+      float scale = ScreenScale(screen);
+      try {
+        using (var key = Registry.CurrentUser.CreateSubKey(WindowKey)) {
+          key.SetValue("Monitor", screen.DeviceName);
+          key.SetValue("X", (int)((bounds.X - screen.WorkingArea.X) / scale));
+          key.SetValue("Y", (int)((bounds.Y - screen.WorkingArea.Y) / scale));
+          key.SetValue("Width", (int)(bounds.Width / scale));
+          key.SetValue("Height", (int)(bounds.Height / scale));
+          key.SetValue("Maximized", WindowState == FormWindowState.Maximized ? 1 : 0);
+        }
+      } catch (IOException) { } catch (UnauthorizedAccessException) { } catch (System.Security.SecurityException) { }
+    }
+
+    public static bool TestWindowBounds() {
+      var area = new Rectangle(-1920, 40, 1920, 1040);
+      var bounds = FitWindow(new Rectangle(5000, -2000, 4000, 100), area);
+      return area.Contains(bounds) && bounds.Width == 1920 && bounds.Height == 600 &&
+        FitWindow(new Rectangle(0, 0, 800, 600), new Rectangle(0, 0, 640, 480)).Size == new Size(640, 480);
+    }
 
     public DesktopWindow(Uri url, string pinnedCertificate) {
       this.url = url;
       this.pinnedCertificate = pinnedCertificate;
       Text = "NOUS";
       Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
-      Size = new Size(1150, 780);
-      MinimumSize = new Size(540, 440);
       AutoScaleMode = AutoScaleMode.Dpi;
       web.DefaultBackgroundColor = Color.FromArgb(20, 22, 30);
-      StartPosition = FormStartPosition.CenterScreen;
+      StartPosition = FormStartPosition.Manual;
       BackColor = Color.FromArgb(20, 22, 30);
       ForeColor = Color.White;
       status.Text = "Conectando ao host NOUS…";
@@ -190,6 +264,7 @@ internal static class NousDesktop {
 
     protected override void OnHandleCreated(EventArgs e) {
       base.OnHandleCreated(e);
+      RestoreWindow();
       int enabled = 1;
       DwmSetWindowAttribute(Handle, 20, ref enabled, sizeof(int));
     }
@@ -218,6 +293,25 @@ internal static class NousDesktop {
           core.Settings.AreDefaultContextMenusEnabled = false;
           core.Settings.AreBrowserAcceleratorKeysEnabled = false;
           core.Settings.IsStatusBarEnabled = false;
+          core.Settings.IsZoomControlEnabled = false;
+          core.Settings.IsPinchZoomEnabled = false;
+          web.ZoomFactor = 1;
+          await core.AddScriptToExecuteOnDocumentCreatedAsync(@"
+(() => {
+  const editable = node => node instanceof Element && !!node.closest('input, textarea, [contenteditable]:not([contenteditable=false])');
+  document.addEventListener('selectstart', event => { if (!editable(event.target)) event.preventDefault(); }, true);
+  document.addEventListener('dragstart', event => { if (event.target instanceof Element && event.target.closest('img, svg')) event.preventDefault(); }, true);
+  document.addEventListener('contextmenu', event => event.preventDefault(), true);
+  document.addEventListener('keydown', event => {
+    if (event.ctrlKey && !event.altKey && ['+', '-', '=', '0', 'Add', 'Subtract'].includes(event.key)) event.preventDefault();
+  }, true);
+  document.addEventListener('wheel', event => { if (event.ctrlKey) event.preventDefault(); }, { capture: true, passive: false });
+  document.addEventListener('DOMContentLoaded', () => {
+    const style = document.createElement('style');
+    style.textContent = 'html, body { user-select: none; -webkit-user-select: none; } input, textarea, [contenteditable]:not([contenteditable=false]) { user-select: text; -webkit-user-select: text; } img { -webkit-user-drag: none; }';
+    document.head.append(style);
+  }, { once: true });
+})();");
           core.NavigationStarting += (s, e) => e.Cancel = !SameOrigin(url, e.Uri);
           core.FrameNavigationStarting += (s, e) => e.Cancel = !SameOrigin(url, e.Uri) && e.Uri != "about:blank";
           core.NewWindowRequested += (s, e) => {

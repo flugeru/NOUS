@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <ctime>
 #include <memory>
 #include <optional>
 #include <string>
@@ -49,7 +50,8 @@ namespace nous_account {
       std::unique_ptr<BIO, decltype(&BIO_free)> buf(BIO_new_mem_buf(pem.data(), static_cast<int>(pem.size())), BIO_free);
       if (!buf) return {};
       std::unique_ptr<X509, decltype(&X509_free)> cert(PEM_read_bio_X509(buf.get(), nullptr, nullptr, nullptr), X509_free);
-      if (!cert || X509_cmp_current_time(X509_get0_notBefore(cert.get())) != -1 || X509_cmp_current_time(X509_get0_notAfter(cert.get())) != 1) return {};
+      const auto certificate_now = std::time(nullptr);
+      if (!cert || ASN1_TIME_cmp_time_t(X509_get0_notBefore(cert.get()), certificate_now) != -1 || ASN1_TIME_cmp_time_t(X509_get0_notAfter(cert.get()), certificate_now) != 1) return {};
       auto *key = X509_get0_pubkey(cert.get());
       std::unique_ptr<EVP_MD_CTX, decltype(&EVP_MD_CTX_free)> ctx(EVP_MD_CTX_new(), EVP_MD_CTX_free);
       if (!ctx || !key || EVP_PKEY_base_id(key) != EVP_PKEY_RSA || EVP_PKEY_bits(key) < 2048 ||

@@ -6,6 +6,39 @@ import { localRoute, test, expect, type Page } from './fixtures';
 
 const screenshotDirectory = process.env.VIBEPOLLO_TEST_OUTPUT || process.env.VIBESHINE_TEST_OUTPUT || join(tmpdir(), 'vibepollo-ui-results');
 
+test('combobox has one cyan focus border for pointer and keyboard', async ({ page }) => {
+  await host(page, 'windows');
+  await page.goto('/v2/');
+  await page.evaluate(() => {
+    document.body.insertAdjacentHTML('beforeend', '<select class="vs-select" id="focus-check" style="width:240px;position:fixed;top:100px;left:400px;z-index:99999"><option>All</option></select>');
+  });
+  const combo = page.locator('#focus-check');
+  await combo.focus();
+  await combo.hover();
+  await expect(combo).toHaveCSS('border-color', 'rgb(131, 219, 228)');
+  await expect(combo).toHaveCSS('outline-style', 'none');
+  await expect(combo).toHaveCSS('border-radius', /[^0]/);
+  await combo.press('Tab');
+  await page.keyboard.press('Shift+Tab');
+  await expect(combo).toBeFocused();
+  await expect(combo).toHaveCSS('outline-style', 'none');
+});
+
+test('desktop document policy preserves editing but blocks UI selection and image drag', async ({ page }) => {
+  const source = await readFile(fileURLToPath(new URL('../../../../../packaging/windows/desktop/NousDesktop.cs', import.meta.url)), 'utf8');
+  const script = source.split('AddScriptToExecuteOnDocumentCreatedAsync(@"')[1].split('\n");')[0];
+  await page.addInitScript(script);
+  await page.route('http://127.0.0.1:5173/desktop-policy-check', route => route.fulfill({ contentType: 'text/html', body: '<p id="label">Label</p><input id="edit" value="hello"><img id="icon">' }));
+  await page.goto('http://127.0.0.1:5173/desktop-policy-check');
+  const result = await page.evaluate(() => {
+    const fires = (id: string, kind: string) => document.getElementById(id)!.dispatchEvent(new Event(kind, { bubbles: true, cancelable: true }));
+    return { label: fires('label', 'selectstart'), edit: fires('edit', 'selectstart'), drag: fires('icon', 'dragstart'), menu: fires('label', 'contextmenu'),
+      zoom: document.dispatchEvent(new KeyboardEvent('keydown', { key: '+', ctrlKey: true, cancelable: true })),
+      copy: document.dispatchEvent(new KeyboardEvent('keydown', { key: 'c', ctrlKey: true, cancelable: true })) };
+  });
+  expect(result).toEqual({ label: false, edit: true, drag: false, menu: false, zoom: false, copy: true });
+});
+
 test('unknown page has a main heading and keyboard recovery', async ({ page }) => {
   await host(page, 'windows');
   await page.setViewportSize({ width: 360, height: 780 });

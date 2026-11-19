@@ -519,8 +519,8 @@ namespace http {
 
     configure_curl_tls(curl);
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
-    curl_easy_setopt(curl, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
+    curl_easy_setopt(curl, CURLOPT_PROTOCOLS_STR, "https");
+    curl_easy_setopt(curl, CURLOPT_REDIR_PROTOCOLS_STR, "https");
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, follow_redirects ? 1L : 0L);
     curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 2L);
     curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5L);

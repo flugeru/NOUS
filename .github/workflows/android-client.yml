@@ -57,7 +57,9 @@ jobs:
           echo "Version: $version_name ($version_code)"
           test "$package" = com.flugel.nous
           test "$version_name" = 1.0.0
-          test "$version_code" = 58
+          expected_version_code=$(sed -nE 's/^[[:space:]]*versionCode[[:space:]]*=[[:space:]]*([0-9]+).*/\1/p' app/build.gradle)
+          test -n "$expected_version_code"
+          test "$version_code" = "$expected_version_code"
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: NOUS-Android-1.0.0-arm64-debug
