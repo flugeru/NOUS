@@ -15,7 +15,11 @@ interface PairResponse {
 
 const route = useRoute();
 const requestedName = route.query.name;
-const lanId = computed(() => typeof route.query.lan === 'string' && /^[A-F0-9]{64}$/.test(route.query.lan) ? route.query.lan : '');
+const lanId = computed(() =>
+  typeof route.query.lan === 'string' && /^[A-F0-9]{64}$/.test(route.query.lan)
+    ? route.query.lan
+    : '',
+);
 const lan = ref<{ name?: string; source?: string; issued?: boolean }>();
 const qr = ref('');
 const lanBusy = ref(false);
@@ -29,7 +33,15 @@ async function lanAction(action: 'inspect' | 'approve' | 'deny'): Promise<void> 
   const generation = lanGeneration;
   lanBusy.value = true;
   try {
-    const reply = await apiPost<PairResponse & { name?: string; source?: string; issued?: boolean; payload?: string; expires_in_ms?: number }>('/api/lan-pairing', { id, action });
+    const reply = await apiPost<
+      PairResponse & {
+        name?: string;
+        source?: string;
+        issued?: boolean;
+        payload?: string;
+        expires_in_ms?: number;
+      }
+    >('/api/lan-pairing', { id, action });
     if (generation !== lanGeneration) return;
     if (!reply.status || action === 'deny') {
       qr.value = '';
@@ -38,7 +50,11 @@ async function lanAction(action: 'inspect' | 'approve' | 'deny'): Promise<void> 
       lan.value = reply;
       lanUnavailable.value = !!reply.issued;
     } else if (reply.payload && reply.expires_in_ms && reply.expires_in_ms > 0) {
-      const image = await QRCode.toDataURL(reply.payload, { errorCorrectionLevel: 'M', width: 384, margin: 4 });
+      const image = await QRCode.toDataURL(reply.payload, {
+        errorCorrectionLevel: 'M',
+        width: 384,
+        margin: 4,
+      });
       if (generation !== lanGeneration) return;
       qr.value = image;
       expiry = setTimeout(() => {
@@ -55,21 +71,117 @@ async function lanAction(action: 'inspect' | 'approve' | 'deny'): Promise<void> 
   }
 }
 
-watch(lanId, () => {
+watch(
+  lanId,
+  () => {
+    ++lanGeneration;
+    clearTimeout(expiry);
+    lan.value = undefined;
+    qr.value = '';
+    lanBusy.value = false;
+    lanUnavailable.value = false;
+    void lanAction('inspect');
+  },
+  { immediate: true },
+);
+onBeforeUnmount(() => {
   ++lanGeneration;
   clearTimeout(expiry);
-  lan.value = undefined;
-  qr.value = '';
-  lanBusy.value = false;
-  lanUnavailable.value = false;
-  void lanAction('inspect');
-}, { immediate: true });
-onBeforeUnmount(() => { ++lanGeneration; clearTimeout(expiry); });
+});
 const name = ref(typeof requestedName === 'string' ? requestedName.slice(0, 96) : '');
 const pin = ref('');
 const submitting = ref(false);
 const error = ref('');
 const pairedName = ref('');
+const otpPassphrase = ref('');
+const otpHost = ref('');
+const otpPort = ref(location.port && Number(location.port) > 1 ? Number(location.port) - 1 : 47989);
+const otpBusy = ref(false);
+const otpError = ref('');
+const otpQr = ref('');
+const otpLink = ref('');
+let otpExpiry: ReturnType<typeof setTimeout> | undefined;
+let otpGeneration = 0;
+
+function clearOtp(): void {
+  ++otpGeneration;
+  clearTimeout(otpExpiry);
+  otpQr.value = '';
+  otpLink.value = '';
+  otpPassphrase.value = '';
+  otpBusy.value = false;
+}
+
+async function generateOtp(): Promise<void> {
+  if (otpBusy.value) return;
+  otpError.value = '';
+  const passphrase = otpPassphrase.value;
+  if (
+    new TextEncoder().encode(passphrase).length < 4 ||
+    passphrase.length > 128 ||
+    !name.value.trim() ||
+    !Number.isInteger(otpPort.value) ||
+    otpPort.value < 1 ||
+    otpPort.value > 65535
+  ) {
+    otpError.value = t('ui.pair.otp.invalid');
+    return;
+  }
+  const requestedHost = otpHost.value.trim();
+  if (requestedHost && /[\s/?#@]/.test(requestedHost)) {
+    otpError.value = t('ui.pair.otp.invalid');
+    return;
+  }
+  const generation = ++otpGeneration;
+  clearTimeout(otpExpiry);
+  otpQr.value = '';
+  otpLink.value = '';
+  otpBusy.value = true;
+  const requestedAt = Date.now();
+  try {
+    const reply = await apiPost<{ status?: boolean; otp?: string; ip?: string; name?: string }>(
+      '/api/otp',
+      {
+        passphrase,
+        deviceName: name.value.trim(),
+      },
+    );
+    if (generation !== otpGeneration) return;
+    if (reply.status !== true || typeof reply.otp !== 'string' || !/^\d{4}$/.test(reply.otp))
+      throw new Error();
+    const remaining = 180000 - (Date.now() - requestedAt);
+    if (remaining <= 0) throw new Error();
+    const local = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+    const host = requestedHost || (local ? reply.ip : location.hostname);
+    if (typeof host !== 'string' || !host || /[\s/?#@]/.test(host)) throw new Error();
+    const authority = host.includes(':') && !host.startsWith('[') ? `[${host}]` : host;
+    const link = new URL(`art://${authority}:${otpPort.value}`);
+    link.search = new URLSearchParams({
+      pin: reply.otp,
+      passphrase,
+      name: reply.name ?? '',
+    }).toString();
+    // Compatibility OTP expires server-side after three minutes; no secret goes to remote QR services.
+    otpExpiry = setTimeout(() => {
+      clearOtp();
+      otpError.value = t('ui.pair.otp.expired');
+    }, remaining);
+    const image = await QRCode.toDataURL(link.href, {
+      errorCorrectionLevel: 'M',
+      width: 384,
+      margin: 4,
+    });
+    if (generation !== otpGeneration) return;
+    otpLink.value = link.href;
+    otpQr.value = image;
+  } catch {
+    if (generation === otpGeneration) otpError.value = t('ui.pair.otp.failed');
+  } finally {
+    if (generation === otpGeneration) otpBusy.value = false;
+  }
+}
+watch(() => route.fullPath, clearOtp);
+onBeforeUnmount(clearOtp);
 
 const normalizedPin = computed(() => pin.value.padStart(4, '0'));
 const pinIsValid = computed(() => /^\d{1,4}$/.test(pin.value));
@@ -127,10 +239,7 @@ function resetForm(): void {
 
 <template>
   <div class="vs-page vs-page--settings pair-page">
-    <PageHeader
-      :title="t('ui.pair.page.title')"
-      :description="t('ui.pair.page.description')"
-    >
+    <PageHeader :title="t('ui.pair.page.title')" :description="t('ui.pair.page.description')">
       <template #meta>
         <StatusBadge :label="t('ui.pair.page.local_approval')" tone="info" compact />
       </template>
@@ -148,12 +257,27 @@ function resetForm(): void {
       <template v-else-if="qr">
         <p role="status">{{ t('ui.lan_pair.scan') }}</p>
         <img class="lan-qr" :src="qr" :alt="t('ui.lan_pair.title')" />
-        <AppButton :label="t('ui.lan_pair.deny')" variant="secondary" :busy="lanBusy" @click="lanAction('deny')" />
+        <AppButton
+          :label="t('ui.lan_pair.deny')"
+          variant="secondary"
+          :busy="lanBusy"
+          @click="lanAction('deny')"
+        />
       </template>
       <template v-else-if="lan">
         <p>{{ t('ui.lan_pair.verify', { name: lan.name, address: lan.source }) }}</p>
-        <AppButton :label="t('ui.lan_pair.approve')" variant="primary" :busy="lanBusy" @click="lanAction('approve')" />
-        <AppButton :label="t('ui.lan_pair.deny')" variant="secondary" :busy="lanBusy" @click="lanAction('deny')" />
+        <AppButton
+          :label="t('ui.lan_pair.approve')"
+          variant="primary"
+          :busy="lanBusy"
+          @click="lanAction('approve')"
+        />
+        <AppButton
+          :label="t('ui.lan_pair.deny')"
+          variant="secondary"
+          :busy="lanBusy"
+          @click="lanAction('deny')"
+        />
       </template>
     </section>
 
@@ -187,7 +311,9 @@ function resetForm(): void {
 
       <section class="pair-panel vs-surface" aria-labelledby="pair-form-title">
         <div class="pair-panel__heading">
-          <div class="pair-panel__icon" aria-hidden="true"><UiIcon name="devices" :size="20" /></div>
+          <div class="pair-panel__icon" aria-hidden="true">
+            <UiIcon name="devices" :size="20" />
+          </div>
           <div>
             <h2 id="pair-form-title">{{ t('ui.pair.form.title') }}</h2>
             <p>{{ t('ui.pair.form.description') }}</p>
@@ -284,6 +410,61 @@ function resetForm(): void {
         </p>
       </section>
     </div>
+    <details
+      v-if="!lanId"
+      class="pair-panel vs-surface"
+      @toggle="!($event.target as HTMLDetailsElement).open && clearOtp()"
+    >
+      <summary>{{ t('ui.pair.otp.title') }}</summary>
+      <p>{{ t('ui.pair.otp.description') }}</p>
+      <form class="pair-form" @submit.prevent="generateOtp">
+        <label class="vs-field"
+          >{{ t('pin.device_name') }}
+          <input v-model="name" class="vs-input" required maxlength="96" :disabled="otpBusy" />
+        </label>
+        <label class="vs-field"
+          >{{ t('ui.pair.otp.passphrase') }}
+          <input
+            v-model="otpPassphrase"
+            class="vs-input"
+            type="password"
+            required
+            maxlength="128"
+            autocomplete="off"
+            :disabled="otpBusy"
+          />
+        </label>
+        <label class="vs-field"
+          >{{ t('ui.pair.otp.host') }}
+          <input v-model="otpHost" class="vs-input" autocomplete="off" :disabled="otpBusy" />
+        </label>
+        <label class="vs-field"
+          >{{ t('ui.pair.otp.port') }}
+          <input
+            v-model.number="otpPort"
+            class="vs-input"
+            type="number"
+            min="1"
+            max="65535"
+            required
+            :disabled="otpBusy"
+          />
+        </label>
+        <AppButton
+          type="submit"
+          variant="primary"
+          :label="t('ui.pair.otp.generate')"
+          :busy="otpBusy"
+        />
+      </form>
+      <InlineAlert v-if="otpError" tone="danger" announce="assertive">{{ otpError }}</InlineAlert>
+      <template v-if="otpQr">
+        <p role="status">{{ t('ui.pair.otp.warning') }}</p>
+        <img class="lan-qr" :src="otpQr" :alt="t('ui.pair.otp.title')" />
+        <a class="vs-button vs-button--secondary" :href="otpLink">{{ t('ui.pair.otp.open') }}</a>
+        <AppButton :label="t('ui.pair.otp.hide')" @click="clearOtp" />
+      </template>
+    </details>
   </div>
 </template>
 

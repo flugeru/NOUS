@@ -980,6 +980,16 @@
       "deny": "Recusar"
     },
     "pair": {
+      "otp": {
+        "title": "Pareamento compatível com Artemis (OTP)",
+        "description": "Pareamento opcional da V1 para clientes Artemis. Moonlight usa aprovação por PIN acima; QR LAN do NOUS continua separado. Informe nome do dispositivo e frase secreta com pelo menos 4 bytes.",
+        "passphrase": "Frase secreta", "host": "Endereço do PC (substituição opcional)", "port": "Porta HTTP do host",
+        "generate": "Gerar QR de compatibilidade", "open": "Abrir Artemis para parear", "hide": "Ocultar QR e limpar segredo",
+        "warning": "Este QR contém segredo de pareamento. Compartilhe somente com dispositivo confiável. Expira em até 3 minutos; ocultar não revoga OTP no servidor.",
+        "invalid": "Confira nome do dispositivo, frase secreta, endereço e porta (1–65535).",
+        "failed": "Não foi possível gerar QR de compatibilidade. Confira endereço do PC e tente novamente.",
+        "expired": "QR de compatibilidade expirado. Gere outro código."
+      },
       "action": {
         "approve": "Aprovar dispositivo",
         "approving": "Aprovando",

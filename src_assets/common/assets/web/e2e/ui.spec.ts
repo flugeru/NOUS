@@ -134,6 +134,33 @@ test('LAN pairing renders QR locally only after approval, then clears it on expi
   expect(actions).toEqual(['inspect', 'approve']);
 });
 
+test('Artemis OTP stays separate from LAN QR and clears secrets on expiry', async ({ page }) => {
+  await host(page, 'windows');
+  const requests: unknown[] = [];
+  await localRoute(page, '**/api/otp', route => {
+    requests.push(route.request().postDataJSON());
+    return route.fulfill({ json: { status: true, otp: '1234', ip: '192.168.1.5', name: 'PC & sala' } });
+  });
+  await page.goto('/v2/pair');
+  await page.clock.install();
+  await page.getByText('Artemis compatibility pairing (OTP)', { exact: true }).click();
+  const panel = page.locator('details');
+  await panel.getByRole('textbox', { name: 'Device Name', exact: true }).fill('Phone');
+  await panel.getByLabel('Secret passphrase', { exact: true }).fill('secret & café');
+  await panel.getByRole('spinbutton', { name: 'Host HTTP port', exact: true }).fill('47989');
+  await panel.getByRole('button', { name: 'Generate compatibility QR' }).click();
+  const qr = panel.getByRole('img');
+  await expect(qr).toHaveAttribute('src', /^data:image\/png;base64,/);
+  expect(requests).toEqual([{ passphrase: 'secret & café', deviceName: 'Phone' }]);
+  const link = new URL((await panel.getByRole('link', { name: 'Open Artemis to pair' }).getAttribute('href'))!);
+  expect(link.host).toBe('192.168.1.5:47989');
+  expect(link.searchParams.get('passphrase')).toBe('secret & café');
+  await page.clock.fastForward(180001);
+  await expect(qr).toHaveCount(0);
+  await expect(panel.getByLabel('Secret passphrase', { exact: true })).toHaveValue('');
+  await expect(panel.getByText('Compatibility QR expired. Generate a new code.')).toBeVisible();
+});
+
 async function host(
   page: Page,
   platform = 'linux',

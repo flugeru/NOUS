@@ -1447,6 +1447,16 @@
       "deny": "Decline"
     },
     "pair": {
+      "otp": {
+        "title": "Artemis compatibility pairing (OTP)",
+        "description": "Optional V1 pairing for Artemis clients. Moonlight uses PIN approval above; NOUS LAN QR remains a separate flow. Enter a device name and a secret passphrase of at least 4 bytes.",
+        "passphrase": "Secret passphrase", "host": "Host address (optional override)", "port": "Host HTTP port",
+        "generate": "Generate compatibility QR", "open": "Open Artemis to pair", "hide": "Hide QR and clear secret",
+        "warning": "This QR contains a pairing secret. Share only with a trusted device. Expires within 3 minutes; hiding it does not revoke the server OTP.",
+        "invalid": "Check device name, passphrase, host address and port (1–65535).",
+        "failed": "Unable to generate compatibility QR. Check host address and try again.",
+        "expired": "Compatibility QR expired. Generate a new code."
+      },
       "action": {
         "approve": "Approve device",
         "approving": "Approving",
