@@ -449,7 +449,8 @@ def run(c):
 
 def capture_virtual_controller_editor(c):
     select("nous_nav_settings")
-    select("nous_settings_virtual_controller")
+    select("nous_settings_controls")
+    tap(wait_for(labels=("Controle virtual", "Virtual controller")))
     wait_for("nous_osc_tool_move")
     root, hierarchy = tree()
     dpad_labels = ("Direcional", "D-pad")
@@ -492,7 +493,7 @@ def capture_virtual_controller_editor(c):
     c.capture("virtual-controller-preview-test")
     select("nous_osc_save")
 
-    select_in_landscape_settings("nous_settings_virtual_controller")
+    tap(wait_for(labels=("Controle virtual", "Virtual controller")))
     select("nous_osc_tool_size")
     wait_for("nous_osc_size_value", labels=(size_label,))
     select("nous_osc_tool_visible")
