@@ -513,7 +513,7 @@ def capture_virtual_controller_editor(c):
     select("nous_osc_tool_visible")
     if wait_for("nous_osc_visible").get("checked") != "false":
         raise RuntimeError("Controller button visibility should persist after saving")
-    select("nous_back")
+    select("nous_osc_save")
     select("nous_back")
 
 
