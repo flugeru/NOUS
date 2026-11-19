@@ -146,10 +146,59 @@ video = (root / "src/video.cpp").read_text()
 program += "std::pair<capture_e, bool> manual_switch(capture_e status, bool artificial_reinit) {\n"
 program += block(video, "if (artificial_reinit && status != platf::capture_e::error)") + "return {status, artificial_reinit}; }\n"
 program += r'''
+using namespace std::string_view_literals;
+using namespace std::chrono_literals;
+namespace logging {
+  template<class T> struct min_max_avg_periodic_logger {
+    min_max_avg_periodic_logger(int, const char *, const char *) {}
+    void collect_and_log(T) {}
+  };
+}
+constexpr int debug=0, S_OK=0, DXGI_ERROR_WAIT_TIMEOUT=1, WAIT_ABANDONED=2,
+  DXGI_ERROR_ACCESS_LOST=3, DXGI_ERROR_ACCESS_DENIED=4, DXGI_ERROR_INVALID_CALL=5;
+namespace util { struct Hex { std::string to_string_view() { return "status"; } }; Hex hex(int) { return {}; } }
+struct DXGI_OUTDUPL_FRAME_INFO { bool ProtectedContentMaskedOut=false; unsigned AccumulatedFrames=1; };
+struct resource_t { using pointer = void *; };
+struct Dup {
+  int status=S_OK;
+  int AcquireNextFrame(long long, DXGI_OUTDUPL_FRAME_INFO *, void **) { return status; }
+  int ReleaseFrame() { return status; }
+};
+struct duplication_t {
+  Dup *dup;
+  bool has_frame=false;
+  std::chrono::steady_clock::time_point last_protected_content_warning_time {};
+  capture_e next_frame(DXGI_OUTDUPL_FRAME_INFO &, std::chrono::milliseconds, void **);
+  capture_e release_frame();
+};
+'''
+program += block(base, '  capture_e duplication_t::next_frame')
+program += block(base, '  capture_e duplication_t::release_frame')
+program += r'''
+void check_dxgi() {
+  Dup driver;
+  duplication_t capture {&driver};
+  DXGI_OUTDUPL_FRAME_INFO info;
+  void *resource=nullptr;
+  assert(capture.next_frame(info, 0ms, &resource) == capture_e::ok && capture.has_frame);
+  assert(capture.release_frame() == capture_e::ok && !capture.has_frame);
+  driver.status=DXGI_ERROR_WAIT_TIMEOUT;
+  assert(capture.next_frame(info, 0ms, &resource) == capture_e::timeout && !capture.has_frame);
+  for (int status : {WAIT_ABANDONED, DXGI_ERROR_ACCESS_LOST, DXGI_ERROR_ACCESS_DENIED}) {
+    driver.status=status;
+    assert(capture.next_frame(info, 0ms, &resource) == capture_e::reinit && !capture.has_frame);
+  }
+  capture.has_frame=true;
+  driver.status=DXGI_ERROR_ACCESS_LOST;
+  assert(capture.release_frame() == capture_e::reinit && !capture.has_frame);
+}
 bool contains(const std::string &value) {
   return std::any_of(logs.begin(), logs.end(), [&](const auto &line) { return line.find(value) != std::string::npos; });
 }
 int main() {
+  check_dxgi();
+  assert(contains("source=dxgi phase=acquire") && contains("source=dxgi phase=release"));
+  logs.clear();
   using namespace display_helper;
   using namespace display_helper::v2;
   // Compile the actual return branches: diagnostics must preserve priorities,

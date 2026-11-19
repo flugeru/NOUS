@@ -39,8 +39,10 @@ jobs:
             android/gradle/wrapper/gradle-wrapper.properties
       - name: Install Android SDK and NDK
         run: '"$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "ndk;27.0.12077973"'
-      - name: Check supported languages
-        run: python3 tools/check_supported_languages.py
+      - name: Check supported languages and decoder drain
+        run: |
+          python3 tools/check_supported_languages.py
+          python3 tools/test_decoder_pacing.py
       - name: Build and test the debug client
         run: bash tools/run-ci-gradle.sh :app:assembleNonRoot_gameDebug :app:testNonRoot_gameDebugUnitTest
       - name: Name the ARM64 APK for distribution

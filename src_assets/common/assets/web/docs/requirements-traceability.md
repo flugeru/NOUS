@@ -135,6 +135,25 @@ Release gate: all rows need implementation or explicit supported exclusion, func
 visual evidence for reachable states, and artifact provenance. Dirty Windows isolation draft is not
 a release source. Classic UI remains recovery fallback until parity is proven.
 
+### Streaming investigation — 2026-11-19 (open)
+
+- Supplied 989.2-second session is host-only telemetry. Loss counters and client decode/present
+  metrics are explicitly unavailable; zeros do not certify the network or Android presentation.
+- Matching host log selects DXGI (`effective_wgc_capture=false`), despite shared counters named
+  `WGC pacing`. Shared labels now say `Capture pacing`; DXGI logs acquisition duration,
+  accumulated frames and acquisition/release HRESULTs on reinitialization.
+- Host drops from 600 encoded frames per ten seconds to 242–344 in degraded windows. Source
+  timestamp intervals exceed one second; these are not measurements of `AcquireNextFrame`
+  duration. Packet queue remains around 0.01 ms. Host-side root cause remains unproven.
+- Android non-balanced latest-frame drain previously waited for future decoder output while
+  holding a renderable frame. Drain now uses timeout zero. Java replay extracts production
+  loop, checks buffer ownership/immediate presentation and rejects original blocking behavior.
+- Local Android Debug build passes; MuMu update uses only `adb install -r`, with preference
+  contents unchanged and launcher startup checked. APK SHA-256:
+  `04953b8058b3ec0a836c74b446e4344fec26809aa9769fdaad6b412e46ad1021`.
+- No stream was started, no driver changed and no host update elevated. Before/after live
+  streaming measurement and exact secondary-virtual-output safety gate remain pending.
+
 ### Verification commands
 
 From the web directory, with Node 22 or newer:

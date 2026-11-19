@@ -338,7 +338,14 @@ namespace platf::dxgi {
       return capture_status;
     }
 
+    thread_local logging::min_max_avg_periodic_logger<double> acquire_logger(debug, "DXGI AcquireNextFrame duration", "ms");
+    thread_local logging::min_max_avg_periodic_logger<double> accumulated_logger(debug, "DXGI accumulated frames", "frames");
+    const auto acquire_start = std::chrono::steady_clock::now();
     auto status = dup->AcquireNextFrame(timeout.count(), &frame_info, res_p);
+    acquire_logger.collect_and_log(std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - acquire_start).count());
+    if (status == S_OK) {
+      accumulated_logger.collect_and_log(frame_info.AccumulatedFrames);
+    }
 
     switch (status) {
       case S_OK:
@@ -357,6 +364,7 @@ namespace platf::dxgi {
       case WAIT_ABANDONED:
       case DXGI_ERROR_ACCESS_LOST:
       case DXGI_ERROR_ACCESS_DENIED:
+        BOOST_LOG(debug) << "Capture restart: source=dxgi phase=acquire status=0x" << util::hex(status).to_string_view();
         return capture_e::reinit;
       default:
         BOOST_LOG(error) << "Couldn't acquire next frame [0x"sv << util::hex(status).to_string_view();
@@ -388,6 +396,7 @@ namespace platf::dxgi {
         return capture_e::ok;
 
       case DXGI_ERROR_ACCESS_LOST:
+        BOOST_LOG(debug) << "Capture restart: source=dxgi phase=release status=0x" << util::hex(status).to_string_view();
         return capture_e::reinit;
 
       default:
@@ -468,7 +477,7 @@ namespace platf::dxgi {
     uint64_t pacing_phase_preserved = 0;     // re-anchor snapped back onto the prior grid
     uint64_t pacing_phase_reanchored = 0;    // re-anchor fell back to the raw arrival phase
     auto pacing_diag_last_log = std::chrono::steady_clock::now();
-    logging::min_max_avg_periodic_logger<double> pacing_phase_error_logger(debug, "WGC pacing re-anchor phase error", "ms");
+    logging::min_max_avg_periodic_logger<double> pacing_phase_error_logger(debug, "Capture pacing re-anchor phase error", "ms");
 
     // Keep the display awake during capture. If the display goes to sleep during
     // capture, best case is that capture stops until it powers back on. However,
@@ -489,7 +498,7 @@ namespace platf::dxgi {
 
       if (auto diag_now = std::chrono::steady_clock::now(); diag_now - pacing_diag_last_log >= 10s) {
         if (pacing_bust_woke_late || pacing_bust_snapshot_miss || pacing_phase_preserved || pacing_phase_reanchored) {
-          BOOST_LOG(debug) << "WGC pacing bust mix: woke_late(a)=" << pacing_bust_woke_late
+          BOOST_LOG(debug) << "Capture pacing bust mix: woke_late(a)=" << pacing_bust_woke_late
                            << " snapshot_miss(b)=" << pacing_bust_snapshot_miss
                            << " phase_preserved=" << pacing_phase_preserved
                            << " phase_reanchored=" << pacing_phase_reanchored
