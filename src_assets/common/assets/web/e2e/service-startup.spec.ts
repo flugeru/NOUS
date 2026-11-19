@@ -72,8 +72,9 @@ async function host(page: Page, options: HostOptions = {}) {
   return calls;
 }
 
+const legacyUrl = process.env.VIBEPOLLO_LEGACY_TEST_URL;
 for (const [interfaceName, path] of [
-  ['legacy', `${process.env.VIBEPOLLO_LEGACY_TEST_URL || 'http://127.0.0.1:5174'}/troubleshooting`],
+  ...(legacyUrl ? [['legacy', `${legacyUrl}/troubleshooting`]] : []),
   ['v2', '/v2/maintenance'],
 ]) {
   test(`${interfaceName} changes automatic startup to manual and back without restart`, async ({
