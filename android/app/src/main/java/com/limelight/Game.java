@@ -299,6 +299,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
     public boolean allowChangeMouseMode = true;
     private boolean onExternelDisplay = false;
     private ImageButton floatingMenuButton;
+    private static final long MENU_HANDLE_IDLE_MS = 4000;
     private final Runnable retractMenuHandle = () -> {
         if (floatingMenuButton == null || !floatingMenuButton.isShown()
                 || floatingMenuButton.isAccessibilityFocused() || floatingMenuButton.hasFocus()) return;
@@ -890,8 +891,8 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         gameMenuCallbacks = new GameMenu(this);
 
         floatingMenuButton = findViewById(R.id.floatingMenuButton);
-        updateFloatingButtonVisibility(prefConfig.enableBackMenu && prefConfig.enableFloatingButton);
         initFloatingButton();
+        updateFloatingButtonVisibility(prefConfig.enableBackMenu && prefConfig.enableFloatingButton);
 
         overlayToggleButton = findViewById(R.id.overlayToggleZoomButton);
         setupOverlayToggleButton();
@@ -1048,7 +1049,6 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         // Touch listener for drag and click
         if (floatingMenuButton != null) {
             floatingMenuButton.setOnClickListener(v -> showGameMenu(null));
-            floatingMenuButton.postDelayed(retractMenuHandle, 4000);
             floatingMenuButton.setOnTouchListener((view, event) -> {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
@@ -1093,11 +1093,11 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                         View parent = (View) view.getParent();
                         view.setX(view.getX() + view.getWidth() / 2f < parent.getWidth() / 2f
                                 ? 0 : Math.max(0, parent.getWidth() - view.getWidth()));
-                        view.postDelayed(retractMenuHandle, 4000);
+                        view.postDelayed(retractMenuHandle, MENU_HANDLE_IDLE_MS);
                         isButtonMoving = false;
                         return true;
                     case MotionEvent.ACTION_CANCEL:
-                        view.postDelayed(retractMenuHandle, 4000);
+                        view.postDelayed(retractMenuHandle, MENU_HANDLE_IDLE_MS);
                         isButtonMoving = false;
                         return true;
                     default:
@@ -1232,7 +1232,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                 floatingButtonShown = floatingMenuButton.isShown();
 
                 if (floatingButtonShown) {
-                    floatingMenuButton.setVisibility(View.GONE);
+                    updateFloatingButtonVisibility(false);
                 }
 
                 overlayToggleZoomButtonShown = overlayToggleButton != null && overlayToggleButton.isShown();
@@ -1268,7 +1268,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                 isHidingOverlays = false;
 
                 if (floatingButtonShown) {
-                    floatingMenuButton.setVisibility(View.VISIBLE);
+                    updateFloatingButtonVisibility(true);
                 }
 
                 if (overlayToggleZoomButtonShown) {
@@ -4304,7 +4304,16 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
     }
 
     private void updateFloatingButtonVisibility(boolean show) {
+        floatingMenuButton.removeCallbacks(retractMenuHandle);
+        floatingMenuButton.animate().cancel();
         floatingMenuButton.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (show) {
+            View parent = (View) floatingMenuButton.getParent();
+            int right = Math.max(0, parent.getWidth() - floatingMenuButton.getWidth());
+            floatingMenuButton.setX(Math.max(0, Math.min(right, floatingMenuButton.getX())));
+            floatingMenuButton.setAlpha(1f);
+            floatingMenuButton.postDelayed(retractMenuHandle, MENU_HANDLE_IDLE_MS);
+        }
     }
 
     public void toggleFloatingButtonVisibility() {
