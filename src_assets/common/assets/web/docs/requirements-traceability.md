@@ -151,6 +151,11 @@ a release source. Classic UI remains recovery fallback until parity is proven.
 - Local Android Debug build passes; MuMu update uses only `adb install -r`, with preference
   contents unchanged and launcher startup checked. APK SHA-256:
   `04953b8058b3ec0a836c74b446e4344fec26809aa9769fdaad6b412e46ad1021`.
+- Android unit run: 87 tests, zero failures/errors/skips. Robolectric warns SDK 36 needs
+  Java 21; this Java 17 run does not certify SDK 36 behavior or hardware decoding.
+- Local Windows package build passes: unsigned `1.0.390.1462`, still includes unvalidated
+  isolation draft, not installed. Manifest remains local beside artifact. Commit `49d9b04de`
+  pushed; Android Actions `44546454547` and Windows Actions `44546455054` started, results pending.
 - No stream was started, no driver changed and no host update elevated. Before/after live
   streaming measurement and exact secondary-virtual-output safety gate remain pending.
 
