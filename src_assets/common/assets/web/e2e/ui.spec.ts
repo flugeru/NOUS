@@ -26,7 +26,7 @@ test('combobox has one cyan focus border for pointer and keyboard', async ({ pag
 
 test('desktop document policy preserves editing but blocks UI selection and image drag', async ({ page }) => {
   const source = await readFile(fileURLToPath(new URL('../../../../../packaging/windows/desktop/NousDesktop.cs', import.meta.url)), 'utf8');
-  const script = source.split('AddScriptToExecuteOnDocumentCreatedAsync(@"')[1].split('\n");')[0];
+  const script = source.match(/AddScriptToExecuteOnDocumentCreatedAsync\(@"([\s\S]*?)"\);/)![1];
   await page.addInitScript(script);
   await page.route('http://127.0.0.1:5173/desktop-policy-check', route => route.fulfill({ contentType: 'text/html', body: '<p id="label">Label</p><input id="edit" value="hello"><img id="icon">' }));
   await page.goto('http://127.0.0.1:5173/desktop-policy-check');
