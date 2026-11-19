@@ -152,7 +152,7 @@ hr {
   transition: translate var(--vs-motion-duration-control) var(--vs-motion-easing-standard);
 }
 
-.vs-skip-link:focus-visible {
+.keyboard-navigation .vs-skip-link:focus-visible {
   translate: 0;
 }
 
@@ -271,7 +271,13 @@ hr {
   text-overflow: ellipsis;
 }
 
-/* One inset focus border; no pink hover border plus outer keyboard ring. */
+/* One inset focus border; no accent hover border plus outer keyboard ring. */
+.vs-input:focus,
+.vs-input:hover:focus,
+.vs-textarea:focus,
+.vs-textarea:hover:focus,
+.vs-control:focus,
+.vs-control:hover:focus,
 select:focus,
 select:hover:focus,
 .vs-select:focus,
@@ -284,6 +290,10 @@ select:hover:focus,
 }
 
 @media (forced-colors: active) {
+  .vs-input:focus,
+  .vs-textarea:focus,
+  .vs-control:focus,
+  .vs-select:focus,
   select:focus,
   [role='combobox']:focus {
     border-color: Highlight;

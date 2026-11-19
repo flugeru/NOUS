@@ -6,6 +6,31 @@ import { localRoute, test, expect, type Page } from './fixtures';
 
 const screenshotDirectory = process.env.VIBEPOLLO_TEST_OUTPUT || process.env.VIBESHINE_TEST_OUTPUT || join(tmpdir(), 'vibepollo-ui-results');
 
+test('skip navigation stays hidden on activation but remains available by keyboard', async ({ page }) => {
+  await host(page, 'windows');
+  await page.goto('/v2/');
+  const skip = page.locator('.vs-skip-link');
+  await skip.focus();
+  await expect.poll(() => skip.evaluate(el => el.getBoundingClientRect().bottom)).toBeLessThanOrEqual(0);
+  await page.keyboard.press('Tab');
+  await skip.focus();
+  await expect.poll(() => skip.evaluate(el => el.getBoundingClientRect().top)).toBeGreaterThanOrEqual(0);
+  await skip.press('Enter');
+  await expect(page.locator('main')).toBeFocused();
+});
+
+test('search input has one cyan focus border even while hovered', async ({ page }) => {
+  await host(page, 'windows');
+  await page.goto('/v2/library');
+  const search = page.locator('.library-search input');
+  await search.click();
+  await expect(search).toHaveCSS('border-color', 'rgb(131, 219, 228)');
+  await expect(search).toHaveCSS('outline-style', 'none');
+  await search.fill('Keyboard test');
+  await search.press('Control+a');
+  await expect.poll(() => search.evaluate((el: HTMLInputElement) => el.selectionEnd! - el.selectionStart!)).toBe(13);
+});
+
 test('combobox has one cyan focus border for pointer and keyboard', async ({ page }) => {
   await host(page, 'windows');
   await page.goto('/v2/');

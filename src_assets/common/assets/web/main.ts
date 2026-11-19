@@ -10,6 +10,17 @@ import '@/styles/components.css';
 import '@/styles/shell.css';
 import '@/styles/views.css';
 
+// WebView can focus its first link on activation; reveal skip navigation only
+// after explicit keyboard/controller navigation, never on window activation.
+document.addEventListener('keydown', (event) => {
+  if (['Tab', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+    document.documentElement.classList.add('keyboard-navigation');
+  }
+}, true);
+document.addEventListener('pointerdown', () => {
+  document.documentElement.classList.remove('keyboard-navigation');
+}, true);
+
 const i18n = await createVibepolloI18n();
 
 router.afterEach((route) => {
