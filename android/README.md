@@ -18,6 +18,8 @@ Cliente do [NOUS](../README.md) para transmitir jogos, desktop e áudio de um PC
 3. Confirme o pareamento no host. A conta Google é opcional e não concede acesso administrativo ao PC.
 4. Abra a biblioteca e inicie um aplicativo. Durante o vídeo, use a alça ou o botão configurado para abrir o menu rápido.
 
+Telas e diálogos locais usam modo imersivo: barra de status e navegação ficam ocultas, sem alterar a navegação configurada no celular. Deslize da borda para acessar as barras temporariamente. Teclado e recortes da tela mantêm espaço seguro. Durante a transmissão, a preferência de tela cheia e as regras do Android para janelas/PiP continuam válidas.
+
 **Desconectar** sai da transmissão sem pedir o encerramento do aplicativo no host. **Encerrar sessão** pede confirmação antes de fechar o aplicativo remoto. Não use a segunda ação com progresso não salvo.
 
 ## Compilar e testar

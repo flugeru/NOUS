@@ -96,6 +96,48 @@ public class ControllerNavigationTest {
     }
 
     @Test
+    public void immersiveBarsHideOnAttachAndFocusWithoutHidingKeyboard() {
+        Window window = org.mockito.Mockito.mock(Window.class);
+        android.view.View decor = new android.view.View(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+        android.view.WindowInsetsController insets = org.mockito.Mockito.mock(android.view.WindowInsetsController.class);
+        org.mockito.Mockito.when(window.getDecorView()).thenReturn(decor);
+        org.mockito.Mockito.when(window.getInsetsController()).thenReturn(insets);
+        org.mockito.Mockito.when(window.getCallback()).thenReturn(org.mockito.Mockito.mock(Window.Callback.class));
+        ControllerNavigation.attach(window, () -> {});
+        org.mockito.ArgumentCaptor<Window.Callback> callback = org.mockito.ArgumentCaptor.forClass(Window.Callback.class);
+        org.mockito.Mockito.verify(window).setCallback(callback.capture());
+        callback.getValue().onWindowFocusChanged(false);
+        callback.getValue().onWindowFocusChanged(true);
+        int bars = android.view.WindowInsets.Type.systemBars();
+        org.mockito.Mockito.verify(insets, org.mockito.Mockito.times(2)).hide(bars);
+        org.mockito.Mockito.verify(insets, org.mockito.Mockito.times(2)).setSystemBarsBehavior(
+                android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        org.mockito.Mockito.verify(insets, org.mockito.Mockito.never()).hide(android.view.WindowInsets.Type.ime());
+    }
+
+    @Test
+    public void immersiveInsetsKeepCutoutAndKeyboardSpaceButNotSystemBars() {
+        try (ActivityController<Host> controller = Robolectric.buildActivity(Host.class).setup()) {
+            Host host = controller.get();
+            com.limelight.utils.UiHelper.applyEdgeToEdgeInsets(host);
+            android.view.View root = host.findViewById(android.R.id.content);
+            androidx.core.view.WindowInsetsCompat insets = new androidx.core.view.WindowInsetsCompat.Builder()
+                    .setInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars(), androidx.core.graphics.Insets.of(0, 24, 0, 48))
+                    .setInsets(androidx.core.view.WindowInsetsCompat.Type.displayCutout(), androidx.core.graphics.Insets.of(16, 0, 0, 0))
+                    .setInsets(androidx.core.view.WindowInsetsCompat.Type.ime(), androidx.core.graphics.Insets.of(0, 0, 0, 240))
+                    .build();
+            androidx.core.view.ViewCompat.dispatchApplyWindowInsets(root, insets);
+            assertEquals(16, root.getPaddingLeft());
+            assertEquals(0, root.getPaddingTop());
+            assertEquals(240, root.getPaddingBottom());
+            androidx.core.view.ViewCompat.dispatchApplyWindowInsets(root,
+                    new androidx.core.view.WindowInsetsCompat.Builder(insets)
+                            .setInsets(androidx.core.view.WindowInsetsCompat.Type.ime(), androidx.core.graphics.Insets.NONE).build());
+            assertEquals(0, root.getPaddingBottom());
+        }
+    }
+
+    @Test
     public void joystickUsesDominantAxisAndIgnoresSmallMovements() {
         int none = KeyEvent.KEYCODE_UNKNOWN;
         assertEquals(none, ControllerNavigation.joystickDirection(0.25f, -0.32f, none));

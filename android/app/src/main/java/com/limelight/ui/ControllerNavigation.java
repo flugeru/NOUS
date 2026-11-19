@@ -20,6 +20,7 @@ import androidx.appcompat.view.WindowCallbackWrapper;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 /** Adapts controllers to Android focus navigation in local menus. */
 final class ControllerNavigation extends WindowCallbackWrapper {
@@ -63,6 +64,13 @@ final class ControllerNavigation extends WindowCallbackWrapper {
         this.window = window;
         this.goBack = goBack;
         this.dialogActions = dialogActions;
+        hideSystemBars();
+    }
+
+    private void hideSystemBars() {
+        WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(window, window.getDecorView());
+        controller.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        controller.hide(WindowInsetsCompat.Type.systemBars());
     }
 
     private static InputDevice connectedController() {
@@ -259,6 +267,9 @@ final class ControllerNavigation extends WindowCallbackWrapper {
             }
         }
         super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            hideSystemBars();
+        }
     }
 
     private void stopRepeating() {
