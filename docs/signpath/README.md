@@ -2,8 +2,13 @@
 
 SignPath publication is disabled under the current build policy. This document
 and its XML files are inactive integration references kept for audit; current
-CI must not invoke SignPath. The signing requests described below apply only
-to that historical integration.
+CI must not invoke SignPath. All descriptions below, including account slugs,
+authorization and certificates, describe the historical integration, not a
+current NOUS signing entitlement or proof that any artifact is signed. Never
+publish private signing material here. Verify each distributed artifact separately.
+
+See [release preparation](../maintainers/release.md) and
+[security guidance](../../SECURITY.md) before distributing a build.
 
 This directory documents how the Windows installer is code-signed through
 [SignPath](https://signpath.io) and keeps **review copies** of the account-side

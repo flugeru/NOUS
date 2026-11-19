@@ -1,5 +1,26 @@
 # Release NOUS
 
+> Os procedimentos abaixo não certificam uma release. Confirme a política e os workflows ativos na revisão escolhida; não publique nem habilite assinatura automaticamente. Builds locais de debug ou sem assinatura devem permanecer identificados como testes.
+
+## Android — Google Play
+
+Antes do primeiro envio e de cada atualização:
+
+- [ ] Selecione commit limpo, mantenha `applicationId` estável e aumente `versionCode`. Use a variante `nonRoot_gameRelease`, não debug nem a variante root legada.
+- [ ] Gere `:app:bundleNonRoot_gameRelease`. O Gradle atual não configura assinatura de release; assine o AAB com a chave de upload protegida e verifique-o. Use Play App Signing; chave de upload e chave distribuída aos usuários têm papéis diferentes.
+- [ ] Guarde keystore, senhas e credenciais de publicação fora do Git e dos artefatos públicos. Não forneça conta de serviço ou segredo OAuth dentro do APK/AAB.
+- [ ] Confira requisitos atuais de target API no Play Console. O projeto aponta para API 36; isso sozinho não certifica conformidade.
+- [ ] Verifique alinhamento ZIP/ELF de 16 KB de **todas** as bibliotecas nativas, inclusive dependências pré-compiladas. `APP_SUPPORT_FLEXIBLE_PAGE_SIZES` não valida o bundle final.
+- [ ] Publique política de privacidade verdadeira, pública e acessível também pelo app. Preencha Segurança dos dados com base no comportamento real e nos SDKs, incluindo conta Google, diretório de PCs, diagnósticos, permissões e dados locais. Não declare ausência de coleta sem auditoria.
+- [ ] Verifique se o fluxo de conta exige exclusão de conta/dados no app e por URL externa segundo a política vigente. Logout ou revogação de um PC não equivale a exclusão de conta. Esses fluxos e a política de privacidade ainda precisam de validação antes do envio.
+- [ ] Revise manifesto mesclado, permissões, backup de credenciais, SDKs e domínios. Cadastre a impressão digital do certificado Play efetivo na integração Google, além dos certificados de desenvolvimento usados separadamente.
+- [ ] Teste o AAB pelo canal interno, inclusive splits, instalação limpa/atualização, conta, LAN offline, controles, acessibilidade, retrato/paisagem e dispositivos físicos. Emulador não comprova latência ou hardware.
+- [ ] Confira classificação de conteúdo, ficha da loja, suporte, licenças de dependências e entrega do código-fonte correspondente à GPL. Não use marcas nem garantias upstream como se fossem do NOUS.
+
+Referências oficiais: [preparar release](https://developer.android.com/studio/publish/preparing), [assinatura](https://developer.android.com/studio/publish/app-signing), [páginas de 16 KB](https://developer.android.com/guide/practices/page-sizes), [Segurança dos dados](https://support.google.com/googleplay/android-developer/answer/10787469), [exclusão de conta](https://support.google.com/googleplay/android-developer/answer/13327111).
+
+O checklist não representa publicação ou aprovação na Google Play. Não enviar automaticamente pelo CI sem autorização de release.
+
 NOUS releases are built from an existing, v-less semantic-version tag such as `1.19.0-beta.4`
 or `1.19.0`. The tagged commit must contain the matching version-scoped release notes file, for
 example `release_notes/1.19.0-beta.4.md`.

@@ -114,7 +114,7 @@ NVENC dedicado não significa custo zero no restante da GPU: conversão/cópias,
 
 Compilador encontrado sem instalação: `C:\Program Files\Windhawk\Compiler\bin\clang++.exe`, clang 20.1.3, alvo padrão i686 MinGW. Link estático evita DLLs runtime ausentes. Artefatos em diretório temporário aprovado; nenhum executável de teste chama APIs GPU.
 
-1. Regressão nova: passou com clang 20.1.3 e também com wrapper `C:\Users\Flugel\AppData\Local\Temp\opencode\cxx.cmd` (Zig 0.14.1 fornecido pela sessão principal). Método extraído do baseline exato `5e6ed8594184212d429bb093d7fd47904c9a6fa6` via `git show`, em árvore temporária: falha esperada no assert 8.333 bits. Variante temporária reinjetando piso antigo também falhou no mesmo assert.
+1. Regressão nova: passou com clang 20.1.3 e também com wrapper C++ local (Zig 0.14.1 fornecido pela sessão principal). Método extraído do baseline exato `5e6ed8594184212d429bb093d7fd47904c9a6fa6` via `git show`, em árvore temporária: falha esperada no assert 8.333 bits. Variante temporária reinjetando piso antigo também falhou no mesmo assert.
 2. `test_nvenc_api.cpp` + `test_nvenc_event_wait.cpp`, fontes reais `nvenc_event_wait.cpp`, googletest/googlemock inicializados: **18/18 passaram**.
 3. `test_wgc_monitor_selection.cpp` com googletest: **29/29 passaram**, incluindo publicação WGC e identidade/deduplicação direta.
 4. Regressão `test_keyed_mutex_abandoned.py`: passou com Zig 0.14.1 e clang 20.1.3; baseline e três reintroduções isoladas falharam como esperado.
@@ -123,10 +123,10 @@ Compilador encontrado sem instalação: `C:\Program Files\Windhawk\Compiler\bin\
 Comando da regressão (PowerShell; variáveis só no processo):
 
 ```powershell
-$env:TEMP = 'C:\Users\Flugel\AppData\Local\Temp\opencode'
-$env:TMP = $env:TEMP
-& 'C:\Users\Flugel\AppData\Local\Temp\opencode\python\python.exe' tests/unit/test_nvenc_bitrate.py --compiler 'C:\Program Files\Windhawk\Compiler\bin\clang++.exe' --compiler-arg=-static
-& 'C:\Users\Flugel\AppData\Local\Temp\opencode\python\python.exe' tests/unit/test_keyed_mutex_abandoned.py --compiler 'C:\Users\Flugel\AppData\Local\Temp\opencode\cxx.cmd'
+$python = (Get-Command python).Source
+$cxx = (Get-Command clang++).Source
+& $python tests/unit/test_nvenc_bitrate.py --compiler $cxx --compiler-arg=-static
+& $python tests/unit/test_keyed_mutex_abandoned.py --compiler $cxx
 ```
 
 Compilação CPU dos 18 testes existentes:

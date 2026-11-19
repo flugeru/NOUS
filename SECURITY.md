@@ -1,5 +1,24 @@
 # Security policy
 
+## Credentials and public artifacts
+
+Do not attach private keys, OAuth client secrets, service-account JSON, signing
+keystores, passwords, refresh tokens, session cookies, pairing tickets, private
+screen captures or raw crash dumps to issues, commits or releases. Redact host
+names, account identifiers, real network addresses and personal file paths from
+reproduction notes. Keep license attribution and public technical examples intact.
+
+`.gitignore` is only an accidental-add safeguard: it does not untrack existing
+files, erase repository history, scan release attachments or revoke credentials.
+If a credential was exposed, revoke or rotate it before coordinating history or
+artifact cleanup. Do not rewrite shared history without maintainer approval.
+
+Run `python tools/test_public_docs.py` before publishing documentation. This
+bounded check is not a full secret scan, history audit or certification of Google
+Play compliance. Firebase client settings and OAuth client IDs are public
+configuration, not server credentials; still restrict them correctly at the
+provider. Never embed server credentials in the Android app or Desktop build.
+
 ## Public security improvements
 
 Security enhancements and defense-in-depth improvements are welcome as public

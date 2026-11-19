@@ -4,6 +4,13 @@ NOUS source: [flugeru/NOUS](https://github.com/flugeru/NOUS). No NOUS container 
 Build from `docker/` locally. Registry examples, version tags and architecture tables below describe upstream Sunshine images, not NOUS images.
 Legacy executable and configuration names remain compatible.
 
+This guide is for running the **host** in a container, not building the Android
+store app. See [NOUS overview](README.md), [Android](android/README.md) and
+[release preparation](docs/maintainers/release.md). Keep the configuration volume,
+certificates, pairing state and environment secrets private; never commit or
+publish a live `/config` snapshot. Do not expose the administrative panel directly
+to the internet.
+
 ## Important note
 Starting with v0.18.0, tag names have changed. You may no longer use `latest`, `master`, `vX.X.X`.
 

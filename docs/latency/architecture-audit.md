@@ -152,7 +152,7 @@ Retorno 1 por advisories: 22 entradas de pacotes, 19 high, 2 moderate, 1 low, ze
 
 ## Checks CPU executados
 
-Ferramentas fornecidas: Zig 0.14.1 via wrapper `C:\Users\Flugel\AppData\Local\Temp\opencode\cxx.cmd`, Python em `C:\Users\Flugel\AppData\Local\Temp\opencode\python\python.exe`, Git portátil em `C:\Users\Flugel\AppData\Local\Temp\opencode\mingit\cmd\git.exe`. Validação de checksum do compilador foi fornecida pelo agente coordenador/sessão principal; não é resultado desta auditoria.
+Ambiente histórico: Zig 0.14.1 com wrapper C++ local, Python e Git portáteis. Caminhos pessoais foram omitidos. Configure as ferramentas do seu ambiente antes de repetir os comandos; a validação de checksum do compilador não é resultado desta auditoria.
 
 | Check | Resultado | Cobertura real |
 | --- | --- | --- |
@@ -169,9 +169,10 @@ Ferramentas fornecidas: Zig 0.14.1 via wrapper `C:\Users\Flugel\AppData\Local\Te
 Comandos reproduzíveis de transporte, em PowerShell na raiz:
 
 ```powershell
-$cxx = 'C:\Users\Flugel\AppData\Local\Temp\opencode\cxx.cmd'
-$python = 'C:\Users\Flugel\AppData\Local\Temp\opencode\python\python.exe'
-$out = 'C:\Users\Flugel\AppData\Local\Temp\opencode'
+$cxx = (Get-Command c++).Source
+$python = (Get-Command python).Source
+$out = Join-Path $env:TEMP 'nous-architecture-checks'
+New-Item -ItemType Directory -Force -Path $out | Out-Null
 & $python tests/unit/test_stream_replace.py $cxx
 & $python tests/unit/test_transport_boundaries.py $cxx
 & $cxx -std=c++23 -O0 -g0 -pthread -I. -Ithird-party/googletest/googletest/include -Ithird-party/googletest/googletest tests/unit/test_video_pacing.cpp tests/unit/test_video_adaptive_pacing.cpp tests/unit/test_stream.cpp src/stream_protocol.cpp third-party/googletest/googletest/src/gtest-all.cc third-party/googletest/googletest/src/gtest_main.cc -o "$out\architecture-transport-tests.exe"

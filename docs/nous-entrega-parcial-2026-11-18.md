@@ -23,7 +23,7 @@
 
 - As quatro capas padrão foram editadas com Python para 640×360 e incluídas no host, que as fornece ao Web e ao Android. Testes Web focados: 7 aprovados, mais teste unitário de categoria. Steam Big Picture vem em Launchers nas instalações novas; catálogos antigos sem escolha explícita usam o comando de abertura como padrão.
 - Android: 79 testes locais aprovados, incluindo cartões 16:9 e categorias. APK permanece o mesmo. Falta testar o recebimento das quatro capas pelo MuMu, em host de teste pareado, sem limpar dados. Remote Input e Remote Monitor têm IDs fixos; o APK atual guarda capa por ID e não usa `ArtVersion`. Entradas com cache anterior podem manter a arte antiga.
-- Web instalado: conferidos Dispositivos, Estatísticas, Registros, Integrações, Manutenção e Transmitir no navegador (sem iniciar sessão). Remoção autorizada apenas de `POCO X6 Pro`, confirmada no painel; a posição de tela salva não foi alterada.
+- Web instalado: conferidos Dispositivos, Estatísticas, Registros, Integrações, Manutenção e Transmitir no navegador (sem iniciar sessão). Remoção autorizada de uma entrada de pareamento de teste, confirmada no painel; a posição de tela salva não foi alterada.
 - Análise local com depurador Microsoft assinado e servidor público de símbolos: bugcheck `0x50`, processo `System`, `ViGEmBus.sys` (`AV_ViGEmBus!unknown_function`). O dump parcial não estabeleceu a sequência que acionou a falha, nem a versão exata do binário envolvido. Não confundir correção no fluxo de instalação com correção do driver. Dump e saída bruta ficam locais.
 - Setup/MSI recompilados, mas não executados. Validar instalação limpa, upgrade, preservação pré/pós, rollback, reinício e controle em Windows com snapshot antes do PC principal. O host acessa backends de controle na inicialização, mesmo sem streaming: não usar segunda instância no PC principal como substituto do ambiente recuperável.
 - CI: [Windows anterior](https://github.com/flugeru/NOUS/actions/runs/44351044736) falhou em `Build Windows`; [Android anterior](https://github.com/flugeru/NOUS/actions/runs/44280373747) falhou na captura do emulador. [Windows da revisão](https://github.com/flugeru/NOUS/actions/runs/44356490840) ainda não certificado.
@@ -47,7 +47,7 @@ Branch: `feat/nous-ecosystem-audit`. Contrato completo e evidências anteriores:
 
 ## Artefatos desta rodada
 
-Pasta local: `C:\Users\Flugel\Desktop\NOUS-desktop-input-fix\build-local\ENTREGA-TOTAL-2026-11-18`.
+Pasta de artefatos relativa ao repositório: `build-local/ENTREGA-TOTAL-2026-11-18` (não versionada).
 
 | Arquivo | Bytes | SHA-256 |
 | --- | ---: | --- |
@@ -75,7 +75,7 @@ Pasta local: `C:\Users\Flugel\Desktop\NOUS-desktop-input-fix\build-local\ENTREGA
 - Apresentação 16:9 é feita por recorte (`object-fit: cover`) em frame 16:9. Grids observados são 920×430 e heroes 3840×1240; **não são arquivos 16:9 nativos** e a interface não os declara como tal.
 - Fallback: GameDB (IGDB) continua disponível em paralelo; se ambos falharem, o modal mostra erro e o upload local continua possível.
 
-Validação real em instância isolada (`C:\Users\Flugel\AppData\Local\Temp\opencode\nous-host-test`, portas 48189/48190, sem tocar na instância instalada em 47990):
+Validação histórica em instância temporária isolada, com portas de teste distintas do host instalado:
 
 - Busca `portal`: HTTP 200 com 10 jogos; resposta inclui `Portal` (id 9022).
 - Assets grid: HTTP 200, 3 itens, 920×430, URLs oficiais do CDN.
@@ -144,8 +144,8 @@ Validação real em instância isolada (`C:\Users\Flugel\AppData\Local\Temp\open
 
 1. Preserve a instalação histórica: registro `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Vibepollo` foi observado com `InstallLocation=C:\Windows\` e `DisplayVersion=1.0.3-local`. Configurações/credenciais históricas em `C:\Windows\config`. Faça backup protegido antes de instalação real; não exponha conteúdo em logs/documentos públicos.
 2. Não apague chaves históricas `SOFTWARE\Nonary\Vibepollo\Installer\DriverSelections` nem a identidade ARP `Vibepollo` por causa da mudança de fornecedor.
-3. A instância instalada em `47990` (PID observado 9400) não foi interrompida. Testes isolados usaram `C:\Users\Flugel\AppData\Local\Temp\opencode\nous-host-test` e portas 48189/48190.
-4. Retome o contrato em `docs/nous-ecosystem-audit.md` e as respostas em `C:\Users\Flugel\Downloads\NOUS_respostas_revisadas.md`. Trabalhe na branch existente, preserve alterações e mantenha commits/push.
+3. Não use PIDs ou caminhos de uma sessão anterior para selecionar processos; confirme a identidade da instância de teste antes de qualquer ação.
+4. Retome o contrato em `docs/nous-ecosystem-audit.md`. Respostas privadas e inventários locais não integram a documentação pública. Preserve alterações existentes.
 
 ## Comandos já utilizados
 
@@ -158,7 +158,7 @@ npm.cmd run build
 # Host, MSI e setup
 cmake --build build-local --target sunshine -j 8
 cmake --build build-local --target package_msi -j 8
-$env:INNO_SETUP_COMPILER='C:\Users\Flugel\AppData\Local\Temp\opencode\inno6\ISCC.exe'
+$env:INNO_SETUP_COMPILER=(Get-Command ISCC.exe).Source
 powershell -NoProfile -ExecutionPolicy Bypass -File packaging\windows\bootstrapper\build_bootstrapper.ps1 -BuildDir build-local -MsiPath build-local\cpack_artifacts\NOUS.msi -OutputName setup.exe -DisableSignPath
 ```
 

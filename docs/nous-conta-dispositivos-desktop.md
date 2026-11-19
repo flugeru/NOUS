@@ -1,87 +1,70 @@
-# NOUS — conta, dispositivos e desktop Windows
+# Conta, dispositivos e NOUS Desktop
 
-Adendo ao [escopo existente](nous-ecosystem-audit.md). Não retira trabalho do roadmap nem redesenha telas. Versão pública Windows/Android: `1.0.0`.
+Contrato público e limites de implementação. Versão do produto: `1.0.0`. A presença de um recurso no roadmap não significa que esteja pronto para produção ou para a Google Play.
 
-## Conta NOUS
+## Acesso local e conta são separados
 
-- Login opcional com Google e Discord. Conta NOUS tem ID próprio; provedores são vínculos por emissor e identificador estável, não por e-mail. Permitir vincular ambos à mesma conta.
-- Se e-mails verificados coincidirem, oferecer mescla, nunca executá-la automaticamente. Reautenticar os dois lados e pedir confirmação explícita; mostrar efeitos, preservar vínculos legítimos e revogar sessões afetadas. Colisão de e-mail nunca concede acesso.
-- Authorization Code com PKCE S256 e `state` de uso único; OIDC exige também validação de emissor, audiência, assinatura, validade e `nonce`. Confirmar S256 com cada provedor em ambiente de teste. Usar navegador do sistema para autenticação do provedor; painel NOUS continua na janela própria. Não incorporar páginas de login de terceiros no WebView.
-- Backend de conta guarda segredos de servidor; nunca no APK, EXE, interface Web ou logs. Tokens locais em armazenamento protegido: Android Keystore, Windows DPAPI/armazenamento de credenciais e cookies `HttpOnly`/`Secure` no Web, conforme cliente. Revogar sessões, rotacionar tokens de renovação e validar callback exato. Credenciais locais existentes não são migradas para conta em nuvem.
+- A senha administrativa do host controla o painel local. Google não substitui essa senha nem concede privilégios de Windows.
+- PIN e certificados locais preservam compatibilidade com Sunshine, Apollo e Moonlight. Uso local não exige conta.
+- A integração Google é opcional. O diretório de PCs guarda nome e impressão digital pública do certificado do host, não endereço público, token, chave privada ou concessão de streaming.
+- O host valida identidade Firebase assinada, conta vinculada, certificado da instalação e prova de posse da chave antes de aceitar uma conexão pela conta. E-mail não é identidade de autorização.
+- O dono precisa ativar acesso por conta uma vez no painel local. Depois, uma instalação da mesma conta pode solicitar **Conectar** na LAN sem nova aprovação por PIN.
+- O fluxo por conta não reativa um certificado desativado nem recria automaticamente uma instalação removida. Bloquear novos vínculos não revoga pareamentos existentes; eles devem ser tratados na lista de dispositivos.
 
-## Vinculação Android e PC
+## Estado da implementação
 
-- Mesma conta: o dono confirma uma vez no painel local que o PC pode aceitar instalações da sua conta NOUS. No Android, entrar na mesma conta faz o PC aparecer; tocar em **Conectar** vincula a instalação e abre o acesso sem digitar PIN, ler QR ou aprovar novamente no PC. O host valida uma autorização para aquele PC e aquela instalação antes de aceitá-la. Um e-mail igual entre Google e Discord só sugere vínculo de contas; não substitui essa validação.
-- Contas diferentes: QR ou convite com confirmação explícita. Convite curto, de uso único, com expiração e escopo; sem segredo permanente, credenciais locais ou token de provedor no QR.
-- Sem conta, na LAN: escolher o PC no Android solicita o pareamento na janela **NOUS Desktop**, sem abrir navegador. O dono confirma no PC; Android lê o QR para concluir sem PIN. O código é gerado localmente, ligado ao host e à chave da instalação, expira em dois minutos e só pode ser usado uma vez. PIN manual continua disponível para clientes atuais e aparelhos sem câmera. Este fluxo é separado de convites entre contas. Host, interface e APK debug 62 compilam; testes da interface e de vínculo do código passaram. Ainda falta validar abertura da janela instalada, leitura com câmera real e pareamento ponta a ponta offline.
-- Cada instalação tem identidade e chave próprias. Autorizações vinculam instalação, host e permissões. Host verifica identidade, autorização, escopo e revogação antes do acesso. Revogação de um dispositivo não afeta outros; testar invalidação de acesso novo e sessões ativas. Vinculação não expõe portas nem habilita acesso remoto por padrão.
-- Preservar pareamento existente Sunshine/Apollo/Moonlight e uso LAN offline. Cloud indisponível não bloqueia credenciais ou certificados locais já autorizados. Nenhum vínculo por conta pode contornar permissões do host; definir validade e alcance offline de concessões de conta antes de publicar.
+| Recurso | Estado |
+| --- | --- |
+| Janela Windows WebView2 separada do serviço | Empacotada em builds de teste. |
+| Login Google Android | Testado em emulador com sessão preservada após atualização. |
+| Login Google no navegador do sistema | Testado no broker local de desenvolvimento. Não é serviço de conta distribuído pronto. |
+| Publicação e leitura do diretório | Testadas com autorização de conta; leitura anônima recusada. |
+| Conectar pela conta | Abriu a biblioteca em teste real com certificado já cadastrado, sem duplicação. Primeira instalação nova ainda exige validação ponta a ponta. |
+| QR LAN offline | Implementado em builds de teste; leitura com câmera física e fluxo offline completo pendentes. |
+| Revogação durante sessão ativa | Pendente de validação integrada. |
+| Identidade NOUS independente, Discord, mescla e convites entre contas | Planejados; não concluídos. |
+| Sessão Desktop de produção sem broker manual | Pendente. |
 
-## Janela Windows: comparação e decisão
+Contas com e-mails iguais nunca devem ser mescladas automaticamente. Um fluxo futuro de mescla exige reautenticação e confirmação dos dois lados, preservando permissões e revogações.
 
-O host C++ serve a mesma Web UI por HTTPS (`src/confighttp.cpp`); `launch_ui()` em `src/entry_handler.cpp` abre navegador, inclusive via bandeja. O MSI atual já cria atalho; Inno empacota o motor/MSI. Serviço precisa permanecer separado do processo visual.
+## Segurança de login e pareamento
 
-| Opção | Benefício | Custo no NOUS |
-| --- | --- | --- |
-| WebView2 + WinForms | Reusa Web UI e runtime Evergreen; ferramenta C# de build já existe no instalador; sem Node/Rust na janela | Gerenciar disponibilidade do runtime, TLS local e perfil por usuário; wrapper apenas Windows |
-| Tauri | Binário pequeno e multiplataforma, com permissões de ponte configuráveis | Toolchain Rust, configuração IPC e bundler extra; no Windows continua dependendo do WebView2 |
-| Electron | Chromium embarcado e ambiente igual entre máquinas | Mais download, atualização própria do Chromium/Node, novo ciclo de empacotamento e isolamento para conteúdo remoto |
+O login nativo usa navegador do sistema, Authorization Code com PKCE S256, `state` de uso único, callback loopback exato e validação OIDC de assinatura, emissor, audiência, tempo e `nonce`. Não inserir login do provedor dentro do WebView nem criar ponte JavaScript para acessar credenciais.
 
-**Escolha: WebView2.** Executável separado, não elevado, com ícone NOUS, janela na barra de tarefas, sem abas ou barra de endereço. Sem ponte nativa para JavaScript. Fechar janela não encerra `ApolloService` nem transmissão. Manter URL Web para uso manual e clientes atuais. Avaliar abrir janela pela bandeja e atalhos; host mantém inicialização atual, janela não autoabre por padrão. Incluir no MSI/Inno após validação do runtime, TLS e comportamento offline; falta runtime não pode bloquear o serviço.
+O QR local é ligado ao host, à solicitação e à chave da instalação. Expira em dois minutos e só pode ser usado uma vez. O resgate exige HTTPS com certificado fixado e prova assinada. O QR não deve conter credenciais administrativas nem token permanente. O PIN continua disponível como alternativa.
 
-Referências: [WebView2 security](https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/security), [Tauri Windows installer](https://v2.tauri.app/distribute/windows-installer/), [Electron security](https://www.electronjs.org/docs/latest/tutorial/security), [RFC 8252](https://www.rfc-editor.org/rfc/rfc8252), [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700).
+Indisponibilidade da nuvem não deve invalidar certificados locais já autorizados. Isso não permite criar uma autorização nova sem as verificações exigidas. Antes da distribuição, validar limites offline e exclusão de conta/dados, além de logout e revogação.
 
-## Diretório de PCs da conta
+## Broker local de desenvolvimento
 
-Firestore `(default)` criado no projeto `nous-game-stream`, região `southamerica-east1` (São Paulo), plano Spark, edição Standard, sem backups pagos. Inicialização em modo produção: nenhuma leitura ou gravação por clientes. A política em `cloud/firestore.rules` foi publicada e relida no console: escopo por UID Firebase e identidade estável do Google, nome e impressão digital pública do host, sem endereço público, token, chave privada ou concessão de pareamento. O diretório não autoriza conexão; o host precisa conferir o vínculo local e a chave da instalação.
+Esse fluxo é uma prévia, não uma instrução para distribuir segredos no instalador:
 
-Cliente OAuth nativo `NOUS Desktop` registrado no mesmo projeto. Teste no MuMu com APK 63 e sessão preservada: **Ajustes → Conta NOUS → PCs da conta** retornou lista vazia, não erro. Consulta anônima ao diretório retornou HTTP 403. Teste de configuração do endpoint de token, sem credenciais de usuário: Google exigiu `client_secret` pelo cliente Desktop mesmo com `code_verifier`. Não colocar segredo de servidor no aplicativo. Prévia Web local: login real concluído no navegador do sistema com segunda chave do mesmo cliente Desktop, mantida fora do repositório. Após o retorno ao loopback, a página confirmou sessão autenticada no Firebase. Isso não concede acesso ao PC nem demonstra conexão Android sem PIN.
+1. Mantenha o JSON do cliente OAuth Desktop autorizado em `%LOCALAPPDATA%\NOUS\desktop-oauth.json`. Mantenha a configuração pública Firebase correspondente em `%LOCALAPPDATA%\NOUS\google-services.json`. Ambos ficam fora do Git; nunca publique o conteúdo.
+2. Com Node.js disponível, execute `node "<pasta do NOUS>\desktop\desktop-login.mjs"` na sessão normal do usuário. O broker escuta somente em `127.0.0.1:48173`.
+3. Entre no painel HTTPS local com a senha administrativa. Em **Dispositivos**, conclua o login Google, escolha **Ativar acesso por conta** e **Continuar no navegador**. Confirme a publicação conscientemente.
+4. No Android da mesma conta, abra **Conta NOUS → PCs da conta**, escolha o PC descoberto na LAN e toque em **Conectar**. Se necessário, adicione o PC localmente antes.
 
-APK debug 64: entradas do diretório conferem caminho da conta, UUID e SHA-256 do certificado. Em **PCs da conta**, selecionar uma entrada só abre a biblioteca quando o PC já está online e pareado localmente com o mesmo certificado. Não cria concessão nem substitui certificado salvo. 85 testes Android passaram; atualização no MuMu via `adb install -r` preservou o horário da primeira instalação. Ainda sem setup de acesso por conta.
+O ticket de ativação é temporário e de uso único. O broker verifica o certificado do endpoint local antes de enviar credenciais. O diretório apenas descobre PCs; não é a autoridade de pareamento. Se a publicação falhar, confira o painel e bloqueie novos vínculos caso não queira manter a autorização.
 
-### Teste integrado — APK 65
+Configuração pública Firebase e IDs de cliente OAuth não são segredos de servidor, mas devem ter restrições corretas no provedor. Chaves privadas, segredos OAuth e tokens reais não devem aparecer em documentação, logs, APK/AAB ou EXE.
 
-- Broker Windows: copie o JSON OAuth do cliente **NOUS Desktop** para `%LOCALAPPDATA%\NOUS\desktop-oauth.json` e o `google-services.json` público do projeto para `%LOCALAPPDATA%\NOUS\google-services.json`. Com Node.js instalado, execute `node "<pasta do NOUS>\desktop\desktop-login.mjs"` na sessão normal do usuário. O broker escuta apenas em `127.0.0.1:48173`; segredos não entram no instalador.
-- No painel HTTPS de loopback, entre com a senha administrativa local. Em **Dispositivos**, entre com Google, selecione **Ativar acesso por conta**, abra **Continuar no navegador** e confirme **Autorizar e publicar PC**. A aba precisa ter voltado do Google antes da confirmação. Se publicação falhar, repita a ativação ou bloqueie novos vínculos no painel.
-- No Android, com a mesma conta, abra **Ajustes → Conta NOUS → PCs da conta**, selecione o PC descoberto na LAN e toque em **Conectar**. O host exige TLS com pin correto, identidade Firebase assinada, desafio de uso único e prova da chave da instalação. O diretório não guarda endereços; se o PC não for descoberto, adicione-o pela LAN primeiro.
-- Use **Dispositivos** no host para desativar ou remover uma instalação. A conexão por conta não reativa uma entrada desativada nem recria uma removida. **Bloquear novos vínculos** deixa pareamentos existentes em vigor; a entrada de descoberta pode continuar na conta. PIN e QR seguem separados.
+## Janela Windows
 
-### Validação no host migrado — Windows 1.0.390.1088 e MuMu 65
+`NOUS Desktop.exe` usa WinForms e WebView2 Evergreen para carregar a interface HTTPS do host. É executável separado, sem elevação, abas ou barra de endereço. Fechá-lo não encerra `ApolloService` nem a transmissão. Sem ponte nativa para JavaScript; origem local e exceção TLS ficam restritas ao certificado esperado, sem alterar confiança global do Windows.
 
-- Removido o produto registrado em `C:\Windows` sem limpeza de dados ou remoção de drivers. MSI instalado em `C:\Program Files\NOUS`, sem instalar drivers, com início do serviço adiado até restaurar 36 arquivos verificados por SHA-256. Backup protegido separado do diretório de instalação. UUID do host, certificado TLS, dois pareamentos e banco de histórico preservados. Serviço NOUS ativo; Parsec não foi reiniciado. A lista de monitores presentes não mudou durante a partida do novo serviço. Nenhuma transmissão iniciada.
-- Login Google real no navegador concluído. Painel local autenticado emitiu a autorização e a página confirmou publicação no Firestore. MuMu listou o PC e **Conectar** abriu a Biblioteca sem PIN nem QR. O certificado da instalação já constava do cadastro anterior; o host registrou uma autorização pela conta sem duplicar o pareamento. Primeira vinculação de uma instalação nova, revogação em sessão ativa e QR com câmera real ainda não foram testados nesse ambiente.
+A disponibilidade de runtime, renovação TLS, atalhos, abertura pela bandeja, upgrade e comportamento offline precisam integrar a matriz de testes de distribuição. Ausência da janela não pode impedir a execução do serviço.
 
-### Pausa no isolamento do monitor virtual
+## Evidências de builds de teste
 
-- Windows continua executando o build `1.0.390.1088`; APK debug `65` continua no MuMu. Nenhum build de isolamento foi instalado, nenhum driver foi alterado nesta etapa e nenhum vídeo foi iniciado. NOUS e Parsec estavam ativos na última checagem.
-- Rascunho local, não publicado: para `extended_isolated`, o caminho RTSP exige uma tela virtual secundária identificada e compara o estado dos monitores físicos. Se a verificação falhar, a intenção é recusar o início ou a retomada, ou encerrar a captura, sem escolher a tela física. As alterações no host e nos testes ficam no workspace, sem entrar neste commit de documentação.
-- Host de teste `1.0.390.1125` compilou. Passaram as verificações com simulação de início e retomada, 1.156 casos de seleção de saída e o teste de passagem da tela exata ao RTSP. **Isolamento físico e retirada da tela durante vídeo não foram comprovados no hardware.** Trabalho pausado a pedido; não instalar nem iniciar a transmissão como parte desta etapa.
+- Windows `1.0.390.1088`: migração para pasta dedicada preservou identidade TLS, pareamentos, configurações e histórico, com backup protegido e comparação de hashes. Isso não certifica toda migração ou rollback do instalador.
+- Android debug 65: sessão Desktop H.264 de aproximadamente seis minutos em emulador; menu rápido, rolagem, navegação com D-pad simulado e encerramento retornaram à biblioteca/lista. Não prova hardware físico nem latência ponta a ponta.
+- Android debug 66: alça voltou a recolher após ser reexibida; teste ao vivo confirmou redução da área visível e abertura do menu. Suíte: 85 testes, sem falhas.
+- Isolamento `extended_isolated`: rascunho pausado, fora do pacote de teste 66. Compilação e simulações não comprovam preservação do monitor físico ou retirada de saída durante vídeo.
 
-### Transmissão normal no MuMu — Windows 1.0.390.1088 e APK 65
+## Antes de publicar
 
-- Teste real de **Desktop** no MuMu, com a saída padrão do host (`DISPLAY1`), conforme solicitado. Sem instalar a alteração de isolamento. Sessão H.264 de aproximadamente seis minutos; o cliente voltou à lista de PCs após **Encerrar sessão**, e o host registrou `CLIENT DISCONNECTED` e `Session ended`. NOUS e Parsec seguiram ativos. Nenhuma imagem da tela salva.
-- Menu rápido abriu sobre o vídeo pelo botão Voltar e pela alça. Rolagem alcançou **Menu avançado**; D-pad simulado moveu o foco e ativou o painel de desempenho. A alça passou de 132 px visíveis a 66 px após inatividade e continuou acionável. Alça ativada na sessão, sem trocar preferência persistente.
-- Duas amostras do painel: 1280×720, 59,97–59,98 FPS recebidos, 59,47–59,49 FPS renderizados, 0% de perda de rede nas amostras, latência média de rede de 1 ms e decodificação média de 35,06–49,89 ms. Não são medidas ponta a ponta nem prova de estabilidade longa. Warp, R3 físico, Xbox/DualSense USB/Bluetooth, múltiplos controles e desempenho no POCO ainda não foram validados.
+Testar instalação nova e atualização, mesma/outra conta, certificado conflitante, expiração/replay, revogação em sessão ativa, LAN sem internet, câmera real, runtime ausente, permissões, acessibilidade e controles físicos. Não classificar esses testes como concluídos com base apenas em build ou emulador.
 
-## Etapas e aceitação
+[Roadmap e auditoria](nous-ecosystem-audit.md) · [Google Play](maintainers/release.md#android--google-play) · [Segurança](../SECURITY.md)
 
-1. Prévia da janela e teste local: HTTPS loopback, origem restrita, popups bloqueados, nada elevado e nenhuma mudança de serviço/driver. Validar render da interface existente, fechamento e mensagens de indisponibilidade. Prévia pode receber certificado público do host por argumento explícito; não adicionar confiança global.
-2. Distribuição: validar origem autoritativa e permissões do certificado público do host, renovação, perfil separado, atalhos, bandeja, runtime ausente/offline, MSI upgrade e fechamento durante transmissão em ambiente recuperável. Não instalar runtime ou novo wrapper no PC principal sem validar fluxo.
-3. Backend de conta: escolher domínio HTTPS, armazenamento e provisionar apps Google/Discord e callbacks. Testar PKCE, `state`/`nonce`, replay, sessão, revogação e vínculo/mescla com contas de teste. Sem credenciais reais no Git. Configuração e implantação dos provedores ainda pendentes.
-4. Clientes: integrar entrada, vínculo, QR/convite e revogação no Windows/Web e Android, sem remover PIN; testar mesma conta, contas diferentes, expiração, replay, revogação e LAN sem internet. Confirmar Steam, biblioteca, controles e upgrades sem regressão.
-
-## Prévia validada
-
-- Build local: `powershell -NoProfile -ExecutionPolicy Bypass -File packaging/windows/desktop/build_desktop_preview.ps1 -OutputDirectory build-local/desktop-preview`. C# x64, WebView2 SDK `1.0.4314.35` com SHA-256 fixo; pacote NuGet verificado com assinatura Microsoft. Usa runtime Evergreen já instalado.
-- `NOUS Desktop Preview.exe --self-test <certificado-público.pem>`: checagens de origem e da exceção TLS passaram. A validação TLS normal continua ativa; a exceção para certificado local autoassinado exige origem exata, bytes iguais ao PEM público informado e certificado dentro da validade. Sem alteração na confiança do Windows.
-- A janela abriu sem elevação e exibiu o login local real, sem abrir navegador externo. Fechar a janela manteve `ApolloService` em execução e o mesmo PID do host. O certificado público foi copiado para pasta local de teste porque a pasta de credenciais do host exige acesso elevado; não copie a chave privada nem altere permissões dessa pasta. Nenhuma transmissão iniciada; login autenticado, downloads, recursos externos e streaming não validados. Prévia ainda fora do MSI/Inno.
-## Revisão da interface — APK debug 61
-
-- Janela Desktop atualizada: DPI por monitor, moldura escura e sem barra de status do WebView2. Consulta de versões permite só a leitura do feed público do NOUS; login externo continua fora da janela. Browser streaming pausado na interface.
-- QR LAN e conexão pela mesma conta permanecem pendentes. Discord adiado. Esta revisão não altera a autorização do host nem substitui PIN.
-
-## Build de teste com janela Windows e Google Android
-
-- O MSI/Inno `1.0.390.866` inclui `NOUS Desktop.exe`, dependências e avisos WebView2. Atalho instalado e bandeja passam pelo lançador do desktop. Serviço publica URL e SHA-256 do certificado TLS em HKLM; a janela aceita apenas HTTPS de loopback e usa perfil separado por pin. O build passou e a tabela MSI contém os arquivos esperados. Instalação, renovação TLS, runtime ausente, abertura pela bandeja e fechamento durante transmissão ainda precisam de teste em VM. O ZIP portátil foi recompilado e inspecionado: mantém `NOUS.exe`, sem o wrapper WebView2 nem o desinstalador MSI. O host do PC principal não foi atualizado.
-- Firebase `nous-game-stream`: Google ativado, apps Web e Android registrados, SHA-1/SHA-256 do APK debug cadastrados. Para o build Android com Google, use o `google-services.json` atualizado em `android/app/` (ignorado pelo Git; só configuração pública de cliente). Builds sem configuração conservam o modo local. Build 60 (debug arm64): 80 testes sem falhas; instalado com `adb install -r` no MuMu, sem limpar dados. Ajustes → Conta NOUS abriu o consentimento oficial do Google Play Services. O usuário concluiu o login no MuMu e confirmou por captura que o app mostrou a sessão conectada. O PC continuou pedindo pareamento, como esperado.
-- Essa prévia só autentica no Firebase. Não concede acesso ao host nem implementa a identidade NOUS, armazenamento de sessão com Keystore, login Desktop/Web, Discord, mescla, conexão sem PIN, QR local, convite entre contas ou revogação por conta. PIN e pareamentos existentes continuam independentes.
+Referências: [RFC 8252](https://www.rfc-editor.org/rfc/rfc8252), [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700), [WebView2 security](https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/security).

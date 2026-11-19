@@ -9,7 +9,7 @@ Versão pública Windows e Android **1.0.0**. Entrega de teste, não release fin
 | `setup.exe` | Instalador Inno Setup 6.7.4, com motor C#, MSI e ViGEmBus 1.22.0 incorporados. Fornecedor **Flűgel**. FileVersion técnica no manifesto. |
 | `NOUS.msi` | MSI usado dentro do setup. ProductVersion `1.0.390.0`; não é necessário manter ao lado do `setup.exe`. |
 | `nous-install-engine.exe` | Motor de instalação C# já incorporado ao setup, incluído para inspeção/recuperação. |
-| `NOUS-Android-arm64-debug.apk` | APK Android arm64, pacote `com.flugel.nous`, versão 1.0.0 (versionCode 61), build **debug**. Na pasta local do usuário, chama-se `nous beta.apk`. |
+| `NOUS-Android-arm64-debug.apk` | APK Android arm64, pacote `com.flugel.nous`, versão 1.0.0 (versionCode 61), build **debug**. |
 | `AUDITORIA-E-EVIDENCIAS.md` | Contrato aprovado, decisões e evidências registradas. |
 | `PENDENCIAS.md` | O que falta, limites de validação e cuidados de retomada. |
 | `VERSAO-BUILD.json` | Branch, commit, versões e hashes. |

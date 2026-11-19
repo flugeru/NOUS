@@ -8,8 +8,11 @@ NOUS is licensed under the GPL-3.0 license, which allows for free use and modifi
 The full text of the license can be reviewed [here](https://github.com/flugeru/NOUS/blob/nous-project/LICENSE).
 
 ## Commercial Use
-NOUS can be used in commercial applications without any limitations. This means that businesses and organizations
-can use NOUS to create and sell products or services without needing to seek permission or pay a fee.
+Commercial use is permitted under the applicable license terms; it is not unrestricted
+redistribution. Anyone distributing NOUS binaries, including through an app store,
+must comply with the GPL and the licenses of bundled components. Preserve copyright
+and license notices and provide the corresponding source code as required. Store
+publication or payment does not remove those obligations.
 
 However, it is important to note that the GPL-3.0 license does not grant any rights to distribute or sell the encoders
 contained within NOUS. If you plan to sell access to NOUS as part of their distribution, you are responsible

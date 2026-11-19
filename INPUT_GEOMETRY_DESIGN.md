@@ -32,10 +32,10 @@ Input packets do not carry a geometry generation. If a geometry event is publish
 
 The focused executable run builds the WGC monitor/policy suite, fifteen transport tests in `tests/unit/test_input_geometry_transport.cpp`, and the event/queue concurrency tests in `tests/unit/test_thread_safe.cpp`. Coverage includes field-preserving mapping updates, generation ordering and stale rejection, touch/pen cancellation-before-publication and stale-contact suppression, invalid/closed capture behavior, invalid startup mapping until a verified sample, periodic target identity checks during color-event subscription, worker wake coalescing, invalidation on unverified geometry, terminal-generation rejection of delayed publishers, generation-aware input reads, capture-return queue drain before delayed-port rejection, deterministic out-of-order event publication races through the event API and dynamic geometry publisher, and terminal geometry publication without a reinit signal on capture-error exits.
 
-Direct build/run from the candidate:
+Direct build/run from the candidate (set `DEPS_DIR` to your local dependency include directory):
 
 ```sh
-g++ -std=c++23 -Wall -Wextra -I . -I /home/chasep/Documents/Codex/2026-10-20/we-x20/work/deps \
+g++ -std=c++23 -Wall -Wextra -I . -I "$DEPS_DIR" \
   tests/tests_main.cpp tests/unit/test_wgc_monitor_selection.cpp \
   tests/unit/test_input_geometry_transport.cpp tests/unit/test_thread_safe.cpp \
   -lgtest -pthread -o /tmp/issue301-focused-tests/vibepollo-focused-tests

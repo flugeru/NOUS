@@ -1,110 +1,117 @@
 <p align="center">
-  <img src="branding/NOUS/new-project-icon-transparent.png" alt="Emblema NOUS" width="180" />
+  <img src="branding/NOUS/new-project-icon-transparent.png" alt="Emblema NOUS" width="160" />
 </p>
 
 # NOUS
 
 **Seus jogos no PC. Sua tela onde você quiser.**
 
-NOUS reúne host desktop e cliente Android para streaming de jogos pela rede. Projeto mantido por [Flügel (@flugeru)](https://github.com/flugeru), com foco em baixa latência, controle da sessão e diagnóstico reproduzível.
+NOUS conecta um host desktop a um cliente Android para transmitir jogos, desktop e áudio pela rede, com controles por toque, teclado, mouse ou gamepad. Mantido por [Flügel (@flugeru)](https://github.com/flugeru/NOUS), a partir do ecossistema Sunshine, Apollo e Moonlight.
 
-**Versão:** 1.0.0 · **Branch principal:** [`nous-project`](https://github.com/flugeru/NOUS/tree/nous-project) · **Licença:** [GPLv3](LICENSE)
+[Começar](#começar) · [Android](android/README.md) · [Compilar](docs/building.md) · [Segurança](SECURITY.md) · [Publicação](docs/maintainers/release.md#android--google-play)
 
-## Dois aplicativos, um projeto
+> **Em desenvolvimento.** A versão pública do projeto é `1.0.0`. APKs de debug e instaladores locais sem assinatura são builds de teste, não releases de produção. Este README não anuncia disponibilidade nem aprovação na Google Play. Consulte os arquivos e as notas de cada [release](https://github.com/flugeru/NOUS/releases).
 
-| Aplicativo | Função | Código |
-| --- | --- | --- |
-| **NOUS Desktop** | Captura e codifica o PC, recebe controles e transmite a sessão. | [`src/`](src/), [`CMakeLists.txt`](CMakeLists.txt) |
-| **NOUS Android** | Recebe vídeo e áudio, apresenta a imagem e envia comandos ao PC. | [`android/`](android/) |
+## Dois aplicativos, uma sessão
 
-Desktop usa emblema **transparente**. Android usa emblema **com fundo preto**, inclusive no launcher adaptativo. Arquivos de referência ficam em [`branding/NOUS/`](branding/NOUS/).
+| Componente | Função |
+| --- | --- |
+| **Host NOUS** | Captura e codifica o PC, transmite vídeo/áudio e recebe entrada do cliente. |
+| **NOUS Desktop** | Janela Windows de administração, separada do serviço do host. Fechá-la não encerra a transmissão. |
+| **NOUS Android** | Descobre PCs, abre a biblioteca, recebe a transmissão e envia controles. |
+| **Painel Web** | Administra aplicativos, pareamentos, permissões, configurações e diagnósticos. Streaming pelo navegador está pausado na interface. |
 
-## Recursos
+### Recursos
 
-- Streaming H.264, HEVC e AV1, conforme suporte de hardware e cliente.
-- Captura de desktop, integração com bibliotecas de jogos e suporte a displays virtuais no Windows.
-- Pareamento, biblioteca com busca, perfis e configurações de vídeo, áudio e controles no Android.
-- Interface web para administrar host, aplicativos e dispositivos.
-- Ferramentas para analisar traces por frame e verificar regressões na lógica de captura, codificação e transporte.
+- H.264, HEVC e AV1, conforme suporte do host e do cliente.
+- Biblioteca com busca, categorias, capas e atalhos de launchers.
+- Perfis de vídeo, áudio e controles no Android; menu rápido durante a sessão.
+- Pareamento local por PIN e fluxo QR LAN em teste; uso local sem conta.
+- Google opcional para descoberta de PCs e autorização por conta em teste. Login de conta não substitui a senha administrativa do host.
+- Histórico local e diagnósticos com retenção limitada e exportação filtrada.
 
-Alguns recursos herdados dependem de clientes ou drivers específicos. Disponibilidade de codec, HDR, display virtual e controle varia conforme sistema e hardware. Não há promessa de latência numérica sem medição ponta a ponta.
+HDR, codecs, monitores virtuais e controles variam por plataforma, driver e hardware. Emulador não comprova desempenho ou compatibilidade de um telefone real. Discord, mescla de contas e convites entre contas não são recursos concluídos.
 
 ## Começar
 
-1. Compile ou obtenha build NOUS Desktop e instale no PC host.
-2. Instale NOUS Android no dispositivo remoto.
-3. Mantenha ambos na mesma rede para primeiro pareamento. Adicione endereço do PC quando descoberta automática não funcionar.
-4. Confirme PIN no host e escolha jogo ou desktop no cliente.
+1. Obtenha um build compatível do host e instale-o em uma pasta dedicada. No Windows, use `C:\Program Files\NOUS`, não a pasta do Windows nem a raiz de uma unidade.
+2. Instale o cliente Android correspondente. Confira origem, versão e assinatura; não desative proteções do sistema para instalar drivers.
+3. Coloque PC e Android na mesma rede. Se a descoberta falhar, adicione o endereço local do PC manualmente.
+4. Faça o pareamento e confirme o acesso no host. Escolha **Desktop**, um jogo ou um launcher na biblioteca.
 
-> **Builds experimentais.** Faça backup das configurações e dos pareamentos antes de instalar. Instalador Windows pode alterar serviços, firewall e drivers. Builds locais não possuem assinatura oficial de distribuição. Não desative Secure Boot nem verificações de assinatura para instalar drivers.
+Comece com uma rede estável e configurações moderadas. Não exponha o painel administrativo à internet. Antes de atualizar, faça backup protegido das configurações e dos pareamentos. Certificados e tokens do backup são privados.
 
-## Compilação local
+O host pode exigir permissões para captura, firewall e serviço. Drivers opcionais devem ser instalados apenas quando necessários e verificados. Problemas de driver exigem um ambiente de teste recuperável, não repetição no computador de trabalho.
 
-Build local é fluxo padrão. GitHub Actions fica reservado para execuções autorizadas; commit não significa publicação de release.
+## Compilar e testar
+
+Clone o repositório e selecione a revisão que pretende compilar:
 
 ```sh
-git clone --branch nous-project --recurse-submodules https://github.com/flugeru/NOUS.git NOUS
+git clone --recurse-submodules https://github.com/flugeru/NOUS.git
 cd NOUS
 ```
 
 ### Android
 
-Requisitos: JDK 17, Android SDK Platform 36 e NDK `27.0.12077973`. Defina `JAVA_HOME` e `ANDROID_HOME`, ou informe SDK em `android/local.properties` sem versionar caminhos pessoais.
-
-PowerShell, a partir da raiz:
+Requisitos: JDK 17, Android SDK Platform 36 e NDK `27.0.12077973`. Configure `JAVA_HOME` e `ANDROID_HOME`, ou `android/local.properties` localmente.
 
 ```powershell
-git submodule update --init --recursive -- android/app/src/main/jni/moonlight-core/moonlight-common-c
 cd android
-.\gradlew.bat --no-daemon :app:assembleNonRoot_gameDebug
-.\gradlew.bat --no-daemon :app:testNonRoot_gameDebugUnitTest
+.\gradlew.bat --no-daemon :app:assembleNonRoot_gameDebug :app:testNonRoot_gameDebugUnitTest
 ```
 
-APK ARM64 de debug fica em `android/app/build/outputs/apk/nonRoot_game/debug/`. Identidade Android: `com.flugel.nous`. Assinatura Debug serve para desenvolvimento, não para publicação em loja.
+APK de desenvolvimento: `android/app/build/outputs/apk/nonRoot_game/debug/`. Pacote: `com.flugel.nous`. Debug não serve para publicação na loja. Veja [instruções Android](android/README.md) e [checklist Google Play](docs/maintainers/release.md#android--google-play).
 
 ### Windows
 
-Requisitos principais: MSYS2 UCRT64 com GCC, CMake e Ninja; Visual Studio Build Tools e Windows SDK; Node.js 22; .NET SDK 10; WiX Toolset 3.14. Dependências e pacotes de drivers usam versões fixadas pelo projeto.
-
-Siga [`docs/building.md`](docs/building.md) para configurar dependências e CMake. Depois, no ambiente UCRT64 configurado:
+Configure toolchain e dependências seguindo [docs/building.md](docs/building.md). Para gerar o instalador completo no diretório de build já configurado:
 
 ```sh
-cmake --build build --target all --parallel 6
-cmake --build build --target package_msi --parallel 6
+cmake --build build --target package_installer --parallel 6
 ```
 
-Use alvo `package_msi`, não CPack isoladamente: alvo prepara e valida pacotes necessários antes do instalador. EXE de instalação é gerado pelo script [`build_bootstrapper.ps1`](packaging/windows/bootstrapper/build_bootstrapper.ps1), com MSI como entrada. Não versionar caches, SDKs, credenciais nem artefatos compilados.
+O alvo prepara MSI e setup; Inno Setup deve estar configurado. O alvo `package_msi` gera apenas o MSI. Não execute CPack isoladamente como substituto dos alvos de empacotamento. Build local não instala o produto nem publica uma release.
 
-## Desenvolvimento e validação
-
-Código local e branch `nous-project` devem permanecer sincronizados após mudanças verificadas. Trabalho não concluído ou não testado deve ser identificado, sem sobrescrever alterações de terceiros.
-
-Validação de lógica não substitui streaming real. Desempenho no telefone, comportamento térmico, recuperação da GPU e latência input-to-photon exigem ensaio no hardware.
+### Web e documentação pública
 
 ```sh
-python tools/latency/test_analyze_trace.py
+cd src_assets/common/assets/web
+npm ci
+npm run test:unit
+npm run build
 ```
+
+Na raiz, confira a higiene dos documentos e as regras de exclusão antes de publicar:
+
+```sh
+python tools/test_public_docs.py
+```
+
+## Documentação e suporte
 
 | Documento | Conteúdo |
 | --- | --- |
+| [Primeiros passos](docs/getting_started.md) | Configuração e uso do host. |
 | [Compilação](docs/building.md) | Toolchains, dependências e empacotamento. |
-| [Auditoria](docs/latency/README.md) | Correções, evidências e limites dos testes. |
-| [Benchmark](docs/latency/benchmark.md) | Protocolo A/B e formato dos traces. |
-| [Android e decodificação](docs/latency/decoder-research.md) | Pesquisa técnica e medições pendentes. |
-| [Segurança](SECURITY.md) | Orientações para relatar problemas sensíveis. |
+| [Cliente Android](android/README.md) | Build, configuração opcional de conta e distribuição. |
+| [Conta e dispositivos](docs/nous-conta-dispositivos-desktop.md) | Fluxos de autorização e limites atuais. |
+| [Pesquisa de latência](docs/latency/README.md) | Evidências, benchmark e limites dos testes. |
+| [Pendências e auditoria](docs/nous-entrega-parcial-2026-11-18.md) | Registro histórico de testes e trabalho restante. |
+| [Manutenção e release](docs/maintainers/README.md) | Validação, assinatura e preparação para distribuição. |
 
-Relate bugs em [Issues](https://github.com/flugeru/NOUS/issues). Inclua commit, sistema, GPU/driver, cliente e passos para reproduzir. Remova tokens, senhas e dados pessoais dos logs.
+Relate bugs em [Issues](https://github.com/flugeru/NOUS/issues), com versão, sistema, hardware relevante e passos de reprodução. Não publique senhas, tokens, chaves, nomes de PCs, IPs reais, screenshots privados ou dumps completos. Vulnerabilidades devem seguir a [política de segurança](SECURITY.md).
 
-## Créditos e origem
+## Créditos e licença
 
 NOUS é trabalho derivado, não distribuição oficial dos projetos de origem:
 
-- **[Nonary/Vibepollo](https://github.com/Nonary/Vibepollo)** — base do host desta edição.
-- **[ClassicOldSong/Apollo](https://github.com/ClassicOldSong/Apollo)** e **[LizardByte/Sunshine](https://github.com/LizardByte/Sunshine)** — origem do host e contribuições anteriores.
-- **[Artemis](https://github.com/ClassicOldSong/moonlight-android)** — base do cliente Android, importada da revisão [`c5cf27f4dc822db0e863c4691e7a70c74bea977a`](https://github.com/ClassicOldSong/moonlight-android/tree/c5cf27f4dc822db0e863c4691e7a70c74bea977a).
-- **[Moonlight](https://github.com/moonlight-stream)** e seus colaboradores — clientes e bibliotecas do ecossistema GameStream.
-- Autores das bibliotecas, drivers e demais componentes listados em [`third-party/`](third-party/) e [`NOTICE`](NOTICE).
+- [Nonary/Vibepollo](https://github.com/Nonary/Vibepollo), base do host desta edição.
+- [ClassicOldSong/Apollo](https://github.com/ClassicOldSong/Apollo) e [LizardByte/Sunshine](https://github.com/LizardByte/Sunshine), origem do host e contribuições anteriores.
+- [Artemis](https://github.com/ClassicOldSong/moonlight-android), base Android importada da revisão [`c5cf27f4dc822db0e863c4691e7a70c74bea977a`](https://github.com/ClassicOldSong/moonlight-android/tree/c5cf27f4dc822db0e863c4691e7a70c74bea977a).
+- [Moonlight](https://github.com/moonlight-stream), bibliotecas e contribuições do ecossistema GameStream.
+- Componentes em [third-party/](third-party/) e [NOTICE](NOTICE).
 
-Direção e manutenção NOUS: **Flügel**. Desenvolvimento assistido por IA. Autorias, avisos legais, licenças e histórico upstream permanecem preservados. Alguns identificadores internos continuam com nomes de origem por compatibilidade de protocolo, JNI, drivers ou migração; não representam marca do produto.
+Direção e manutenção: **Flügel**. Desenvolvimento assistido por IA. Autorias, avisos legais, licenças e histórico upstream são preservados. Identificadores internos herdados permanecem por compatibilidade; não representam a marca do produto.
 
-Código sob [GNU GPLv3](LICENSE), respeitando licenças específicas dos componentes. Certificados, patrocínios e garantias dos projetos de origem não se estendem automaticamente ao NOUS.
+Código sob [GNU GPLv3](LICENSE), respeitando as licenças específicas dos componentes. Redistribuição, inclusive pela Google Play, deve cumprir essas licenças e disponibilizar o código-fonte correspondente. Assinaturas, garantias e patrocínios dos projetos de origem não se estendem automaticamente ao NOUS.

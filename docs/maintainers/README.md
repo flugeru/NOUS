@@ -1,18 +1,19 @@
-# Maintainer Documentation
+# Manutenção e distribuição do NOUS
 
-This directory contains documentation intended for NOUS maintainers only. These documents cover internal processes,
-workflows, and procedures that are not relevant to end users or general contributors.
+Este diretório contém procedimentos públicos para contribuidores e mantenedores. Não deve conter credenciais, configurações de contas pessoais, dumps de produção nem inventário de máquinas privadas. Estar fora do Doxygen **não** torna um arquivo privado: tudo que entra no Git pode ser publicado.
 
-## Available Documentation
+## Guias
 
-### [Release Process](release.md)
-Instructions for creating and managing NOUS releases, including the steps to convert pre-releases to stable releases
-and an overview of the automated workflows that are triggered during the release process.
+- [Release](release.md): revisão, artefatos, assinatura e publicação.
+- [Android e Google Play](release.md#android--google-play): checklist obrigatório antes de enviar um AAB.
+- [Referência de localização chinesa](chinese-web-ui-localization.md): revisão dos catálogos mantidos.
+- [Segurança](../../SECURITY.md): relato privado de vulnerabilidades.
 
-### [Chinese Localization Reference](chinese-web-ui-localization.md)
-Notes for reviewing the retained Simplified and Traditional Chinese locale catalogs.
+## Antes de enviar um commit
 
----
+1. Confira `git diff --cached`: nenhuma chave privada, token, senha, serial, nome real de PC ou caminho pessoal.
+2. Rode `python tools/test_public_docs.py` na raiz. O check cobre padrões conhecidos, não substitui revisão humana nem scanner do histórico.
+3. Mantenha builds, logs, perfis de navegador e material de assinatura fora do Git. `.gitignore` não remove arquivos já versionados nem apaga o histórico.
+4. Preserve licenças e créditos upstream. Modelos públicos de hardware, endpoints de serviço e certificados públicos de teste não são automaticamente segredos.
 
-> [!NOTE]
-> These documents are excluded from the public Doxygen documentation build and are intended for internal use only.
+Se houver credencial exposta, revogue/rotacione primeiro. Remover a linha atual não revoga acesso. Reescrever histórico, remover releases ou alterar configurações externas exige coordenação separada.

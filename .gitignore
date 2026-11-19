@@ -44,6 +44,7 @@
 .vscode/
 
 # build directories
+/build-local/
 build/
 !src_assets/macos/build/
 !src_assets/macos/build/nous.icns
@@ -92,3 +93,35 @@ vibeshine_state.json
 /sunshine_state.json
 /.workflow/
 .claude/
+
+# Private local credentials, signing material and runtime exports
+.env
+.env.*
+!.env.example
+!.env.*.example
+!**/.env.example
+!**/.env.*.example
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.key
+client_secret*.json
+desktop-oauth*.json
+*.nous-account.json
+cakey.pem
+cacert.pem
+*service-account*.json
+*service_account*.json
+*-firebase-adminsdk-*.json
+key.properties
+keystore.properties
+/credentials/
+/config/
+/session_history/
+/crash-dumps/
+*.dmp
+*.hprof
+/sunshine_state.json.bak
+/vibeshine_state.json.bak
+/cloud/google-services.json
