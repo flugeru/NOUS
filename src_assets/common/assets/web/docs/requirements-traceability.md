@@ -116,6 +116,13 @@ remain separate from mocked browser checks.
 | `WebRtcClientView.vue`, `BrowserStreamView.vue`                 | No active route                 | Both routers redirect stream URLs to Overview. Classify existing backend/client support; do not count redirects as stream validation or silently enable experimental capture.                                                                                                                                          |
 | Desktop / Android native windows                                | Native shell and menus          | Audit owned dialogs and layout states. OS sign-in/permission prompts keep platform appearance. Android 68 immersive has unit/MuMu status-bar evidence; physical navigation, camera and controllers still unverified.                                                                                                   |
 
+Incremental evidence (2026-11-19): Web build and 138 unit checks pass. Broad browser run:
+221 passed, 34 skipped, one Edge `newContext` startup failure; affected Windows log-download case
+passes separately. Dedicated classic/NOUS display and HDR matrix: 26 passed. Follow-up recovery,
+statistics accessible names, discard/OTP and draft regressions pass. These are mocked UI checks,
+not real hardware or installed-binary certification. In-place asset copy was denied by Windows;
+backup exists and no host restart was performed. Installer/APK refresh is still pending.
+
 Release gate: all rows need implementation or explicit supported exclusion, functional regression,
 visual evidence for reachable states, and artifact provenance. Dirty Windows isolation draft is not
 a release source. Classic UI remains recovery fallback until parity is proven.

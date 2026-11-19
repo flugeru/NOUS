@@ -829,6 +829,21 @@ test('failed configuration load keeps editing unavailable until retry succeeds',
   await expect(page.locator('#setting-pyrowave')).toBeVisible();
 });
 
+test('settings discard uses NOUS dialog and Escape keeps edits', async ({ page }) => {
+  await host(page);
+  await page.goto('/v2/settings');
+  await page.locator('#setting-pyrowave').uncheck();
+  await page.getByRole('link', { name: 'Library', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Discard unsaved changes?' });
+  await expect(dialog).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(dialog).not.toBeVisible();
+  await expect(page.locator('#setting-pyrowave')).not.toBeChecked();
+  await page.getByRole('link', { name: 'Library', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Discard and leave', exact: true }).click();
+  await expect(page).toHaveURL(/\/library$/);
+});
+
 test('edits made during a settings save remain unsaved', async ({ page }) => {
   await host(page);
   let finish!: () => void;
