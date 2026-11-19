@@ -32,6 +32,37 @@ public class ProfileBitrateTest {
         return null;
     }
 
+    @Test public void explicitPreferencesDoNotReadGlobalVideoOrInputSettings() {
+        android.content.Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
+        android.content.SharedPreferences base = PreferenceManager.getDefaultSharedPreferences(context);
+        base.edit().putString("video_format", "auto").putString("frame_pacing", "balanced")
+                .putString("list_video_scale_mode", "fit").putString("analog_scrolling", "right")
+                .putBoolean("pref_low_latency_frame_balance", false).commit();
+        android.content.SharedPreferences draft = context.getSharedPreferences("settings-draft-test", 0);
+        draft.edit().clear().putString("list_resolution", "1920x1080").putString("list_fps", "30")
+                .putString("video_format", "forceh265").putString("frame_pacing", "smoothness")
+                .putString("list_video_scale_mode", "fill").putString("analog_scrolling", "left")
+                .putBoolean("pref_low_latency_frame_balance", true).commit();
+        PreferenceConfiguration config = PreferenceConfiguration.readPreferences(context, draft);
+        assertEquals(PreferenceConfiguration.FormatOption.FORCE_HEVC, config.videoFormat);
+        assertEquals(PreferenceConfiguration.FRAME_PACING_MAX_SMOOTHNESS, config.framePacing);
+        assertEquals(PreferenceConfiguration.ScaleMode.FILL, config.videoScaleMode);
+        assertEquals(PreferenceConfiguration.AnalogStickForScrolling.LEFT, config.analogStickForScrolling);
+        assertTrue(config.preferLowerDelays);
+        assertEquals(PreferenceConfiguration.getDefaultBitrate("1920x1080", "30"), config.bitrate);
+    }
+
+    @Test public void joyConFixReadsVisiblePreferenceAndPreservesLegacyFallback() {
+        android.content.Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
+        android.content.SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().putBoolean("checkbox_joycon_fix", true).remove("checkbox_enable_joyconfix").commit();
+        assertTrue(PreferenceConfiguration.readPreferences(context, prefs).enableJoyConFix);
+        prefs.edit().putBoolean("checkbox_enable_joyconfix", false).commit();
+        assertFalse(PreferenceConfiguration.readPreferences(context, prefs).enableJoyConFix);
+        prefs.edit().putBoolean("checkbox_enable_joyconfix", true).commit();
+        assertTrue(PreferenceConfiguration.readPreferences(context, prefs).enableJoyConFix);
+    }
+
     @Test public void customRefreshRateUsesLocaleIndependentStorage() {
         java.util.Locale previous = java.util.Locale.getDefault();
         java.util.Locale.setDefault(java.util.Locale.forLanguageTag("pt-BR"));

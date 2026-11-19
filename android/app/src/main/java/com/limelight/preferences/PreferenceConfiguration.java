@@ -588,8 +588,7 @@ public class PreferenceConfiguration {
                 prefs.getString(FPS_PREF_STRING, DEFAULT_FPS));
     }
 
-    private static FormatOption getVideoFormatValue(Context context) {
-        SharedPreferences prefs = ProfilesManager.getInstance().getOverlayingSharedPreferences(context);
+    private static FormatOption getVideoFormatValue(SharedPreferences prefs) {
 
         String str = prefs.getString(VIDEO_FORMAT_PREF_STRING, DEFAULT_VIDEO_FORMAT);
         if (str.equals("auto")) {
@@ -610,8 +609,7 @@ public class PreferenceConfiguration {
         }
     }
 
-    private static ScaleMode getVideoScaleMode(Context context) {
-        SharedPreferences prefs = ProfilesManager.getInstance().getOverlayingSharedPreferences(context);
+    private static ScaleMode getVideoScaleMode(SharedPreferences prefs) {
 
         String str = prefs.getString(VIDEO_SCALE_MODE_PREF_STRING, DEFAULT_VIDEO_SCALE_MODE);
         if (str.equals("fit")) {
@@ -640,8 +638,7 @@ public class PreferenceConfiguration {
         // default true: favor lower delay unless user opts out
         return prefs.getBoolean(LOW_LATENCY_FRAME_BALANCE_PREF_STRING, false);
     }
-private static int getFramePacingValue(Context context) {
-        SharedPreferences prefs = ProfilesManager.getInstance().getOverlayingSharedPreferences(context);
+    private static int getFramePacingValue(SharedPreferences prefs) {
 
         // Migrate legacy never drop frames option to the new location
         if (prefs.contains(LEGACY_DISABLE_FRAME_DROP_PREF_STRING)) {
@@ -671,8 +668,7 @@ private static int getFramePacingValue(Context context) {
         }
     }
 
-    private static AnalogStickForScrolling getAnalogStickForScrollingValue(Context context) {
-        SharedPreferences prefs = ProfilesManager.getInstance().getOverlayingSharedPreferences(context);
+    private static AnalogStickForScrolling getAnalogStickForScrollingValue(SharedPreferences prefs) {
 
         String str = prefs.getString(ANALOG_SCROLLING_PREF_STRING, DEFAULT_ANALOG_STICK_FOR_SCROLLING);
         if (str.equals("right")) {
@@ -839,7 +835,7 @@ private static int getFramePacingValue(Context context) {
         // This must happen after the preferences migration to ensure the preferences are populated
         config.bitrate = prefs.getInt(BITRATE_PREF_STRING, prefs.getInt(BITRATE_PREF_OLD_STRING, 0) * 1000);
         if (config.bitrate == 0) {
-            config.bitrate = getDefaultBitrate(context);
+            config.bitrate = getDefaultBitrate(config.width + "x" + config.height, Float.toString(config.fps));
         }
 
         config.meteredBitrate = prefs.getInt((METERED_BITRATE_PREF_STRING), 0);
@@ -859,11 +855,11 @@ private static int getFramePacingValue(Context context) {
             config.audioConfiguration = MoonBridge.AUDIO_CONFIGURATION_STEREO;
         }
 
-        config.videoScaleMode = getVideoScaleMode(context);
+        config.videoScaleMode = getVideoScaleMode(prefs);
 
-        config.videoFormat = getVideoFormatValue(context);
-        config.framePacing = getFramePacingValue(context);
-        config.preferLowerDelays = getPreferLowerDelays(context);
+        config.videoFormat = getVideoFormatValue(prefs);
+        config.framePacing = getFramePacingValue(prefs);
+        config.preferLowerDelays = prefs.getBoolean(LOW_LATENCY_FRAME_BALANCE_PREF_STRING, false);
 
 
         String warpFactorStr = prefs.getString(FRAME_PACING_PREF_STRING, "");
@@ -873,7 +869,7 @@ private static int getFramePacingValue(Context context) {
             config.framePacingWarpFactor = 4;
         }
 
-        config.analogStickForScrolling = getAnalogStickForScrollingValue(context);
+        config.analogStickForScrolling = getAnalogStickForScrollingValue(prefs);
 
         config.deadzonePercentage = prefs.getInt(DEADZONE_PREF_STRING, DEFAULT_DEADZONE);
 
@@ -958,7 +954,8 @@ private static int getFramePacingValue(Context context) {
 
         config.enableKeyboardVibrate = prefs.getBoolean(CHECKBOX_ENABLE_KEYBOARD_VIBRATE,false);
         //兼容joycon手柄
-        config.enableJoyConFix = prefs.getBoolean("checkbox_joycon_fix",false);
+        config.enableJoyConFix = prefs.getBoolean("checkbox_enable_joyconfix",
+                prefs.getBoolean("checkbox_joycon_fix", false));
         //全键盘透明度
         config.oscKeyboardOpacity = prefs.getInt("seekbar_keyboard_axi_opacity",DEFAULT_OPACITY);
 

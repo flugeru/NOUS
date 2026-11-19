@@ -188,6 +188,19 @@ a release source. Classic UI remains recovery fallback until parity is proven.
   `python android/tools/test_decoder_pacing.py`. Latest local build and all 88 unit tests
   pass (zero failures/errors/skips); updated Debug APK installed with replacement only.
   Real settings dialog saves `59.94` and rebuilds settings without losing the value.
+- Further settings audit found Joy-Con fix reading `checkbox_joycon_fix` while UI writes
+  `checkbox_enable_joyconfix`; reader now prefers UI key with legacy fallback.
+  Explicit draft preference reads now use the supplied store for codec, pacing, scale,
+  lower-delay tuning, analog scrolling and default bitrate instead of re-reading global settings.
+  Local build passes with 90 unit tests, zero failures/errors/skips. These paths have
+  regression tests; physical Joy-Con behavior remains untested.
+- A second 30-minute run starts at approximately 13:06 with per-monitor DPI-aware motion
+  and 1 ms timer request: short reference run produced 957 paints/15.009 s, max gap 20 ms,
+  exact 2712x1220 window. Runtime stays on `d76beb8f2` changes; no APK update during soak.
+  Latest Joy-Con/profile changes are built separately, not installed during measurement.
+- Windows Actions `44546455054` failed final embedded-MSI verification, not compilation.
+  Verifier still uses .NET `Payload.msi` resources although packaging now builds Inno Setup;
+  qualification remains failed and artifacts must not be described as release-certified.
 - APKs are local Debug updates using `adb install -r`, preserving pairing and application data.
   Remaining settings, physical controls/audio, HDR, camera and Poco presentation are not certified.
 
