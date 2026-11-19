@@ -42,6 +42,9 @@
     <string name="nous_account">Conta NOUS</string>
     <string name="nous_account_optional">Entrar é opcional. O pareamento e o streaming locais funcionam sem conta.</string>
     <string name="nous_account_hosts">PCs da conta</string>
+    <string name="nous_account_connect">Conectar</string>
+    <string name="nous_account_connect_explain">Vincular esta instalação usando sua conta NOUS?</string>
+    <string name="nous_account_connect_failed">Não foi possível autorizar esta instalação. Confira se o acesso por conta está ativado no PC.</string>
     <string name="nous_account_host_not_paired">Esta instalação não está pareada com este PC. O pareamento local está disponível em Computadores.</string>
     <string name="nous_account_host_pin_conflict">O certificado salvo do PC difere do listado na conta. Nenhuma conexão foi feita.</string>
     <string name="nous_account_hosts_empty">Nenhum PC listado para esta conta Google.</string>

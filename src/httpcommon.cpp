@@ -494,7 +494,8 @@ namespace http {
     const std::string &body,
     const std::string &content_type,
     std::size_t max_bytes,
-    long timeout_seconds
+    long timeout_seconds,
+    bool follow_redirects
   ) {
     if (url.rfind("https://", 0) != 0 || max_bytes == 0) {
       return std::nullopt;
@@ -520,7 +521,7 @@ namespace http {
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
     curl_easy_setopt(curl, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
-    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, follow_redirects ? 1L : 0L);
     curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 2L);
     curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5L);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout_seconds);

@@ -22,5 +22,8 @@ try {
   assert.equal((await fetch(root+'/login',{method:'POST',headers:{Origin:'https://example.org'}})).status,403);
   assert.equal((await fetch(root+'/login',{method:'POST',headers:{Origin:root}})).status,503);
   assert.equal((await fetch(root+'/google/callback?state=wrong&code=fixture')).status,400);
+  assert.equal((await fetch(root+'/link')).status,401);
+  assert.equal((await fetch(root+'/link',{method:'POST',headers:{Origin:root},body:new URLSearchParams({ticket:'A'.repeat(64)})})).status,400);
+  assert.equal((await fetch(root+'/link',{method:'POST',headers:{Origin:'https://example.org'},body:new URLSearchParams({ticket:'A'.repeat(64)})})).status,403);
 } finally {app.close();}
 console.log('PKCE, signed OIDC identity, loopback form and callback checks passed.');

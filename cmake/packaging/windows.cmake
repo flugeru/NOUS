@@ -4,7 +4,9 @@ include("${CMAKE_SOURCE_DIR}/cmake/packaging/windows_virtual_gamepad_contract.cm
 include("${CMAKE_SOURCE_DIR}/cmake/packaging/windows_usbip_contract.cmake")
 
 install(TARGETS sunshine RUNTIME DESTINATION "." COMPONENT application)
-install(FILES ${SUNSHINE_DESKTOP_FILES} DESTINATION "desktop" COMPONENT application)
+install(FILES ${SUNSHINE_DESKTOP_FILES}
+        "${CMAKE_SOURCE_DIR}/cloud/desktop-login.mjs"
+        DESTINATION "desktop" COMPONENT application)
 # Compatibility executable for legacy integrations.
 install(PROGRAMS "$<TARGET_FILE:sunshine>" DESTINATION "." RENAME sunshine.exe COMPONENT application)
 install(FILES "${CMAKE_SOURCE_DIR}/packaging/windows/dualsense_usbip_NOTICES.txt"

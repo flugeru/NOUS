@@ -6922,6 +6922,25 @@ namespace confighttp {
 
     register_api_route("^/api/pin$", "POST", savePin);
     // Keep local device approval out of the API-token route catalog.
+    server.resource["^/api/account-access$"]["POST"] = [](resp_https_t res, req_https_t req) {
+      if (!net::normalize_address(req->remote_endpoint().address()).is_loopback() || req->header.count("Authorization")) return res->write(StatusCode::client_error_forbidden);
+      if (!authenticate(res,req) || !validateContentType(res,req,"application/json")) return;
+      auto origin=req->header.find("Origin"), csrf=req->header.find("X-CSRF-Token");
+      if (origin==req->header.end() || origin->second!=get_web_ui_url() || csrf==req->header.end()) return res->write(StatusCode::client_error_forbidden);
+      if (!validate_stored_csrf_token(res,req,get_client_id(req),csrf->second)) return;
+      auto body=req->content.size()<=256 ? nlohmann::json::parse(req->content,nullptr,false) : nlohmann::json{};
+      if (!body.is_object() || !body.contains("action") || (body["action"]!="start" && body["action"]!="disable")) return bad_request(res,req);
+      send_response(res,nvhttp::account_pairing(body["action"].get<std::string>(),body),"no-store");
+    };
+    server.resource["^/nous/account/(enable|challenge|connect)$"]["POST"] = [](resp_https_t res, req_https_t req) {
+      const bool local=net::normalize_address(req->remote_endpoint().address()).is_loopback();
+      const bool lan=net::from_address(net::addr_to_normalized_string(req->remote_endpoint().address()))==net::LAN;
+      const auto op=req->path.substr(req->path.rfind('/')+1);
+      if ((op=="enable" ? !local : !lan) || req->header.count("Origin") || req->content.size()>24576) return res->write(StatusCode::client_error_forbidden);
+      if (!validateContentType(res,req,"application/json")) return;
+      const auto result = nvhttp::account_pairing(op, nlohmann::json::parse(req->content, nullptr, false));
+      res->write(success_ok, result.dump(), {{"Content-Type", "application/json"}, {"Cache-Control", "no-store"}});
+    };
     server.resource["^/api/lan-pairing$"]["POST"] = approveLanPairing;
     server.resource["^/nous/lan-pairing$"]["POST"] = handleLanPairing;
     register_api_route("^/api/otp$", "POST", getOTP);

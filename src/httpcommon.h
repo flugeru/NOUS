@@ -53,7 +53,8 @@ namespace http {
     const std::string &body = {},
     const std::string &content_type = {},
     std::size_t max_bytes = 2 * 1024 * 1024,
-    long timeout_seconds = 15
+    long timeout_seconds = 15,
+    bool follow_redirects = true
   );
 
   bool configure_curl_tls(CURL *curl);

@@ -39,6 +39,13 @@ Cliente OAuth nativo `NOUS Desktop` registrado no mesmo projeto. Teste no MuMu c
 
 APK debug 64: entradas do diretório conferem caminho da conta, UUID e SHA-256 do certificado. Em **PCs da conta**, selecionar uma entrada só abre a biblioteca quando o PC já está online e pareado localmente com o mesmo certificado. Não cria concessão nem substitui certificado salvo. 85 testes Android passaram; atualização no MuMu via `adb install -r` preservou o horário da primeira instalação. Ainda sem setup de acesso por conta.
 
+### Teste integrado — APK 65
+
+- Broker Windows: copie o JSON OAuth do cliente **NOUS Desktop** para `%LOCALAPPDATA%\NOUS\desktop-oauth.json` e o `google-services.json` público do projeto para `%LOCALAPPDATA%\NOUS\google-services.json`. Com Node.js instalado, execute `node "<pasta do NOUS>\desktop\desktop-login.mjs"` na sessão normal do usuário. O broker escuta apenas em `127.0.0.1:48173`; segredos não entram no instalador.
+- No painel HTTPS de loopback, entre com a senha administrativa local. Em **Dispositivos**, entre com Google, selecione **Ativar acesso por conta**, abra **Continuar no navegador** e confirme **Autorizar e publicar PC**. A aba precisa ter voltado do Google antes da confirmação. Se publicação falhar, repita a ativação ou bloqueie novos vínculos no painel.
+- No Android, com a mesma conta, abra **Ajustes → Conta NOUS → PCs da conta**, selecione o PC descoberto na LAN e toque em **Conectar**. O host exige TLS com pin correto, identidade Firebase assinada, desafio de uso único e prova da chave da instalação. O diretório não guarda endereços; se o PC não for descoberto, adicione-o pela LAN primeiro.
+- Use **Dispositivos** no host para desativar ou remover uma instalação. A conexão por conta não reativa uma entrada desativada nem recria uma removida. **Bloquear novos vínculos** deixa pareamentos existentes em vigor; a entrada de descoberta pode continuar na conta. PIN e QR seguem separados.
+
 ## Etapas e aceitação
 
 1. Prévia da janela e teste local: HTTPS loopback, origem restrita, popups bloqueados, nada elevado e nenhuma mudança de serviço/driver. Validar render da interface existente, fechamento e mensagens de indisponibilidade. Prévia pode receber certificado público do host por argumento explícito; não adicionar confiança global.

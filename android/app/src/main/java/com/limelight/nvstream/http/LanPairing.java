@@ -73,6 +73,33 @@ public final class LanPairing {
         proof.initSign(crypto.getClientPrivateKey());
         proof.update(payload.getBytes(StandardCharsets.US_ASCII));
         X509Certificate[] peer = new X509Certificate[1];
+        OkHttpClient client = pinned(endpoint, pin, peer);
+        JSONObject reply = post(client, endpoint, new JSONObject().put("payload", payload).put("signature", hex(proof.sign())));
+        if (!reply.optBoolean("status") || peer[0] == null) throw new IOException("LAN pairing rejected");
+        return peer[0];
+    }
+
+    public static X509Certificate connectAccount(ComputerDetails.AddressTuple address, String host, String pin, String token,
+                                                 LimelightCryptoProvider crypto) throws IOException, JSONException, GeneralSecurityException {
+        if (address == null || address.port >= 65535 || !host.matches("[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}") ||
+                !pin.matches("[A-F0-9]{64}") || token == null || token.isEmpty()) throw new IOException("Invalid account endpoint");
+        HttpUrl endpoint = new HttpUrl.Builder().scheme("https").host(address.address).port(address.port + 1).addPathSegments("nous/account/challenge").build();
+        X509Certificate[] peer = new X509Certificate[1];
+        var client = pinned(endpoint, pin, peer);
+        JSONObject body = new JSONObject().put("host", host).put("certificate", new String(crypto.getPemEncodedClientCertificate(), StandardCharsets.US_ASCII));
+        var challenge = post(client, endpoint, body);
+        String nonce = challenge.optString("nonce");
+        if (!challenge.optBoolean("status") || !nonce.matches("[A-F0-9]{64}") || peer[0] == null) throw new IOException("Account access unavailable");
+        String payload = "NOUS-ACCOUNT-1:" + host + ":" + pin + ":" + sha256(crypto.getClientCertificate().getEncoded()) + ":" + nonce;
+        Signature proof = Signature.getInstance("EC".equals(crypto.getClientPrivateKey().getAlgorithm()) ? "SHA256withECDSA" : "SHA256withRSA");
+        proof.initSign(crypto.getClientPrivateKey()); proof.update(payload.getBytes(StandardCharsets.US_ASCII));
+        var result = post(client, endpoint.newBuilder().setPathSegment(2,"connect").build(), body.put("nonce",nonce).put("token",token)
+                .put("name", DeviceUtils.getModel()).put("signature",hex(proof.sign())));
+        if (!result.optBoolean("status")) throw new IOException("Account access rejected");
+        return peer[0];
+    }
+
+    private static OkHttpClient pinned(HttpUrl endpoint, String pin, X509Certificate[] peer) throws GeneralSecurityException {
         X509TrustManager trust = new X509TrustManager() {
             @Override public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
             @Override public void checkClientTrusted(X509Certificate[] chain, String type) throws CertificateException {
@@ -91,11 +118,8 @@ public final class LanPairing {
         };
         SSLContext tls = SSLContext.getInstance("TLS");
         tls.init(null, new X509TrustManager[]{trust}, new SecureRandom());
-        OkHttpClient client = CLIENT.newBuilder().sslSocketFactory(tls.getSocketFactory(), trust)
+        return CLIENT.newBuilder().sslSocketFactory(tls.getSocketFactory(), trust)
                 .hostnameVerifier((host, session) -> endpoint.host().equals(host) && peer[0] != null).build();
-        JSONObject reply = post(client, endpoint, new JSONObject().put("payload", payload).put("signature", hex(proof.sign())));
-        if (!reply.optBoolean("status") || peer[0] == null) throw new IOException("LAN pairing rejected");
-        return peer[0];
     }
 
     static String scannedPin(String payload, String hostId, String id, String certificateHash) {

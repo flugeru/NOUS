@@ -79,6 +79,21 @@ namespace {
     EXPECT_FALSE(add_authorized_client(record(1001, "new-cert")));
     EXPECT_EQ(client_root.named_devices.size(), 256u);
   }
+  TEST_F(PairingTransaction, AccountCannotRestoreDisabledRemovedOrTransientGrants) {
+    auto old = record(1, "cert-a", PERM::custom, false); client_root.named_devices = {old};
+    auto candidate = record(2, "cert-a");
+    EXPECT_FALSE(add_authorized_client(candidate, true, true));
+    old->enabled = true; old->perm = PERM::_no;
+    EXPECT_FALSE(add_authorized_client(candidate, true, true));
+    old->perm = PERM::custom;
+    ASSERT_TRUE(add_authorized_client(candidate, true, true));
+    EXPECT_EQ(candidate->perm, PERM::custom);
+    client_root.named_devices.clear();
+    EXPECT_FALSE(add_authorized_client(candidate, true, true));
+    config::sunshine.flags[config::FRESH_STATE] = true;
+    EXPECT_FALSE(add_authorized_client(candidate, true, false));
+    EXPECT_EQ(save_calls, 0); EXPECT_EQ(cert_chain.count, 0);
+  }
   TEST_F(PairingTransaction, InvalidCurrentRecordsAndCandidateFailClosed) {
     auto a = record(1, "cert-a"); auto b = record(2, "cert-a");
     client_root.named_devices = {a, b};

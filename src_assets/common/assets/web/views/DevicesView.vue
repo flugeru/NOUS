@@ -885,7 +885,7 @@ onBeforeUnmount(() => {
     </PageHeader>
 
     <div class="devices-stack">
-      <AccountLogin />
+      <AccountLogin manage />
       <InlineAlert
         v-if="error"
         tone="danger"

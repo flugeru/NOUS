@@ -1,12 +1,75 @@
-// Local browser test only. No host admin routes, no grants, no tokens in pages or logs.
+// Loopback OAuth broker. The host requires an administrator-issued, one-use activation ticket.
 import http from 'node:http';
-import { randomBytes, createHash, createPublicKey, verify } from 'node:crypto';
+import https from 'node:https';
+import { randomBytes, createHash, createPublicKey, verify, X509Certificate } from 'node:crypto';
+import tls from 'node:tls';
 import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { join } from 'node:path';
+import { execFileSync } from 'node:child_process';
+
+function hostBinding() {
+  // Never accept a TLS pin or port from the browser. Registry is written by the host service.
+  const reg = join(process.env.SystemRoot, 'System32', 'reg.exe');
+  const text = execFileSync(reg,['query','HKLM\\SOFTWARE\\NOUS\\Desktop','/v','LocalHost','/reg:64'],{encoding:'utf8',windowsHide:true,timeout:2000});
+  const binding = text.match(/REG_SZ\s+https:\/\/127\.0\.0\.1:(\d{1,5})\/?\|([A-Fa-f0-9]{64})\s*$/);
+  if (!binding || Number(binding[1]) < 1 || Number(binding[1]) > 65535) throw Error('Host binding missing');
+  return {port:Number(binding[1]),pin:binding[2].toUpperCase()};
+}
+
+// Never write request bytes before the exact loopback certificate has been checked.
+function enableHost(port, pin, ticket, token) {
+  const agent = new https.Agent();
+  agent.createConnection = (_options, done) => {
+    const socket = tls.connect({host:'127.0.0.1',port,rejectUnauthorized:false,minVersion:'TLSv1.2'});
+    const fail = error => { socket.destroy(); done(error); };
+    socket.once('error',fail);
+    socket.setTimeout(5000,()=>socket.destroy(Error('Host timeout')));
+    socket.once('secureConnect',()=>{
+      socket.removeListener('error',fail);
+      try {
+        const cert = new X509Certificate(socket.getPeerCertificate().raw);
+        const now = Date.now();
+        if (cert.fingerprint256.replaceAll(':','')!==pin || now<Date.parse(cert.validFrom) || now>=Date.parse(cert.validTo)) throw Error('Host certificate mismatch');
+      } catch { return fail(Error('Host certificate rejected')); }
+      done(null,socket);
+    });
+  };
+  return new Promise((resolve,reject)=>{
+    const body=JSON.stringify({ticket,token});
+    const req=https.request({host:'127.0.0.1',port,path:'/nous/account/enable',method:'POST',agent,signal:AbortSignal.timeout(8000),headers:{'Content-Type':'application/json','Content-Length':Buffer.byteLength(body)}},res=>{
+      let text=''; res.setEncoding('utf8');
+      res.on('data',part=>{text+=part;if(text.length>8192) req.destroy(Error('Host reply too large'));});
+      res.on('error',reject);
+      res.on('end',()=>{try {if(res.statusCode!==200) throw Error('Host rejected activation');resolve(JSON.parse(text));} catch (e) {reject(e);} });
+    });
+    req.on('error',reject); req.end(body);
+  }).finally(()=>agent.destroy());
+}
+
+async function linkHost(ticket, session) {
+  const {port,pin} = hostBinding();
+  const {status,host,name,pin:replyPin} = await enableHost(port,pin,ticket,session.token);
+  if (status!==true || replyPin!==pin || !/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/.test(host) ||
+      typeof name!=='string' || !name || name.length>96 || /[\p{Cc}\p{Cf}]/u.test(name)) throw Error('Invalid host metadata');
+  const dir = `https://firestore.googleapis.com/v1/projects/nous-game-stream/databases/(default)/documents/accounts/${session.uid}/google/${session.sub}/hosts/${host}`;
+  await json(dir,{method:'PATCH',headers:{Authorization:`Bearer ${session.token}`,'Content-Type':'application/json'},
+    body:JSON.stringify({fields:{name:{stringValue:name},pin:{stringValue:pin}}})});
+}
+
+async function form(req) {
+  if (req.headers['content-type']!=='application/x-www-form-urlencoded') throw Error('Invalid form');
+  let text='';
+  for await (const buf of req) { text+=buf; if(text.length>1024) throw Error('Form too large'); }
+  return new URLSearchParams(text);
+}
 const client = '963969569031-lbvh8j3iv48r4vjr0qsruf8dkhje1f4a.apps.googleusercontent.com';
 const origin = 'http://127.0.0.1:48173', redirect = origin + '/google/callback';
 const random = () => randomBytes(32).toString('base64url');
+const linkScript = `const params = new URLSearchParams(location.hash.slice(1));
+history.replaceState(null,'','/link');
+document.getElementById('ticket').value = params.get('ticket') || '';`;
+const linkScriptHash = createHash('sha256').update(linkScript).digest('base64');
 export function begin() {
   const state = random(), verifier = random(), nonce = random();
   const url = new URL('https://accounts.google.com/o/oauth2/v2/auth');
@@ -41,7 +104,7 @@ export function serve(configFile, firebaseKey) {
   const pending = new Map(), sessions = new Map();
   const server = http.createServer(async (req,res) => {
     res.setHeader('Cache-Control','no-store'); res.setHeader('Referrer-Policy','strict-origin');
-    res.setHeader('X-Content-Type-Options','nosniff'); res.setHeader('Content-Security-Policy',"default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'; form-action 'self' https://accounts.google.com; base-uri 'none'");
+    res.setHeader('X-Content-Type-Options','nosniff'); res.setHeader('Content-Security-Policy',`default-src 'none'; script-src 'sha256-${linkScriptHash}'; style-src 'unsafe-inline'; frame-ancestors 'none'; form-action 'self' https://accounts.google.com; base-uri 'none'`);
     const send = (code,html) => {res.writeHead(code,{'Content-Type':'text/html; charset=utf-8'});res.end(html);};
     const go = location => {res.writeHead(303,{Location:location});res.end();};
     if (req.headers.host !== '127.0.0.1:48173' || !req.url.startsWith('/') || req.url.startsWith('//') || req.url.length>8192) return send(400,'Pedido inválido');
@@ -49,8 +112,19 @@ export function serve(configFile, firebaseKey) {
     const id = (req.headers.cookie||'').split('; ').find(x=>x.startsWith(cookieName+'='))?.slice(cookieName.length+1);
     try {
       const u=new URL(req.url,origin);
-      if (req.method==='GET' && req.url==='/') return send(200,sessions.has(id) ? page('Conta Google autenticada no Firebase. Este PC ainda não concede acesso por conta.','/logout','Sair da conta') : page('Login da conta é separado da senha administrativa. Entrar não autoriza dispositivos.','/login','Entrar com Google'));
+      if (req.method==='GET' && req.url==='/') return send(200,sessions.has(id) ? page('Conta Google autenticada no Firebase. Para autorizar novas instalações, use Dispositivos no painel do PC.','/logout','Sair da conta') : page('Login da conta é separado da senha administrativa. Entrar não autoriza dispositivos.','/login','Entrar com Google'));
+      if (req.method==='GET' && req.url==='/link') {
+        if (!sessions.has(id)) return send(401,page('Entre com Google primeiro. Depois volte ao painel do PC e selecione Ativar acesso por conta.','/login','Entrar com Google'));
+        return send(200,page('Autorizar instalações da sua conta Google neste PC?','/link','Autorizar e publicar PC').replace('<button>','<input type="hidden" name="ticket" id="ticket"><button>')+`<script>${linkScript}</script>`);
+      }
       if (req.method==='POST' && req.headers.origin!==origin) return send(403,'Origem inválida');
+      if (req.method==='POST' && req.url==='/link') {
+        const session=sessions.get(id), params=await form(req), ticket=params.get('ticket');
+        if (!session || params.getAll('ticket').length!==1 || !/^[A-F0-9]{64}$/.test(ticket ?? '')) return send(400,page('Autorização inválida ou expirada. Volte ao painel do PC.'));
+        try { await linkHost(ticket,session); }
+        catch { return send(502,page('Não foi possível concluir a publicação. Confira o painel do PC; desative o acesso por conta se não quiser manter a autorização.')); }
+        return send(200,page('PC publicado. No Android, abra Conta NOUS → PCs da conta → Conectar.'));
+      }
       if (req.method==='POST' && req.url==='/logout') {sessions.delete(id);pending.delete(id);res.setHeader('Set-Cookie',cookie('',0));return go('/');}
       if (req.method==='POST' && req.url==='/login') {
         let c; try { c=JSON.parse(readFileSync(configFile,'utf8')).installed; } catch {}
@@ -67,8 +141,9 @@ export function serve(configFile, firebaseKey) {
         const keys=await json('https://www.googleapis.com/oauth2/v3/certs');
         const sub=identity(token.id_token,keys.keys,flow.nonce,Math.floor(Date.now()/1000));
         const fb=await json('https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key='+encodeURIComponent(firebaseKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestUri:'http://localhost',postBody:new URLSearchParams({id_token:token.id_token,providerId:'google.com'}).toString(),returnSecureToken:true})});
-        if (fb.providerId!=='google.com' || !fb.localId || fb.needConfirmation || !fb.idToken) throw Error('Account not confirmed');
-        const key=random(); sessions.set(key,{uid:fb.localId,sub,expires:Date.now()+900000});res.setHeader('Set-Cookie',cookie(key,900));return go('/');
+        if (fb.providerId!=='google.com' || typeof fb.localId!=='string' || !/^[A-Za-z0-9_-]{1,128}$/.test(fb.localId) || fb.needConfirmation || typeof fb.idToken!=='string' || !fb.idToken) throw Error('Account not confirmed');
+        if (sessions.size>=64) return send(429,'Tente novamente mais tarde');
+        const key=random(); sessions.set(key,{uid:fb.localId,sub,token:fb.idToken,expires:Date.now()+900000});res.setHeader('Set-Cookie',cookie(key,900));return go('/');
       }
       send(404,'Não encontrado');
     } catch {send(502,page('Não foi possível validar a conta. O host não foi alterado.','/login','Recomeçar'));}
@@ -77,6 +152,13 @@ export function serve(configFile, firebaseKey) {
 }
 if (process.argv[1] && import.meta.url===pathToFileURL(process.argv[1]).href) {
   const file = process.env.NOUS_GOOGLE_CLIENT_FILE || join(process.env.LOCALAPPDATA,'NOUS','desktop-oauth.json');
-  const key = process.env.NOUS_FIREBASE_WEB_KEY || JSON.parse(readFileSync(new URL('../android/app/google-services.json',import.meta.url),'utf8')).client[0].api_key[0].current_key;
+  let key = process.env.NOUS_FIREBASE_WEB_KEY;
+  for (const config of [join(process.env.LOCALAPPDATA,'NOUS','google-services.json'),new URL('../android/app/google-services.json',import.meta.url)]) {
+    if (key) break;
+    try {
+      const data=JSON.parse(readFileSync(config,'utf8'));
+      if (data.project_info?.project_id==='nous-game-stream') key=data.client.find(c=>c.client_info?.android_client_info?.package_name==='com.flugel.nous')?.api_key?.[0]?.current_key;
+    } catch { /* Optional public Firebase client configuration. */ }
+  }
   serve(file,key);
 }

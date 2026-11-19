@@ -81,6 +81,7 @@
 #include "session_display_policy.h"
 #include "single_flight.h"
 #include "state_storage_policy.h"
+#include "nous_account_token.h"
 #ifdef _WIN32
   #include "platform/windows/display.h"
   #include "platform/windows/display_target_borrow.h"
@@ -2743,13 +2744,13 @@ namespace nvhttp {
       return true;
     }
 
-    bool add_authorized_client(const p_named_cert_t &named_cert_p) {
+    bool add_authorized_client(const p_named_cert_t &named_cert_p, bool from_account = false, bool previously_granted = false) {
       const bool transient = config::sunshine.flags[config::flag::FRESH_STATE];
       if (!transient) statefile::migrate_recent_state_keys();
       std::lock_guard<std::mutex> state_lock(statefile::state_mutex());
       std::lock_guard<std::mutex> client_lock(client_mutex);
       if (!transient && !authorization_state_ready.load(std::memory_order_acquire)) return false;
-      if (!named_cert_p) return false;
+      if (!named_cert_p || (from_account && transient)) return false;
       const auto candidate_identity = exact_certificate_identity(crypto::x509(named_cert_p->cert));
       if (!candidate_identity) return false;
       std::vector<std::string> identities;
@@ -2762,6 +2763,7 @@ namespace nvhttp {
         // A verified re-pair restores a disabled client's default access while
         // retaining its stable UUID, commands and display preferences.
         if ((*existing)->perm == PERM::_no || !(*existing)->enabled) {
+          if (from_account) return false;
           const auto previous_permissions = (*existing)->perm;
           const auto previously_enabled = (*existing)->enabled;
           if ((*existing)->perm == PERM::_no) (*existing)->perm = PERM::_default;
@@ -2775,6 +2777,8 @@ namespace nvhttp {
         *named_cert_p = **existing;
         return true;
       }
+      // Account admission cannot resurrect a previously granted certificate after unpair.
+      if (from_account && previously_granted) return false;
       client_root.named_devices.push_back(named_cert_p);
       if (!build_paired_client_records(client_root, identities, records)) {
         client_root.named_devices.pop_back();
@@ -3576,6 +3580,8 @@ namespace nvhttp {
       if (RAND_bytes(bytes.data(), static_cast<int>(bytes.size())) != 1) return {};
       return util::hex(bytes, true).to_string();
     }
+
+#include "nous_account_pairing.inc"
 
     std::string lan_pairing_payload(const lan_pairing_t &session) {
       auto certificate = crypto::x509(conf_intern.servercert);

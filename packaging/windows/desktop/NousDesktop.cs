@@ -23,6 +23,12 @@ internal static class NousDesktop {
       (url.Host == "127.0.0.1" || url.Host == "localhost" || url.Host == "[::1]") && url.UserInfo.Length == 0;
   }
 
+  private static bool IsAccountBroker(string raw) {
+    const string root = "http://127.0.0.1:48173/";
+    return raw == root || (raw.StartsWith(root + "link#ticket=", StringComparison.Ordinal) &&
+      raw.Length == root.Length + 12 + 64 && raw.Substring(root.Length + 12).All(c => "0123456789ABCDEF".Contains(c)));
+  }
+
   private static bool IsPublicReleaseFeed(Uri url) {
     return url.Scheme == Uri.UriSchemeHttps && url.IsDefaultPort && url.UserInfo.Length == 0 &&
       url.Host == "api.github.com" && url.AbsolutePath == "/repos/flugeru/NOUS/releases" &&
@@ -75,6 +81,9 @@ internal static class NousDesktop {
 
   private static int SelfTest(string certificatePath) {
     var origin = new Uri("https://127.0.0.1:47990/");
+    if (!IsAccountBroker("http://127.0.0.1:48173/") || !IsAccountBroker("http://127.0.0.1:48173/link#ticket=" + new string('A', 64)) ||
+        IsAccountBroker("http://127.0.0.1:48173/link#ticket=" + new string('G', 64)) || IsAccountBroker("http://127.0.0.1:48173/other") ||
+        IsAccountBroker("http://127.0.0.1:48173@other.example/")) return 1;
     if (!SameOrigin(origin, "https://127.0.0.1:47990/pin?q=1")) return 1;
     if (!IsPublicReleaseFeed(new Uri("https://api.github.com/repos/flugeru/NOUS/releases?per_page=100&page=10")) ||
         IsPublicReleaseFeed(new Uri("https://api.github.com/repos/flugeru/NOUS/releases?per_page=100&page=11")) ||
@@ -211,7 +220,13 @@ internal static class NousDesktop {
           core.Settings.IsStatusBarEnabled = false;
           core.NavigationStarting += (s, e) => e.Cancel = !SameOrigin(url, e.Uri);
           core.FrameNavigationStarting += (s, e) => e.Cancel = !SameOrigin(url, e.Uri) && e.Uri != "about:blank";
-          core.NewWindowRequested += (s, e) => e.Handled = true;
+          core.NewWindowRequested += (s, e) => {
+            e.Handled = true;
+            if (e.IsUserInitiated && IsAccountBroker(e.Uri)) {
+              try { System.Diagnostics.Process.Start(e.Uri); }
+              catch { MessageBox.Show("Não foi possível abrir o navegador padrão.", "NOUS"); }
+            }
+          };
           core.PermissionRequested += (s, e) => e.State = CoreWebView2PermissionState.Deny;
           core.AddWebResourceRequestedFilter("*", CoreWebView2WebResourceContext.All, CoreWebView2WebResourceRequestSourceKinds.All);
           core.WebResourceRequested += (s, e) => {

@@ -290,6 +290,18 @@ public class ComputerManagerService extends Service {
             return null;
         }
 
+        public ComputerDetails getAccountComputer(String uuid) {
+            synchronized (pollingTuples) {
+                ComputerDetails match = null;
+                for (PollingTuple tuple : pollingTuples) {
+                    if (!uuid.equalsIgnoreCase(tuple.computer.uuid)) continue;
+                    if (match != null) return null;
+                    match = tuple.computer;
+                }
+                return match;
+            }
+        }
+
         public boolean persistPairingPin(String uuid, java.security.cert.X509Certificate pin) {
             if (!getLocalDatabaseReference()) return false;
             try {

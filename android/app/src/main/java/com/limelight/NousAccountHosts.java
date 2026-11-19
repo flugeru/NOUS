@@ -108,7 +108,7 @@ final class NousAccountHosts {
             for (int i = 0; i < labels.length; i++) labels[i] = list.get(i).name + " · " + list.get(i).uuid.substring(0, 8);
             dialog.setItems(labels, (ignored, i) -> {
                 if (auth.getCurrentUser() == user && activity instanceof PcView && !activity.isDestroyed())
-                    ((PcView) activity).openPairedAccountHost(list.get(i));
+                    ((PcView) activity).openPairedAccountHost(list.get(i), auth, user);
             });
         }
         dialog.setPositiveButton(android.R.string.ok, null).show();

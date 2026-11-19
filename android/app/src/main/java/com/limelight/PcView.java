@@ -189,10 +189,10 @@ public class PcView extends ControllerMenuActivity implements AdapterFragmentCal
         else Toast.makeText(this, R.string.nous_games_need_pc, Toast.LENGTH_SHORT).show();
     }
 
-    void openPairedAccountHost(NousAccountHosts.Host entry) {
-        ComputerDetails host = managerBinder == null ? null : managerBinder.getComputer(entry.uuid);
+    void openPairedAccountHost(NousAccountHosts.Host entry, com.google.firebase.auth.FirebaseAuth auth, com.google.firebase.auth.FirebaseUser user) {
+        ComputerDetails host = managerBinder == null ? null : managerBinder.getAccountComputer(entry.uuid);
         int message = R.string.nous_account_host_not_paired;
-        if (host != null && entry.uuid.equals(host.uuid) && host.serverCert != null) {
+        if (host != null && entry.uuid.equalsIgnoreCase(host.uuid) && host.serverCert != null) {
             try {
                 if (!entry.matchesSavedCertificate(host.serverCert.getEncoded())) message = R.string.nous_account_host_pin_conflict;
                 else if (host.state != ComputerDetails.State.ONLINE) message = R.string.error_pc_offline;
@@ -201,6 +201,36 @@ public class PcView extends ControllerMenuActivity implements AdapterFragmentCal
                     return;
                 }
             } catch (java.security.GeneralSecurityException invalidCertificate) { message = R.string.nous_account_host_pin_conflict; }
+        }
+        if (message == R.string.nous_account_host_not_paired && host != null && host.state == ComputerDetails.State.ONLINE && host.activeAddress != null) {
+            new ControllerDialogBuilder(this).setTitle(entry.name).setMessage(R.string.nous_account_connect_explain)
+                    .setNegativeButton(android.R.string.cancel, null).setPositiveButton(R.string.nous_account_connect, (dialog, which) -> {
+                        if (lanPairingBusy || auth.getCurrentUser() != user) return;
+                        lanPairingBusy = true;
+                        user.getIdToken(false).addOnCompleteListener(task -> {
+                            var binder = managerBinder;
+                            if (!task.isSuccessful() || isDestroyed() || isFinishing() || binder == null || auth.getCurrentUser() != user) {
+                                lanPairingBusy = false;
+                                if (!isDestroyed() && !isFinishing()) Toast.makeText(this,R.string.nous_account_connect_failed,Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                            new Thread(() -> {
+                                boolean stored = false;
+                                try {
+                                    var cert = LanPairing.connectAccount(host.activeAddress, entry.uuid, entry.pin, task.getResult().getToken(), PlatformBinding.getCryptoProvider(this));
+                                    stored = auth.getCurrentUser() == user && binder.persistPairingPin(host.uuid, cert);
+                                } catch (Exception ignored) { /* Never log identity credentials. */ }
+                                final boolean ok = stored;
+                                runOnUiThread(() -> {
+                                    lanPairingBusy = false;
+                                    if (isDestroyed() || isFinishing()) return;
+                                    if (ok && auth.getCurrentUser() == user) doAppList(host,true,false);
+                                    else Toast.makeText(this,R.string.nous_account_connect_failed,Toast.LENGTH_LONG).show();
+                                });
+                            },"nous-account-connect").start();
+                        });
+                    }).show();
+            return;
         }
         new ControllerDialogBuilder(this).setTitle(entry.name).setMessage(message).setPositiveButton(android.R.string.ok, null).show();
     }
