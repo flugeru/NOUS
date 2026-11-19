@@ -31,6 +31,6 @@ with tempfile.TemporaryDirectory(prefix='pairing-transaction-') as directory:
     fixture.write_text(template.replace('@FUNCTION@', body))
     executable = path / 'test'
     subprocess.run([args.compiler, '-std=c++23', '-pthread', '-I', str(root), str(fixture),
-                    str(root / 'src/http_pairing_policy.cpp'), '-lgtest_main', '-lgtest',
+                    str(root / 'src/http_pairing_policy.cpp'), '-lgtest_main', '-lgtest', '-lcrypto',
                     '-o', str(executable)], check=True)
     subprocess.run([str(executable)], check=True)

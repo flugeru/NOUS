@@ -1,6 +1,12 @@
 // Exercise the real add_authorized_client body with deterministic storage and
 // certificate adapters. Real X.509 parsing has separate TLS identity tests.
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
+#include <openssl/crypto.h>
+#include <algorithm>
+#include <chrono>
+#include <cctype>
+#include <unordered_map>
 #include <array>
 #include <atomic>
 #include <memory>
@@ -11,18 +17,66 @@
 #include <vector>
 #include "src/http_pairing_policy.h"
 
+using namespace std::chrono_literals;
 namespace config {
   enum flag { FRESH_STATE };
-  struct { std::array<bool, 1> flags {}; } sunshine;
+  struct { std::array<bool, 1> flags {}; bool enable_pairing = true; } sunshine;
+  struct { std::string pkey = "fixture", sunshine_name = "Test PC"; } nvhttp;
+}
+namespace http {
+  const std::string unique_id = "ABCDEF11-2222-3333-4444-555555555555";
+  bool online = true;
+  struct response { int status; std::string body; };
+  std::optional<response> fetch_text(const char *, const char *, const char *, const char *, int, int, bool) {
+    if (!online) return {};
+    return response {200, R"({"fixture":"key"})"};
+  }
+}
+namespace nous_account {
+  struct identity { std::string uid, google_subject; };
+  std::optional<identity> verify(const std::string &token, const nlohmann::json &, int) {
+    if (token == "owner") return identity {"owner", "123"};
+    if (token == "other") return identity {"other", "456"};
+    if (token == "wrong-subject") return identity {"owner", "456"};
+    return {};
+  }
+}
+namespace uuid_util {
+  struct uuid_t {
+    static uuid_t generate() { return {}; }
+    std::string string() const { return "11111111-2222-3333-4444-555555555555"; }
+  };
+}
+namespace boost::algorithm {
+  std::string to_lower_copy(std::string value) {
+    for (char &c : value) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+    return value;
+  }
+}
+namespace util {
+  struct hex_t { std::string value; std::string to_string() const { return value; } };
+  hex_t hex(const std::string &value, bool) { return {value}; }
+  std::string from_hex_vec(std::string_view value, bool) { return std::string(value); }
 }
 namespace statefile {
   std::mutex state;
   std::mutex &state_mutex() { return state; }
   void migrate_recent_state_keys() {}
+  enum class json_load_result_e { loaded, missing, failed };
+  nlohmann::json account_state;
+  json_load_result_e load_json(const std::string &, nlohmann::json &out) {
+    if (account_state.is_null()) {
+      out = nlohmann::json::object();
+      return json_load_result_e::missing;
+    }
+    out = account_state;
+    return json_load_result_e::loaded;
+  }
+  void write_json_atomic(const std::string &, const nlohmann::json &value) { account_state = value; }
 }
 namespace nvhttp {
   enum class PERM { _no, _default, custom };
-  struct named_cert_t { std::string uuid, cert, name; PERM perm = PERM::_default; bool enabled = true; };
+  struct named_cert_t { std::string uuid, cert, name; PERM perm = PERM::_default; bool enabled = true; bool allow_client_commands = true; };
   using p_named_cert_t = std::shared_ptr<named_cert_t>;
   struct client_t { std::vector<p_named_cert_t> named_devices; } client_root;
   std::mutex client_mutex;
@@ -31,12 +85,30 @@ namespace nvhttp {
   int save_calls = 0;
   struct { int count = 0; void add(const p_named_cert_t &) { ++count; } } cert_chain;
   namespace crypto {
-    std::optional<std::string> x509(const std::string &cert) {
-      if (cert.empty() || cert == "invalid") return std::nullopt;
-      return cert;
+    using nvhttp::named_cert_t;
+    struct certificate {
+      std::optional<std::string> value;
+      explicit operator bool() const { return value.has_value(); }
+      const std::string *get() const { return value ? &*value : nullptr; }
+    };
+    certificate x509(const std::string &cert) {
+      if (cert.empty() || cert == "invalid") return {};
+      return {cert};
+    }
+    std::string pem(const certificate &cert) { return *cert.value; }
+    std::string hash(std::string_view der) { return std::string(64, der == "cert-a" ? 'A' : 'B'); }
+    bool verify256(const certificate &cert, const std::string &proof, std::string_view sig) {
+      return cert.get() && sig == "AB" && proof.find(":" + hash(*cert.get()) + ":") != proof.npos;
     }
   }
-  std::optional<std::string> exact_certificate_identity(const std::optional<std::string> &cert) { return cert; }
+  const void *X509_get0_pubkey(const std::string *cert) { return cert; }
+  std::optional<std::string> exact_certificate_identity(const crypto::certificate &cert) { return cert.value; }
+  struct { std::string servercert = "host-cert"; } conf_intern;
+  int now_seconds() { return 1000; }
+  std::string qr_random_hex() {
+    static unsigned counter = 0;
+    return std::string(56, 'F') + std::to_string(10000000 + ++counter);
+  }
   bool build_paired_client_records(const client_t &client, std::vector<std::string> &identities,
                                    std::vector<pairing_policy::paired_client_record_view_t> &records) {
     identities.clear(); records.clear();
@@ -50,6 +122,7 @@ namespace nvhttp {
   }
   bool save_state_snapshot_locked(const client_t &) { ++save_calls; return save_succeeds; }
 @FUNCTION@
+#include "src/nous_account_pairing.inc"
 }
 namespace {
   using namespace nvhttp;
@@ -64,8 +137,57 @@ namespace {
     void SetUp() override {
       client_root.named_devices.clear(); cert_chain.count = 0; save_calls = 0; save_succeeds = true;
       authorization_state_ready = true; config::sunshine.flags[config::FRESH_STATE] = false;
+      config::sunshine.enable_pairing = true; statefile::account_state = nullptr;
+      activation.clear(); account_challenges.clear();
     }
   };
+  TEST_F(PairingTransaction, AccountEnrollmentRequiresOwnerAndSingleUseProof) {
+    const nlohmann::json empty = nlohmann::json::object();
+    nlohmann::json body {{"certificate", "cert-a"}, {"host", "abcdef11-2222-3333-4444-555555555555"}};
+    auto ok = [](const nlohmann::json &reply) { return reply.value("status", false); };
+    EXPECT_FALSE(ok(account_pairing("challenge", body)));
+    auto start = account_pairing("start", empty);
+    ASSERT_TRUE(ok(start));
+    nlohmann::json consent {{"ticket", start.at("ticket")}, {"token", "owner"}};
+    ASSERT_TRUE(ok(account_pairing("enable", consent)));
+    EXPECT_FALSE(ok(account_pairing("enable", consent)));
+    auto issue = [&] {
+      const auto reply = account_pairing("challenge", body);
+      EXPECT_TRUE(ok(reply));
+      body["nonce"] = reply.at("nonce");
+    };
+    body["signature"] = "AB";
+    body["name"] = "Test device";
+    for (const auto *token : {"other", "wrong-subject", "invalid"}) {
+      issue(); body["token"] = token;
+      EXPECT_FALSE(ok(account_pairing("connect", body)));
+      body["token"] = "owner";
+      EXPECT_FALSE(ok(account_pairing("connect", body)));
+    }
+    EXPECT_TRUE(client_root.named_devices.empty());
+    EXPECT_EQ(save_calls, 0);
+    issue();
+    const auto valid = body;
+    body["certificate"] = "cert-b";
+    EXPECT_FALSE(ok(account_pairing("connect", body)));
+    body = valid;
+    body["signature"] = "CD";
+    EXPECT_FALSE(ok(account_pairing("connect", body)));
+    body = valid;
+    account_challenges.begin()->second = account_clock::now();
+    EXPECT_FALSE(ok(account_pairing("connect", body)));
+    issue();
+    ASSERT_TRUE(ok(account_pairing("connect", body)));
+    EXPECT_FALSE(ok(account_pairing("connect", body)));
+    ASSERT_EQ(client_root.named_devices.size(), 1u);
+    EXPECT_FALSE(client_root.named_devices.front()->allow_client_commands);
+    EXPECT_EQ(save_calls, 1);
+    client_root.named_devices.clear();
+    issue();
+    EXPECT_FALSE(ok(account_pairing("connect", body)));
+    ASSERT_TRUE(ok(account_pairing("disable", empty)));
+    EXPECT_FALSE(ok(account_pairing("challenge", body)));
+  }
   TEST_F(PairingTransaction, RePairAtCapacityPreservesIdentityAndRestoresGrant) {
     for (unsigned i = 0; i < 256; ++i) client_root.named_devices.push_back(record(i, "cert-" + std::to_string(i)));
     client_root.named_devices[0]->perm = PERM::_no;

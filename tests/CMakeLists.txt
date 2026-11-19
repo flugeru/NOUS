@@ -452,13 +452,14 @@ if(SUNSHINE_TEST_ENABLE_COMPONENT)
                 "${CMAKE_CURRENT_LIST_DIR}/unit/test_pairing_transaction.py"
                 "${CMAKE_CURRENT_LIST_DIR}/unit/test_pairing_transaction.cpp.in"
                 "${SUNSHINE_TEST_REPOSITORY_ROOT}/src/nvhttp.cpp"
+                "${SUNSHINE_TEST_REPOSITORY_ROOT}/src/nous_account_pairing.inc"
             VERBATIM)
         sunshine_add_test_target(
             NAME test_component_pairing_transaction
             CATEGORY component
             TEST_SOURCES "${CMAKE_CURRENT_LIST_DIR}/tests_main.cpp" "${_pairing_transaction_fixture}"
             PRODUCT_SOURCES "${SUNSHINE_TEST_REPOSITORY_ROOT}/src/http_pairing_policy.cpp"
-            LINK_LIBRARIES GTest::gtest Threads::Threads
+            LINK_LIBRARIES GTest::gtest Threads::Threads nlohmann_json::nlohmann_json OpenSSL::Crypto
         )
         set_tests_properties(test_component_pairing_transaction PROPERTIES TIMEOUT 30)
     endif()
