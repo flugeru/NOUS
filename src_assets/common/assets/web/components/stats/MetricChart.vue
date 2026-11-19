@@ -612,6 +612,7 @@ onBeforeUnmount(() => {
       <dialog
         ref="dialog"
         class="metric-chart__dialog"
+        :aria-labelledby="`metric-chart-title-${uid}`"
         :style="{ '--metric-color': color }"
         @cancel="onNativeCancel"
       >

@@ -136,6 +136,27 @@ test('LAN pairing renders QR locally only after approval, then clears it on expi
   expect(actions).toEqual(['inspect', 'approve']);
 });
 
+test('display recovery snapshot uses NOUS confirmation before mutation', async ({ page }) => {
+  await host(page, 'windows');
+  let exports = 0;
+  await localRoute(page, '**/api/display/golden_status', route => route.fulfill({ json: { exists: false, maintenance_available: true } }));
+  await localRoute(page, '**/api/display/export_golden', route => {
+    exports++;
+    return route.fulfill({ json: { status: true } });
+  });
+  await page.goto('/v2/settings');
+  await page.locator('#settings-group-everyday-everyday_recovery summary').click();
+  await page.getByRole('button', { name: 'Create snapshot', exact: true }).click();
+  const confirmation = page.getByRole('dialog', { name: 'Golden recovery snapshot', exact: true });
+  await expect(confirmation).toBeVisible();
+  expect(exports).toBe(0);
+  await confirmation.getByRole('button', { name: 'Cancel', exact: true }).click();
+  expect(exports).toBe(0);
+  await page.getByRole('button', { name: 'Create snapshot', exact: true }).click();
+  await confirmation.getByRole('button', { name: 'Create snapshot', exact: true }).click();
+  await expect.poll(() => exports).toBe(1);
+});
+
 test('integration exclusion drafts warn before leaving and survive canceled navigation', async ({ page }) => {
   await host(page, 'linux');
   await localRoute(page, '**/api/steam/status', route => route.fulfill({ json: { enabled: true, available: true } }));

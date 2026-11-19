@@ -223,12 +223,14 @@ test('history pagination, grouped details, full export, deletion, and chart zoom
   await expect(page.getByText('Grouped Session (2 streams)', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: /Grouped Session \(2 streams\)/ }).click();
   const detailDialog = page.locator('dialog.stats-detail-dialog[open]');
+  await expect(detailDialog).toHaveAccessibleName(/.+/);
   await expect(detailDialog.getByRole('button', { name: 'Export JSON' })).toBeVisible();
   await expect(detailDialog.locator('.event-list').getByText('fixture event')).toHaveCount(2);
 
   await detailDialog.getByRole('button', { name: 'Open chart in larger view' }).first().click();
   const chartDialog = page.locator('dialog.metric-chart__dialog[open]');
   await expect(chartDialog).toBeVisible();
+  await expect(chartDialog).toHaveAccessibleName(/.+/);
   await expect(chartDialog.locator('.metric-chart__event')).toHaveCount(12);
   await expect(chartDialog.getByRole('button', { name: /stall/ }).first()).toBeAttached();
   const plot = chartDialog.locator('.metric-chart__dialog-plot svg');

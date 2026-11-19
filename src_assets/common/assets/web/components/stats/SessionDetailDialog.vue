@@ -205,7 +205,7 @@ onBeforeUnmount(() => {
 
 <template>
   <Teleport to="body">
-    <dialog ref="dialog" class="stats-detail-dialog" @cancel="onCancel" @click="onBackdrop">
+    <dialog ref="dialog" class="stats-detail-dialog" :aria-label="t('sessions.history_detail_title')" @cancel="onCancel" @click="onBackdrop">
       <section ref="panel" class="stats-detail-dialog__panel" tabindex="-1">
         <header class="stats-detail-dialog__header">
           <div>

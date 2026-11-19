@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { apiGet, apiPost } from '@/api/client';
-import { AppButton, StatusBadge } from '@/components/ui';
+import { AppButton, ConfirmDialog, StatusBadge } from '@/components/ui';
 import type { StatusTone } from '@/components/ui/types';
 
 interface GoldenStatus {
@@ -40,6 +40,7 @@ const { t } = useI18n();
 const golden = ref<GoldenStatus | null>(null);
 const statusLoading = ref(true);
 const captureBusy = ref(false);
+const captureOpen = ref(false);
 const statusError = ref('');
 const notice = ref('');
 const hotkeyCaptureActive = ref(false);
@@ -126,11 +127,7 @@ async function loadGoldenStatus(): Promise<void> {
 
 async function captureGoldenSnapshot(): Promise<void> {
   if (captureBusy.value || props.maintenanceAvailable !== true) return;
-  const confirmation = golden.value?.exists
-    ? t('ui.settings.recovery.replace_confirm')
-    : t('ui.settings.recovery.create_confirm');
-  if (!window.confirm(confirmation)) return;
-
+  captureOpen.value = false;
   captureBusy.value = true;
   statusError.value = '';
   notice.value = '';
@@ -207,6 +204,10 @@ onMounted(() => void loadGoldenStatus());
 
 <template>
   <div class="display-recovery-settings">
+    <ConfirmDialog v-model:open="captureOpen" :title="t('ui.settings.recovery.golden_title')"
+      :description="t(golden?.exists ? 'ui.settings.recovery.replace_confirm' : 'ui.settings.recovery.create_confirm')"
+      :confirm-label="t(golden?.exists ? 'ui.settings.recovery.update_snapshot' : 'ui.settings.recovery.create_snapshot')"
+      :busy="captureBusy" @confirm="captureGoldenSnapshot" />
     <article class="recovery-item">
       <div class="recovery-item__copy">
         <div class="recovery-item__title">
@@ -227,7 +228,7 @@ onMounted(() => void loadGoldenStatus());
         :busy-label="t('ui.settings.recovery.saving_snapshot')"
         :disabled="statusLoading || (golden !== null && maintenanceAvailable !== true)"
         variant="secondary"
-        @click="golden ? captureGoldenSnapshot() : loadGoldenStatus()"
+        @click="golden ? (captureOpen = true) : loadGoldenStatus()"
       />
 
       <p v-if="maintenanceAvailable !== true" role="status">
