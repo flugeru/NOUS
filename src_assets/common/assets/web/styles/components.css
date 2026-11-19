@@ -82,6 +82,7 @@
 .button--primary:hover:not(:disabled) {
   border-color: var(--vs-button-primary-bg-hover, var(--vs-color-accent-hover));
   background: var(--vs-button-primary-bg-hover, var(--vs-color-accent-hover));
+  color: var(--vs-button-primary-fg, var(--vs-color-text-on-accent));
 }
 
 .vs-button--secondary,

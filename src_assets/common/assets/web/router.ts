@@ -24,6 +24,13 @@ const router = createRouter({
     },
     { path: '/stream', alias: '/webrtc', redirect: { name: 'overview' } },
     {
+      path: '/account',
+      name: 'account',
+      component: () => import('@/components/AccountLogin.vue'),
+      props: { manage: true },
+      meta: { titleKey: 'ui.nav.account' },
+    },
+    {
       path: '/library',
       name: 'library',
       component: LibraryView,

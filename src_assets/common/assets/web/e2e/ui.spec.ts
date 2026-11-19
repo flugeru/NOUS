@@ -6,6 +6,22 @@ import { localRoute, test, expect, type Page } from './fixtures';
 
 const screenshotDirectory = process.env.VIBEPOLLO_TEST_OUTPUT || process.env.VIBESHINE_TEST_OUTPUT || join(tmpdir(), 'vibepollo-ui-results');
 
+test('account lives in workspace navigation and button labels survive hover', async ({ page }) => {
+  await host(page, 'windows');
+  await page.goto('/v2/devices');
+  await expect(page.locator('main .account-page')).toHaveCount(0);
+  await page.getByRole('link', { name: 'NOUS account', exact: true }).click();
+  await expect(page.locator('main h1')).toHaveText('NOUS account');
+  await page.evaluate(() => {
+    document.querySelector('main')!.insertAdjacentHTML('beforeend', '<a href="#" class="vs-button vs-button--primary" id="hover-check">Sign in with Google</a>');
+  });
+  const button = page.locator('#hover-check');
+  const normalColor = await button.evaluate(el => getComputedStyle(el).color);
+  await button.hover();
+  await expect(button).toHaveCSS('color', normalColor);
+  expect(await button.evaluate(el => getComputedStyle(el).color !== getComputedStyle(el).backgroundColor)).toBe(true);
+});
+
 test('skip navigation stays hidden on activation but remains available by keyboard', async ({ page }) => {
   await host(page, 'windows');
   await page.goto('/v2/');
@@ -625,6 +641,7 @@ test('all canonical v2 pages render without client-side exceptions', async ({ pa
     'library',
     'library/new',
     'devices',
+    'account',
     'pair',
     'stats',
     'integrations',
@@ -703,12 +720,13 @@ for (const theme of ['light', 'dark']) {
       await page.setViewportSize({ width, height: 1000 });
       const errors: string[] = [];
       page.on('pageerror', (error) => errors.push(error.message));
-      for (const path of ['', 'library', 'library/new', 'devices', 'integrations', 'settings', 'maintenance', 'logs', 'api-tokens', 'stats', 'stream']) {
+      for (const path of ['', 'library', 'library/new', 'devices', 'account', 'pair', 'integrations', 'settings', 'maintenance', 'logs', 'api-tokens', 'stats', 'stream']) {
         await page.goto(`/v2/${path}`);
         await expect(page.locator('html')).toHaveAttribute('lang', 'pt-BR');
         await expect(page.locator('main h1').first()).toBeVisible();
         await expect.poll(() => page.evaluate(() => [...document.querySelectorAll('main, main *')].filter((element) => element.getBoundingClientRect().right > innerWidth + 1).map((element) => `${element.tagName}.${element.className}`).slice(0, 12)), { message: path }).toEqual([]);
         await expect(page.locator('main')).not.toContainText(/ui\.(?:application|settings|integrations|topology)\./);
+        await page.screenshot({ path: join(screenshotDirectory, `audit-${theme}-${width}-${path.replaceAll('/', '-') || 'overview'}.png`), fullPage: true });
       }
       expect(errors).toEqual([]);
     });

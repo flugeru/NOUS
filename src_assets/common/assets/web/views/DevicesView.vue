@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, toRaw } from 'vue';
-import AccountLogin from '@/components/AccountLogin.vue';
 import { useUnsavedChanges } from '@/composables/useUnsavedChanges';
 import { useI18n } from 'vue-i18n';
 
@@ -885,7 +884,7 @@ onBeforeUnmount(() => {
     </PageHeader>
 
     <div class="devices-stack">
-      <AccountLogin manage />
+      <!-- Account access lives under Seu PC / Conta NOUS. -->
       <InlineAlert
         v-if="error"
         tone="danger"
