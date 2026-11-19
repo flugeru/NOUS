@@ -31,11 +31,30 @@ const transientFields = new Set([
   'running',
 ]);
 
-export async function fetchApps(): Promise<AppRecord[]> {
+export async function fetchAppLibrary(): Promise<{
+  apps: AppRecord[];
+  hostUuid: string;
+  hostName: string;
+  restorableSystemApps: { id: string; name: string }[];
+}> {
   const payload = await apiGet<unknown>('/api/apps');
-  return asArray<AppRecord>(payload, 'apps').filter((app): app is AppRecord =>
-    Boolean(app && typeof app === 'object' && !Array.isArray(app)),
-  );
+  const metadata =
+    payload && typeof payload === 'object' ? (payload as Record<string, unknown>) : {};
+  return {
+    apps: asArray<AppRecord>(payload, 'apps').filter((app): app is AppRecord =>
+      Boolean(app && typeof app === 'object' && !Array.isArray(app)),
+    ),
+    restorableSystemApps: asArray<{ id: string; name: string }>(
+      metadata,
+      'restorable-system-apps',
+    ).filter((item) => item && typeof item.id === 'string' && typeof item.name === 'string'),
+    hostUuid: typeof metadata.host_uuid === 'string' ? metadata.host_uuid : '',
+    hostName: typeof metadata.host_name === 'string' ? metadata.host_name : '',
+  };
+}
+
+export async function fetchApps(): Promise<AppRecord[]> {
+  return (await fetchAppLibrary()).apps;
 }
 
 export function appUuid(app: AppRecord): string {
@@ -68,13 +87,21 @@ export function prepareAppForSave(app: AppRecord): AppRecord {
 export async function saveApp(app: AppRecord): Promise<AppMutationResult> {
   const result = await apiPost<AppMutationResult>('/api/apps', prepareAppForSave(app));
   if (result.status === false) {
-    throw new AppServiceError('save-rejected', typeof result.error === 'string' ? result.error : undefined);
+    throw new AppServiceError(
+      'save-rejected',
+      typeof result.error === 'string' ? result.error : undefined,
+    );
   }
   return result;
 }
 
-export function deleteApp(uuid: string, options: { providerMaintenance?: boolean } = {}): Promise<AppMutationResult> {
+export function deleteApp(
+  uuid: string,
+  options: { providerMaintenance?: boolean } = {},
+): Promise<AppMutationResult> {
   if (!uuid) return Promise.reject(new AppServiceError('missing-app-uuid'));
-  return apiDelete<AppMutationResult>(`/api/apps/${encodeURIComponent(uuid)}`,
-    options.providerMaintenance ? { 'provider-maintenance': true } : undefined);
+  return apiDelete<AppMutationResult>(
+    `/api/apps/${encodeURIComponent(uuid)}`,
+    options.providerMaintenance ? { 'provider-maintenance': true } : undefined,
+  );
 }

@@ -25,12 +25,12 @@ import {
   appUuid,
   AppServiceError,
   deleteApp,
-  fetchApps,
+  fetchAppLibrary,
   type AppRecord,
 } from '@/services/apps';
 
 type ViewMode = 'grid' | 'list';
-type SortMode = 'name' | 'name-desc' | 'source';
+type SortMode = 'name' | 'name-desc' | 'source' | 'manual';
 type AppProvider = 'playnite' | 'steam' | 'lutris';
 
 interface ProviderInfo {
@@ -41,7 +41,7 @@ interface ProviderInfo {
 
 const PAGE_SIZE = 72;
 const VIEW_STORAGE_KEY = 'vibepollo.library.view';
-const validSortModes = new Set<SortMode>(['name', 'name-desc', 'source']);
+const validSortModes = new Set<SortMode>(['name', 'name-desc', 'source', 'manual']);
 
 const route = useRoute();
 const router = useRouter();
@@ -83,6 +83,71 @@ const deleteTarget = ref<AppRecord | null>(null);
 const deleteOpen = ref(false);
 const deleteBusy = ref(false);
 const deleteError = ref('');
+const reordering = ref(false);
+const actionError = ref('');
+const hostUuid = ref('');
+const hostName = ref('');
+const launchTarget = ref<AppRecord | null>(null);
+const launchOpen = ref(false);
+const launchBusy = ref(false);
+const launchError = ref('');
+
+function requestLaunch(app: AppRecord): void {
+  launchTarget.value = app;
+  launchError.value = '';
+  launchOpen.value = true;
+  contextUuid.value = '';
+}
+
+async function confirmLaunch(): Promise<void> {
+  const uuid = launchTarget.value && appUuid(launchTarget.value);
+  if (!uuid || launchBusy.value) return;
+  launchBusy.value = true;
+  launchError.value = '';
+  try {
+    const status = await apiGet<{ appRunning?: boolean; activeSessions?: number }>(
+      '/api/session/status',
+    );
+    // ponytail: reject active sessions here; atomic launch admission remains the host's responsibility.
+    if (status.appRunning !== false || status.activeSessions !== 0) {
+      launchError.value = t('ui.library.launch.conflict');
+      return;
+    }
+    const result = await apiPost<{ status?: boolean }>('/api/apps/launch', { uuid });
+    if (result.status !== true) throw new Error();
+    launchOpen.value = false;
+    await load();
+  } catch {
+    launchError.value = t('ui.library.launch.failed');
+  } finally {
+    launchBusy.value = false;
+  }
+}
+
+function clientLink(app: AppRecord): string {
+  return `art://launch?${new URLSearchParams({
+    host_uuid: hostUuid.value,
+    host_name: hostName.value,
+    app_uuid: appUuid(app),
+    app_name: displayName(app),
+  })}`;
+}
+
+function exportLauncher(app: AppRecord): void {
+  const fields = [hostUuid.value, hostName.value, appUuid(app), displayName(app)];
+  if (!fields[0] || !fields[2] || fields.some((value) => /[\r\n\0]/.test(value))) {
+    actionError.value = t('ui.library.errors.launcher');
+    return;
+  }
+  const content = `# Artemis app entry\n# Exported by NOUS\n\n[host_uuid] ${fields[0]}\n[host_name] ${fields[1]}\n[app_uuid] ${fields[2]}\n[app_name] ${fields[3]}\n`;
+  const url = URL.createObjectURL(new Blob([content], { type: 'text/plain;charset=utf-8' }));
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${displayName(app).replace(/[<>:"/\\|?*\x00-\x1f]/g, '_')}.art`;
+  link.click();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  contextUuid.value = '';
+}
 const purgePlayniteOpen = ref(false);
 const purgePlayniteBusy = ref(false);
 const purgePlayniteError = ref('');
@@ -160,7 +225,10 @@ function isPlayniteEntry(app: AppRecord): boolean {
 }
 
 const purgeablePlayniteEntries = computed(() =>
-  apps.value.filter((app) => isPlayniteEntry(app) && app['remote-monitor-profile'] !== true && Boolean(appUuid(app))),
+  apps.value.filter(
+    (app) =>
+      isPlayniteEntry(app) && app['remote-monitor-profile'] !== true && Boolean(appUuid(app)),
+  ),
 );
 
 function providerLabel(app: AppRecord): string {
@@ -265,6 +333,8 @@ const filteredApps = computed(() => {
         .includes(query);
     });
 
+  if (sort.value === 'manual') return candidates.map(({ app }) => app);
+
   if (sort.value === 'source') {
     candidates.sort((left, right) => {
       const sourceResult = collator.value.compare(
@@ -317,12 +387,11 @@ async function load(silent = false): Promise<void> {
   if (!silent) loading.value = true;
   error.value = '';
   try {
-    const [loadedApps, systemApps] = await Promise.all([
-      fetchApps(),
-      apiGet<{ 'restorable-system-apps'?: { id: string; name: string }[] }>('/api/apps'),
-    ]);
-    apps.value = loadedApps;
-    restorableSystemApps.value = systemApps['restorable-system-apps'] ?? [];
+    const library = await fetchAppLibrary();
+    apps.value = library.apps;
+    hostUuid.value = library.hostUuid;
+    hostName.value = library.hostName;
+    restorableSystemApps.value = library.restorableSystemApps;
     void loadSuggestions();
     failedCovers.value = new Set();
     const liveIds = new Set(apps.value.map(appUuid).filter(Boolean));
@@ -502,6 +571,35 @@ function closeContextMenu(): void {
   if (returnTo) focusItem(returnTo);
 }
 
+async function moveApp(app: AppRecord, offset: -1 | 1): Promise<void> {
+  if (reordering.value || sort.value !== 'manual') return;
+  const visible = filteredApps.value;
+  const index = visible.findIndex((candidate) => appUuid(candidate) === appUuid(app));
+  const neighbor = visible[index + offset];
+  if (index < 0 || !neighbor) return;
+  const order = apps.value.map(appUuid);
+  if (order.some((uuid) => !uuid) || new Set(order).size !== order.length) {
+    actionError.value = t('ui.library.errors.reorder');
+    return;
+  }
+  const from = order.indexOf(appUuid(app));
+  const to = order.indexOf(appUuid(neighbor));
+  [order[from], order[to]] = [order[to], order[from]];
+  reordering.value = true;
+  actionError.value = '';
+  try {
+    const result = await apiPost<{ status?: boolean }>('/api/apps/reorder', { order });
+    if (result.status !== true) throw new Error(t('ui.library.errors.reorder'));
+    contextUuid.value = '';
+    await load();
+    focusItem(appUuid(app));
+  } catch {
+    actionError.value = t('ui.library.errors.reorder');
+  } finally {
+    reordering.value = false;
+  }
+}
+
 function requestDelete(app: AppRecord): void {
   contextUuid.value = '';
   deleteTarget.value = app;
@@ -575,7 +673,9 @@ function onDocumentPointerDown(event: PointerEvent): void {
   }
 }
 
-watch([category, runningOnly], () => { renderLimit.value = PAGE_SIZE; });
+watch([category, runningOnly], () => {
+  renderLimit.value = PAGE_SIZE;
+});
 
 watch([search, sort], () => {
   renderLimit.value = PAGE_SIZE;
@@ -600,7 +700,15 @@ watch(loadMoreSentinel, (current, previous) => {
 
 onMounted(() => {
   refreshTimer = window.setInterval(() => {
-    if (!document.hidden && !deleteBusy.value && !librarySetupOpen.value) void load(true);
+    if (
+      !document.hidden &&
+      !deleteBusy.value &&
+      !reordering.value &&
+      !launchOpen.value &&
+      !contextUuid.value &&
+      !librarySetupOpen.value
+    )
+      void load(true);
   }, 5000);
   if ('IntersectionObserver' in window) {
     observer = new IntersectionObserver(
@@ -672,11 +780,20 @@ function libraryRequest(
       </template>
     </PageHeader>
 
-    <section v-if="restorableSystemApps.length" :aria-label="t('ui.library.restore_system')" class="system-app-restore">
+    <section
+      v-if="restorableSystemApps.length"
+      :aria-label="t('ui.library.restore_system')"
+      class="system-app-restore"
+    >
       <span>{{ t('ui.library.restore_system') }}:</span>
-      <AppButton v-for="app in restorableSystemApps" :key="app.id" size="compact"
-        :label="t('ui.library.restore_named', { name: app.name })" :disabled="Boolean(restoringSystemApp)"
-        @click="restoreSystemApp(app.id)" />
+      <AppButton
+        v-for="app in restorableSystemApps"
+        :key="app.id"
+        size="compact"
+        :label="t('ui.library.restore_named', { name: app.name })"
+        :disabled="Boolean(restoringSystemApp)"
+        @click="restoreSystemApp(app.id)"
+      />
     </section>
 
     <section
@@ -725,6 +842,10 @@ function libraryRequest(
       </template>
     </InlineAlert>
 
+    <InlineAlert v-if="actionError" tone="danger" announce="assertive">{{
+      actionError
+    }}</InlineAlert>
+
     <section class="library-toolbar" :aria-label="t('ui.library.controls.region')">
       <label class="library-category">
         <span class="vs-sr-only">{{ t('ui.library.category') }}</span>
@@ -757,6 +878,7 @@ function libraryRequest(
           <option value="name">{{ t('ui.library.sort.nameAsc') }}</option>
           <option value="name-desc">{{ t('ui.library.sort.nameDesc') }}</option>
           <option value="source">{{ t('ui.library.sort.provider') }}</option>
+          <option value="manual">{{ t('ui.library.sort.manual') }}</option>
         </select>
       </label>
 
@@ -993,6 +1115,47 @@ function libraryRequest(
               role="menuitem"
               size="compact"
               variant="tertiary"
+              :label="t('ui.library.actions.launchHost')"
+              :disabled="launchBusy"
+              @click="requestLaunch(app)"
+            />
+            <template v-if="hostUuid">
+              <a
+                class="vs-button vs-button--tertiary vs-button--compact"
+                role="menuitem"
+                :href="clientLink(app)"
+                >{{ t('ui.library.actions.openClient') }}</a
+              >
+              <AppButton
+                role="menuitem"
+                size="compact"
+                variant="tertiary"
+                :label="t('ui.library.actions.exportLauncher')"
+                @click="exportLauncher(app)"
+              />
+            </template>
+            <template v-if="sort === 'manual'">
+              <AppButton
+                role="menuitem"
+                size="compact"
+                variant="tertiary"
+                :label="t('ui.library.actions.moveEarlier')"
+                :disabled="reordering || app === filteredApps[0]"
+                @click="moveApp(app, -1)"
+              />
+              <AppButton
+                role="menuitem"
+                size="compact"
+                variant="tertiary"
+                :label="t('ui.library.actions.moveLater')"
+                :disabled="reordering || app === filteredApps[filteredApps.length - 1]"
+                @click="moveApp(app, 1)"
+              />
+            </template>
+            <AppButton
+              role="menuitem"
+              size="compact"
+              variant="tertiary"
               icon="trash"
               :label="t('_common.delete')"
               @click="requestDelete(app)"
@@ -1017,6 +1180,20 @@ function libraryRequest(
         />
       </div>
     </template>
+
+    <ConfirmDialog
+      v-model:open="launchOpen"
+      :title="t('ui.library.launch.title', { name: launchTarget ? displayName(launchTarget) : '' })"
+      :description="t('ui.library.launch.description')"
+      :confirm-label="t('ui.library.actions.launchHost')"
+      :busy="launchBusy"
+      :close-on-confirm="false"
+      @confirm="confirmLaunch"
+    >
+      <InlineAlert v-if="launchError" tone="danger" announce="assertive">{{
+        launchError
+      }}</InlineAlert>
+    </ConfirmDialog>
 
     <ConfirmDialog
       v-model:open="deleteOpen"
@@ -1076,7 +1253,13 @@ function libraryRequest(
 </template>
 
 <style scoped>
-.system-app-restore { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-block: 1rem; }
+.system-app-restore {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-block: 1rem;
+}
 
 .library-page {
   display: grid;

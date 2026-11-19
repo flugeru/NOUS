@@ -1570,6 +1570,131 @@ for (const platform of ['windows', 'linux']) {
   });
 }
 
+test('host launch requires confirmation and refuses active sessions', async ({ page }) => {
+  await host(page, 'windows');
+  await localRoute(page, '**/api/apps', route => route.fulfill({ json: { apps: [{ uuid: 'game', name: 'Game' }] } }));
+  let active = true;
+  const launches: unknown[] = [];
+  await localRoute(page, '**/api/session/status', route => route.fulfill({ json: {
+    appRunning: active, activeSessions: active ? 1 : 0,
+  } }));
+  await localRoute(page, '**/api/apps/launch', route => {
+    launches.push(route.request().postDataJSON());
+    return route.fulfill({ json: { status: true } });
+  });
+  await page.goto('/v2/library');
+  await page.getByRole('option', { name: 'Game', exact: true }).hover();
+  await page.getByRole('button', { name: 'More actions for Game', exact: true }).click();
+  await page.getByRole('menuitem', { name: 'Start on host', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Start Game on host?' });
+  await expect(dialog).toBeVisible();
+  expect(launches).toEqual([]);
+  await dialog.getByRole('button', { name: 'Start on host', exact: true }).click();
+  await expect(dialog.getByText(/Host is busy/)).toBeVisible();
+  expect(launches).toEqual([]);
+  active = false;
+  await dialog.getByRole('button', { name: 'Start on host', exact: true }).click();
+  await expect(dialog).not.toBeVisible();
+  expect(launches).toEqual([{ uuid: 'game' }]);
+});
+
+test('Artemis links encode identity and launcher export preserves V1 format', async ({ page }) => {
+  await host(page, 'windows');
+  await localRoute(page, '**/api/apps', route => route.fulfill({ json: {
+    apps: [{ uuid: 'app&1', name: 'Game & café' }], host_uuid: 'host&1', host_name: 'PC & sala',
+  } }));
+  await page.goto('/v2/library');
+  await page.getByRole('option', { name: 'Game & café', exact: true }).hover();
+  await page.getByRole('button', { name: 'More actions for Game & café', exact: true }).click();
+  const link = page.getByRole('menuitem', { name: 'Open in Artemis client', exact: true });
+  const url = new URL((await link.getAttribute('href'))!);
+  expect(url.protocol).toBe('art:');
+  expect(Object.fromEntries(url.searchParams)).toEqual({
+    host_uuid: 'host&1', host_name: 'PC & sala', app_uuid: 'app&1', app_name: 'Game & café',
+  });
+  const downloadEvent = page.waitForEvent('download');
+  await page.getByRole('menuitem', { name: 'Export Artemis launcher (.art)', exact: true }).click();
+  const download = await downloadEvent;
+  expect(download.suggestedFilename()).toBe('Game & café.art');
+  const content = await readFile((await download.path())!, 'utf8');
+  expect(content).toContain('[host_uuid] host&1\n[host_name] PC & sala\n[app_uuid] app&1\n[app_name] Game & café\n');
+});
+
+test('manual library order persists full list and reports rejected writes', async ({ page }) => {
+  await host(page, 'windows');
+  let apps = [
+    { uuid: 'z', name: 'Zebra' },
+    { uuid: 'hidden', name: 'Hidden' },
+    { uuid: 'a', name: 'Alpha' },
+  ];
+  const orders: string[][] = [];
+  let reject = false;
+  await localRoute(page, '**/api/apps', route => route.fulfill({ json: { apps } }));
+  await localRoute(page, '**/api/apps/reorder', async route => {
+    const { order } = route.request().postDataJSON();
+    orders.push(order);
+    if (!reject) apps = order.map((uuid: string) => apps.find(app => app.uuid === uuid)!);
+    await route.fulfill({ json: { status: !reject } });
+  });
+  await page.goto('/v2/library');
+  await page.getByRole('combobox', { name: 'Sort' }).selectOption('manual');
+  const items = page.locator('[data-library-item] .library-item__title');
+  await expect(items).toHaveText(['Zebra', 'Hidden', 'Alpha']);
+  await page.getByRole('option', { name: 'Alpha', exact: true }).hover();
+  await page.getByRole('button', { name: 'More actions for Alpha', exact: true }).click();
+  await page.getByRole('menuitem', { name: 'Move earlier', exact: true }).click();
+  await expect.poll(() => orders).toEqual([['z', 'a', 'hidden']]);
+  await expect(items).toHaveText(['Zebra', 'Alpha', 'Hidden']);
+  await page.reload();
+  await expect(items).toHaveText(['Zebra', 'Alpha', 'Hidden']);
+  reject = true;
+  await page.getByRole('option', { name: 'Alpha', exact: true }).hover();
+  await page.getByRole('button', { name: 'More actions for Alpha', exact: true }).click();
+  await page.getByRole('menuitem', { name: 'Move earlier', exact: true }).click();
+  await expect(page.getByText('Unable to save library order. Reload and try again.')).toBeVisible();
+  await expect(items).toHaveText(['Zebra', 'Alpha', 'Hidden']);
+});
+
+for (const theme of ['dark', 'light']) {
+  test(`PT-BR library wizard uses NOUS design and restores focus in ${theme}`, async ({ page }) => {
+    await page.addInitScript((theme) => localStorage.setItem('vibepollo.theme', theme), theme);
+    await page.setViewportSize({ width: 320, height: 740 });
+    await page.emulateMedia({ colorScheme: theme === 'dark' ? 'dark' : 'light' });
+    await page.context().setExtraHTTPHeaders({ 'Accept-Language': 'pt-BR' });
+    await page.addInitScript(() => Object.defineProperty(navigator, 'languages', { get: () => ['pt-BR'] }));
+    await host(page, 'windows', {}, true, { steam: true });
+    await localRoute(page, '**/api/playnite/status', route => route.fulfill({ json: { installed: false } }));
+    await page.goto('/v2/library');
+    const trigger = page.getByRole('button', { name: 'Configurar integração de bibliotecas de jogos', exact: true });
+    await trigger.click();
+    const wizard = page.getByRole('dialog', { name: 'Conectar bibliotecas de jogos' });
+    await expect(wizard).toBeVisible();
+    await expect(wizard).not.toContainText('YOUR GAMES');
+    await expect(wizard.getByText('Recomendado no Windows')).toBeVisible();
+    expect(await wizard.evaluate(el => getComputedStyle(el).backgroundColor)).toBe(
+      await wizard.evaluate(el => {
+        const probe = document.createElement('div');
+        probe.style.backgroundColor = 'var(--vs-color-bg-surface)';
+        el.append(probe);
+        const color = getComputedStyle(probe).backgroundColor;
+        probe.remove();
+        return color;
+      }),
+    );
+    const checkbox = wizard.getByRole('checkbox', { name: 'Steam', exact: true });
+    await checkbox.check();
+    await checkbox.focus();
+    await expect(checkbox).toHaveCSS('accent-color', theme === 'light' ? 'rgb(0, 121, 135)' : 'rgb(131, 219, 228)');
+    await wizard.getByRole('button', { name: 'Próximo: opções das bibliotecas' }).click();
+    await expect(wizard.getByRole('spinbutton', { name: 'Jogos recentes', exact: true })).toBeVisible();
+    expect(await wizard.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+    await page.screenshot({ path: test.info().outputPath(`library-wizard-${theme}-pt-BR.png`), fullPage: true });
+    await page.keyboard.press('Escape');
+    await expect(wizard).not.toBeVisible();
+    await expect(trigger).toBeFocused();
+  });
+}
+
 test('initial library setup refreshes apps and persists editable settings', async ({ page }) => {
   await host(page, 'windows', {}, true, { steam: true });
   await localRoute(page, '**/api/playnite/status', route => route.fulfill({ json: { installed: false } }));

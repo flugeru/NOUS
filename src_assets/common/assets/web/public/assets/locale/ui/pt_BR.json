@@ -1157,6 +1157,12 @@
       "support": "Ajuda e atualizações"
     },
     "library": {
+      "launch": {
+        "title": "Iniciar {name} no PC?",
+        "description": "Executa os comandos do aplicativo neste PC e pode inicializar captura de tela. Não abre um cliente de transmissão. Aplicativos ou sessões em andamento precisam ser encerrados primeiro.",
+        "conflict": "PC ocupado ou estado das sessões indisponível. Encerre aplicativo ou sessão atual na Visão geral antes de iniciar outro.",
+        "failed": "Não foi possível iniciar o aplicativo. Confira logs do host e configuração de tela."
+      },
       "category": "Categoria",
       "running": "Em execução",
       "categories": {
@@ -1171,6 +1177,11 @@
         "editLabel": "Editar {name}",
         "menuLabel": "Ações de {name}",
         "moreLabel": "Mais ações de {name}",
+        "launchHost": "Iniciar no PC",
+        "openClient": "Abrir no cliente Artemis",
+        "exportLauncher": "Exportar atalho Artemis (.art)",
+        "moveEarlier": "Mover para antes",
+        "moveLater": "Mover para depois",
         "removePlaynite": "Remover entradas do Playnite",
         "showMore": "Mostrar mais",
         "tryAgain": "Tentar novamente",
@@ -1216,7 +1227,9 @@
         "delete": "Não foi possível excluir o aplicativo.",
         "load": "Não foi possível carregar a biblioteca.",
         "missingUuid": "{name} não tem UUID e não pode ser editado com segurança.",
-        "missingUuidGeneric": "Este aplicativo não tem UUID."
+        "missingUuidGeneric": "Este aplicativo não tem UUID.",
+        "reorder": "Não foi possível salvar a ordem da biblioteca. Recarregue e tente novamente.",
+        "launcher": "Não foi possível exportar o atalho: identidade do PC ou aplicativo ausente ou inválida."
       },
       "loading": "Carregando aplicativos",
       "page": {
@@ -1258,6 +1271,7 @@
         "configured": "Ordem configurada",
         "label": "Ordenar aplicativos",
         "nameAsc": "Nome, A a Z",
+        "manual": "Ordem manual",
         "nameDesc": "Nome, Z a A",
         "provider": "Fonte"
       },

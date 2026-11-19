@@ -795,6 +795,12 @@
       }
     },
     "library": {
+      "launch": {
+        "title": "Start {name} on host?",
+        "description": "Runs application commands on this PC and may initialize display capture. This does not open a streaming client. Existing applications or sessions must be stopped first.",
+        "conflict": "Host is busy or session state is unavailable. Stop the current application or session from Overview before starting another.",
+        "failed": "Unable to start application. Check host logs and display configuration."
+      },
       "category": "Category",
       "running": "Running",
       "categories": {
@@ -809,6 +815,11 @@
         "editLabel": "Edit {name}",
         "menuLabel": "Actions for {name}",
         "moreLabel": "More actions for {name}",
+        "launchHost": "Start on host",
+        "openClient": "Open in Artemis client",
+        "exportLauncher": "Export Artemis launcher (.art)",
+        "moveEarlier": "Move earlier",
+        "moveLater": "Move later",
         "removePlaynite": "Remove Playnite entries",
         "showMore": "Show more",
         "tryAgain": "Try again",
@@ -854,7 +865,9 @@
         "delete": "Unable to delete the application.",
         "load": "Unable to load the application library.",
         "missingUuid": "{name} does not have a UUID and cannot be edited safely.",
-        "missingUuidGeneric": "This application does not have a UUID."
+        "missingUuidGeneric": "This application does not have a UUID.",
+        "reorder": "Unable to save library order. Reload and try again.",
+        "launcher": "Unable to export launcher: host or application identity is missing or invalid."
       },
       "loading": "Loading applications",
       "page": {
@@ -896,6 +909,7 @@
         "configured": "Configured order",
         "label": "Sort applications",
         "nameAsc": "Name, A to Z",
+        "manual": "Manual order",
         "nameDesc": "Name, Z to A",
         "provider": "Provider"
       },
