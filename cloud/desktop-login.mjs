@@ -58,7 +58,7 @@ async function linkHost(ticket, session) {
 }
 
 async function form(req) {
-  if (req.headers['content-type']!=='application/x-www-form-urlencoded') throw Error('Invalid form');
+  if (!/^application\/x-www-form-urlencoded(?:\s*;\s*charset=utf-8)?$/i.test(req.headers['content-type'] ?? '')) return null;
   let text='';
   for await (const buf of req) { text+=buf; if(text.length>1024) throw Error('Form too large'); }
   return new URLSearchParams(text);
@@ -119,8 +119,8 @@ export function serve(configFile, firebaseKey) {
       }
       if (req.method==='POST' && req.headers.origin!==origin) return send(403,'Origem inválida');
       if (req.method==='POST' && req.url==='/link') {
-        const session=sessions.get(id), params=await form(req), ticket=params.get('ticket');
-        if (!session || params.getAll('ticket').length!==1 || !/^[A-F0-9]{64}$/.test(ticket ?? '')) return send(400,page('Autorização inválida ou expirada. Volte ao painel do PC.'));
+        const session=sessions.get(id), params=await form(req), ticket=params?.get('ticket');
+        if (!session || !params || params.getAll('ticket').length!==1 || !/^[A-F0-9]{64}$/.test(ticket ?? '')) return send(400,page('Autorização inválida ou expirada. Volte ao painel do PC.'));
         try { await linkHost(ticket,session); }
         catch { return send(502,page('Não foi possível concluir a publicação. Confira o painel do PC; desative o acesso por conta se não quiser manter a autorização.')); }
         return send(200,page('PC publicado. No Android, abra Conta NOUS → PCs da conta → Conectar.'));
