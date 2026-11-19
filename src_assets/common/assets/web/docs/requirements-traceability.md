@@ -125,6 +125,9 @@ backup exists and no host restart was performed. Later UAC elevation was cancele
 Google broker now mirrors NOUS colors, rounded controls, dark/light system theme and single cyan
 keyboard focus; four 390/1440 px screenshots and PKCE/OIDC/TLS checks pass without real credentials.
 Login account section no longer references a missing heading; both account UI regressions pass.
+Three additional mocked authentication checks cover absent heading, empty/rejected login with retry,
+remember-me payload and first-administrator password confirmation. Real Google flow reached account
+selection; user handoff timed out, so real sign-in/account linking is not counted as verified.
 Android CI `44520537861` passed build and emulator screen capture at `977bda3c5`; this does not
 certify physical navigation or camera. Installer/APK refresh is still pending.
 

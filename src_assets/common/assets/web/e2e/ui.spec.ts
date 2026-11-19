@@ -16,6 +16,68 @@ test('login account section never references an absent heading', async ({ page }
   await expect(page.locator('.account-login')).not.toHaveAttribute('aria-labelledby');
 });
 
+test('local login rejects empty credentials, reports failure and retries without Google', async ({ page }) => {
+  await host(page);
+  let authenticated = false;
+  const attempts: unknown[] = [];
+  await localRoute(page, '**/api/auth/status', route => route.fulfill({ json: {
+    authenticated, login_required: !authenticated, credentials_configured: true,
+  } }));
+  await localRoute(page, '**/api/auth/login', route => {
+    attempts.push(route.request().postDataJSON());
+    authenticated = attempts.length > 1;
+    return route.fulfill({ status: authenticated ? 200 : 401, json: { status: authenticated } });
+  });
+  await page.goto('/v2/');
+  const submit = page.locator('.auth-form button[type="submit"]');
+  await submit.click();
+  await expect(page.getByRole('alert')).toBeVisible();
+  expect(attempts).toHaveLength(0);
+  await page.locator('[name="username"]').fill(' fixture-admin ');
+  await page.locator('[name="password"]').fill('fixture-password');
+  await submit.click();
+  await expect(page.getByRole('alert')).toBeVisible();
+  await expect(submit).toBeEnabled();
+  await page.locator('.auth-form input[type="checkbox"]').uncheck();
+  await submit.click();
+  await expect(page.locator('.auth-panel')).toHaveCount(0);
+  expect(attempts).toEqual([
+    { username: 'fixture-admin', password: 'fixture-password', remember_me: true },
+    { username: 'fixture-admin', password: 'fixture-password', remember_me: false },
+  ]);
+});
+
+test('first administrator setup validates confirmation before creating local credentials', async ({ page }) => {
+  await host(page);
+  let configured = false;
+  let authenticated = false;
+  const credentials: unknown[] = [];
+  await localRoute(page, '**/api/auth/status', route => route.fulfill({ json: {
+    authenticated, login_required: !authenticated, credentials_configured: configured,
+  } }));
+  await localRoute(page, '**/api/password', route => {
+    credentials.push(route.request().postDataJSON());
+    configured = true;
+    return route.fulfill({ json: { status: true } });
+  });
+  await localRoute(page, '**/api/auth/login', route => {
+    authenticated = true;
+    return route.fulfill({ json: { status: true } });
+  });
+  await page.goto('/v2/');
+  await page.locator('[name="username"]').fill('fixture-admin');
+  await page.locator('[name="password"]').fill('fixture-password');
+  await page.locator('[name="confirm-password"]').fill('different');
+  await page.locator('.auth-form button[type="submit"]').click();
+  await expect(page.getByRole('alert')).toBeVisible();
+  expect(credentials).toHaveLength(0);
+  await page.locator('[name="confirm-password"]').fill('fixture-password');
+  await page.locator('.auth-form button[type="submit"]').click();
+  await expect(page.locator('.auth-panel')).toHaveCount(0);
+  expect(credentials).toEqual([{ currentUsername: '', currentPassword: '', newUsername: 'fixture-admin',
+    newPassword: 'fixture-password', confirmNewPassword: 'fixture-password' }]);
+});
+
 test('account lives in workspace navigation and button labels survive hover', async ({ page }) => {
   await host(page, 'windows');
   await page.goto('/v2/devices');
