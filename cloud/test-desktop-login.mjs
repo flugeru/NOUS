@@ -1,6 +1,35 @@
 import assert from 'node:assert/strict';
-import {generateKeyPairSync, sign, createHash} from 'node:crypto';
-import {begin,identity,serve} from './desktop-login.mjs';
+import {generateKeyPairSync, sign, createHash, X509Certificate} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+import {mkdtempSync, readFileSync, rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {createServer} from 'node:https';
+import {begin,enableHost,identity,serve} from './desktop-login.mjs';
+
+// Generated fixture only. The real OAuth token never enters this test.
+const fixture = mkdtempSync(join(tmpdir(),'nous-tls-'));
+const pem = join(fixture,'cert.pem'), pk = join(fixture,'key.pem');
+try {
+  execFileSync('openssl',['req','-x509','-newkey','rsa:2048','-nodes','-subj','/CN=Test','-days','1','-out',pem,'-keyout',pk],{stdio:'ignore'});
+  const cert=readFileSync(pem), pin=new X509Certificate(cert).fingerprint256.replaceAll(':','');
+  const received=[];
+  const host=createServer({cert,key:readFileSync(pk)},async (req,res)=>{
+    const chunks=[];
+    for await (const chunk of req) chunks.push(chunk);
+    received.push({path:req.url,method:req.method,body:JSON.parse(Buffer.concat(chunks).toString())});
+    res.end(JSON.stringify({status:true}));
+  });
+  await new Promise((resolve,reject)=>host.listen(0,'127.0.0.1',resolve).once('error',reject));
+  try {
+    const port=host.address().port;
+    const wrong=(pin[0]==='A' ? 'B' : 'A')+pin.slice(1);
+    await assert.rejects(enableHost(port,wrong,'fixture-ticket','fixture-token'),/certificate rejected/);
+    assert.deepEqual(received,[]);
+    assert.deepEqual(await enableHost(port,pin,'fixture-ticket','fixture-token'),{status:true});
+    assert.deepEqual(received,[{path:'/nous/account/enable',method:'POST',body:{ticket:'fixture-ticket',token:'fixture-token'}}]);
+  } finally { await new Promise(resolve=>host.close(resolve)); }
+} finally { rmSync(fixture,{recursive:true,force:true}); }
 const flow=begin(), query=flow.url.searchParams, enc=x=>Buffer.from(JSON.stringify(x)).toString('base64url');
 assert.equal(query.get('code_challenge'),createHash('sha256').update(flow.verifier).digest('base64url'));
 assert.notEqual(begin().state, flow.state);

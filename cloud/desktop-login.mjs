@@ -18,7 +18,10 @@ function hostBinding() {
 }
 
 // Never write request bytes before the exact loopback certificate has been checked.
-function enableHost(port, pin, ticket, token) {
+export function enableHost(port, pin, ticket, token) {
+  if (!Number.isInteger(port) || port < 1 || port > 65535 || !/^[A-F0-9]{64}$/.test(pin)) {
+    return Promise.reject(Error('Invalid host binding'));
+  }
   const agent = new https.Agent();
   agent.createConnection = (_options, done) => {
     const socket = tls.connect({host:'127.0.0.1',port,rejectUnauthorized:false,minVersion:'TLSv1.2'});
