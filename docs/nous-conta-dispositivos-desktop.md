@@ -46,6 +46,11 @@ APK debug 64: entradas do diretório conferem caminho da conta, UUID e SHA-256 d
 - No Android, com a mesma conta, abra **Ajustes → Conta NOUS → PCs da conta**, selecione o PC descoberto na LAN e toque em **Conectar**. O host exige TLS com pin correto, identidade Firebase assinada, desafio de uso único e prova da chave da instalação. O diretório não guarda endereços; se o PC não for descoberto, adicione-o pela LAN primeiro.
 - Use **Dispositivos** no host para desativar ou remover uma instalação. A conexão por conta não reativa uma entrada desativada nem recria uma removida. **Bloquear novos vínculos** deixa pareamentos existentes em vigor; a entrada de descoberta pode continuar na conta. PIN e QR seguem separados.
 
+### Validação no host migrado — Windows 1.0.390.1088 e MuMu 65
+
+- Removido o produto registrado em `C:\Windows` sem limpeza de dados ou remoção de drivers. MSI instalado em `C:\Program Files\NOUS`, sem instalar drivers, com início do serviço adiado até restaurar 36 arquivos verificados por SHA-256. Backup protegido separado do diretório de instalação. UUID do host, certificado TLS, dois pareamentos e banco de histórico preservados. Serviço NOUS ativo; Parsec não foi reiniciado. A lista de monitores presentes não mudou durante a partida do novo serviço. Nenhuma transmissão iniciada.
+- Login Google real no navegador concluído. Painel local autenticado emitiu a autorização e a página confirmou publicação no Firestore. MuMu listou o PC e **Conectar** abriu a Biblioteca sem PIN nem QR. O certificado da instalação já constava do cadastro anterior; o host registrou uma autorização pela conta sem duplicar o pareamento. Primeira vinculação de uma instalação nova, revogação em sessão ativa e QR com câmera real ainda não foram testados nesse ambiente.
+
 ## Etapas e aceitação
 
 1. Prévia da janela e teste local: HTTPS loopback, origem restrita, popups bloqueados, nada elevado e nenhuma mudança de serviço/driver. Validar render da interface existente, fechamento e mensagens de indisponibilidade. Prévia pode receber certificado público do host por argumento explícito; não adicionar confiança global.
