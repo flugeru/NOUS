@@ -80,6 +80,20 @@ def select(identifier):
     tap(wait_for(identifier))
 
 
+def select_scrolled_label(labels):
+    for _ in range(16):
+        root, _ = tree()
+        node = match(root, labels=labels)
+        if node is not None:
+            tap(node)
+            return
+        width, height = viewport_size()
+        shell("input", "swipe", str(width // 2), str(height * 4 // 5),
+              str(width // 2), str(height // 3), "250")
+        pause()
+    raise RuntimeError(f"Missing scrollable preference {labels}")
+
+
 def back():
     shell("input", "keyevent", "KEYCODE_BACK")
     pause()
@@ -450,7 +464,7 @@ def run(c):
 def capture_virtual_controller_editor(c):
     select("nous_nav_settings")
     select("nous_settings_controls")
-    tap(wait_for(labels=("Controle virtual", "Virtual controller")))
+    select_scrolled_label(("Controle virtual", "Virtual controller"))
     wait_for("nous_osc_tool_move")
     root, hierarchy = tree()
     dpad_labels = ("Direcional", "D-pad")
@@ -493,7 +507,7 @@ def capture_virtual_controller_editor(c):
     c.capture("virtual-controller-preview-test")
     select("nous_osc_save")
 
-    tap(wait_for(labels=("Controle virtual", "Virtual controller")))
+    select_scrolled_label(("Controle virtual", "Virtual controller"))
     select("nous_osc_tool_size")
     wait_for("nous_osc_size_value", labels=(size_label,))
     select("nous_osc_tool_visible")
