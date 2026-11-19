@@ -51,6 +51,12 @@ APK debug 64: entradas do diretório conferem caminho da conta, UUID e SHA-256 d
 - Removido o produto registrado em `C:\Windows` sem limpeza de dados ou remoção de drivers. MSI instalado em `C:\Program Files\NOUS`, sem instalar drivers, com início do serviço adiado até restaurar 36 arquivos verificados por SHA-256. Backup protegido separado do diretório de instalação. UUID do host, certificado TLS, dois pareamentos e banco de histórico preservados. Serviço NOUS ativo; Parsec não foi reiniciado. A lista de monitores presentes não mudou durante a partida do novo serviço. Nenhuma transmissão iniciada.
 - Login Google real no navegador concluído. Painel local autenticado emitiu a autorização e a página confirmou publicação no Firestore. MuMu listou o PC e **Conectar** abriu a Biblioteca sem PIN nem QR. O certificado da instalação já constava do cadastro anterior; o host registrou uma autorização pela conta sem duplicar o pareamento. Primeira vinculação de uma instalação nova, revogação em sessão ativa e QR com câmera real ainda não foram testados nesse ambiente.
 
+### Pausa no isolamento do monitor virtual
+
+- Windows continua executando o build `1.0.390.1088`; APK debug `65` continua no MuMu. Nenhum build de isolamento foi instalado, nenhum driver foi alterado nesta etapa e nenhum vídeo foi iniciado. NOUS e Parsec estavam ativos na última checagem.
+- Rascunho local, não publicado: para `extended_isolated`, o caminho RTSP exige uma tela virtual secundária identificada e compara o estado dos monitores físicos. Se a verificação falhar, a intenção é recusar o início ou a retomada, ou encerrar a captura, sem escolher a tela física. As alterações no host e nos testes ficam no workspace, sem entrar neste commit de documentação.
+- Host de teste `1.0.390.1125` compilou. Passaram as verificações com simulação de início e retomada, 1.156 casos de seleção de saída e o teste de passagem da tela exata ao RTSP. **Isolamento físico e retirada da tela durante vídeo não foram comprovados no hardware.** Trabalho pausado a pedido; não instalar nem iniciar a transmissão como parte desta etapa.
+
 ## Etapas e aceitação
 
 1. Prévia da janela e teste local: HTTPS loopback, origem restrita, popups bloqueados, nada elevado e nenhuma mudança de serviço/driver. Validar render da interface existente, fechamento e mensagens de indisponibilidade. Prévia pode receber certificado público do host por argumento explícito; não adicionar confiança global.
