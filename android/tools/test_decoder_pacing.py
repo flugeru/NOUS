@@ -61,4 +61,10 @@ with tempfile.TemporaryDirectory() as directory:
         'dequeueOutputBuffer(info, 0)', 'dequeueOutputBuffer(info, 2000)')), encoding='utf-8')
     result = subprocess.run(['java', str(java)], capture_output=True, text=True)
     assert result.returncode != 0 and 'Ready frame delayed' in result.stderr, result.stderr
-print('Decoder pacing regression checks passed (production drain and negative control)')
+game = (Path(__file__).resolve().parents[1] / 'app/src/main/java/com/limelight/Game.java').read_text(encoding='utf-8')
+startup = game[game.index('decoderRenderer = new MediaCodecDecoderRenderer('):game.index('// Don\'t stream HDR')]
+assert 'prefConfig.framePacing =' not in startup, 'Decoder tuning must preserve selected pacing mode'
+assert 'setPreferLowerDelays(prefConfig.preferLowerDelays)' in startup
+assert 'new AndroidAudioRenderer(Game.this, prefConfig.enableAudioFx)' in game
+assert '.enableLocalAudioPlayback(prefConfig.playHostAudio)' in game
+print('Decoder pacing and independent audio preference checks passed (production drain and negative control)')

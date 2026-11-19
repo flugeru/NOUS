@@ -32,6 +32,29 @@ public class ProfileBitrateTest {
         return null;
     }
 
+    @Test public void customRefreshRateUsesLocaleIndependentStorage() {
+        java.util.Locale previous = java.util.Locale.getDefault();
+        java.util.Locale.setDefault(java.util.Locale.forLanguageTag("pt-BR"));
+        android.content.Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
+        try (org.robolectric.android.controller.ActivityController<EditProfileActivity> controller =
+                     Robolectric.buildActivity(EditProfileActivity.class, new Intent(context, EditProfileActivity.class)).setup()) {
+            EditProfileActivity activity = controller.get();
+            EditProfileActivity.ProfilePreferenceFragment fragment =
+                    (EditProfileActivity.ProfilePreferenceFragment) activity.getSupportFragmentManager()
+                            .findFragmentById(R.id.preferences_container);
+            androidx.preference.EditTextPreference custom = fragment.findPreference(PreferenceConfiguration.CUSTOM_REFRESH_RATE_PREF_STRING);
+            assertNotNull(custom);
+            for (String invalid : new String[]{"NaN", "Infinity", "0", "-1", "invalid"}) {
+                assertFalse(invalid, custom.callChangeListener(invalid));
+            }
+            assertFalse(custom.callChangeListener("59,94")); // Listener persists normalized value itself.
+            assertEquals("59.94", activity.getInMemoryPrefs().getString(
+                    PreferenceConfiguration.CUSTOM_REFRESH_RATE_PREF_STRING, null));
+        } finally {
+            java.util.Locale.setDefault(previous);
+        }
+    }
+
     @Test public void profileEditorKeepsBitrateInKbpsWithoutChangingBase() {
         android.content.Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
         PreferenceManager.getDefaultSharedPreferences(context).edit()

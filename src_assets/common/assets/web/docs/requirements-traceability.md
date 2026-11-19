@@ -159,6 +159,34 @@ a release source. Classic UI remains recovery fallback until parity is proven.
 - No stream was started, no driver changed and no host update elevated. Before/after live
   streaming measurement and exact secondary-virtual-output safety gate remain pending.
 
+### 2026-11-19 MuMu soak and Android settings follow-up (not release certification)
+
+- Remote Monitor streamed only the client's secondary virtual output `\\.\DISPLAY15`,
+  2712x1220 at 60 Hz, automatic codec negotiated H.264, 50,000 kbps requested and
+  38,988 kbps encoder budget. Installed Windows host was not replaced.
+- Motion ran 1,800.005 seconds with 71,995 paints (40.0 paints/s), maximum paint gap
+  63 ms. All 178 activity samples remained in Game; client log had no fatal exception.
+  The wrapper incorrectly marked failure because Process.ExitCode was unavailable;
+  original manifest is preserved with a separate local analysis, not rewritten as success.
+- Host produced about 401 frames per 10-second window, matching the source limitation.
+  Logged source gaps after startup reached 54.97 ms; a 4,828 ms gap straddled source startup.
+  This does not prove sustained 60 FPS, network/presentation health, or Poco stability.
+  Windows Forms movement is an inadequate 60 FPS reference; Poco validation remains open.
+- Fixed Android startup forcing every pacing selection to Balanced. Runtime reconnects
+  now report minimum-latency mode 0 and smoothness mode 3 independently.
+- Fixed Android audio renderer receiving host-playback preference instead of equalizer
+  preference. With host playback off, runtime equalizer on selects standard AudioTrack
+  (`1920 false`), equalizer off selects low-latency track (`1920 true`). This checks routing,
+  not audible equalization: MuMu does not certify physical audio output or effect availability.
+- Custom refresh input accepts decimal comma, stores Locale.ROOT decimal point, rejects
+  non-finite/nonpositive values, and prevents dialog persistence overwriting normalized input.
+  Regression extends existing profile test; pacing/audio source checks remain runnable via
+  `python android/tools/test_decoder_pacing.py`. Latest local build and all 88 unit tests
+  pass (zero failures/errors/skips); updated Debug APK installed with replacement only.
+  Real settings dialog saves `59.94` and rebuilds settings without losing the value.
+- APKs are local Debug updates using `adb install -r`, preserving pairing and application data.
+  Remaining settings, physical controls/audio, HDR, camera and Poco presentation are not certified.
+
 ### Verification commands
 
 From the web directory, with Node 22 or newer:

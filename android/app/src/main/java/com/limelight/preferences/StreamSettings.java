@@ -1070,20 +1070,21 @@ public class StreamSettings extends ControllerMenuActivity {
                     }
                     
                     try {
-                        float refreshRate = Float.parseFloat(value);
-                        if (refreshRate <= 0) {
+                        float refreshRate = Float.parseFloat(value.replace(',', '.'));
+                        if (Float.isNaN(refreshRate) || Float.isInfinite(refreshRate) || refreshRate <= 0) {
                             Toast.makeText(getActivity(), getString(R.string.pref_enter_value_0_9999), Toast.LENGTH_SHORT).show();
                             return false;
                         }
                         
                         // Format to max 3 decimal places
-                        String formattedValue = String.format("%.3f", refreshRate);
+                        String formattedValue = String.format(java.util.Locale.ROOT, "%.3f", refreshRate);
                         // Remove trailing zeros
                         formattedValue = formattedValue.replaceAll("0+$", "").replaceAll("\\.$", "");
 
                         editAndReload(PreferenceConfiguration.CUSTOM_REFRESH_RATE_PREF_STRING, formattedValue);
 
-                        return true;
+                        // Already persisted normalized value; do not overwrite it with raw dialog input.
+                        return false;
                     } catch (NumberFormatException e) {
                         Toast.makeText(getActivity(), getString(R.string.pref_error_occurred), Toast.LENGTH_SHORT).show();
                         return false;

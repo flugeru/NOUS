@@ -697,22 +697,11 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
             }
         } catch (Throwable ignored) {}
 
-// --- latency profile selection ---
-        try {
-            if (prefConfig != null && prefConfig.preferLowerDelays) {
-                // Intermediate: more responsive than Balanced but not 0 µs
-                decoderRenderer.setPreferLowerDelays(true);
-                decoderRenderer.setPreferLowerDelaysTimeoutUs(500);  // 0.5 ms
-                prefConfig.framePacing = PreferenceConfiguration.FRAME_PACING_BALANCED;
-                LimeLog.info("PreferLowerDelays: preferLowerDelays=true, timeout=500us, pacing=BALANCED");
-            } else {
-                // Balanced default
-                decoderRenderer.setPreferLowerDelays(false);
-                decoderRenderer.setPreferLowerDelaysTimeoutUs(2000); // 2 ms
-                prefConfig.framePacing = PreferenceConfiguration.FRAME_PACING_BALANCED;
-                LimeLog.info("Balanced: preferLowerDelays=false, timeout=2000us, pacing=BALANCED");
-            }
-        } catch (Throwable ignored) {}
+        // Decoder dequeue tuning must not replace the selected frame pacing mode.
+        decoderRenderer.setPreferLowerDelays(prefConfig.preferLowerDelays);
+        decoderRenderer.setPreferLowerDelaysTimeoutUs(prefConfig.preferLowerDelays ? 500 : 2000);
+        LimeLog.info("Frame pacing mode=" + prefConfig.framePacing +
+                ", preferLowerDelays=" + prefConfig.preferLowerDelays);
 
 // Don't stream HDR if the decoder can't support it
         if (willStreamHdr && !decoderRenderer.isHevcMain10Hdr10Supported() && !decoderRenderer.isAv1Main10Supported()) {
@@ -883,7 +872,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                 decoderRenderer.setRenderTarget(streamContainer.getSurface());
 
                 // Starten Sie die NvConnection
-                conn.start(new AndroidAudioRenderer(Game.this, prefConfig.playHostAudio),
+                conn.start(new AndroidAudioRenderer(Game.this, prefConfig.enableAudioFx),
                         decoderRenderer, Game.this);
             }
         });
