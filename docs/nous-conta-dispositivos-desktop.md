@@ -57,6 +57,12 @@ APK debug 64: entradas do diretório conferem caminho da conta, UUID e SHA-256 d
 - Rascunho local, não publicado: para `extended_isolated`, o caminho RTSP exige uma tela virtual secundária identificada e compara o estado dos monitores físicos. Se a verificação falhar, a intenção é recusar o início ou a retomada, ou encerrar a captura, sem escolher a tela física. As alterações no host e nos testes ficam no workspace, sem entrar neste commit de documentação.
 - Host de teste `1.0.390.1125` compilou. Passaram as verificações com simulação de início e retomada, 1.156 casos de seleção de saída e o teste de passagem da tela exata ao RTSP. **Isolamento físico e retirada da tela durante vídeo não foram comprovados no hardware.** Trabalho pausado a pedido; não instalar nem iniciar a transmissão como parte desta etapa.
 
+### Transmissão normal no MuMu — Windows 1.0.390.1088 e APK 65
+
+- Teste real de **Desktop** no MuMu, com a saída padrão do host (`DISPLAY1`), conforme solicitado. Sem instalar a alteração de isolamento. Sessão H.264 de aproximadamente seis minutos; o cliente voltou à lista de PCs após **Encerrar sessão**, e o host registrou `CLIENT DISCONNECTED` e `Session ended`. NOUS e Parsec seguiram ativos. Nenhuma imagem da tela salva.
+- Menu rápido abriu sobre o vídeo pelo botão Voltar e pela alça. Rolagem alcançou **Menu avançado**; D-pad simulado moveu o foco e ativou o painel de desempenho. A alça passou de 132 px visíveis a 66 px após inatividade e continuou acionável. Alça ativada na sessão, sem trocar preferência persistente.
+- Duas amostras do painel: 1280×720, 59,97–59,98 FPS recebidos, 59,47–59,49 FPS renderizados, 0% de perda de rede nas amostras, latência média de rede de 1 ms e decodificação média de 35,06–49,89 ms. Não são medidas ponta a ponta nem prova de estabilidade longa. Warp, R3 físico, Xbox/DualSense USB/Bluetooth, múltiplos controles e desempenho no POCO ainda não foram validados.
+
 ## Etapas e aceitação
 
 1. Prévia da janela e teste local: HTTPS loopback, origem restrita, popups bloqueados, nada elevado e nenhuma mudança de serviço/driver. Validar render da interface existente, fechamento e mensagens de indisponibilidade. Prévia pode receber certificado público do host por argumento explícito; não adicionar confiança global.
