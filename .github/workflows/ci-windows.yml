@@ -1515,6 +1515,8 @@ jobs:
           $proof = & powershell.exe -NoProfile -NonInteractive -File scripts/verify_setup_embedded_msi.ps1 -SetupPath "artifacts/$env:INSTALLER_NAME" -MsiPath "signed-msi/$env:MSI_NAME"
           if ($LASTEXITCODE -ne 0) { throw 'Setup embedded MSI qualification failed.' }
           $proof | Set-Content embedded-msi-proof.json -Encoding utf8
+          & powershell.exe -NoProfile -NonInteractive -File packaging/windows/bootstrapper/tests/test_setup_embedded_msi.ps1 -SetupPath "artifacts/$env:INSTALLER_NAME" -MsiPath "signed-msi/$env:MSI_NAME"
+          if ($LASTEXITCODE -ne 0) { throw 'Setup embedded MSI negative controls failed.' }
 
       - name: Download symbols package
         if: startsWith(github.ref, 'refs/tags/') || inputs.publish_symbols || inputs.upload_symbols_artifact

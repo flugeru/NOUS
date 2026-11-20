@@ -1,16 +1,46 @@
 param(
  [Parameter(Mandatory=$true)][string]$SetupPath,
- [Parameter(Mandatory=$true)][string]$MsiPath
+ [Parameter(Mandatory=$true)][string]$MsiPath,
+ [string]$CacheDir = (Join-Path $env:TEMP 'nous-setup-verifier')
 )
 $ErrorActionPreference='Stop'
-# Loading metadata/resources never invokes the setup entry point or MSI actions.
-$assembly=[Reflection.Assembly]::ReflectionOnlyLoadFrom((Resolve-Path -LiteralPath $SetupPath).Path)
-$stream=$assembly.GetManifestResourceStream('Payload.msi')
-if($null -eq $stream){throw 'Setup has no embedded Payload.msi'}
-$hasher=[Security.Cryptography.SHA256]::Create()
+$setup=(Resolve-Path -LiteralPath $SetupPath).Path
+# Read resources only. Never execute either installer layer or any MSI actions.
+try {$assembly=[Reflection.Assembly]::ReflectionOnlyLoadFrom($setup)}
+catch [BadImageFormatException] {$assembly=$null}
+$work=$null
 try {
- $embedded=([BitConverter]::ToString($hasher.ComputeHash($stream))).Replace('-','').ToLowerInvariant()
-} finally {$stream.Dispose();$hasher.Dispose()}
+ if($null -eq $assembly) {
+  New-Item -ItemType Directory -Path $CacheDir -Force | Out-Null
+  $archive=Join-Path $CacheDir 'innounp-2.71.1.zip'
+  $extractorHash='f2f037fdbc63de31248efae9ccb294398d160dc0cbad5f36d14c2f159e17bbf5'
+  if(!(Test-Path -LiteralPath $archive)) {
+   $partial=Join-Path $CacheDir ([Guid]::NewGuid().ToString('N')+'.partial')
+   try {
+    [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12
+    Invoke-WebRequest -UseBasicParsing -Uri 'https://raw.githubusercontent.com/jrathlev/InnoUnpacker-Windows-GUI/6fb49264aacf512a093e7b4fc6fb3dd266dad31a/innounp-2/bin/innounp-2.zip' -OutFile $partial
+    if((Get-FileHash -LiteralPath $partial -Algorithm SHA256).Hash -ne $extractorHash){throw 'Setup extractor download failed SHA-256 verification'}
+    Move-Item -LiteralPath $partial -Destination $archive
+   } finally {if(Test-Path -LiteralPath $partial){Remove-Item -LiteralPath $partial -Force}}
+  }
+  if((Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash -ne $extractorHash){throw 'Cached setup extractor failed SHA-256 verification'}
+  $work=Join-Path $CacheDir ('verify-'+[Guid]::NewGuid().ToString('N'))
+  Expand-Archive -LiteralPath $archive -DestinationPath (Join-Path $work 'unpacker')
+  $output=Join-Path $work 'payload'
+  & (Join-Path $work 'unpacker\innounp.exe') -x -q -y "-d$output" $setup '{tmp}\nous-install-engine.exe' | Out-Null
+  if($LASTEXITCODE -ne 0){throw 'Inno Setup engine extraction failed'}
+  $engine=Join-Path $output '{tmp}\nous-install-engine.exe'
+  $assembly=[Reflection.Assembly]::ReflectionOnlyLoad([IO.File]::ReadAllBytes($engine))
+ }
+ $stream=$assembly.GetManifestResourceStream('Payload.msi')
+ if($null -eq $stream){throw 'Setup engine has no embedded Payload.msi'}
+ $hasher=[Security.Cryptography.SHA256]::Create()
+ try {
+  $embedded=([BitConverter]::ToString($hasher.ComputeHash($stream))).Replace('-','').ToLowerInvariant()
+ } finally {$stream.Dispose();$hasher.Dispose()}
+} finally {
+ if($work -and (Test-Path -LiteralPath $work)){Remove-Item -LiteralPath $work -Recurse -Force}
+}
 $expected=(Get-FileHash -LiteralPath $MsiPath -Algorithm SHA256).Hash.ToLowerInvariant()
 if($embedded -cne $expected){throw 'Setup embedded MSI differs from the exact qualified internal MSI'}
 $installer=New-Object -ComObject WindowsInstaller.Installer

@@ -204,6 +204,49 @@ a release source. Classic UI remains recovery fallback until parity is proven.
 - APKs are local Debug updates using `adb install -r`, preserving pairing and application data.
   Remaining settings, physical controls/audio, HDR, camera and Poco presentation are not certified.
 
+### 2026-11-19 recovered soak evidence and transport controls (investigation open)
+
+- Recovered retained rotated host logs for the second soak, 13:06:24–13:36:24.
+  Motion produced 114,891 paints in 1,800.003 s; maximum paint gap was 143 ms.
+  All 178 activity samples remained in Game. Android logged 4,129 distinct incomplete
+  frames and 4,117 RFI requests, with no fatal exception. This is not a stability pass.
+- Recovered logs contain 180 encode windows, median 601 frames per roughly 10 seconds.
+  The first window straddles source startup (427 frames), while a later full window
+  contains 531 frames. Source timestamp gaps around 100–118 ms occur during early
+  degradation; they are not DXGI acquisition-duration measurements. Earlier analysis
+  of only the final 17 minutes missed these degraded windows.
+- Two 90-second controls, same virtual output and requested profile: initial address
+  produced 270 incomplete-frame messages, explicit LAN address produced 255.
+  Both have zero delta in Android UDP InErrors/RcvbufErrors and zero long decoder-input
+  waits. Counts distinguish `Unrecoverable frame` reports from lowercase `unrecoverable
+  frame` in RFI messages; a case-insensitive search counts both and doubles the result.
+  LAN launch endpoint was confirmed as 192.168.255.104. These controls do not isolate
+  actual packet loss from reordering or drops elsewhere in the emulator transport.
+- Earlier decoder-input waits and cumulative UDP buffer errors remain evidence of
+  possible receiver stalls, not an explanation of every incomplete frame. No change
+  to direct-submit behavior was made. Android tcpdump capture was denied; no root,
+  driver change or elevation was attempted to bypass that restriction.
+- Debug native builds enable upstream FEC validation, requiring an extra shard and
+  synthetic recovery. Release comparison is separate; Debug counts alone cannot
+  certify production transport behavior. Latest Debug APK (3047c40c2 settings changes)
+  was installed after the soak with replacement only. Local Release build succeeds,
+  but lint reports Firebase Kotlin metadata 2.4.0 versus expected 2.2.0; this remains
+  unresolved. Test Release APK is signed with the local Android Debug certificate,
+  not a production identity, and was installed with `adb install -r` only.
+  ARM64 Release LAN control completed 90 seconds: 215 incomplete-frame reports,
+  205 RFI requests, zero new UDP errors and zero long input-buffer waits. Removing
+  Debug FEC validation does not eliminate the failure. MuMu reports x86_64 ABI;
+  these ARM64 tests include native translation, so a native x86_64 control is next.
+- Android Actions succeeded for 37a2a1dfe (44561273022), d76beb8f2 (44561995970),
+  and 3047c40c2 (44563466045). Windows qualification remains failed until a new run.
+- Setup verifier now extracts only the embedded Inno engine with the already-pinned
+  innounp 2.71.1 archive (SHA-256 checked), reads its Payload.msi resource without
+  executing it, compares the exact MSI hash, and retains Upgrade-table/rollback checks.
+  Local Inno fixture passes positive verification and rejects a different MSI and
+  corrupt extractor cache. Fixture MSI was recovered from that setup, so this local
+  check tests the verifier, not independent release provenance. CI uses the separately
+  qualified MSI artifact and now runs the negative controls too.
+
 ### Verification commands
 
 From the web directory, with Node 22 or newer:
